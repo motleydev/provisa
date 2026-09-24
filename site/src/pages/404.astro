@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Actions, Button, Eyebrow, Links, Section } from '../components/ds';
+---
+
+<BaseLayout title="Page not found — Provisa" description="The page you asked for doesn’t exist or has moved." contact={false} noindex>
+  <Section labelledBy="nf-title">
+    <div class="l-stack" style="--gap: 28px; max-width: 860px; padding-block: 24px 48px">
+      <Eyebrow tone="vermilion">404 · Not found</Eyebrow>
+      <h1 class="t-display" id="nf-title">This page isn’t here.</h1>
+      <p class="t-lede">The page you asked for doesn’t exist or has moved. These are the places most people are looking for.</p>
+      <Actions>
+        <Button href="/" size="lg">Go to the home page</Button>
+        <Button href="/docs/" variant="outline" size="lg">Read the docs</Button>
+      </Actions>
+      <Links
+        items={[
+          { label: 'Governance', href: '/why/governance' },
+          { label: 'Interfaces', href: '/why/interfaces' },
+          { label: 'Sources', href: '/why/sources' },
+          { label: 'Download', href: '/#download' },
+        ]}
+      />
+    </div>
+  </Section>
+</BaseLayout>

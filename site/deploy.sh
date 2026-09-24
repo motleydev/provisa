@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Manually publish the landing page (static assets + the /api/subscribe Pages
-# Function) to Cloudflare Pages. Config lives in site/wrangler.jsonc — project
-# name, static output dir, and the D1 binding. Run from anywhere:
+# Manually build and publish the site (the Astro build in dist/ plus the Pages
+# Functions in functions/) to Cloudflare Pages. Config lives in wrangler.jsonc —
+# project name, output dir (dist/), and the D1 binding. Run from anywhere:
 #
 #   ./site/deploy.sh                 # deploy to production
 #   ./site/deploy.sh --preview       # deploy a preview build (non-prod branch)
@@ -24,5 +24,14 @@ fi
 
 # Run from the site dir so wrangler picks up wrangler.jsonc (functions/ + D1 binding).
 cd "${SITE_DIR}"
+
+# Build the site. If the MkDocs docs were built separately, copy them in so
+# /docs/ ships with the same deploy: DOCS_DIR=/path/to/built/docs ./deploy.sh
+npm ci
+npm run build
+if [[ -n "${DOCS_DIR:-}" ]]; then
+  rm -rf dist/docs
+  cp -R "${DOCS_DIR}" dist/docs
+fi
 echo "Deploying ${SITE_DIR} → Cloudflare Pages 'provisa-dev' (branch: ${BRANCH})"
 npx --yes wrangler pages deploy --branch="${BRANCH}"

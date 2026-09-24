@@ -1,6 +1,6 @@
 name: Deploy Site
 
-# Builds the MkDocs docs into site/docs and deploys the provisa.dev Cloudflare
+# Builds the Astro site into site/dist, the MkDocs docs into site/dist/docs, and deploys the provisa.dev Cloudflare
 # Pages project (marketing landing + /docs). exclude_docs in mkdocs.yml keeps
 # internal-only pages (requirements traceability, GTM/competitor, private
 # multi-tenant/SaaS) out of the published site.
@@ -39,11 +39,17 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Build docs into site/docs
+      - name: Build the site (Astro) into site/dist
+        working-directory: site
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build docs into site/dist/docs
         run: |
           pip install mkdocs-material pymdown-extensions mkdocs-static-i18n
           python scripts/gen_docs_index.py
-          mkdocs build --strict -d site/docs
+          mkdocs build --strict -d site/dist/docs
 
       - name: Deploy to Cloudflare Pages
         working-directory: site

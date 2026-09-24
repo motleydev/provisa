@@ -1,9 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "provisa-dev",
-  // The site dir itself is the static output. functions/ is compiled to Pages
-  // Functions (not served as assets); config files are excluded from upload.
-  "pages_build_output_dir": ".",
+  // Astro builds the static site into dist/. functions/ (beside this file) is
+  // compiled to Pages Functions. The MkDocs docs are built into dist/docs/.
+  "pages_build_output_dir": "./dist",
   "compatibility_date": "2025-01-01",
 
   // Private mailing-list store. Create it once, then paste the id here:
@@ -16,6 +16,10 @@
     }
   ]
 
+  // functions/api/demo.js ("Book a demo") uses the same D1 binding (table
+  // demo_requests in schema.sql) and, when RESEND_API_KEY is set, emails a
+  // notification to DEMO_NOTIFY_TO (a plain variable; defaults to license@provisa.dev).
+  //
   // REQ-1793 (license registration, functions/api/register.js + functions/api/register/confirm.js)
   // needs two secrets, set once via `wrangler pages secret put <NAME> --project-name provisa-dev`
   // (never in this file — see scripts/generate_license_keypair.py for how to produce them):

@@ -1,0 +1,357 @@
+---
+/**
+ * Living style guide: every token (read from design-system/tokens.json) and
+ * every component, rendered by the same code the site uses. Not indexed.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import tokens from '../../design-system/tokens.json';
+import {
+  Accordion,
+  Actions,
+  Button,
+  Callout,
+  Card,
+  Checklist,
+  CodeBlock,
+  CodeTabs,
+  ComparisonTable,
+  DownloadList,
+  Eyebrow,
+  FIGURES,
+  FigureArt,
+  Grid,
+  IndustryCard,
+  LayerList,
+  Legend,
+  Links,
+  Matrix,
+  ProtocolList,
+  ResourceCard,
+  RoleSwitcher,
+  RuleCard,
+  RuleList,
+  Section,
+  SectionIndex,
+  Stack,
+  StackHead,
+  StackNote,
+  StackRow,
+  Steps,
+  Switch,
+  Tabs,
+  Tags,
+  TierList,
+  TintCard,
+  Trace,
+} from '../components/ds';
+import { LAYER_GROUPS, LAYER_SUMMARIES } from '../data/governance';
+import { DOWNLOADS, FAQ, HERO_TABS, INTERFACE_GROUPS, TIERS, TRACE } from '../data/home';
+
+type FigName = keyof typeof FIGURES;
+const figNames = Object.keys(FIGURES) as FigName[];
+const colors = tokens.color.tokens;
+const aliasOf = (v: string) => /^\{(.+)\}$/.exec(v)?.[1];
+const resolve = (v: string): string => {
+  const alias = aliasOf(v);
+  return alias ? resolve(colors.find((c) => c.name === alias)!.value) : v;
+};
+const others = (['spacing', 'radius', 'border', 'layout', 'fluid'] as const).map((key) => ({ key, ...tokens[key] }));
+---
+
+<BaseLayout title="Design system — Provisa" description="Tokens and components of the Provisa design system." contact={false} noindex>
+  <Section labelledBy="ds-title">
+    <div class="l-stack" style="--gap: 28px; max-width: 900px">
+      <Eyebrow>Design system</Eyebrow>
+      <h1 class="t-display" id="ds-title">Provisa design system</h1>
+      <p class="t-lede">
+        The tokens and components this site is built from. Colors, type and spacing come from <code>design-system/tokens.json</code>; the
+        components are the same code the pages use.
+      </p>
+      <Links
+        items={[
+          { label: 'Colors', href: '#colors' },
+          { label: 'Type', href: '#type' },
+          { label: 'Scales', href: '#scales' },
+          { label: 'Components', href: '#components' },
+          { label: 'Figures', href: '#figures' },
+        ]}
+      />
+    </div>
+  </Section>
+
+  <Section id="colors" tone="surface" labelledBy="colors-title">
+    <div class="l-stack" style="--gap: 40px">
+      <h2 class="t-h2" id="colors-title">Colors</h2>
+      <div class="l-grid" style="--min: 230px; --gap: 24px">
+        {
+          colors.map((c) => (
+            <div class="l-stack" style="--gap: 10px">
+              <div class="ds-swatch" style={`background: ${resolve(c.value)}`} />
+              <span class="t-mono-sm">
+                <strong>{c.name}</strong> · {c.value}
+              </span>
+              <span class="t-fine pv-muted">{c.usage}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <Section id="type" labelledBy="type-title">
+    <div class="l-stack" style="--gap: 40px">
+      <h2 class="t-h2" id="type-title">Type</h2>
+      {
+        tokens.type.groups.map((g) => (
+          <div class="l-stack" style="--gap: 0">
+            <Eyebrow>{`${g.name} · ${g.family}`}</Eyebrow>
+            <p class="t-body pv-body pv-measure" style="padding-block: 8px 16px">
+              {g.note}
+            </p>
+            <div class="pv-list" role="list">
+              {g.styles.map((s) => (
+                <div class="ds-type-row" role="listitem">
+                  <span class="t-mono-sm pv-muted">
+                    .{s.name}
+                    <br />
+                    {s.fontSize} / {s.lineHeight} · {s.fontWeight}
+                  </span>
+                  <span class={s.name}>{s.sample}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section id="scales" tone="surface" labelledBy="scales-title">
+    <div class="l-stack" style="--gap: 40px">
+      <h2 class="t-h2" id="scales-title">Scales</h2>
+      <div class="l-grid" style="--min: 340px; --gap: 40px">
+        {
+          others.map((fam) => (
+            <div class="l-stack" style="--gap: 12px">
+              <h3 class="t-h4">{fam.key}</h3>
+              <p class="t-fine pv-muted">{fam.note}</p>
+              <ul class="pv-list pv-list--dense" role="list">
+                {fam.tokens.map((t) => (
+                  <li class="ds-scale-row">
+                    <span class="t-mono-sm">--{t.name}</span>
+                    <span class="t-mono-sm pv-muted">{t.value}</span>
+                    {fam.key === 'spacing' && <span class="ds-bar" style={`width: ${t.value}`} />}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <Section id="components" labelledBy="components-title">
+    <div class="l-stack" style="--gap: 56px">
+      <h2 class="t-h2" id="components-title">Components</h2>
+
+      <div class="ds-demo">
+        <h3 class="t-h4">Button, TextLink, Eyebrow, SectionIndex, Tag, Switch</h3>
+        <Actions>
+          <Button href="#components" size="lg">Book a demo</Button>
+          <Button href="#components" variant="outline" size="lg">Start a free trial</Button>
+          <Button href="#components">Book a demo</Button>
+          <Button variant="ink">Subscribe</Button>
+        </Actions>
+        <Links items={[{ label: 'How each layer works', href: '#components', arrow: true }, { label: 'Every interface in detail', href: '#components' }]} />
+        <div class="l-cluster" style="--gap: 32px; --align: flex-start">
+          <Eyebrow>Default (forest)</Eyebrow>
+          <Eyebrow tone="cobalt">Cobalt</Eyebrow>
+          <Eyebrow tone="vermilion">Vermilion</Eyebrow>
+          <SectionIndex number="03" label="Governance" />
+        </div>
+        <Tags items={[{ label: 'SQL', tone: 'cobalt' }, { label: 'GraphQL', tone: 'forest' }, { label: 'Cypher', tone: 'vermilion' }, { label: 'Starburst', tone: 'ink' }, { label: 'Trino' }]} />
+        <div class="l-cluster" style="--gap: 32px">
+          <Switch on />
+          <Switch on={false} />
+        </div>
+      </div>
+
+      <div class="ds-demo">
+        <h3 class="t-h4">RuleCard, TintCard, Card</h3>
+        <Grid min={220}>
+          <RuleCard rule="bar" color="cobalt" title="Not a warehouse" titleClass="t-h4" body="Your data stays where it is." />
+          <RuleCard rule="accent" color="forest" title="GraphQL" titleClass="t-h4" body="Per-role schemas, valid by construction." />
+          <RuleCard index="01" title="Point" body="One location, not one table." />
+          <RuleCard title="Read and write" body="Analytical *and* transactional." />
+        </Grid>
+        <Grid min={220} gap={16}>
+          <TintCard tone="cobalt" title="It serves." body="Generated from the registration." titleClass="t-h3-lg" />
+          <TintCard tone="forest" title="SQL" meta="pgwire · JDBC" body="Full SQL over federated data." titleClass="t-h3-lg" />
+          <TintCard tone="vermilion" index="02" title="It records." plainTitle body="Every query is traced." />
+          <Card title="Refresh by calendar" titleClass="t-h3" body="A TTL or interval, when time is the trigger." />
+        </Grid>
+      </div>
+
+      <div class="ds-demo">
+        <h3 class="t-h4">Stack, Callout, Legend</h3>
+        <Grid min={340} gap={40}>
+          <Stack>
+            <StackHead>GraphQL · SQL · Cypher → any of nine protocols</StackHead>
+            <StackRow index="0" label="Introspection filtering" tone="cobalt" />
+            <StackRow index="3" label="Row-level security" tone="forest" />
+            <StackRow index="5" label="Predicate guard and approval" tone="vermilion" />
+            <StackNote label="PLAN OUT">One compiled plan, policy already inside it</StackNote>
+          </Stack>
+          <div class="l-stack">
+            <Callout label="← RETURN">Rows come back already filtered and masked.</Callout>
+            <Callout label="PLAN OUT" tone="paper">One compiled plan, plus the audit row.</Callout>
+            <Legend items={LAYER_GROUPS} />
+          </div>
+        </Grid>
+      </div>
+
+      <div class="ds-demo">
+        <h3 class="t-h4">CodeBlock, CodeTabs</h3>
+        <Grid min={420} gap={40}>
+          <CodeTabs id="ds-code" label="Query language" tabs={HERO_TABS.slice(0, 3)} />
+          <CodeBlock code={TRACE[2].code} comments="dash" head="compiled for analyst_eu" accent="vermilion" compact />
+        </Grid>
+      </div>
+
+      <div class="ds-demo">
+        <h3 class="t-h4">Accordion, Tabs, RoleSwitcher</h3>
+        <Accordion name="ds-faq" items={FAQ.slice(0, 3)} />
+        <Tabs
+          id="ds-tabs"
+          label="Schema change"
+          kicker="WHAT PROVISA DOES"
+          tabs={[
+            { label: 'A column is added', title: 'Nothing happens.', body: 'A definition names the columns it uses.' },
+            { label: 'A column is removed', title: 'The refresh fails loudly.', body: 'At that node, not three hops downstream.' },
+          ]}
+        />
+        <div style="max-width: 560px">
+          <RoleSwitcher
+            id="ds-roles"
+            label="Role"
+            flag="relationship_guard"
+            roles={[
+              { name: 'Analyst', on: true, rows: [{ k: 'JOINs and traversals', v: 'registered relationships only', ok: true }] },
+              { name: 'Trusted role', on: false, rows: [{ k: 'JOINs and traversals', v: 'unconstrained', ok: false }] },
+            ]}
+          />
+        </div>
+      </div>
+
+      <div class="ds-demo">
+        <h3 class="t-h4">ComparisonTable, RuleList, Checklist, Steps, TierList</h3>
+        <ComparisonTable
+          caption="Example comparison"
+          them="Starburst"
+          rows={[
+            { label: 'What it is', them: 'A query engine', us: 'A semantic and governance layer' },
+            { label: 'Smallest deployment', them: 'A cluster', us: '`pip install "provisa[embedded]"`' },
+          ]}
+        />
+        <Grid min={300} gap={40}>
+          <RuleList items={['Governance compiled into every query plan', 'An audit row for every query']} />
+          <TintCard tone="cobalt" size="lg" title="Choose Provisa alone when" plainTitle>
+            <Checklist tone="cobalt" items={['You need GraphQL or Cypher.', 'You need to run airgapped.']} />
+          </TintCard>
+        </Grid>
+        <Steps
+          items={[
+            { title: 'Structure is read, not typed.', body: 'Discovered from the source.', color: 'cobalt' },
+            { title: 'Missing keys are proposed.', body: 'With cardinality and reasoning.', color: 'forest' },
+            { title: 'Stewards approve.', body: 'Candidates, not live edges.', color: 'vermilion' },
+          ]}
+        />
+        <TierList tiers={TIERS} />
+      </div>
+
+      <div class="ds-demo">
+        <h3 class="t-h4">DownloadList, IndustryCard, ResourceCard</h3>
+        <div style="max-width: 620px">
+          <DownloadList items={DOWNLOADS} />
+        </div>
+        <Grid min={220}>
+          <IndustryCard number="01" name="Financial services" line="Row-level security and an audit row on every query." href="#components" bg="cobalt" corner="vermilion" />
+          <IndustryCard number="04" name="Manufacturing & energy" line="Crawl the shared drives plants run on." href="#components" bg="ink" corner="vermilion" />
+          <ResourceCard type="Explainer" title="Active vs. passive" href="#components" bg="cobalt" a="vermilion" />
+          <ResourceCard type="Migration guide" title="Coming from Hasura v2" href="#components" bg="forest" a="paper" />
+        </Grid>
+      </div>
+
+      <div class="ds-demo">
+        <h3 class="t-h4">Trace, ProtocolList, Matrix</h3>
+        <Trace steps={TRACE.slice(1, 3)} />
+        <ProtocolList
+          items={[{ name: 'pgwire', meta: 'port 5439', body: 'Any Postgres client; `pg_catalog` is answered in memory.', code: 'psql -h provisa -p 5439' }]}
+        />
+        <Matrix rows={INTERFACE_GROUPS.slice(0, 2)} />
+      </div>
+    </div>
+  </Section>
+
+  <Section tone="forest" label="LayerList on a forest band">
+    <div style="max-width: 820px">
+      <LayerList head="Query in GraphQL · SQL · Cypher, over any of the nine protocols" layers={LAYER_SUMMARIES} out={{ label: 'PLAN OUT', text: 'One compiled plan, plus the audit row' }} />
+    </div>
+  </Section>
+
+  <Section id="figures" tone="surface" labelledBy="figures-title">
+    <div class="l-stack" style="--gap: 40px">
+      <h2 class="t-h2" id="figures-title">Figures</h2>
+      <div class="l-grid" style="--min: 220px; --gap: 32px">
+        {
+          figNames.map((name, i) => (
+            <div class="l-stack" style="--gap: 12px">
+              <FigureArt name={name} label={`FIG. 0${i + 1}`} />
+              <span class="t-mono-sm">{name}</span>
+              <span class="t-fine pv-muted">{FIGURES[name].motif}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .ds-swatch {
+    height: 88px;
+    border: 1px solid var(--line);
+  }
+
+  .ds-type-row {
+    display: grid;
+    grid-template-columns: minmax(160px, 220px) 1fr;
+    gap: 24px;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  .ds-scale-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 12px;
+    align-items: center;
+  }
+
+  .ds-bar {
+    grid-column: 1 / -1;
+    height: 6px;
+    background: var(--cobalt);
+  }
+
+  .ds-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-top: 24px;
+    border-top: 2px solid var(--rule);
+  }
+</style>

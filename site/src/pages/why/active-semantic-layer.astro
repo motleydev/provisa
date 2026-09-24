@@ -1,0 +1,231 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  Block,
+  ComparisonTable,
+  Grid,
+  Links,
+  PageHero,
+  Section,
+  SplitHeader,
+  Stack,
+  StackHead,
+  StackNote,
+  StackRow,
+  Steps,
+  TintCard,
+} from '../../components/ds';
+import { LINKS } from '../../data/site';
+
+const passiveActive = [
+  {
+    label: 'What it produces',
+    them: 'Definitions, metrics, and documentation for other tools to consume',
+    us: 'The running system: the API, the plan, the policy, and the audit trail',
+  },
+  {
+    label: 'Who executes',
+    them: 'A BI tool, a warehouse, or an application, each with its own copy of the rules',
+    us: 'The layer compiles and executes. There is no copy to drift.',
+  },
+  {
+    label: 'Governance',
+    them: 'Documented in the model, enforced downstream, or not, depending on the path',
+    us: 'Compiled into every query plan on every protocol, with no bypass path',
+  },
+  { label: 'Coverage', them: 'The tools that were integrated with it', us: 'Anything that speaks a supported wire protocol, including AI agents' },
+  { label: 'Drift', them: 'Model and reality diverge between releases', us: 'Not possible: the description is the implementation' },
+];
+
+const catalogSteps = [
+  {
+    title: 'Structure is read, not typed.',
+    body: 'Register a source and its tables and columns are discovered from the source. For files, you register a location (a folder, a bucket, a SharePoint site) and the crawl registers what it finds.',
+    color: 'cobalt' as const,
+  },
+  {
+    title: 'Foreign keys become relationships.',
+    body: 'Declared constraints register as relationships in both directions, named for the concept rather than the constraint.',
+    color: 'cobalt' as const,
+  },
+  {
+    title: 'Missing keys are proposed.',
+    body: 'Where foreign keys were never declared, Claude reads the schema and suggests the relationships with cardinality, a confidence score, and its reasoning.',
+    color: 'forest' as const,
+  },
+  {
+    title: 'Stewards approve. They don’t author.',
+    body: 'Suggestions land as candidates, not live edges. Reviewing a proposed join takes a minute. Finding it from scratch takes an afternoon.',
+    color: 'vermilion' as const,
+  },
+];
+
+const fourThings = [
+  { title: 'It serves.', body: 'The GraphQL schema, the SQL catalog, and the graph model are generated from the registration, not maintained beside it.', tone: 'cobalt' as const },
+  { title: 'It plans.', body: 'Joins and traversals compile against registered relationships. An illegal path never compiles.', tone: 'cobalt' as const },
+  {
+    title: 'It enforces.',
+    body: 'Six governance layers apply inside the plan: introspection filtering, public and domain access, row-level security, column masking, and a pre-execution predicate guard.',
+    tone: 'forest' as const,
+  },
+  {
+    title: 'It records.',
+    body: 'Every query is traced and compacted into queryable tables, so the audit trail joins to the business data it describes.',
+    tone: 'vermilion' as const,
+  },
+];
+---
+
+<BaseLayout
+  title="The Active Semantic Layer — Provisa"
+  description="A passive semantic layer describes your data and hopes something else honors it. An active semantic layer executes the query, enforces the governance, and writes the audit trail from that same description — at query time, on every protocol."
+  current="/#platform"
+>
+  <PageHero
+    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'Active Semantic Layer' }]}
+    eyebrow="The Active Semantic Layer"
+    title="A semantic layer that runs the query."
+    lede="Most semantic layers are descriptions. They define what a customer is, which tables join, and who should see what, then hand that definition to another tool to honor. Provisa honors it at execution time, whatever the path in."
+    actions={[
+      { label: 'Book a demo', href: '#contact' },
+      { label: 'Start a free trial', href: LINKS.cloud, variant: 'outline' },
+    ]}
+  >
+    <Stack slot="aside" label="What one registration does at query time">
+      <StackHead>ONE REGISTRATION · sources, relationships, meaning, policy</StackHead>
+      <StackRow index="01" label="It serves" tone="cobalt" tall />
+      <StackRow index="02" label="It plans" tone="cobalt" tall />
+      <StackRow index="03" label="It enforces" tone="forest" tall />
+      <StackRow index="04" label="It records" tone="vermilion" tall />
+      <StackNote label="AT QUERY TIME">On every language and every protocol</StackNote>
+    </Stack>
+  </PageHero>
+
+  <Section tone="surface" labelledBy="museum-title">
+    <SplitHeader eyebrow="The estate you have" eyebrowTone="cobalt" title="Every enterprise is a data museum" titleId="museum-title">
+      <p class="t-lead-serif">
+        Wing after wing of systems from different eras, each built by people who have mostly moved on, each correct for its time.
+      </p>
+      <p class="t-body-lg pv-body">
+        The mainframe extract nobody dares retire, the warehouse from the last re-platforming, the SaaS app finance bought in 2019, the lake
+        somebody filled and left. Consolidation programs try to demolish the museum. They run for years, cost a fortune, and end with one
+        more wing.
+      </p>
+      <p class="t-body-lg pv-body">
+        The practical job is navigation: which system holds what, which paths between them are valid, and which ones you are allowed to use.
+        Get that right and the age of a system stops mattering. A 1994 system reachable by a governed path is more useful than a modern one
+        nobody can find.
+      </p>
+    </SplitHeader>
+  </Section>
+
+  <Section labelledBy="terms-title">
+    <SplitHeader eyebrow="Business terms" eyebrowTone="forest" title="Better names are useful. They are not the layer." titleId="terms-title">
+      <p class="t-body-lg pv-body">
+        Column comments and descriptions have existed in every database for decades. Provisa supports them anyway, because most estates are
+        full of badly named, barely described tables. Sources are imported as they are and never touched; you alias over them. Every
+        description field has a button that drafts one with the model, and nothing persists until a steward approves it.
+      </p>
+      <p class="t-body-lg pv-body">
+        A well-named estate would still need the layer. The rules worth building it for can’t live in a name: which joins are legal, whose
+        row this is and whether you may see it, which physical copy answers fastest, and what happened when someone asked.
+      </p>
+    </SplitHeader>
+  </Section>
+
+  <Section tone="surface" labelledBy="work-title">
+    <Block>
+      <SplitHeader eyebrow="The work" eyebrowTone="vermilion" title="Most of the catalog is not written by people" titleId="work-title">
+        <p class="t-body-lg pv-body">
+          Cataloging used to mean a two-year program of people typing descriptions into a tool that could not act on them. The idea was
+          sound. The method gave humans the machine’s half of the job.
+        </p>
+      </SplitHeader>
+      <Steps items={catalogSteps} />
+      <p class="t-body-lg pv-body pv-measure">
+        You also never catalog the whole museum at once. Domains register independently, so one team can put its corner under a governed API
+        this month, and the paths between domains get registered when someone actually needs one.
+      </p>
+    </Block>
+  </Section>
+
+  <Section tone="forest" labelledBy="funding-title">
+    <SplitHeader eyebrow="How it gets paid for" title="The catalog arrives as a side effect of funded work" titleId="funding-title">
+      <p class="t-body-lg pv-body">
+        Infrastructure gets deferred every year by people who agree it matters. Projects get funded. So register the four sources this
+        quarter’s project needs, ship the project, and keep the registrations.
+      </p>
+      <p class="t-body-lg pv-body">
+        Adding a source, a relationship, or a masking rule is an addition to a declarative config, not a re-model of what’s already there. A
+        steward’s explicit definition overrides a discovered one, so correcting the machine is an edit. It is the move infrastructure made
+        with Terraform: declare what should exist, and read the state instead of re-running a script to find out.
+      </p>
+      <p class="t-body-lg">After ten funded projects, you have a catalog nobody had to fund as a catalog.</p>
+    </SplitHeader>
+  </Section>
+
+  <Section labelledBy="passive-title">
+    <Block gap={40}>
+      <SplitHeader eyebrow="Passive and active" eyebrowTone="cobalt" title="The difference is who executes" titleId="passive-title">
+        <p class="t-body-lg pv-body">A passive layer produces definitions for other tools to consume. An active layer is the running system.</p>
+      </SplitHeader>
+      <ComparisonTable caption="Passive and active semantic layers compared" them="Passive semantic layer" us="Active semantic layer" rows={passiveActive} />
+    </Block>
+  </Section>
+
+  <Section tone="surface" labelledBy="active-title">
+    <Block>
+      <SplitHeader eyebrow="What active has to mean" eyebrowTone="forest" title="Four things, from one description, when a query runs" titleId="active-title">
+        <p class="t-body-lg pv-body">
+          Take any one away and you are back to a description plus a promise. The usual failure is a good model that four systems interpret
+          four ways, and a governance rule that holds in the BI tool but not in the notebook.
+        </p>
+      </SplitHeader>
+      <Grid min={260} gap={16}>
+        {fourThings.map((t) => <TintCard tone={t.tone} title={t.title} body={t.body} titleClass="t-h3-lg" />)}
+      </Grid>
+    </Block>
+  </Section>
+
+  <Section labelledBy="protocol-title">
+    <SplitHeader eyebrow="Every protocol, agents included" eyebrowTone="vermilion" title="One path underneath every way in" titleId="protocol-title">
+      <p class="t-body-lg pv-body">
+        A semantic layer reachable only through its own API governs only the traffic that chooses to use it. Provisa is reachable over
+        pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, and MCP, and all of them land in the same compiler and the same six
+        layers. An analyst on psql, a dashboard on JDBC, and an agent on MCP get the same answer under the same policy.
+      </p>
+      <p class="t-body-lg pv-body">
+        An agent’s OAuth token maps to a role, governed exactly as a person’s would be. There is no second policy engine to keep in sync, and
+        no service account holding wider rights than the human it answers for.
+      </p>
+      <div style="padding-top: 8px">
+        <Links
+          items={[
+            { label: 'Three languages, nine protocols', href: '/why/interfaces' },
+            { label: 'The six governance layers', href: '/why/governance' },
+          ]}
+        />
+      </div>
+    </SplitHeader>
+  </Section>
+
+  <Section tone="ink" labelledBy="not-title">
+    <SplitHeader eyebrow="What it is not" eyebrowTone="vermilion" title="Not a metrics language, not federation, not ABAC" titleId="not-title">
+      <p class="t-body-lg pv-body">
+        Those are good categories with good products. Each on its own is inert: a metric the engine does not enforce is a document,
+        federation that does not know what the data means is a join, and access control at one door is not access control.
+      </p>
+      <p class="t-body-lg pv-body">
+        The usual fix is an integration project that wires three products together and maintains the seams forever. Here the published API,
+        the legal join paths, and the policy are all derived from one registration, and they meet at the point where the query executes.
+        That registration is a declarative config you own, so each product underneath goes back to being a component you can put out to bid.
+      </p>
+      <p class="t-body-lg">
+        If you find another product where the description is the thing that runs, governs, and audits every query, we would like to know.
+      </p>
+      <div style="padding-top: 8px">
+        <Links items={[{ label: 'Why the model outlives the engine', href: '/why/no-lock-in' }]} />
+      </div>
+    </SplitHeader>
+  </Section>
+</BaseLayout>

@@ -1,0 +1,112 @@
+---
+/**
+ * Every page: head metadata, the utility bar, header, the page, the closing
+ * contact band (unless a page opts out) and the footer.
+ */
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/ds.css';
+import { ContactSection, SiteFooter, SiteHeader, UtilityBar } from '../components/ds';
+import {
+  CONTACT_LINKS,
+  FOOTER_COLUMNS,
+  FOOTER_NOTE,
+  INNER_CONTACT,
+  LEGAL,
+  LINKS,
+  NAV,
+  SITE_URL,
+  SUBSCRIBE,
+  UTILITY,
+} from '../data/site';
+
+interface Props {
+  /** Full document title. */
+  title: string;
+  description: string;
+  /** Nav href of the current section, to mark it in the header. */
+  current?: string;
+  /** Closing band: 'forest' (home), 'ink' (default) or false for none. */
+  contact?: 'forest' | 'ink' | false;
+  contactTitle?: string;
+  contactLead?: string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+}
+
+const {
+  title,
+  description,
+  current,
+  contact = 'ink',
+  contactTitle = INNER_CONTACT.title,
+  contactLead = INNER_CONTACT.lead,
+  noindex = false,
+  ogType = 'article',
+} = Astro.props;
+
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/');
+const canonical = new URL(path === '' ? '/' : path, SITE_URL).href;
+// "Book a demo" jumps to this page's contact band, or the home page's when there is none.
+const demo = { label: 'Book a demo', href: contact ? '#contact' : '/#contact' };
+const footerColumns = FOOTER_COLUMNS.map((col) => ({
+  ...col,
+  links: col.links.map((l) => (l.href === LINKS.contact ? { ...l, href: demo.href } : l)),
+}));
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#f8f6f1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href="/fonts/source-serif-4-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/public-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <meta property="og:site_name" content="Provisa" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/og.png', SITE_URL).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="pv-skip" href="#main">Skip to content</a>
+    <UtilityBar message={UTILITY.message} cta={UTILITY.cta} links={UTILITY.links} />
+    <SiteHeader nav={NAV} current={current} trial={{ label: 'Start free trial', href: LINKS.cloud }} demo={demo} />
+    <main id="main">
+      <slot />
+    </main>
+    {
+      contact && (
+        <ContactSection tone={contact} title={contactTitle} lead={contactLead} links={CONTACT_LINKS} />
+      )
+    }
+    <SiteFooter
+      note={FOOTER_NOTE}
+      columns={footerColumns}
+      subscribe={SUBSCRIBE}
+      copyright={`© ${year} Provisa`}
+      legal={LEGAL}
+    />
+    <script>
+      import { initBehaviors } from '../components/ds/behaviors';
+      import { markDetectedOs } from '../scripts/downloads';
+      import { initForms } from '../scripts/forms';
+
+      initBehaviors();
+      initForms();
+      markDetectedOs();
+    </script>
+  </body>
+</html>

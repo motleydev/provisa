@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Links, PageHero, Section, SplitHeader, Stack, StackArrow, StackPanel, Tags } from '../../components/ds';
+import { LINKS } from '../../data/site';
+---
+
+<BaseLayout
+  title="No lock-in — engine, source, or us — Provisa"
+  description="Your semantics live above the infrastructure: swap engines and re-point sources without rewriting a query or a policy — and take your declarative model with you if you leave Provisa."
+>
+  <PageHero
+    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'No lock-in' }]}
+    eyebrow="Vendor leverage"
+    title="Locked-in ecosystems become replaceable execution engines."
+    lede="Provisa front-ends your disparate systems so your semantics live with *you*, not your vendors — turning the platforms you’re currently stuck inside into components you can swap without rewriting a query or a policy."
+    actions={[
+      { label: 'Book a demo', href: '#contact' },
+      { label: 'Start a free trial', href: LINKS.cloud, variant: 'outline' },
+    ]}
+  >
+    <Stack slot="aside" label="Your model above swappable engines">
+      <StackPanel label="YOUR MODEL · semantics, relationships, governance" variant="cobalt">
+        <span class="t-body">Portable declarative config, in git</span>
+      </StackPanel>
+      <StackArrow />
+      <StackPanel label="THE ENGINE · A REPLACEABLE COMPONENT">
+        <Tags
+          items={['Embedded', 'Trino', 'Databricks', 'Snowflake', 'Postgres', 'ClickHouse', 'Oracle'].map((label) => ({ label }))}
+        />
+      </StackPanel>
+    </Stack>
+  </PageHero>
+
+  <Section tone="surface" labelledBy="engines-title">
+    <SplitHeader eyebrow="Engines and sources" eyebrowTone="cobalt" title="No lock-in to an engine or a source" titleId="engines-title">
+      <p class="t-body-lg pv-body">
+        Your model, semantics, and governance live <em>above</em> the infrastructure rather than inside it, which insulates your data consumers
+        from infrastructure churn. Swap the engine — embedded, to Trino, to your warehouse; new CTO, new strategy, switch it to Databricks — and
+        the queries and policies don’t change. Re-point a table from Oracle to Postgres, or MongoDB to Snowflake, and consumers never see it
+        move.
+      </p>
+      <p class="t-body-lg pv-body">
+        That turns <strong>data modernization</strong> into an incremental effort instead of a big-bang cutover. Migrate sources table by
+        table behind a stable governed API, with one uniform governance model applying to legacy and modern sources alike throughout the
+        transition — which is the part that usually kills these programs, since the interim state normally means two governance models and a
+        spreadsheet reconciling them.
+      </p>
+      <p class="t-body-lg pv-body">
+        Your warehouse should be a replaceable component, not a place you get stranded. When your semantics live above the engine, vendors
+        compete for your workloads instead of holding them hostage.
+      </p>
+    </SplitHeader>
+  </Section>
+
+  <Section labelledBy="us-title">
+    <SplitHeader eyebrow="Our side of it" eyebrowTone="forest" title="We don’t lock you in either" titleId="us-title">
+      <p class="t-body-lg pv-body">
+        Provisa is a handful of primitives — domains, tables, relationships, masking, views — compiled deterministically. There is no
+        proprietary modeling universe to learn and no black box: your model is portable declarative config, and the SQL it compiles is yours
+        to read, export, and keep.
+      </p>
+      <p class="t-body-lg pv-body">
+        Use it as scaffolding in dev if that’s all you want. The semantics you write don’t die with the tool, because they were never trapped
+        inside it. A vendor that argues you should be able to leave its dependencies has to be willing to let you leave it, too.
+      </p>
+    </SplitHeader>
+  </Section>
+
+  <Section tone="forest" labelledBy="coherence-title">
+    <SplitHeader eyebrow="Architecture" title="Physical fragmentation, logical coherence" titleId="coherence-title">
+      <p class="t-body-lg pv-body">
+        Performance needs fragmentation: the right engine per workload, materialized copies at the right granularity. Consumers need one
+        coherent model. The old cost of fragmenting the physical was fragmenting the <em>logical</em> too — a pile of models with clashing
+        objectives and granularity, physical detail bleeding into logical design.
+      </p>
+      <p class="t-body-lg pv-body">
+        Provisa splits them. Specialized engines and materialized views underneath, one governed logical model on top, and the physical never
+        bleeds into the contract your consumers see. The knobs that fragment for speed live in the same declarative model that keeps you
+        coherent, so going faster never spawns a second modeling mess.
+      </p>
+    </SplitHeader>
+  </Section>
+
+  <Section tone="surface" labelledBy="domains-title">
+    <SplitHeader eyebrow="Domains" eyebrowTone="vermilion" title="Domains as products — delegated, not centralized" titleId="domains-title">
+      <p class="t-body-lg pv-body">
+        Give a domain its own owner and scoped rights to build it: register sources, publish tables, wire relationships, ship views — all
+        inside their domain, none of it reaching another. Central policy still governs every query. Authorship is federated; enforcement stays
+        absolute. It’s optional — off by default, on when you need it.
+      </p>
+    </SplitHeader>
+  </Section>
+
+  <Section id="promote-config" labelledBy="promote-title">
+    <SplitHeader eyebrow="Change management" eyebrowTone="cobalt" title="Promote config like code" titleId="promote-title">
+      <p class="t-body-lg pv-body">
+        Analysts and developers work freely in an isolated replica: register sources, publish tables, wire relationships. Their changes export
+        as a patch that can be approved, and flow through your own designed release process — Provisa fits the process you already run, not
+        the other way round, from a manual eyeball-and-apply all the way to a fully automated pipeline. Because the estate is declarative,
+        metadata promotion is a simple patch.
+      </p>
+    </SplitHeader>
+  </Section>
+
+  <Section tone="ink" labelledBy="economics-title">
+    <SplitHeader eyebrow="Economics" eyebrowTone="vermilion" title="The economic takeaway — you set the compute bill" titleId="economics-title">
+      <p class="t-body-lg pv-body">
+        Pair semantic governance with intelligent query routing and the value shifts from merely <em>managing access</em> to actively
+        optimizing compute economics. Provisa becomes a single point of leverage to optimize execution speed, minimize network egress, and
+        dictate exactly how much you pay vendor compute engines on any given query.
+      </p>
+      <p class="t-body-lg pv-body">
+        Single-source queries bypass federation entirely and route direct to the driver. Hot lookups inline as VALUES CTEs. Queries rewrite
+        onto a fresh materialized view when one covers them. Each of those is a decision about whose meter is running, made in one place
+        instead of in every team’s query.
+      </p>
+      <div style="padding-top: 8px">
+        <Links
+          items={[
+            { label: 'The governance that travels with the model', href: '/why/governance' },
+            { label: 'Download Provisa', href: '/#download' },
+          ]}
+        />
+      </div>
+    </SplitHeader>
+  </Section>
+</BaseLayout>
