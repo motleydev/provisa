@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Provisa — Design System Style Guide</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  html,body{background:var(--paper)}
+  .sg-wrap{max-width:1320px;margin:0 auto;padding:clamp(48px,7vw,96px) clamp(20px,4vw,40px) 160px}
+  .sg-lede{display:grid;grid-template-columns:1fr;gap:24px;padding-bottom:56px;border-bottom:1px solid var(--ink)}
+  .sg-eyebrow{font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--forest)}
+  .sg-h1{font-family:var(--font-serif);font-weight:600;font-size:clamp(44px,6.6vw,86px);line-height:0.98;letter-spacing:-0.03em}
+  .sg-h1 em{color:var(--vermilion);font-style:italic}
+  .sg-sub{font-family:var(--font-sans);font-size:17px;line-height:1.6;color:var(--gray-700);max-width:64ch}
+  .sg-toc{display:flex;gap:22px;flex-wrap:wrap;padding-top:8px}
+  .sg-toc a{font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);border-bottom:1px solid var(--rule)}
+  .sg-toc a:hover{color:var(--forest);border-color:var(--forest)}
+  .sg-section{padding-top:clamp(56px,8vw,96px)}
+  .sg-section-head{display:flex;align-items:baseline;gap:20px;border-top:1px solid var(--ink);padding-top:20px;margin-bottom:32px}
+  .sg-idx{font-family:var(--font-mono);font-size:13px;color:var(--gray-600)}
+  .sg-h2{font-family:var(--font-serif);font-weight:600;font-size:clamp(30px,4vw,52px);line-height:1.05;letter-spacing:-0.025em}
+  .sg-note{font-family:var(--font-sans);font-size:14.5px;line-height:1.6;color:var(--gray-600);max-width:60ch;margin-top:8px}
+  .sg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,540px),1fr));gap:32px 28px}
+  .sg-card{display:flex;flex-direction:column;gap:10px}
+  .sg-card-hd{display:flex;flex-direction:column;gap:2px;padding-bottom:8px;border-top:3px solid var(--forest);padding-top:14px}
+  .sg-card-hd .k{font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray-500)}
+  .sg-card-hd .n{font-family:var(--font-serif);font-weight:600;font-size:22px;line-height:1.15;letter-spacing:-0.015em}
+  .sg-card-hd .s{font-family:var(--font-sans);font-size:14px;color:var(--gray-600)}
+  .sg-frame{width:100%;border:1px solid var(--ink);background:var(--white);display:block}
+  .sg-components .sg-card-hd{border-top-color:var(--cobalt)}
+  .sg-components .sg-frame{background:var(--paper)}
+  .sg-tokens{background:var(--ink);color:var(--on-ink-1);margin-top:96px;padding:clamp(40px,6vw,72px) clamp(24px,4vw,48px)}
+  .sg-tokens h2{font-family:var(--font-serif);font-weight:600;font-size:34px;letter-spacing:-0.02em;margin-bottom:24px}
+  .sg-tokens pre{font-family:var(--font-mono);font-size:12.5px;line-height:1.75;color:var(--on-ink-code);white-space:pre-wrap;margin:0}
+  .sg-tokens ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px 32px}
+  .sg-tokens li{display:flex;justify-content:space-between;gap:12px;font-family:var(--font-mono);font-size:12px;color:var(--on-ink-2);padding:6px 0;border-bottom:1px solid var(--ink-rule)}
+  .sg-tokens li b{color:var(--on-ink-1);font-weight:500}
+  .sg-foot{margin-top:96px;padding-top:24px;border-top:1px solid var(--rule);font-family:var(--font-mono);font-size:12px;color:var(--gray-500);display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<main class="sg-wrap">
+
+  <header class="sg-lede">
+    <div class="sg-eyebrow">Provisa · design system · v1</div>
+    <h1 class="sg-h1">Foundations, in the open. <em>Nothing invented.</em></h1>
+    <p class="sg-sub">Every specimen and component on this page is loaded from the design system source — the same <code>styles.css</code>, the same tokens, the same JSX bundle that ships alongside the marketing site. Change a token, this page changes. This folder is prefixed <code>_styleguide</code> by convention so build tools skip it in production output.</p>
+    <nav class="sg-toc">
+      <a href="#colors">01 · Colors</a>
+      <a href="#type">02 · Type</a>
+      <a href="#spacing">03 · Spacing & rules</a>
+      <a href="#brand">04 · Brand</a>
+      <a href="#components">05 · Components</a>
+      <a href="#tokens">06 · Tokens</a>
+    </nav>
+  </header>
+
+  <section id="colors" class="sg-section">
+    <div class="sg-section-head"><span class="sg-idx">01</span><h2 class="sg-h2">Colors</h2></div>
+    <p class="sg-note">Ink on paper, with a brand trio where every color has a job: <b>Cobalt</b> = actions and "who can see"; <b>Forest</b> = links, eyebrows, primary bands, "what they get"; <b>Vermilion</b> = emphasis and "whether it runs".</p>
+    <div class="sg-grid" style="margin-top:24px">
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Colors · card</span><span class="n">Brand trio</span><span class="s">Cobalt, Forest, Vermilion — each has a job</span></div><iframe class="sg-frame" src="guidelines/colors-brand.html" height="240" loading="lazy" title="Brand trio"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Colors · card</span><span class="n">Brand tints & hover</span><span class="s">Tints for tinted rows and comparison cells</span></div><iframe class="sg-frame" src="guidelines/colors-tints.html" height="220" loading="lazy" title="Brand tints"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Colors · card</span><span class="n">Ink, paper & bands</span><span class="s">Ink and paper are constant; white bands alternate</span></div><iframe class="sg-frame" src="guidelines/colors-neutrals.html" height="220" loading="lazy" title="Neutrals"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Colors · card</span><span class="n">Text colors</span><span class="s">Text steps on paper</span></div><iframe class="sg-frame" src="guidelines/colors-text.html" height="210" loading="lazy" title="Text colors"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Colors · card</span><span class="n">Dark surfaces</span><span class="s">Ink surfaces: code blocks, deploy band, footer CTAs</span></div><iframe class="sg-frame" src="guidelines/colors-dark.html" height="220" loading="lazy" title="Dark surfaces"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Colors · card</span><span class="n">On Forest</span><span class="s">Text and rules used on the Forest band</span></div><iframe class="sg-frame" src="guidelines/colors-on-forest.html" height="200" loading="lazy" title="On forest"></iframe></div>
+    </div>
+  </section>
+
+  <section id="type" class="sg-section">
+    <div class="sg-section-head"><span class="sg-idx">02</span><h2 class="sg-h2">Type</h2></div>
+    <p class="sg-note">Source Serif 4 (600, tight negative tracking) for headings and some ledes. Public Sans for body and UI. IBM Plex Mono for code, section indices and figure captions. Hero and h2 sizes are fluid via <code>clamp()</code>.</p>
+    <div class="sg-grid" style="margin-top:24px">
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Type · card</span><span class="n">Display</span><span class="s">Source Serif 4 · 600 · tight negative tracking</span></div><iframe class="sg-frame" src="guidelines/type-display.html" height="270" loading="lazy" title="Display"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Type · card</span><span class="n">Headings & lede</span><span class="s">Card and row headings, serif lede</span></div><iframe class="sg-frame" src="guidelines/type-headings.html" height="230" loading="lazy" title="Headings"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Type · card</span><span class="n">Body & UI</span><span class="s">Public Sans · 400/500/600</span></div><iframe class="sg-frame" src="guidelines/type-body.html" height="250" loading="lazy" title="Body"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Type · card</span><span class="n">Eyebrows & indices</span><span class="s">Uppercase 13px 600, 0.12em tracking; mono indices</span></div><iframe class="sg-frame" src="guidelines/type-eyebrow.html" height="170" loading="lazy" title="Eyebrow"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Type · card</span><span class="n">Mono</span><span class="s">IBM Plex Mono · code, wire names, labels</span></div><iframe class="sg-frame" src="guidelines/type-mono.html" height="210" loading="lazy" title="Mono"></iframe></div>
+    </div>
+  </section>
+
+  <section id="spacing" class="sg-section">
+    <div class="sg-section-head"><span class="sg-idx">03</span><h2 class="sg-h2">Spacing & rules</h2></div>
+    <p class="sg-note">Zero corner radius everywhere except the role switch (pill) and dot-grid circles. Structure comes from rules, not boxes: 1px hairlines between rows, 1px ink above card groups, 3–4px brand-colored top rules on feature cards, 6px vermilion left edge on "PLAN OUT" callouts.</p>
+    <div class="sg-grid" style="margin-top:24px">
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Spacing · card</span><span class="n">Spacing scale</span><span class="s">Gaps used in the source — exact, not grid-snapped</span></div><iframe class="sg-frame" src="guidelines/spacing-scale.html" height="220" loading="lazy" title="Spacing"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Spacing · card</span><span class="n">Rules & accents</span><span class="s">Square corners; rules do the structural work</span></div><iframe class="sg-frame" src="guidelines/rules-borders.html" height="220" loading="lazy" title="Rules"></iframe></div>
+    </div>
+  </section>
+
+  <section id="brand" class="sg-section">
+    <div class="sg-section-head"><span class="sg-idx">04</span><h2 class="sg-h2">Brand</h2></div>
+    <p class="sg-note">The wordmark is a CSS construction — three 6×18px bars (cobalt · forest · vermilion, 3px gap) with "Provisa" in Source Serif 4 at 26px. No logo file exists. Illustration is flat geometric "FIG." panels; the source has no photography.</p>
+    <div class="sg-grid" style="margin-top:24px">
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Brand · card</span><span class="n">Wordmark</span><span class="s">Three bars + Source Serif 4 wordmark</span></div><iframe class="sg-frame" src="guidelines/brand-wordmark.html" height="200" loading="lazy" title="Wordmark"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Brand · card</span><span class="n">Figure panels</span><span class="s">Flat geometric FIG. panels stand in for illustration</span></div><iframe class="sg-frame" src="guidelines/brand-figures.html" height="310" loading="lazy" title="Figure panels"></iframe></div>
+    </div>
+  </section>
+
+  <section id="components" class="sg-section sg-components">
+    <div class="sg-section-head"><span class="sg-idx">05</span><h2 class="sg-h2">Components</h2></div>
+    <p class="sg-note">React primitives rendered live from <code>_ds_bundle.js</code>. Each card mirrors the group's <code>*.card.html</code> at the design-system root, so what you see here is what a consumer of the library gets. Source lives under <code>components/&lt;group&gt;/&lt;Name&gt;.jsx</code>.</p>
+    <div class="sg-grid" style="margin-top:24px">
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Components · brand</span><span class="n">Wordmark · BrandBars · FigPanel</span><span class="s">Logo constructions and illustration panels</span></div><iframe class="sg-frame" src="components/brand/brand.card.html" height="310" loading="lazy" title="Brand components"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Components · actions</span><span class="n">Button · TextLink</span><span class="s">Primary and secondary actions, inline links</span></div><iframe class="sg-frame" src="components/actions/actions.card.html" height="280" loading="lazy" title="Actions"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Components · navigation</span><span class="n">UtilityBar · SiteHeader · Breadcrumb · SiteFooter</span><span class="s">Sticky header, breadcrumbs, footer</span></div><iframe class="sg-frame" src="components/navigation/navigation.card.html" height="460" loading="lazy" title="Navigation"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Components · content</span><span class="n">Eyebrow · Heading · Emph · RuledCard · Callout · TileCard · ChoiceCard · StatStrip</span><span class="s">Text primitives and card templates</span></div><iframe class="sg-frame" src="components/content/content.card.html" height="460" loading="lazy" title="Content"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Components · data</span><span class="n">CodeBlock · CodeTabs · Chip · LayerRow · ComparisonTable</span><span class="s">Data-flavored primitives</span></div><iframe class="sg-frame" src="components/data/data.card.html" height="460" loading="lazy" title="Data"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Components · forms</span><span class="n">Input · Textarea · DemoForm · SubscribeField · Switch · ToggleButtons</span><span class="s">Form controls</span></div><iframe class="sg-frame" src="components/forms/forms.card.html" height="420" loading="lazy" title="Forms"></iframe></div>
+      <div class="sg-card"><div class="sg-card-hd"><span class="k">Components · disclosure</span><span class="n">Accordion</span><span class="s">Plus/minus disclosure rows</span></div><iframe class="sg-frame" src="components/disclosure/disclosure.card.html" height="480" loading="lazy" title="Accordion"></iframe></div>
+    </div>
+  </section>
+
+  <section id="tokens" class="sg-section sg-tokens">
+    <div class="sg-section-head" style="border-top-color:var(--ink-rule)"><span class="sg-idx" style="color:var(--on-ink-3)">06</span><h2 class="sg-h2">Tokens</h2></div>
+    <p class="sg-note" style="color:var(--on-ink-2)">Semantic aliases first — reach for these before raw hex. All values live in <code>tokens/colors.css</code>, <code>typography.css</code>, <code>spacing.css</code>.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px;margin-top:32px">
+      <div>
+        <h3 style="font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--on-ink-3);margin-bottom:14px">Ink & paper</h3>
+        <ul>
+          <li><b>--ink</b><span>#16181d</span></li>
+          <li><b>--paper</b><span>#f8f6f1</span></li>
+          <li><b>--white</b><span>#ffffff</span></li>
+          <li><b>--sand</b><span>#ece9e1</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--on-ink-3);margin-bottom:14px">Brand trio</h3>
+        <ul>
+          <li><b>--cobalt</b><span>#2451d8</span></li>
+          <li><b>--forest</b><span>#0f6b4f</span></li>
+          <li><b>--vermilion</b><span>#e24a1f</span></li>
+          <li><b>--cobalt-tint</b><span>#e3eafc</span></li>
+          <li><b>--forest-tint</b><span>#dff1e9</span></li>
+          <li><b>--vermilion-tint</b><span>#fde6dc</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--on-ink-3);margin-bottom:14px">Semantic aliases</h3>
+        <ul>
+          <li><b>--surface-page</b><span>--paper</span></li>
+          <li><b>--surface-inverse</b><span>--ink</span></li>
+          <li><b>--text-body</b><span>--gray-700</span></li>
+          <li><b>--text-link</b><span>--forest</span></li>
+          <li><b>--text-emphasis</b><span>--vermilion</span></li>
+          <li><b>--action-primary</b><span>--cobalt</span></li>
+          <li><b>--border-hairline</b><span>--rule</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--on-ink-3);margin-bottom:14px">Governance groups</h3>
+        <ul>
+          <li><b>--group-see</b><span>who can see</span></li>
+          <li><b>--group-get</b><span>what they get</span></li>
+          <li><b>--group-run</b><span>whether it runs</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="sg-foot">
+    <span>PROVISA · STYLE GUIDE</span>
+    <span>Loaded from <code>_styleguide/</code> · not shipped with the site build</span>
+  </footer>
+
+</main>
+</body>
+</html>

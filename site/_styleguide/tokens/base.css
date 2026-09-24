@@ -1,0 +1,6 @@
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:var(--ink);text-decoration:none}
+a:hover{color:var(--forest)}
+h1,h2,h3,h4,p{margin:0}
+code{font-family:var(--font-mono);font-size:0.9em}

@@ -1,0 +1,44 @@
+:root{
+--font-serif:'Source Serif 4',Georgia,serif;
+--font-sans:'Public Sans',system-ui,sans-serif;
+--font-mono:'IBM Plex Mono',ui-monospace,monospace;
+
+/* Display (Source Serif 4, 600) */
+--type-hero:clamp(44px,6.6vw,96px);
+--type-hero-lh:0.98;
+--type-hero-ls:-0.03em;
+--type-page-title:clamp(44px,6vw,88px);
+--type-page-title-lh:1;
+--type-page-title-ls:-0.025em;
+--type-h2:clamp(34px,4vw,58px);
+--type-h2-lh:1.05;
+--type-h2-ls:-0.025em;
+--type-cta-title:clamp(38px,4.6vw,66px);
+--type-h3-lg:clamp(26px,2.6vw,36px);
+--type-h3:23px;
+--type-h3-sm:22px;
+--type-lede-serif:clamp(20px,1.8vw,25px);
+--type-stat:56px;
+
+/* Body (Public Sans) */
+--type-lede:clamp(18px,1.5vw,21px);
+--type-body:16.5px;
+--type-body-lh:1.65;
+--type-body-sm:15px;
+--type-body-sm-lh:1.6;
+--type-small:14.5px;
+--type-caption:13.5px;
+--type-nav:15px;
+--type-button:15.5px;
+
+/* Eyebrow / labels */
+--type-eyebrow:13px;
+--type-eyebrow-ls:0.12em;
+--type-label:12px;
+
+/* Mono */
+--type-mono:13px;
+--type-mono-sm:12.5px;
+--type-mono-xs:11px;
+--type-code-lh:1.8;
+}

@@ -1,0 +1,37 @@
+:root{
+/* Layout */
+--container:1320px;
+--gutter:40px;
+--header-h:76px;
+--section-y:clamp(72px,9vw,136px); /* @kind spacing */
+--section-y-sm:clamp(72px,9vw,120px); /* @kind spacing */
+--hero-y-top:clamp(56px,8vw,112px); /* @kind spacing */
+
+/* Gap scale, copied from the source (not snapped to a grid) */
+--space-3:3px;
+--space-6:6px;
+--space-8:8px;
+--space-10:10px;
+--space-12:12px;
+--space-14:14px;
+--space-16:16px;
+--space-18:18px;
+--space-20:20px;
+--space-24:24px;
+--space-28:28px;
+--space-32:32px;
+--space-40:40px;
+--space-48:48px;
+--space-56:56px;
+--space-64:64px;
+
+/* Shape: square everywhere */
+--radius:0;
+--rule-w:1px;
+--rule-top-card:4px;
+--rule-accent:6px;
+
+/* Motion: effectively none; one switch transition */
+--ease-switch:left .2s; /* @kind other */
+--blur-header:blur(8px); /* @kind other */
+}

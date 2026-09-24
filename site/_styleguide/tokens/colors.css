@@ -1,0 +1,82 @@
+:root{
+/* Constants: ink + paper */
+--ink:#16181d;
+--paper:#f8f6f1;
+--white:#ffffff;
+--sand:#ece9e1;
+--sand-2:#efece5;
+
+/* Brand trio (palette option 1: Cobalt · Forest · Vermilion) */
+--cobalt:#2451d8;
+--cobalt-hover:#1a3fb0;
+--cobalt-tint:#e3eafc;
+--cobalt-on-1:#dfe6fa;
+--cobalt-on-2:#e8edf8;
+--cobalt-on-3:#d6e0ff;
+--forest:#0f6b4f;
+--forest-tint:#dff1e9;
+--forest-on-1:#e6efe9;
+--forest-on-2:#b9d6cb;
+--forest-rule:#4f8373;
+--forest-rule-strong:#7fa99a;
+--mint:#8fc2b0;
+--mint-2:#cfe8dd;
+--vermilion:#e24a1f;
+--vermilion-tint:#fde6dc;
+--vermilion-on-dark:#f0b49f;
+--vermilion-highlight:rgba(226,74,31,0.28);
+
+/* Neutral text steps (on paper) */
+--gray-700:#40454d;
+--gray-600:#565b64;
+--gray-500:#7d8189;
+--gray-400:#8a8f98;
+
+/* Rules + borders */
+--rule:#dcd8ce;
+--rule-input:#cfcabe;
+--rule-dashed:#bdb8ac;
+--switch-off:#b8b3a7;
+
+/* Dark surfaces */
+--ink-deep:#0e1013;
+--ink-hover:#23262d;
+--ink-rule:#2c3037;
+--ink-rule-2:#3a3e45;
+--on-ink-1:#f1efe9;
+--on-ink-code:#e7e5df;
+--on-ink-2:#c9c7c1;
+--on-ink-3:#a5a39d;
+--on-ink-tab:#c9cdd3;
+--on-ink-label:#a5aab2;
+
+/* Semantic aliases */
+--surface-page:var(--paper);
+--surface-band:var(--white);
+--surface-inverse:var(--ink);
+--surface-code:var(--ink);
+--surface-code-deep:var(--ink-deep);
+--surface-brand:var(--cobalt);
+--surface-brand-alt:var(--forest);
+--text-primary:var(--ink);
+--text-body:var(--gray-700);
+--text-muted:var(--gray-600);
+--text-faint:var(--gray-500);
+--text-on-color:var(--white);
+--text-link:var(--forest);
+--text-emphasis:var(--vermilion);
+--text-eyebrow:var(--forest);
+--action-primary:var(--cobalt);
+--action-primary-hover:var(--cobalt-hover);
+--border-hairline:var(--rule);
+--border-strong:var(--ink);
+--border-input:var(--rule-input);
+
+/* Governance group semantics: A who can see · B what they get · C whether it runs */
+--group-see:var(--cobalt);
+--group-see-tint:var(--cobalt-tint);
+--group-get:var(--forest);
+--group-get-tint:var(--forest-tint);
+--group-run:var(--vermilion);
+--group-run-tint:var(--vermilion-tint);
+}
