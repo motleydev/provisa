@@ -1,22 +1,21 @@
 ---
 /**
  * Every page: head metadata, the utility bar, header, the page, the closing
- * contact band (unless a page opts out) and the footer.
+ * ContactBand with the "Keep me posted" signup (unless a page opts out) and
+ * the footer.
  */
-import '../styles/tokens.css';
-import '../styles/base.css';
-import '../styles/ds.css';
-import { ContactSection, SiteFooter, SiteHeader, UtilityBar } from '../components/ds';
+import '../styles/site.css';
+import { ContactBand, SignupForm, SiteFooter, SiteHeader, UtilityBar } from '../components/ds';
 import {
-  CONTACT_LINKS,
+  CONTACT,
+  FOOTER_BLURB,
   FOOTER_COLUMNS,
-  FOOTER_NOTE,
-  INNER_CONTACT,
+  HEADER_CTA,
+  HEADER_SECONDARY,
   LEGAL,
-  LINKS,
   NAV,
+  SIGNUP,
   SITE_URL,
-  SUBSCRIBE,
   UTILITY,
 } from '../data/site';
 
@@ -24,35 +23,20 @@ interface Props {
   /** Full document title. */
   title: string;
   description: string;
-  /** Nav href of the current section, to mark it in the header. */
-  current?: string;
+  /** Social description, when it differs from `description`. */
+  ogDescription?: string;
+  /** Label of the nav item to mark as current. */
+  active?: string;
   /** Closing band: 'forest' (home), 'ink' (default) or false for none. */
   contact?: 'forest' | 'ink' | false;
-  contactTitle?: string;
-  contactLead?: string;
   noindex?: boolean;
   ogType?: 'website' | 'article';
 }
 
-const {
-  title,
-  description,
-  current,
-  contact = 'ink',
-  contactTitle = INNER_CONTACT.title,
-  contactLead = INNER_CONTACT.lead,
-  noindex = false,
-  ogType = 'article',
-} = Astro.props;
+const { title, description, ogDescription = description, active, contact = 'ink', noindex = false, ogType = 'article' } = Astro.props;
 
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/');
 const canonical = new URL(path === '' ? '/' : path, SITE_URL).href;
-// "Book a demo" jumps to this page's contact band, or the home page's when there is none.
-const demo = { label: 'Book a demo', href: contact ? '#contact' : '/#contact' };
-const footerColumns = FOOTER_COLUMNS.map((col) => ({
-  ...col,
-  links: col.links.map((l) => (l.href === LINKS.contact ? { ...l, href: demo.href } : l)),
-}));
 const year = new Date().getFullYear();
 ---
 
@@ -72,33 +56,28 @@ const year = new Date().getFullYear();
     <meta property="og:site_name" content="Provisa" />
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={ogDescription} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL('/og.png', SITE_URL).href} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <slot name="head" />
   </head>
   <body>
     <a class="pv-skip" href="#main">Skip to content</a>
-    <UtilityBar message={UTILITY.message} cta={UTILITY.cta} links={UTILITY.links} />
-    <SiteHeader nav={NAV} current={current} trial={{ label: 'Start free trial', href: LINKS.cloud }} demo={demo} />
+    <UtilityBar message={UTILITY.message} link={UTILITY.link} links={UTILITY.links} />
+    <SiteHeader items={NAV} active={active} badge="Preview" secondary={HEADER_SECONDARY} cta={HEADER_CTA} />
     <main id="main">
       <slot />
     </main>
     {
       contact && (
-        <ContactSection tone={contact} title={contactTitle} lead={contactLead} links={CONTACT_LINKS} />
+        <ContactBand tone={contact} title={CONTACT.title} sub={CONTACT.sub} links={CONTACT.links}>
+          <SignupForm slot="form" title={SIGNUP.title} lead={SIGNUP.lead} fine={SIGNUP.fine} />
+        </ContactBand>
       )
     }
-    <SiteFooter
-      note={FOOTER_NOTE}
-      columns={footerColumns}
-      subscribe={SUBSCRIBE}
-      copyright={`© ${year} Provisa`}
-      legal={LEGAL}
-    />
+    <SiteFooter blurb={FOOTER_BLURB} columns={FOOTER_COLUMNS} copyright={`© ${year} Provisa`} legal={LEGAL} />
     <script>
       import { initBehaviors } from '../components/ds/behaviors';
       import { markDetectedOs } from '../scripts/downloads';

@@ -3,377 +3,402 @@ import { Picture } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import {
   Accordion,
-  Actions,
-  Button,
+  Chips,
   CodeBlock,
   CodeTabs,
+  Disclosure,
   DownloadList,
-  Editorial,
+  Emph,
   Eyebrow,
-  Figure,
+  Fine,
   Grid,
-  IndustryCard,
+  Head,
+  Heading,
+  HeroCTAs,
+  ItemList,
   LayerList,
   Links,
-  Matrix,
-  ResourceCard,
-  RuleCard,
-  RuleList,
-  Section,
-  StatRow,
+  P,
+  RailGrid,
+  RuledCard,
+  Sec,
+  SourceGrid,
+  Stack,
   TextLink,
-  TierList,
-  Trace,
+  Two,
 } from '../components/ds';
-import { LAYER_SUMMARIES } from '../data/governance';
+import { LAYERS, PLAN_OUT } from '../data/governance';
 import {
-  AIRGAP_POINTS,
-  DEPLOY_OPTIONS,
-  DERIVED,
+  CRAWL_STEPS,
+  CRAWLS,
+  DISTRIBUTION_CODE,
+  DISTRIBUTION_POINTS,
   DOWNLOADS,
   FAQ,
   HERO_TABS,
-  INDUSTRIES,
-  INSTALL_CODE,
   INTERFACE_GROUPS,
-  LANGS,
-  ONE_JOB,
-  PILLARS,
-  PIP_CODE,
-  RESOURCES,
-  SECURITY_POINTS,
-  STATS,
-  TIERS,
-  TRACE,
+  PYPI_CODE,
+  READS,
   USE_CASES,
 } from '../data/home';
 import { LINKS } from '../data/site';
-import { CRAWL_STEPS, FEATURED_SOURCES } from '../data/sources';
-import queryExplorer from '../assets/query-explorer.png';
+import { HOME_SOURCES } from '../data/sources';
 import graphView from '../assets/graph-view.png';
+import queryExplorer from '../assets/query-explorer.png';
 
-const pad2 = (i: number) => String(i + 1).padStart(2, '0');
-const shot = { formats: ['avif', 'webp'] as Array<'avif' | 'webp'>, widths: [640, 960, 1280, 1440], sizes: '(min-width: 1320px) 1240px, 100vw' };
+const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
 <BaseLayout
   title="Provisa — Query all your data in 3 languages and 9 protocols"
   description="Connect your databases once, then query them in GraphQL, SQL, or Cypher — from psql, Tableau, Neo4j Browser, or an AI agent. Governance is compiled into every query plan, so there is no way in that goes around it."
-  ogType="website"
+  ogDescription="Connect your databases once, then query them in GraphQL, SQL, or Cypher over nine wire protocols — psql, Neo4j Browser, Tableau, or an AI agent. Governance no one can go around."
   contact="forest"
-  contactTitle="See it on your data before anyone talks pricing."
-  contactLead="Or skip the call entirely: start a free trial, or pip install it tonight."
+  ogType="website"
 >
-  <section class="pv-hero pv-tone-paper" aria-labelledby="hero-title">
-    <div class="pv-container">
-      <div class="pv-hero__head">
-        <Eyebrow>A semantic layer. Not another platform.</Eyebrow>
-        <h1 class="t-display-xl" id="hero-title">
-          Query the data you already have. <em class="pv-em">Replace nothing.</em>
-        </h1>
+  <!-- Hero -->
+  <section class="pv-container pv-homehero" aria-labelledby="hero-title">
+    <div class="pv-homehero__title">
+      <Heading level="hero" id="hero-title">Query all your data in 3 languages in any tool. <Emph>In 5 minutes.</Emph></Heading>
+    </div>
+    <div class="pv-homehero__grid">
+      <div class="pv-homehero__copy">
+        <p class="pv-lede">
+          Connect your data once. Query in <strong>GraphQL, SQL, or Cypher</strong> — from psql, Tableau, Neo4j Browser, or an AI agent. Governance is
+          compiled into the query plan, so there's no way in that goes around it.
+        </p>
+        <HeroCTAs primary={{ label: 'Start a free trial', href: LINKS.cloud }} secondary={{ label: 'Try it on your data', href: LINKS.sandbox }}>
+          <TextLink href="#download" variant="plain">Download</TextLink>
+        </HeroCTAs>
+        <p class="pv-p pv-p--sm">Nothing to connect yet? <a href="#download">Download and take the demo tour</a></p>
       </div>
-      <div class="pv-hero__body">
-        <div class="pv-hero__copy">
-          <p class="t-lede">
-            Provisa sits on top of the databases, warehouses, and files you already run. Connect them once, then query in
-            <strong>SQL, GraphQL, or Cypher</strong> from psql, Tableau, Neo4j Browser, or an AI agent. Access rules are compiled
-            into every query, so there's no way around them. Running on your laptop in about five minutes.
-          </p>
-          <Actions>
-            <Button href="#contact" size="lg">Book a demo</Button>
-            <Button href={LINKS.cloud} variant="outline" size="lg">Start a free trial</Button>
-          </Actions>
-          <p class="pv-hero__alt">
-            No sales cycle required: <a href="#download">pip install it</a> or <a href={LINKS.sandbox} target="_blank" rel="noopener"
-              >try it on your data</a
-            > in the browser.
-          </p>
-          <p class="pv-hero__note">
-            One model, three languages — and if you want none of them, generated REST.
-            <strong>RLS, masking, and approval are already applied</strong> on whichever tab you pick — nothing to remember, and nothing
-            to re-implement per protocol.
-          </p>
-        </div>
-        <CodeTabs id="hero-code" label="Query language and wire protocol" tabs={HERO_TABS} />
+      <div class="pv-homehero__code">
+        <CodeTabs id="hero" tabs={HERO_TABS} label="One question in five interfaces" minHeight={300} />
+        <p class="pv-p pv-p--sm">
+          One model, three languages — and if you want none of them, generated REST. <strong>RLS, masking, and approval are already applied</strong> on
+          whichever tab you pick — nothing to remember, and nothing to re-implement per protocol.
+        </p>
       </div>
     </div>
   </section>
 
-  <StatRow items={STATS} />
+  <!-- 01 Use cases -->
+  <Sec band="white" id="use-cases" labelledBy="use-cases-title">
+    <RailGrid num="01" label="Use cases" figure="usecases">
+      <Heading level="section" id="use-cases-title">Most people start with one of these.</Heading>
+      <Accordion name="use-cases" variant="numbered" items={USE_CASES} />
+    </RailGrid>
+  </Sec>
 
-  <Section flushBottom labelledBy="one-job-title">
-    <div class="l-stack" style="--gap: 40px">
-      <h2 class="t-h2-xl" id="one-job-title" style="max-width: 900px">It does one job, and stays out of the way of everything else.</h2>
-      <Grid min={240} gap={32}>
-        {ONE_JOB.map((c) => <RuleCard rule="bar" color={c.color} title={c.title} body={c.body} titleClass="t-h4" />)}
+  <!-- 02 Active Semantic Layer -->
+  <Sec id="platform" labelledBy="platform-title">
+    <RailGrid num="02" label="Active Semantic Layer" figure="platform">
+      <Heading level="lede">
+        You describe your data once — sources, tables, relationships, who may see what. Everything else is generated from that one description: the
+        APIs, the legal join paths, the governance, and the audit trail. <em>There is no second place to keep in sync.</em>
+      </Heading>
+      <Stack gap={20}>
+        <Heading level="section" id="platform-title">We call this an Active Semantic Layer.</Heading>
+        <P>
+          Every other semantic layer is a <em>description</em> — a model something else has to honor. This one runs the query, enforces the policy, and
+          writes the audit trail itself, at query time, on every protocol.
+        </P>
+        <Links
+          links={[
+            { label: 'Active vs. passive — what the word has to mean', href: '/why/active-semantic-layer' },
+            { label: 'Every change is versioned — promotion is a simple patch', href: '/why/no-lock-in#promote-config' },
+          ]}
+        />
+      </Stack>
+      <Grid min={220} gap={40}>
+        <RuledCard title="Three languages, one model">
+          <p>
+            GraphQL, Cypher, and SQL all query the same federated model and retarget to any source dialect. Domains carve it into namespaces — a domain
+            is the schema a SQL client sees — and governance applies identically across all three languages: <em>not three integrations, but one</em>.
+          </p>
+        </RuledCard>
+        <RuledCard title="Read and write">
+          <p>
+            Analytical <em>and</em> transactional flows through the same governed API: cross-source reads fan out through federation; writes and
+            single-source reads route direct to the driver, sub-100ms.
+          </p>
+        </RuledCard>
+        <RuledCard title="Smart routing">
+          <p>
+            Single-source queries bypass federation entirely. Materialized views record the transform that built them, so queries rewrite
+            transparently onto a fresh MV.
+          </p>
+        </RuledCard>
       </Grid>
-    </div>
-  </Section>
+    </RailGrid>
+  </Sec>
 
-  <Section id="flow" flushBottom labelledBy="flow-title">
-    <div class="l-stack" style="--gap: 40px">
-      <div class="l-stack" style="--gap: 20px; max-width: 900px">
-        <Eyebrow>How a query moves</Eyebrow>
-        <h2 class="t-h2-xl" id="flow-title">One query, start to finish.</h2>
-        <p class="t-body-lg pv-body">
-          A query arrives in the language and over the protocol your tool already speaks. Provisa checks it against your model, compiles
-          every access rule into it, and hands one plan to the source or to your engine. Rows come back already filtered and masked.
-          Nothing is copied ahead of time.
-        </p>
-      </div>
-      <Trace steps={TRACE} label="One query from Tableau, step by step" />
-    </div>
-  </Section>
-
-  <Section id="platform" size="lg" labelledBy="platform-title">
-    <Editorial index="01" label="Platform" figure="platform">
-      <h2 class="t-h2-xl" id="platform-title">Describe your data once. The rest is generated.</h2>
-      <p class="t-lead-serif-lg">
-        You describe your data once — sources, tables, relationships, who may see what. Everything else is generated from that one
-        description: the APIs, the legal join paths, the governance, and the audit trail. <em>There is no second place to keep in sync.</em>
-      </p>
-      <p class="t-body-lg pv-body pv-measure">
-        Every other semantic layer is a <em>description</em> — a model something else has to honor. This one runs the query, enforces the
-        policy, and writes the audit trail itself, at query time, on every protocol.
-      </p>
-      <Links
-        items={[
-          { label: 'Active vs. passive — what the word has to mean', href: '/why/active-semantic-layer' },
-          { label: 'Every change is versioned — promotion is a simple patch', href: '/why/no-lock-in#promote-config' },
-        ]}
-      />
-      <div style="padding-top: 16px">
-        <Grid min={240} gap={40}>
-          {PILLARS.map((p) => <RuleCard title={p.title} body={p.body} />)}
+  <!-- 03 Interfaces -->
+  <Sec band="white" id="interfaces" labelledBy="interfaces-title">
+    <RailGrid num="03" label="Query interfaces & wire protocols" figure="interfaces">
+      <Stack gap={24}>
+        <Heading level="section" id="interfaces-title">Write in three languages. Connect your way.</Heading>
+        <P>
+          Transport, language, and interface contract are three independent choices, not one bundled "protocol." The transport moves the bytes —
+          HTTP, gRPC, a native driver. The language is what you write — SQL, GraphQL, Cypher. The interface contract is what your tooling expects —
+          JDBC, JSON:API, a typed gRPC schema. Which combination fits is a function of your tooling constraints and performance requirements, not a
+          rule fixed here — and the same governance reaches every combination.
+        </P>
+      </Stack>
+      <Grid min={200} gap={32}>
+        <RuledCard rule="cobalt" weight={4} titleSize={23} title="GraphQL">
+          <p>Per-role schemas with field-level visibility, constrained to registered relationships — valid by construction.</p>
+        </RuledCard>
+        <RuledCard rule="forest" weight={4} titleSize={23} title="SQL">
+          <p>Full SQL over federated data. Single-source queries bypass federation entirely for sub-100ms latency.</p>
+        </RuledCard>
+        <RuledCard rule="vermilion" weight={4} titleSize={23} title="Cypher">
+          <p>Graph traversals over the same federated model, under identical governance.</p>
+        </RuledCard>
+      </Grid>
+      <Disclosure title="See how this works for your use case">
+        <Grid min={280} gap={32} gapX={40}>
+          {
+            INTERFACE_GROUPS.map((g) => (
+              <RuledCard as="h4" title={g.title}>
+                <p>{g.lead}</p>
+                <ItemList items={g.items} />
+              </RuledCard>
+            ))
+          }
         </Grid>
-      </div>
-    </Editorial>
-  </Section>
-
-  <Section id="usecases" tone="surface" size="lg" labelledBy="usecases-title">
-    <Editorial index="02" label="Use cases" figure="use-cases">
-      <h2 class="t-h2-xl" id="usecases-title">Start with one problem. Most teams do.</h2>
-      <Accordion name="use-cases" items={USE_CASES} numbered />
-    </Editorial>
-  </Section>
-
-  <Section id="governance" tone="forest" size="lg" labelledBy="governance-title">
-    <Editorial index="03" label="Active, query-time governance" figure="governance" gap={36}>
-      <h2 class="t-h2-xl" id="governance-title">Governance you set once and can’t forget.</h2>
-      <Grid min={280} gap={24}>
-        <p class="t-body-lg pv-body">
-          You don’t need any of it to start — one source and a role is enough. When the project you started alone has to survive an
-          auditor, it’s already there: six layers, applied the same way in every language and over every protocol. Add a source, a column,
-          or a relationship and every layer covers it automatically.
-        </p>
-        <p class="t-body-lg pv-body">
-          All six are applied while the query is <em>compiled</em>, not checked against a policy list afterwards. What executes is already
-          the governed query — so there is no version of it that could have run ungoverned.
-        </p>
-      </Grid>
-      <LayerList
-        head="Query in GraphQL · SQL · Cypher, over any of the nine protocols"
-        layers={LAYER_SUMMARIES}
-        out={{ label: 'PLAN OUT', text: 'One compiled plan, policy already inside it — plus the audit row' }}
-      />
-      <p class="t-body-lg pv-body pv-measure">
-        <strong>Relationships are governed too.</strong> A JOIN or a graph traversal is legal only if it matches
-        a registered, approved relationship — so people and agents can roam the model freely while every path stays inside what policy
-        sanctioned. It’s a per-role flag: trusted roles can turn it off.
-      </p>
-      <TextLink href="/why/governance" arrow>How each layer works</TextLink>
-    </Editorial>
-  </Section>
-
-  <Section id="security" labelledBy="security-title">
-    <Editorial index="04" label="Security & compliance" figure="security">
-      <h2 class="t-h2-xl" id="security-title">Enforced in the plan. Recorded on every query.</h2>
-      <RuleList items={SECURITY_POINTS} variant="grid" min={280} colGap={40} label="Security properties" />
-    </Editorial>
-  </Section>
-
-  <Section id="industries" tone="surface" labelledBy="industries-title">
-    <div class="l-stack" style="--gap: 48px">
-      <div class="pv-row-head">
-        <h2 class="t-h2-xl" id="industries-title">Built for teams that answer to auditors.</h2>
-        <TextLink href="#contact">Talk to an industry specialist</TextLink>
-      </div>
-      <Grid min={260} gap={32}>
-        {INDUSTRIES.map((ind, i) => <IndustryCard number={pad2(i)} name={ind.name} line={ind.line} href="#contact" bg={ind.bg} corner={ind.corner} />)}
-      </Grid>
-    </div>
-  </Section>
-
-  <Section id="interfaces" size="lg" labelledBy="interfaces-title">
-    <Editorial index="05" label="Query interfaces & wire protocols" figure="interfaces">
-      <h2 class="t-h2-xl" id="interfaces-title">Keep your tools. All of them.</h2>
-      <p class="t-body-lg pv-body">
-        Transport, language, and interface contract are three independent choices, not one bundled “protocol.” The transport moves the
-        bytes — HTTP, gRPC, a native driver. The language is what you write — SQL, GraphQL, Cypher. The interface contract is what your
-        tooling expects — JDBC, JSON:API, a typed gRPC schema. Which combination fits is a function of your tooling constraints and
-        performance requirements, not a rule fixed here — and the same governance reaches every combination.
-      </p>
-      <Grid min={220} gap={32}>
-        {LANGS.map((l) => <RuleCard rule="accent" color="forest" title={l.name} body={l.body} titleClass="t-h4" />)}
-      </Grid>
-      <h3 class="t-eyebrow" style="padding-top: 16px">See how this works for your use case</h3>
-      <Matrix rows={INTERFACE_GROUPS} />
-      <TextLink href="/why/interfaces">Every interface in detail</TextLink>
-      <Figure slot="wide" caption="Write a GraphQL query; see its live Semantic SQL and Cypher translations, then jump into either editor.">
+      </Disclosure>
+      <TextLink href="/why/interfaces" arrow>Every interface in detail</TextLink>
+      <figure class="pv-figure">
         <Picture
           src={queryExplorer}
-          {...shot}
+          formats={['avif', 'webp']}
+          widths={[720, 1080, 1440]}
+          sizes="(min-width: 960px) 820px, 100vw"
           alt="The Query Language Explorer: a GraphQL query with its live Semantic SQL and Cypher translations in side panels."
+          loading="lazy"
         />
-      </Figure>
-    </Editorial>
-  </Section>
+        <figcaption>Write a GraphQL query; see its live Semantic SQL and Cypher translations, then jump into either editor.</figcaption>
+      </figure>
+    </RailGrid>
+  </Sec>
 
-  <Section id="sources" tone="surface" size="lg" labelledBy="sources-title">
-    <Editorial index="06" label="Data sources" figure="sources">
-      <h2 class="t-h2-xl" id="sources-title">54 source types. No pipelines.</h2>
-      <p class="t-body-lg pv-body">
-        Graph and RDF sources are first-class, not adapters. Register REST, GraphQL, gRPC, WebSocket, or RSS endpoints as governed tables
-        — federated joins across API and relational sources work transparently.
-      </p>
-      <RuleList items={FEATURED_SOURCES} variant="grid" label="Featured source types" />
-      <TextLink href="/why/sources#the-53">See all 54 source types</TextLink>
-      <div class="l-stack" style="--gap: 24px; padding-top: 32px">
-        <Eyebrow>Auto-indexing file crawler</Eyebrow>
-        <h3 class="t-h3-xl">Point it at a location. Get a catalog of the data hiding in it.</h3>
-        <p class="t-body-lg pv-body">
-          One of the 54 behaves unlike the other fifty-three: you register a <em>location</em>, not a table. It walks the tree recursively,
-          introspects every data file it finds, and catalogs each one as an available table — the shared drive nobody has mapped, the S3
-          prefix of extracts, the SharePoint site a department has been running on for years.
-        </p>
-        <Grid min={200} gap={32}>
-          {CRAWL_STEPS.map((s, i) => <RuleCard index={pad2(i)} title={s.title} body={s.body} />)}
-        </Grid>
-        <Grid min={240} gap={32}>
-          <p class="t-body-sm pv-body" style="line-height: 1.7">
-            <strong>Crawls</strong> — Local &amp; network folders · S3 · SharePoint · HDFS · HTTP(S) · FTP · FTPS · SFTP
-          </p>
-          <p class="t-body-sm pv-body" style="line-height: 1.7">
-            <strong>Reads</strong> — CSV · TSV · JSON · Parquet · Arrow · YAML · Excel · Word · PowerPoint · HTML · XML
-            · Markdown
-          </p>
-        </Grid>
-        <TextLink href="/why/sources">What it crawls, and what else registers</TextLink>
-      </div>
-      <Figure slot="wide" caption="The same federated model, explorable as a live graph — domains, node labels, and relationships across every source.">
+  <!-- 04 Governance -->
+  <Sec band="forest" id="governance" labelledBy="governance-title">
+    <RailGrid num="04" label="Active, query-time governance" figure="governance">
+      <Stack gap={24}>
+        <Heading level="section" id="governance-title">Six layers. Every language. Every transport.</Heading>
+        <P size="16">
+          You do not configure any of this to get started — one source and a role is enough. It matters later, when the project you started alone has
+          to survive an auditor: governance is applied uniformly, there is no query path that bypasses it, and adding a source, column, or relationship
+          applies every layer automatically.
+        </P>
+      </Stack>
+      <LayerList
+        head="Query in GraphQL · SQL · Cypher, over any of the nine protocols"
+        layers={LAYERS.map((l) => ({ title: l.title, desc: l.short }))}
+        callout={PLAN_OUT}
+      />
+      <Stack gap={20}>
+        <P size="16">
+          All six are applied while the query is <em>compiled</em>, not checked against a policy list afterwards. What executes is already the governed
+          query — so there is no version of it that could have run ungoverned.
+        </P>
+        <P size="16">
+          <strong>Relationships are governed too.</strong> A JOIN or a graph traversal is legal only if it matches a registered, approved relationship —
+          so people and agents can roam the model freely while every path stays inside what policy sanctioned. It's a per-role flag: trusted roles can
+          turn it off.
+        </P>
+      </Stack>
+      <TextLink href="/why/governance" arrow>How each layer works</TextLink>
+    </RailGrid>
+  </Sec>
+
+  <!-- 05 Sources -->
+  <Sec id="sources" labelledBy="sources-title">
+    <RailGrid num="05" label="Data sources" figure="sources">
+      <Stack gap={24}>
+        <Heading level="section" id="sources-title">54 source types through one API.</Heading>
+        <P>
+          Graph and RDF sources are first-class, not adapters. Register REST, GraphQL, gRPC, WebSocket, or RSS endpoints as governed tables — federated
+          joins across API and relational sources work transparently.
+        </P>
+      </Stack>
+      <SourceGrid items={HOME_SOURCES} label="Source types" />
+      <TextLink href="/why/sources#the-53" arrow>See all 54 source types</TextLink>
+
+      <Stack gap={24}>
+        <Eyebrow tone="vermilion">Auto-indexing file crawler</Eyebrow>
+        <Heading level="sub">Point it at a location. Get a catalog of the data hiding in it.</Heading>
+        <P>
+          One of the 54 behaves unlike the other fifty-three: you register a <em>location</em>, not a table. It walks the tree recursively, introspects
+          every data file it finds, and catalogs each one as an available table — the shared drive nobody has mapped, the S3 prefix of extracts, the
+          SharePoint site a department has been running on for years.
+        </P>
+      </Stack>
+      <Grid min={200} gap={32}>
+        {
+          CRAWL_STEPS.map((s, i) => (
+            <RuledCard num={pad(i + 1)} as="h4" title={s.title}>
+              <p>{s.body}</p>
+            </RuledCard>
+          ))
+        }
+      </Grid>
+      <Grid min={260} gap={32}>
+        <Stack gap={12}>
+          <Eyebrow size="sm" as="h4">Crawls</Eyebrow>
+          <Chips items={CRAWLS} />
+        </Stack>
+        <Stack gap={12}>
+          <Eyebrow size="sm" as="h4">Reads</Eyebrow>
+          <Chips items={READS} />
+        </Stack>
+      </Grid>
+      <TextLink href="/why/sources" arrow>What it crawls, and what else registers</TextLink>
+      <figure class="pv-figure">
         <Picture
           src={graphView}
-          {...shot}
+          formats={['avif', 'webp']}
+          widths={[720, 1080, 1440]}
+          sizes="(min-width: 960px) 820px, 100vw"
           alt="The federated model explored as a live graph: domain and node labels, relationship types, and variable-length traversals across sources."
+          loading="lazy"
         />
-      </Figure>
-    </Editorial>
-  </Section>
+        <figcaption>The same federated model, explorable as a live graph — domains, node labels, and relationships across every source.</figcaption>
+      </figure>
+    </RailGrid>
+  </Sec>
 
-  <Section size="lg" labelledBy="derived-title">
-    <Editorial index="07" label="Derived data & your existing stack" figure="derived">
-      <h2 class="t-h2-xl" id="derived-title">Declare the dataset. Skip the DAG.</h2>
-      <Grid min={220} gap={32}>
-        {DERIVED.map((d) => <RuleCard title={d.title} body={d.body} />)}
+  <!-- 06 Derived data -->
+  <Sec band="white" id="analytics" labelledBy="analytics-title">
+    <RailGrid num="06" label="Derived data & your existing stack" figure="derived">
+      <Heading level="section" id="analytics-title">Declare the analytics layer. Publish it.</Heading>
+      <Grid min={220} gap={40}>
+        <RuledCard rule="vermilion" weight={4} titleSize={23} as="h4" title="Declared datasets, not pipelines">
+          <p>
+            A pipeline is a program that ran; to audit one you read code. Declare the dataset instead and the definition is the record — column-level
+            lineage, the data version consumed, the rules that produced it. No orchestration DAG.
+          </p>
+        </RuledCard>
+        <RuledCard rule="cobalt" weight={4} titleSize={23} as="h4" title="Feeds the catalog you bought">
+          <p>
+            One registration publishes to OpenMetadata, DataHub, Collibra, Atlan, Apache Atlas, and OpenLineage — with lineage stitched on business
+            identity, so re-platforming doesn't reset it.
+          </p>
+        </RuledCard>
+        <RuledCard rule="forest" weight={4} titleSize={23} as="h4" title="Every value has an address">
+          <p>
+            Governed values resolve over REST or MCP at a semantic address, optionally as of a point in time. Physical URIs are refused, so a citation
+            can't leak a location.
+          </p>
+        </RuledCard>
       </Grid>
       <Links
-        items={[
+        links={[
           { label: 'Materialized views in depth', href: '/why/materialized-views' },
           { label: 'Catalog, lineage, and data quality', href: '/why/catalog' },
         ]}
       />
-    </Editorial>
-  </Section>
+    </RailGrid>
+  </Sec>
 
-  <Section id="deploy" tone="ink" size="lg" labelledBy="deploy-title">
-    <Editorial index="08" label="Enterprise-ready" figure="enterprise">
-      <h2 class="t-h2-xl" id="deploy-title">Airgap-ready. Install from PyPI.</h2>
-      <Grid min={280} gap={40}>
-        <div class="l-stack" style="--gap: 20px">
-          <p class="t-body-lg pv-body">
-            The embedded profile ships the entire runnable system — precompiled UI and all — as a single Python wheel. Regulated and
-            airgapped orgs already trust Artifactory-as-PyPI, so there's no new supply chain to approve: no Docker registry to mirror, no
-            JVM, no root.
-          </p>
-          <RuleList items={AIRGAP_POINTS} label="Embedded profile" />
-        </div>
-        <CodeBlock code={INSTALL_CODE} label="Install Provisa from PyPI and run it" />
-      </Grid>
-      <div class="l-stack" style="--gap: 16px; padding-top: 32px; border-top: 1px solid var(--pv-line)">
-        <h3 class="t-h3-lg">Swap the engine. Keep everything else.</h3>
-        <p class="t-body-lg pv-body">
-          Your model, semantics, and governance live <em>above</em> the infrastructure, not inside it. Swap the engine — embedded to Trino
-          to your warehouse; new CTO, switch it to Databricks — and the queries and policies don't change. Re-point a table from Oracle to
-          Postgres and consumers never see it move.
-        </p>
-        <p class="t-body-lg pv-body">
+  <!-- 07 Enterprise-ready -->
+  <Sec band="ink" id="distribution" labelledBy="distribution-title">
+    <RailGrid num="07" label="Enterprise-ready" figure="deploy">
+      <Heading level="section" id="distribution-title">Airgap-ready. Install from PyPI.</Heading>
+      <Stack gap={32}>
+        <Stack gap={24}>
+          <P size="16">
+            The embedded profile ships the entire runnable system — precompiled UI and all — as a single Python wheel. Regulated and airgapped orgs
+            already trust Artifactory-as-PyPI, so there's no new supply chain to approve: no Docker registry to mirror, no JVM, no root.
+          </P>
+          <ItemList items={DISTRIBUTION_POINTS} tone="vermilion" />
+        </Stack>
+        <CodeBlock deep code={DISTRIBUTION_CODE} label="Install and run the embedded profile" />
+      </Stack>
+      <Stack gap={20}>
+        <Heading level="sub">Locked-in ecosystems become replaceable execution engines</Heading>
+        <P size="16">
+          Your model, semantics, and governance live <em>above</em> the infrastructure, not inside it. Swap the engine — embedded to Trino to your
+          warehouse; new CTO, switch it to Databricks — and the queries and policies don't change. Re-point a table from Oracle to Postgres and
+          consumers never see it move.
+        </P>
+        <P size="16">
           We don't lock you in either: your model is portable declarative config, and the SQL it compiles is yours to read, export, and keep.
-        </p>
-        <TextLink href="/why/no-lock-in">The full argument — including domains as products, config promotion, and the compute bill</TextLink>
-      </div>
-      <div class="l-stack" style="--gap: 20px; padding-top: 24px">
-        <h3 class="t-h3-lg">From a laptop to a cluster — same platform.</h3>
-        <Grid min={200} gap={28}>
-          {DEPLOY_OPTIONS.map((d) => <RuleCard color="forest" title={d.title} titleClass="t-body t-strong" titleAs="h4" body={d.body} />)}
-        </Grid>
-      </div>
-    </Editorial>
-  </Section>
+        </P>
+        <TextLink href="/why/no-lock-in" arrow>The full argument — including domains as products, config promotion, and the compute bill</TextLink>
+      </Stack>
+    </RailGrid>
+  </Sec>
 
-  <Section id="download" labelledBy="download-title">
-    <div class="l-grid" style="--min: 420px; --gap: 56px">
-      <div class="l-stack" style="--gap: 22px">
+  <!-- Download -->
+  <Sec id="download" labelledBy="download-title">
+    <Two min={440}>
+      <Head>
         <Eyebrow>Get Provisa</Eyebrow>
-        <h2 class="t-h2" id="download-title">Running in 5 minutes. Priced like it.</h2>
-        <p class="t-body pv-body">
-          Signed desktop installers for every OS, or <code>pip install</code> the embedded runtime. The whole working system runs on your
-          desktop in about five minutes — no Docker, no JVM, no cluster. Launch it and pick the guided demo: a sample federation is already
-          bundled, so you can run SQL, GraphQL, and Cypher over it before you connect anything of your own. Prefer not to install anything?
-          The same runtime is hosted for you at <a class="pv-inline-link" href={LINKS.cloud} target="_blank" rel="noopener">cloud.provisa.dev</a>
-          — start a free trial — or connect your own sources in the browser at <a
-            class="pv-inline-link"
-            href={LINKS.sandbox}
-            target="_blank"
-            rel="noopener">sandbox.provisa.dev</a
-          >.
-        </p>
-        <TierList tiers={TIERS} />
-        <p class="t-fine pv-muted">
-          Business Source License 1.1. Non-production use, including evaluation, is free forever, for any size organization — evaluate it
-          for as long as you like. Production use is also free for any organization that, together with its affiliates, has fewer than 100
-          employees and contractors and under $1,000,000 in annual revenue, budget, or expenditures. Grow past that and you get a 90-day
-          grace period to get a commercial license — <a class="pv-inline-link" href={LINKS.license}>get in touch</a>. Each release converts
-          to GPL v2-or-later four years after it ships.
-        </p>
-      </div>
-      <div class="l-stack" style="--gap: 24px">
+        <Heading level="section" id="download-title">Download and run in 5 minutes.</Heading>
+        <P>
+          Signed desktop installers for every OS, or <code>pip install</code> the embedded runtime. The whole working system runs on your desktop in about
+          five minutes — no Docker, no JVM, no cluster. Launch it and pick the guided demo: a sample federation is already bundled, so you can run SQL,
+          GraphQL, and Cypher over it before you connect anything of your own. Prefer not to install anything? The same runtime is hosted for you at <a
+            href={LINKS.cloud}>cloud.provisa.dev</a
+          > — start a free trial — or connect your own sources in the browser at <a href={LINKS.sandbox}>sandbox.provisa.dev</a>.
+        </P>
+        <Fine>
+          Business Source License 1.1. Non-production use, including evaluation, is free forever, for any size organization — evaluate it for as long as
+          you like. Production use is also free for any organization that, together with its affiliates, has fewer than 100 employees and contractors and
+          under $1,000,000 in annual revenue, budget, or expenditures. Grow past that and you get a 90-day grace period to get a commercial license — <a
+            href={LINKS.license}>get in touch</a
+          >. Each release converts to GPL v2-or-later four years after it ships.
+        </Fine>
+      </Head>
+      <Stack gap={32}>
         <DownloadList items={DOWNLOADS} />
-        <h3 class="t-strong" style="font-size: 16px">Or install from PyPI</h3>
-        <p class="t-body-sm pv-muted">
-          The whole runnable system — precompiled UI included — as a single wheel. Airgap-ready over an Artifactory PyPI mirror: no
-          Docker, no JVM, no root.
-        </p>
-        <CodeBlock code={PIP_CODE} compact label="Install Provisa with pip" />
-      </div>
-    </div>
-  </Section>
+        <Stack gap={16}>
+          <Heading level="card">Or install from PyPI</Heading>
+          <P size="sm">
+            The whole runnable system — precompiled UI included — as a single wheel. Airgap-ready over an Artifactory PyPI mirror: no Docker, no JVM, no
+            root.
+          </P>
+          <CodeBlock code={PYPI_CODE} label="Install from PyPI" />
+        </Stack>
+      </Stack>
+    </Two>
+  </Sec>
 
-  <Section id="resources" tone="surface" labelledBy="resources-title">
-    <div class="l-stack" style="--gap: 48px">
-      <div class="pv-row-head">
-        <h2 class="t-h2-xl" id="resources-title">Insights</h2>
-        <TextLink href={LINKS.docs}>Documentation</TextLink>
-      </div>
-      <Grid min={260} gap={32}>
-        {RESOURCES.map((r) => <ResourceCard type={r.type} title={r.title} href={r.href} bg={r.bg} a={r.a} />)}
+  <!-- Deploy -->
+  <Sec band="white" id="deploy" labelledBy="deploy-title">
+    <Stack gap={48}>
+      <Head>
+        <Eyebrow>Deploy anywhere</Eyebrow>
+        <Heading level="section" id="deploy-title">From a laptop to a cluster — same platform.</Heading>
+      </Head>
+      <Grid min={240} gap={32}>
+        <RuledCard rule="cobalt" weight={4} titleSize={23} as="h3" title="Desktop installers">
+          <p>Signed macOS, Windows, and Linux installers — each with a one-click demo build that boots a sample stack.</p>
+        </RuledCard>
+        <RuledCard rule="forest" weight={4} titleSize={23} as="h3" title="Python wheel">
+          <p><code>pip install "provisa[embedded]"</code> — the whole system, precompiled UI included. Airgap-ready.</p>
+        </RuledCard>
+        <RuledCard rule="vermilion" weight={4} titleSize={23} as="h3" title="Kubernetes · Helm">
+          <p>A production chart deploys the control plane, workers, and engine — scale the federation tier horizontally.</p>
+        </RuledCard>
+        <RuledCard rule="ink" weight={4} titleSize={23} as="h3" title="Cloud & VM · Terraform">
+          <p>Modules for AWS, Azure, and GCP stand up a VM or cluster deployment end to end.</p>
+        </RuledCard>
       </Grid>
-    </div>
-  </Section>
+    </Stack>
+  </Sec>
 
-  <Section id="faq" labelledBy="faq-title">
-    <div class="pv-aside-head">
-      <h2 class="t-h2" id="faq-title">Frequently asked</h2>
-      <Accordion name="faq" items={FAQ} />
-    </div>
-  </Section>
+  <!-- FAQ -->
+  <Sec id="faq" labelledBy="faq-title">
+    <RailGrid>
+      <Head slot="side">
+        <Eyebrow>Questions</Eyebrow>
+        <Heading level="section-sm" id="faq-title">Frequently asked</Heading>
+      </Head>
+      <Accordion name="faq" items={FAQ} initial={-1} />
+    </RailGrid>
+  </Sec>
 </BaseLayout>

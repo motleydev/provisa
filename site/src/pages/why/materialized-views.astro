@@ -1,208 +1,303 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
-  Block,
-  Card,
-  ComparisonTable,
+  Chapter,
+  Chapters,
+  Eyebrow,
   Grid,
+  Heading,
+  HeroCTAs,
+  HeroStack,
+  ItemList,
+  LayerRow,
+  Lede,
   Links,
+  P,
   PageHero,
-  Section,
-  SplitHeader,
-  Stack,
-  StackArrow,
-  StackCells,
-  StackNode,
+  RuledCard,
+  Sec,
+  StackHead,
   StackNote,
-  Tabs,
-  TintCard,
 } from '../../components/ds';
-import { LINKS } from '../../data/site';
-
-const questions = [
-  {
-    label: 'What did it do?',
-    them: 'Whatever the code said on the day it ran. You trace which columns fed which output by hand.',
-    us: 'Column-level lineage resolved from the definition, back to leaf source columns. Each edge carries a named transform, so a derivation reads as `concat → geocode`.',
-  },
-  {
-    label: 'When did it do it?',
-    them: 'The job’s start time: when the machine woke up, not which version of the data it read.',
-    us: 'Two stamps per refresh: a content hash of the definition, and the input version at the best fidelity the source offers (Iceberg snapshot, watermark, freshness token, or clock), with the fidelity recorded.',
-  },
-  {
-    label: 'How do you audit it?',
-    them: 'Code review, repeated every time anyone changes it.',
-    us: 'A query. Stamps land in the refresh ledger and trace tables, joinable to the business data they describe.',
-  },
-  {
-    label: 'What does it mean?',
-    them: 'The name someone typed on the output table, and a wiki page written later by someone else.',
-    us: 'A dataset is declared as an entity or a fact, with a key, a grain, and history.',
-  },
-];
-
-const drift = [
-  {
-    label: 'A column is added',
-    title: 'Nothing happens.',
-    body: 'A definition names the columns it uses, and a new column is not referenced. On the landing side, incoming rows map to target columns by name and extra keys are dropped.',
-  },
-  {
-    label: 'A column is removed',
-    title: 'The refresh fails loudly, at that node.',
-    body: 'If a definition referenced the column, the refresh stops there instead of producing a NULL column three hops downstream. If the share of expected columns collapses, the land is refused. A schema check on the contract catches it independently of any refresh.',
-  },
-  {
-    label: 'A column changes type',
-    title: 'The schema check fires.',
-    body: 'The declared type no longer matches the observed one, which is exactly what that check is for.',
-  },
-  {
-    label: 'A column changes meaning',
-    title: 'The distribution checks fire.',
-    body: 'No system reads intent. But a change consequential enough to move your numbers moves a distribution, and invalid, missing, duplicate, and aggregate checks fire when it does. Then ask what derives from that column and get the answer across every view and MV that consumes it.',
-  },
-];
+import { INNER_CTAS } from '../../data/site';
 ---
 
 <BaseLayout
   title="Materialized views — analytics you declare — Provisa"
   description="Layered materialized views with recorded transforms, freshness-driven refresh, and transparent query rewrite — a declarative dependency graph instead of an orchestration DAG."
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'Materialized views' }]}
-    eyebrow="Materialized views"
-    title="Declare the dataset. There is no pipeline to run."
-    lede="A materialized view can sit on a source, a view, or another MV, stacking from raw source to final analytics table. Lineage, refresh, and governance come from the definition, so there is no orchestration DAG to write or babysit."
-    actions={[
-      { label: 'Book a demo', href: '#contact' },
-      { label: 'Start a free trial', href: LINKS.cloud, variant: 'outline' },
-    ]}
-  >
-    <Stack slot="aside" label="A chain of declared datasets">
-      <StackCells items={['Postgres', 'MongoDB', 'S3 · Parquet']} />
-      <StackArrow />
-      <StackNode title="orders_enriched" meta="view · join + geocode" tone="cobalt" />
-      <StackArrow />
-      <StackNode title="daily_revenue" meta="MV · refresh on freshness" tone="forest" />
-      <StackArrow />
-      <StackNode title="monthly_close" meta="MV · refresh on calendar" tone="forest" />
+  <PageHero crumb="Materialized views">
+    <Eyebrow>Derived data</Eyebrow>
+    <Heading level="page">Analytics datasets you declare, not pipelines you orchestrate.</Heading>
+    <Lede>
+      A pipeline is not a data product. It is a program, and it inherits everything that comes with code. Declare the dataset instead: a materialized
+      view over a view, a source, or another MV, stacking into a graph of derived datasets from raw source to final analytics table. There is no
+      orchestration DAG to write or babysit.
+    </Lede>
+    <HeroCTAs primary={INNER_CTAS.primary} secondary={INNER_CTAS.secondary} />
+    <HeroStack slot="aside" label="A graph of declared datasets">
+      <StackHead>RAW SOURCES · where the data already lives</StackHead>
+      <LayerRow idx="01" title="A view over the sources" tone="cobalt" href="#layered" />
+      <LayerRow idx="02" title="An MV over the view · refresh by freshness" tone="forest" href="#refresh-freshness" />
+      <LayerRow idx="03" title="An MV over the MV · refresh by calendar" tone="forest" href="#refresh-calendar" />
       <StackNote label="GOVERNED">RLS and masking hold at every node</StackNote>
-    </Stack>
+    </HeroStack>
   </PageHero>
 
-  <Section tone="surface" labelledBy="origins-title">
-    <Block>
-      <SplitHeader eyebrow="Where pipelines come from" eyebrowTone="cobalt" title="Two reasons people write imperative code" titleId="origins-title">
-        <p class="t-body-lg pv-body">
-          Almost nobody writes a pipeline because they wanted a program. Both of the usual reasons can be handled by declaration instead.
-        </p>
-      </SplitHeader>
-      <Grid min={360} gap={16}>
-        <TintCard
-          tone="cobalt"
-          index="01"
-          title="Shaping"
-          plainTitle
-          body="The data arrived in a shape SQL couldn’t address: nested JSON, documents with arrays, a directory of files, a stream. Non-relational data falls into a modest set of structure types, and each has a short declarative rule for projecting it into rows and columns. Once everything is two-dimensional, the rest is SQL, which a machine can read back."
+  <Sec band="white" label="Where pipelines come from">
+    <Chapters>
+      <Chapter id="imperative-code" title="Where the imperative code comes from">
+        <P>
+          Almost nobody writes a pipeline because they wanted a program. They write one because the data arrived in a shape SQL couldn't address — a
+          nested JSON response, a document with an array of sub-documents, a directory of files, a graph, an event stream — and shaping it took code.
+          That first shaping step is where the procedure enters, and once a procedure is in the path, everything downstream inherits it.
+        </P>
+        <P>
+          Our premise is that the shaping step doesn't need code, because non-relational data is not infinitely various. It falls into a modest set of
+          structure types, and each one has a short declarative rule for projecting it into rows and columns: the path to the collection in a response
+          and the fields to lift out of it, the sampled document schema for a collection with the steward's explicit types overriding what was
+          inferred, the crawl of a location that registers each CSV, Parquet, or SQLite file it finds. That is a declaration per source type, not a
+          program per dataset.
+        </P>
+        <P>
+          Once everything is two-dimensional, the rest is SQL. Which is the whole point: SQL is a language a machine can read back, so lineage,
+          governance, rewriting, and audit become properties of the definition. Determinism is still on you — SQL gives you enough rope, and this
+          system will refuse the parts of that rope it can detect. After SQL, the only remaining problem is timing.
+        </P>
+      </Chapter>
+
+      <Chapter id="a-to-b" title="The other reason: getting data from A to B">
+        <P>
+          The rest of the pipelines exist because something in one system was needed in another. That sounds like plumbing, and it isn't. Writing it
+          forces a developer to settle questions that were never theirs to settle: which copy is now authoritative, how stale is acceptable, what
+          happens when the pull fails, where a write is supposed to land. Those are policy decisions, and they get made in a script, one at a time, by
+          whoever drew the ticket — then they harden, because the answer is now a program somebody depends on.
+        </P>
+        <P>
+          Here data movement is a property of the system rather than something you do. Registering a source resolves how it joins the query surface:
+          reached live through a connector, read in place as a file, or landed into a store because it has no live representation at all. Nobody
+          chooses that; it follows from what the source can do and what the engine can do, and the same source can resolve differently on a different
+          engine without anyone rewriting anything.
+        </P>
+        <P>
+          The questions that used to land on a developer are settled once, as rules. A pull that fails with no fresh cached data is an error, not a
+          silent serve of yesterday's numbers — stale is served only where a freshness policy explicitly says it may be. A write goes to the upstream
+          system of record and invalidates the cached copy, because a cache is never allowed to act like the source of truth. A store the engine
+          cannot read back is rejected at registration rather than discovered later.
+        </P>
+        <P>
+          Which is why re-pointing is uneventful. Move the source from Oracle to Postgres, move the target to a different store, switch the engine
+          underneath — the strategy re-resolves and the movement follows. There is no pipeline to rewrite, because there was never a pipeline; there
+          was a registration, and you changed it.
+        </P>
+      </Chapter>
+    </Chapters>
+  </Sec>
+
+  <Sec label="Auditing a derived dataset">
+    <Chapters>
+      <Chapter id="already-a-hole" title="An imperative pipeline is already a hole">
+        <P>
+          Most derived data is produced by a program: a script, a notebook, a job in an orchestrator. It runs, it writes a table, and the only durable
+          record of what happened is the table plus a log line. Everything you later need to know has to be reconstructed by reading code and hoping
+          it's the version that ran.
+        </P>
+        <ItemList
+          loose
+          tone="vermilion"
+          items={[
+            '<strong>How do you audit it?</strong> By reading the transform. The audit surface is a program, so auditing it is code review, repeated every time anyone changes it.',
+            '<strong>What did it actually do?</strong> Whatever the code said on the day it ran. Which columns fed which output is a question you answer by tracing the source by hand.',
+            "<strong>When did it do it?</strong> You get the job's start time, which is incidental — when the machine woke up — rather than semantic: the version of the data it consumed. Those two differ by however late the upstream was, and the log records the one that doesn't matter.",
+            '<strong>What does the result mean?</strong> The name someone typed on the output table, and a wiki page written at a different time by a different person.',
+          ]}
         />
-        <TintCard
+        <P>
+          None of that is fixable with better discipline, because the artifact is a procedure. A procedure can only be understood by simulating it.
+          Declared datasets invert that: the definition is the artifact, and every one of those four questions is answered by reading the model
+          instead of the code. A pipeline tells you how a number was computed. A definition tells you what the number is.
+        </P>
+      </Chapter>
+
+      <Chapter id="four-questions" title="The four questions, answered from the definition">
+        <ItemList
+          loose
           tone="forest"
-          index="02"
-          title="Moving data from A to B"
-          plainTitle
-          body="Writing that code forces a developer to decide which copy is authoritative, how stale is acceptable, and what happens when a pull fails. Here those are rules, settled once. A failed pull with no fresh cache is an error, not yesterday’s numbers. A write goes to the system of record and invalidates the cache. Re-pointing a source from Oracle to Postgres is a registration change."
+          items={[
+            '<strong>What it did</strong> — column-level lineage is resolved statically from the definition: every output column back to the leaf source columns it derives from, with the intermediate CTEs and joins preserved as a graph. Each edge carries a <em>named</em> transform, matched against SQL operators, engine built-ins, and registered commands, so a derivation reads as <code>concat → geocode</code> rather than as a blob of SQL you have to parse yourself.',
+            "<strong>When it did it</strong> — every refresh stamps two versions. A <em>definition</em> version, which is a content hash of the MV's logic, so you can tell whether two runs used the same rules. And an <em>input</em> version, captured at the strongest fidelity the source offers: an Iceberg snapshot id, else a relational watermark, else a freshness token, else the refresh clock. The fidelity kind is recorded alongside the value, so a lineage query knows whether it is looking at a precise data version or a wall-clock guess.",
+            '<strong>How you audit it</strong> — those stamps land in the refresh ledger and the trace, which are queryable tables. Point-in-time lineage is a query you write, joined against the business data it describes, rather than a report a separate tool renders.',
+            '<strong>What it means</strong> — a dataset is declared as an entity or a fact, with a key, a grain, and history, and that declaration lowers to the underlying view machinery. Meaning lives in the model that produced the table rather than in the name on it.',
+          ]}
         />
-      </Grid>
-    </Block>
-  </Section>
+        <P>
+          The declarative form also lets the system refuse definitions that could not be audited. A distributed MV whose SQL calls <code>now()</code> or
+          <code>random()</code>, or takes a <code>LIMIT</code> with no total ordering, is rejected outright: two copies computing from the same sources
+          would never agree, and a number nobody can reproduce is not a metric.
+        </P>
+      </Chapter>
+    </Chapters>
+  </Sec>
 
-  <Section labelledBy="audit-title">
-    <Block gap={40}>
-      <SplitHeader eyebrow="Auditability" eyebrowTone="vermilion" title="Four questions, answered from the definition" titleId="audit-title">
-        <p class="t-body-lg pv-body">A pipeline tells you how a number was computed. A definition tells you what the number is.</p>
-        <p class="t-body-lg pv-body">
-          The declarative form also lets the system refuse definitions that could never be reproduced. A distributed MV that calls
-          <code>now()</code> or <code>random()</code>, or takes a <code>LIMIT</code> with no total ordering, is rejected.
-        </p>
-      </SplitHeader>
-      <ComparisonTable caption="Auditing an imperative pipeline and a declared dataset" rowHeader="Question" them="Imperative pipeline" us="Declared dataset" rows={questions} />
-    </Block>
-  </Section>
-
-  <Section tone="surface" labelledBy="refresh-title">
-    <Block>
-      <SplitHeader eyebrow="Refresh and rewrite" eyebrowTone="forest" title="Two knobs, and queries that find the MV on their own" titleId="refresh-title">
-        <p class="t-body-lg pv-body">
-          Each MV records the SQL or join that built it and the input signals it read. Because the transform is recorded, queries against
-          the underlying tables are rewritten onto a fresh MV when one covers them, partial join matches included. Nobody has to know the MV
-          exists to benefit from it.
-        </p>
-      </SplitHeader>
-      <Grid min={300} gap={16}>
-        <Card
-          title="Refresh by freshness"
-          titleClass="t-h3"
-          body="An MV rebuilds only when an upstream input changed, and the change fans out to its dependents. Demand-driven refresh is where a derived layer’s compute bill usually shrinks."
+  <Sec band="white" label="Schema drift">
+    <Chapters>
+      <Chapter id="source-changes" title="What happens when the source changes">
+        <P>Schema drift is the standing objection to any declarative model, and it deserves four separate answers rather than one.</P>
+        <ItemList
+          loose
+          items={[
+            "<strong>A column is added.</strong> Nothing happens. A definition names the columns it uses, and one it never named isn't referenced. On the landing side, incoming rows are mapped to target columns by name and extra keys are dropped, so additive drift is a non-event.",
+            '<strong>A column is removed.</strong> If a definition referenced it, the refresh fails — loudly, at that node, rather than quietly producing a NULL column three hops downstream. If the fraction of expected columns present in the incoming data collapses, the land is refused outright rather than writing a mangled table. A schema check on the contract catches it independently of any refresh.',
+            "<strong>A column changes type.</strong> The schema check is a direct hit: the declared type no longer matches the observed one, which is that check's whole job.",
+            '<strong>A column changes meaning.</strong> This is the hard one, and no system reads intent. But anything consequential enough to change your numbers moves a distribution, and the checks sitting on that distribution — invalid, missing, duplicate, aggregate — fire when it does.',
+          ]}
         />
-        <Card
-          title="Refresh by calendar"
-          titleClass="t-h3"
-          body="A TTL or interval, for when time is the trigger: a daily close, a monthly snapshot. There is no hand-maintained schedule to drift from the model."
+        <P>
+          Where detection genuinely ends, the graph takes over. Ask what derives from a column and you get the answer at column granularity, across
+          every view and MV that consumes it. The question stops being "did something break," which is unanswerable, and becomes "here are the eleven
+          things affected." That is also the question a pipeline estate cannot answer at all without reading every job.
+        </P>
+        <P>
+          And most of this lands in dev, where it should. Source schema changes arrive as releases, so the refresh that fails and the checks that fire
+          do it in a lower environment against the same declared model, before anything reaches production. The objection assumes schema drift is
+          something that happens to you in the night. Usually it is something a team shipped, and shipping is a thing you can stage.
+        </P>
+        <P>
+          When the change comes from outside — a vendor feed, a partner's export, an API that shifted under you — nobody can solve that, and we won't
+          claim to. What a system can do is give you the hygiene: checks that fire on the first bad batch, a refresh that fails instead of landing
+          garbage, and a list of exactly what is downstream. You still get woken up. You just get woken up early, with the answer attached.
+        </P>
+      </Chapter>
+    </Chapters>
+  </Sec>
+
+  <Sec band="forest" label="How materialized views work">
+    <Grid min={260} gap={48}>
+      <RuledCard rule="mint" weight={4} titleSize={26} as="h2" id="layered" title="Layered by design">
+        <P>
+          MVs stack on views and on other MVs, so your whole analytics layer becomes one declarative graph — expressed in the same model that describes
+          and governs your data, not in a second tool with its own scheduler and its own idea of what your tables mean.
+        </P>
+      </RuledCard>
+      <RuledCard rule="mint" weight={4} titleSize={26} as="h2" id="recorded-transforms" title="Recorded transforms">
+        <P>
+          Each MV records the SQL or join that built it, plus the input signals it read — an Iceberg snapshot id, a relational watermark. Because the
+          transform is recorded rather than merely executed, queries against the underlying tables are transparently rewritten onto a fresh MV when
+          one covers them, partial join matches included. Nobody has to know the MV exists to benefit from it.
+        </P>
+      </RuledCard>
+      <RuledCard rule="mint" weight={4} titleSize={26} as="h2" id="refresh-freshness" title="Refresh by freshness">
+        <P>
+          An MV rebuilds only when an upstream input actually changed, and a change fans out through the graph to its dependents. Refresh is
+          demand-driven rather than recompute-everything, which is where the compute bill for a derived layer usually goes.
+        </P>
+      </RuledCard>
+      <RuledCard rule="mint" weight={4} titleSize={26} as="h2" id="refresh-calendar" title="Refresh by calendar">
+        <P>
+          Or on a TTL or interval, when time rather than data is the trigger — a daily close, a monthly snapshot. Freshness and calendars are the only
+          two knobs; there is no hand-maintained schedule to drift out of sync with the model.
+        </P>
+      </RuledCard>
+    </Grid>
+  </Sec>
+
+  <Sec band="white" label="Governance and custom logic">
+    <Chapters>
+      <Chapter id="governance-hole" title="A pipeline is a hole in your governance">
+        <P>
+          A pipeline is a policy bypass. It reads governed data and writes a new table somewhere else, and that new table is outside the policy model —
+          same numbers, no row filter, no masking, no record of who may see it. Every rule you wrote upstream stops at the write. So the derived layer
+          becomes the reliable way around the controls, built by the team that was asked to make data more available, and nobody involved intended a
+          bypass.
+        </P>
+        <P>
+          Declared datasets close it, because the derived table never leaves the model. Row-level security, masking, and relationship rules hold on an
+          MV exactly as they hold on a source table. There is no second copy to govern separately, and no materialization that quietly outranks the
+          policy that produced it.
+        </P>
+      </Chapter>
+
+      <Chapter id="move-the-data" title={'"But we still have to move the data"'}>
+        <P>
+          Sometimes, and for good reasons. Data lands in a backend-for-frontend because something has to put it in front of eyeballs. It gets cached
+          closer to a workload for a performance reason somebody measured. It goes to another organization entirely. These are all real, and they all
+          have the same answer: three query languages across nine wire protocols. That is what the right-hand edge is <em>for</em>. Connect the way you
+          already connect, read a governed dataset, keep a faithful copy if you need one.
+        </P>
+        <P>
+          What you don't do is build something inside your own organization that sits outside the graph. A copy that reads from the published edge is
+          downstream of the model, and you can trace it back. A copy assembled by its own job isn't downstream of anything — it just exists, and now two
+          numbers disagree with no way to say which one is wrong.
+        </P>
+      </Chapter>
+
+      <Chapter id="mostly-declarative" title={'"But ours is mostly declarative"'}>
+        <P>
+          Often true. Plenty of orchestrators spend most of their runtime shuttling data between declarative SQL transforms, and the SQL in them is
+          fine. The trouble is that the surrounding thing can still do anything, and what a system <em>can</em> do is what you have to audit it for. A
+          mostly-declarative pipeline has to be reviewed as a program, because proving it stayed inside the declarative part means reading it — which
+          is the cost you were trying to avoid.
+        </P>
+        <P>
+          And it never stays inside. The escape hatch is right there, the deadline is real, and one custom step is always the fastest way through — so
+          the model gets a hook, then a macro that writes SQL, then a step that calls out to a script nobody revisits. Nobody decides to make the layer
+          untrustworthy. It happens one reasonable exception at a time, and afterward you cannot tell by looking which datasets went through the clean
+          path.
+        </P>
+        <P>
+          A closed vocabulary is the difference. When the only thing you can declare is a definition the system can read back, "is this reproducible"
+          stops being a question about the team's discipline. It becomes a property the system can check — which is why a definition that reaches for
+          <code>now()</code> or <code>random()</code> where reproducibility is required gets refused rather than reviewed.
+        </P>
+      </Chapter>
+
+      <Chapter id="custom-logic" title="Custom logic is fine. Undeclared custom logic isn't.">
+        <P>
+          Real work needs code the model can't express: text pulled out of a PDF, an embedding from a model endpoint, a third-party API with its own
+          rate limits and its own bad days. Banning that would be a fantasy, and it isn't the rule here.
+        </P>
+        <P>
+          The price of admission is a two-dimensional transform: models in, a model out, with data quality checked on both sides. Most of the ones you
+          need already ship as declarations — that's what the source shaping rules are. What's left is the rare case, and it enters the same way
+          everything else does.
+        </P>
+        <P>
+          Which means the result is always a DAG of models. Lineage isn't something a command interrupts; the call is a node with real edges, so the
+          trace closes across it. That's the difference from a graveyard of stored procedures nobody can inventory. This is a live graph, and every
+          exception in it is a labeled node you can go and look at.
+        </P>
+        <P>
+          The comparison flatters the procedure, anyway. A stored procedure declares a <em>signature</em> — scalar arguments, maybe an untyped result set
+          — and most of the real data flow doesn't pass through it at all: it reads whatever tables it likes and writes wherever it wants, none of which
+          appears in the declaration. A signature tells you how to call something. A contract names the datasets going in and the dataset coming out,
+          which is a statement about data flow, and data flow is what lineage is made of. You can derive edges from one and nothing from the other —
+          which is why tracing a procedure estate means parsing bodies to guess, and why the guess is always partial.
+        </P>
+      </Chapter>
+    </Chapters>
+  </Sec>
+
+  <Sec label="What you end up with">
+    <Chapters>
+      <Chapter id="end-up-with" title="What you end up with">
+        <P>
+          None of this is a productivity feature. Writing the transform was never the expensive part; living with it was. A procedure has to be re-read
+          every time someone asks what a number means, re-audited every time it changes, and worked around every time it turns out to hold data that
+          policy says a person shouldn't see. That cost compounds per dataset, and it is why derived layers end as a pile of tables nobody fully
+          trusts.
+        </P>
+        <Heading level="lede">
+          Declared datasets pay it once. The lineage is in the definition, the data version is stamped on the refresh, the policy is the same policy that
+          governs the source, and the decision about whether to move data at all belongs to the system. What you have at the end is not a set of output
+          tables and the scripts that made them. It is a model — and a model is a thing you can ask questions of.
+        </Heading>
+        <Links
+          links={[
+            { label: 'How governance reaches derived tables', href: '/why/governance' },
+            { label: 'Publishing lineage outward', href: '/why/catalog' },
+          ]}
         />
-      </Grid>
-    </Block>
-  </Section>
-
-  <Section labelledBy="drift-title">
-    <Block gap={40}>
-      <SplitHeader eyebrow="Schema drift" eyebrowTone="cobalt" title="What happens when the source changes" titleId="drift-title">
-        <p class="t-body-lg pv-body">Drift is the standing objection to any declarative model. It deserves four separate answers.</p>
-      </SplitHeader>
-      <Tabs id="drift" label="Kinds of schema change" kicker="WHAT PROVISA DOES" tabs={drift} />
-      <p class="t-body-lg pv-body pv-measure">
-        Most drift arrives as a release a team shipped, so the failing refresh and the checks fire in a lower environment first. When the
-        change comes from outside, like a vendor feed or a partner export, no system can prevent it. What you get is a refresh that fails
-        instead of landing bad data, checks on the first bad batch, and a list of exactly what is downstream.
-      </p>
-    </Block>
-  </Section>
-
-  <Section tone="vermilion" labelledBy="hole-title">
-    <SplitHeader eyebrow="Governance" title="A pipeline is a hole in your governance" titleId="hole-title">
-      <p class="t-body-lg">
-        A pipeline reads governed data and writes a new table somewhere else. That table has the same numbers, no row filter, no masking,
-        and no record of who may see it. Every rule written upstream stops at the write, and nobody involved intended the bypass.
-      </p>
-      <p class="t-body-lg">
-        A declared dataset never leaves the model. Row-level security, masking, and relationship rules hold on an MV exactly as they do on
-        the source table.
-      </p>
-      <div style="padding-top: 8px">
-        <Links items={[{ label: 'How governance reaches derived tables', href: '/why/governance' }]} />
-      </div>
-    </SplitHeader>
-  </Section>
-
-  <Section tone="surface" labelledBy="custom-title">
-    <SplitHeader eyebrow="Custom logic" eyebrowTone="forest" title="Custom code is allowed. Undeclared custom code isn’t." titleId="custom-title">
-      <p class="t-body-lg pv-body">
-        Some work needs code the model cannot express: text from a PDF, an embedding from a model endpoint, a third-party API with its own
-        rate limits. That code enters as a two-dimensional transform with named datasets in and a dataset out, and data quality checked on
-        both sides.
-      </p>
-      <p class="t-body-lg pv-body">
-        The call becomes a node in the graph with real edges, so lineage passes through it. A stored procedure declares only a signature and
-        reads and writes whatever it likes. A contract names the data flowing in and out, and that is what lineage is made of.
-      </p>
-      <p class="t-body-lg pv-body">
-        Where copies are genuinely needed (a backend for a frontend, a cache near a workload, another organization), read them from the
-        published edge over any of the nine protocols. A copy made that way can be traced back to the model.
-      </p>
-      <div style="padding-top: 8px">
-        <Links items={[{ label: 'Publishing lineage outward', href: '/why/catalog' }]} />
-      </div>
-    </SplitHeader>
-  </Section>
+      </Chapter>
+    </Chapters>
+  </Sec>
 </BaseLayout>

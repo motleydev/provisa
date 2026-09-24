@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { PageHero, Prose, Section } from '../components/ds';
+import { Eyebrow, Fine, Heading, Lede, Links, PageHero, Prose, Sec } from '../components/ds';
 ---
 
 <BaseLayout
@@ -8,62 +8,67 @@ import { PageHero, Prose, Section } from '../components/ds';
   description="What Provisa collects, why, and how to control it: sign-in via Google, GitHub, or Microsoft; the product-update mailing list; nothing else."
   contact={false}
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'Privacy Policy' }]}
-    eyebrow="Last updated August 31, 2026"
-    title="Privacy Policy"
-    lede="Provisa is a single product, operated by Kenneth Stott. This page covers the provisa.dev website and the sign-in used by the Provisa application. It does not cover data you load into your own Provisa deployment — that data is yours, stays in your infrastructure, and is never seen by us."
-  />
+  <PageHero crumb="Privacy Policy">
+    <Eyebrow>Legal</Eyebrow>
+    <Heading level="page">Privacy Policy</Heading>
+    <Lede>
+      Provisa is a single product, operated by Kenneth Stott. This page covers the provisa.dev website and the sign-in used by the Provisa application. It does not cover data you load into your own Provisa deployment — that data is yours, stays in your infrastructure, and is never seen by us.
+    </Lede>
+    <Fine>Last updated August 31, 2026.</Fine>
+  </PageHero>
 
-  <Section tone="surface" label="Privacy policy">
+  <Sec band="white" label="Privacy Policy">
     <Prose>
-      <h2>What we collect</h2>
-      <p>Two things, and nothing beyond them:</p>
-      <ul>
-        <li>
-          <strong>Sign-in to the Provisa application.</strong> When you sign in with Google, GitHub, or Microsoft, we request only your
-          <strong>name, email address, and profile picture</strong> (scopes: <code>profile</code>, <code>email</code>). We use this solely to
-          create and authenticate your account and to know who is asking when a query runs. We never request access to your files, contacts,
-          calendar, or any other data those providers hold.
-        </li>
-        <li>
-          <strong>Product-update mailing list.</strong> If you submit the “Keep me posted” form on this site, we store the
-          <strong>name and email address</strong> you enter, for the sole purpose of emailing you product updates.
-        </li>
-      </ul>
+        <h2>What we collect</h2>
+        <p class="pv-p">Two things, and nothing beyond them:</p>
+        <ul class="pv-list pv-list--loose">
+          <li>
+            <strong>Sign-in to the Provisa application.</strong> When you sign in with Google, GitHub, or Microsoft, we request only your
+            <strong>name, email address, and profile picture</strong> (scopes: <code>profile</code>, <code>email</code>). We use this solely to
+            create and authenticate your account and to know who is asking when a query runs. We never request access to your files, contacts,
+            calendar, or any other data those providers hold.
+          </li>
+          <li>
+            <strong>Product-update mailing list.</strong> If you submit the “Keep me posted” form on this site, we store the
+            <strong>name and email address</strong> you enter, for the sole purpose of emailing you product updates.
+          </li>
+        </ul>
 
-      <h2>What we don’t collect</h2>
-      <p>
-        No advertising trackers, no third-party analytics pixels, no cross-site tracking. We don’t sell, rent, or share your data with any
-        third party for their own marketing purposes.
-      </p>
+        <h2>What we don’t collect</h2>
+        <p class="pv-p">
+          No advertising trackers, no third-party analytics pixels, no cross-site tracking. We don’t sell, rent, or share your data with any
+          third party for their own marketing purposes.
+        </p>
 
-      <h2>Where it’s stored</h2>
-      <p>
-        Sign-in identities are managed by Firebase Authentication (Google Cloud). Mailing-list entries are stored in a private Cloudflare D1
-        database that only the Provisa operator can access. Both providers process data under their own security and compliance commitments as
-        our data sub-processors; neither is authorized to use it for their own purposes.
-      </p>
+        <h2>Where it’s stored</h2>
+        <p class="pv-p">
+          Sign-in identities are managed by Firebase Authentication (Google Cloud). Mailing-list entries are stored in a private Cloudflare D1
+          database that only the Provisa operator can access. Both providers process data under their own security and compliance commitments as
+          our data sub-processors; neither is authorized to use it for their own purposes.
+        </p>
 
-      <h2>How long we keep it</h2>
-      <p>
-        Sign-in data persists for as long as your account exists; delete your account and it is removed. Mailing-list entries persist until you
-        unsubscribe or ask us to remove them — every email includes an unsubscribe link, and the address is de-duplicated so you’re only ever
-        stored once.
-      </p>
+        <h2>How long we keep it</h2>
+        <p class="pv-p">
+          Sign-in data persists for as long as your account exists; delete your account and it is removed. Mailing-list entries persist until you
+          unsubscribe or ask us to remove them — every email includes an unsubscribe link, and the address is de-duplicated so you’re only ever
+          stored once.
+        </p>
 
-      <h2>Your choices</h2>
-      <ul>
-        <li>Sign in with any of the three supported providers, or self-host with your own auth if you’re running Provisa on your own infrastructure.</li>
-        <li>Unsubscribe from the mailing list at any time via the link in any email.</li>
-        <li>Ask us to access, correct, export, or delete your data — email us and we’ll handle it directly, no ticket queue.</li>
-      </ul>
+        <h2>Your choices</h2>
+        <ul class="pv-list pv-list--loose">
+          <li>Sign in with any of the three supported providers, or self-host with your own auth if you’re running Provisa on your own infrastructure.</li>
+          <li>Unsubscribe from the mailing list at any time via the link in any email.</li>
+          <li>Ask us to access, correct, export, or delete your data — email us and we’ll handle it directly, no ticket queue.</li>
+        </ul>
 
-      <h2>Contact</h2>
-      <p>
-        Questions about this policy, or a request to access, correct, or delete your data:
-        <a href="mailto:privacy@provisa.dev">privacy@provisa.dev</a>. General support: <a href="mailto:support@provisa.dev">support@provisa.dev</a>.
-      </p>
-    </Prose>
-  </Section>
+        <h2>Contact</h2>
+        <p class="pv-p">
+          Questions about this policy, or a request to access, correct, or delete your data:
+          <a href="mailto:privacy@provisa.dev">privacy@provisa.dev</a>. General support: <a href="mailto:support@provisa.dev">support@provisa.dev</a>.
+        </p>
+        <Links
+          links={[{ label: 'Back to provisa.dev', href: '/' }]}
+        />
+      </Prose>
+  </Sec>
 </BaseLayout>

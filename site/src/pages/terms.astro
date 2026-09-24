@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { PageHero, Prose, Section } from '../components/ds';
+import { Eyebrow, Fine, Heading, Lede, Links, PageHero, Prose, Sec } from '../components/ds';
 ---
 
 <BaseLayout
@@ -8,69 +8,77 @@ import { PageHero, Prose, Section } from '../components/ds';
   description="The terms for using provisa.dev, downloading Provisa, and the preview mailing list."
   contact={false}
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'Terms of Service' }]}
-    eyebrow="Last updated August 31, 2026"
-    title="Terms of Service"
-    lede="These terms cover provisa.dev, the Provisa software you download or sign in to from this site, and the preview mailing list. Provisa is operated by Kenneth Stott. By using this site or the software, you agree to these terms."
-  />
+  <PageHero crumb="Terms of Service">
+    <Eyebrow>Legal</Eyebrow>
+    <Heading level="page">Terms of Service</Heading>
+    <Lede>
+      These terms cover provisa.dev, the Provisa software you download or sign in to from this site, and the preview mailing list. Provisa is operated by Kenneth Stott. By using this site or the software, you agree to these terms.
+    </Lede>
+    <Fine>Last updated August 31, 2026.</Fine>
+  </PageHero>
 
-  <Section tone="surface" label="Terms of service">
+  <Sec band="white" label="Terms of Service">
     <Prose>
-      <h2 id="the-software">The software</h2>
-      <p>
-        Provisa is licensed under the <a href="https://mariadb.com/bsl11/" target="_blank" rel="noopener">Business Source License 1.1</a> —
-        non-production use, including evaluation, is free forever, for any size organization, with no time limit. Production use is also free
-        for any organization that, together with its affiliates, has fewer than 100 employees and contractors and less than $1,000,000 in
-        total revenue, budget, or expenditures in its most recently completed fiscal year (or annualized, if it hasn’t completed one). An
-        organization that grows past these thresholds gets a 90-day grace period to obtain a <a href="mailto:license@provisa.dev"
-          >commercial license</a
-        >; any other production use needs one from the start. The license terms shipped with the software govern your right to use, modify,
-        and redistribute it; these Terms of Service govern your use of this website and any hosted services offered from it.
-      </p>
+        <h2 id="the-software">The software</h2>
+        <p class="pv-p">
+          Provisa is licensed under the <a href="https://mariadb.com/bsl11/" target="_blank" rel="noopener">Business Source License 1.1</a> —
+          non-production use, including evaluation, is free forever, for any size organization, with no time limit. Production use is also free
+          for any organization that, together with its affiliates, has fewer than 100 employees and contractors and less than $1,000,000 in
+          total revenue, budget, or expenditures in its most recently completed fiscal year (or annualized, if it hasn’t completed one). An
+          organization that grows past these thresholds gets a 90-day grace period to obtain a <a href="mailto:license@provisa.dev"
+            >commercial license</a
+          >; any other production use needs one from the start. The license terms shipped with the software govern your right to use, modify,
+          and redistribute it; these Terms of Service govern your use of this website and any hosted services offered from it.
+        </p>
 
-      <h2>Release status</h2>
-      <p>
-        Features, APIs, and the on-disk/wire formats may still change between releases. The software and this site are provided
-        <strong>“as is,” without warranty of any kind</strong>, express or implied, including warranties of merchantability, fitness for a
-        particular purpose, and non-infringement.
-      </p>
+        <h2>Release status</h2>
+        <p class="pv-p">
+          Features, APIs, and the on-disk/wire formats may still change between releases. The software and this site are provided
+          <strong>“as is,” without warranty of any kind</strong>, express or implied, including warranties of merchantability, fitness for a
+          particular purpose, and non-infringement.
+        </p>
 
-      <h2>Your data</h2>
-      <p>
-        If you run Provisa against your own data sources, that data stays in your own infrastructure and is never transmitted to us. See the
-        <a href="/privacy">Privacy Policy</a> for what limited account data (sign-in identity, mailing-list entries) we do collect.
-      </p>
+        <h2>Your data</h2>
+        <p class="pv-p">
+          If you run Provisa against your own data sources, that data stays in your own infrastructure and is never transmitted to us. See the
+          <a href="/privacy">Privacy Policy</a> for what limited account data (sign-in identity, mailing-list entries) we do collect.
+        </p>
 
-      <h2>Acceptable use</h2>
-      <p>You agree not to:</p>
-      <ul>
-        <li>Use the site or software to violate any applicable law.</li>
-        <li>Attempt to gain unauthorized access to accounts, systems, or data that aren’t yours.</li>
-        <li>Interfere with or disrupt the operation of provisa.dev or the mailing-list service.</li>
-        <li>Use automated means to scrape or bulk-harvest content from this site outside normal, reasonable use.</li>
-      </ul>
+        <h2>Acceptable use</h2>
+        <p class="pv-p">You agree not to:</p>
+        <ul class="pv-list pv-list--loose">
+          <li>Use the site or software to violate any applicable law.</li>
+          <li>Attempt to gain unauthorized access to accounts, systems, or data that aren’t yours.</li>
+          <li>Interfere with or disrupt the operation of provisa.dev or the mailing-list service.</li>
+          <li>Use automated means to scrape or bulk-harvest content from this site outside normal, reasonable use.</li>
+        </ul>
 
-      <h2>Accounts</h2>
-      <p>
-        If you sign in to a Provisa-hosted service using Google, GitHub, or Microsoft, you’re responsible for activity under your account and
-        for keeping your credentials with that provider secure. We may suspend or terminate access for violation of these terms.
-      </p>
+        <h2>Accounts</h2>
+        <p class="pv-p">
+          If you sign in to a Provisa-hosted service using Google, GitHub, or Microsoft, you’re responsible for activity under your account and
+          for keeping your credentials with that provider secure. We may suspend or terminate access for violation of these terms.
+        </p>
 
-      <h2>Limitation of liability</h2>
-      <p>
-        To the maximum extent permitted by law, Provisa and its operator are not liable for any indirect, incidental, special, consequential,
-        or punitive damages, or any loss of data, revenue, or profits, arising from your use of the site or software.
-      </p>
+        <h2>Limitation of liability</h2>
+        <p class="pv-p">
+          To the maximum extent permitted by law, Provisa and its operator are not liable for any indirect, incidental, special, consequential,
+          or punitive damages, or any loss of data, revenue, or profits, arising from your use of the site or software.
+        </p>
 
-      <h2>Changes</h2>
-      <p>
-        We may update these terms as the product moves from preview to general availability. Material changes will be reflected by updating
-        the date at the top of this page.
-      </p>
+        <h2>Changes</h2>
+        <p class="pv-p">
+          We may update these terms as the product moves from preview to general availability. Material changes will be reflected by updating
+          the date at the top of this page.
+        </p>
 
-      <h2>Contact</h2>
-      <p>Questions about these terms: <a href="mailto:support@provisa.dev">support@provisa.dev</a>.</p>
-    </Prose>
-  </Section>
+        <h2>Contact</h2>
+        <p class="pv-p">Questions about these terms: <a href="mailto:support@provisa.dev">support@provisa.dev</a>.</p>
+        <Links
+          links={[
+          { label: 'Privacy Policy', href: '/privacy' },
+          { label: 'Back to provisa.dev', href: '/' },
+        ]}
+        />
+      </Prose>
+  </Sec>
 </BaseLayout>

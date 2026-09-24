@@ -1,154 +1,157 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
-  Block,
+  Chips,
+  Copy,
+  Eyebrow,
   Grid,
+  Head,
+  Heading,
+  HeroCTAs,
+  HeroStack,
+  LayerRow,
+  Lede,
   Links,
+  P,
   PageHero,
-  RuleCard,
-  Section,
-  SplitHeader,
+  RuledCard,
+  Sec,
+  SourceGroup,
   Stack,
   StackHead,
   StackNote,
-  StackRow,
-  Tags,
+  TextLink,
+  Two,
 } from '../../components/ds';
-import { LINKS } from '../../data/site';
+import { INNER_CTAS } from '../../data/site';
 import { CRAWLER, SOURCE_GROUPS } from '../../data/sources';
-
-const crawlerGroups = [
-  { title: 'Where it crawls', items: CRAWLER.where },
-  { title: 'What it reads directly', items: CRAWLER.reads },
-  { title: 'What it converts to tables', items: CRAWLER.converts },
-];
 ---
 
 <BaseLayout
   title="53 sources, and one of them is a crawler — Provisa"
   description="53 source types, including a file crawler: point it at a folder, bucket, SFTP host, or SharePoint site and every database file and tabular document under it is discovered and cataloged, ready to register as a governed table — alongside graph, RDF, and API endpoints."
-  current="/why/sources"
+  active="Sources"
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'Sources' }]}
-    eyebrow="Data sources"
-    title="Fifty-three sources, and one of them is a secret weapon."
-    lede="Fifty-two of them connect to a system you already know you have. The fifty-third is a crawler, and it tends to find the half of your estate nobody put on the inventory."
-    actions={[
-      { label: 'Book a demo', href: '#contact' },
-      { label: 'Start a free trial', href: LINKS.cloud, variant: 'outline' },
-    ]}
-  >
-    <Stack slot="aside" label="How the file crawler registers a location">
+  <PageHero crumb="Sources">
+    <Eyebrow>Data sources</Eyebrow>
+    <Heading level="page">Fifty-three sources, and one of them is a secret weapon.</Heading>
+    <Lede>
+      Fifty-two of them connect to a system you already know you have. The fifty-third is a crawler, and it tends to find the half of your estate
+      nobody put on the inventory.
+    </Lede>
+    <HeroCTAs primary={INNER_CTAS.primary} secondary={INNER_CTAS.secondary} />
+    <HeroStack slot="aside" label="How the file crawler registers a location">
       <StackHead>ONE LOCATION · folder, bucket, SharePoint site, SFTP host</StackHead>
-      <StackRow index="01" label="Point" tone="cobalt" tall />
-      <StackRow index="02" label="Crawl" tone="forest" tall />
-      <StackRow index="03" label="Register" tone="vermilion" tall />
+      <LayerRow idx="01" title="Point" tone="cobalt" href="#file-crawler" />
+      <LayerRow idx="02" title="Crawl" tone="forest" href="#file-crawler" />
+      <LayerRow idx="03" title="Register" tone="vermilion" href="#file-crawler" />
       <StackNote label="GOVERNED">Every table it finds, under the same six layers</StackNote>
-    </Stack>
+    </HeroStack>
   </PageHero>
 
-  <Section tone="surface" labelledBy="crawler-title">
-    <Block>
-      <SplitHeader eyebrow="Auto-indexing file crawler" eyebrowTone="forest" title="The file crawler" titleId="crawler-title">
-        <p class="t-body-lg pv-body">
-          It is one source type, and the only one where you register a <em>location</em> rather than a system. Point it at a folder, a bucket,
-          an FTP or SFTP host, or a SharePoint site and it walks the tree recursively, looking for two things: database files, and files with
-          tabular data embedded in them. What it finds gets cataloged as an available table; registering it is still your call, the same as
-          for any other source.
-        </p>
-        <p class="t-body-lg pv-body">
-          Which is a wider net than it sounds. Not just CSV and Parquet — <strong>Excel workbooks</strong>, and even
-          <strong>Word, PowerPoint, HTML, XML, and Markdown documents</strong>, each converted to tables on the way in.
-        </p>
-      </SplitHeader>
-      <Grid min={280} gap={32}>
-        {
-          crawlerGroups.map((g) => (
-            <RuleCard title={g.title}>
-              <Tags items={g.items.map((label) => ({ label }))} />
-            </RuleCard>
-          ))
-        }
+  <Sec band="white" id="file-crawler" labelledBy="crawler-title">
+    <Stack gap={48}>
+      <Two>
+        <Head>
+          <Eyebrow tone="vermilion">The fifty-third source</Eyebrow>
+          <Heading level="section-sm" id="crawler-title">The file crawler</Heading>
+        </Head>
+        <Copy>
+          <P>
+            It is one source type, and the only one where you register a <em>location</em> rather than a system. Point it at a folder, a bucket, an FTP
+            or SFTP host, or a SharePoint site and it walks the tree recursively, looking for two things: database files, and files with tabular data
+            embedded in them. What it finds gets cataloged as an available table; registering it is still your call, the same as for any other source.
+          </P>
+          <P>
+            Which is a wider net than it sounds. Not just CSV and Parquet — <strong>Excel workbooks</strong>, and even <strong
+              >Word, PowerPoint, HTML, XML, and Markdown documents</strong
+            >, each converted to tables on the way in.
+          </P>
+        </Copy>
+      </Two>
+      <Grid min={280} gap={40}>
+        <RuledCard rule="cobalt" weight={4} title="Where it crawls">
+          <Chips items={CRAWLER.crawls} />
+        </RuledCard>
+        <RuledCard rule="forest" weight={4} title="What it reads directly">
+          <Chips items={CRAWLER.reads} />
+        </RuledCard>
+        <RuledCard rule="vermilion" weight={4} title="What it converts to tables">
+          <Chips items={CRAWLER.converts} />
+        </RuledCard>
       </Grid>
-      <p class="t-body-lg pv-body pv-measure">
-        The reason it earns the description: the data that runs a department is very often sitting in a share drive, and it has never been
-        anywhere near a governance program. Discovery is the part that used to be a project — after that, what you register lands under the
-        same row-level security, masking, and relationship rules as the databases.
-      </p>
-    </Block>
-  </Section>
+      <Heading level="lede" as="p">
+        The reason it earns the description: the data that runs a department is very often sitting in a share drive, and it has never been anywhere
+        near a governance program. Discovery is the part that used to be a project — after that, what you register lands under the same row-level
+        security, masking, and relationship rules as the databases.
+      </Heading>
+    </Stack>
+  </Sec>
 
-  <Section labelledBy="systems-title">
-    <SplitHeader eyebrow="Not only databases" eyebrowTone="cobalt" title="Systems that aren’t databases" titleId="systems-title">
-      <p class="t-body-lg pv-body">
-        Connect <strong>SharePoint</strong> and its lists enumerate as schemas you can query. Run a <strong>Splunk</strong> search and the
-        results come back as a table you can JOIN to your business data. A live <strong>Google Sheet</strong> is just another table — and so
-        is a REST, GraphQL, gRPC, WebSocket, or RSS endpoint, registered as a governed table that federated joins reach transparently.
-      </p>
-    </SplitHeader>
-  </Section>
+  <Sec band="forest" label="Beyond databases">
+    <Grid min={300} gap={48}>
+      <RuledCard rule="mint" weight={4} titleSize={26} as="h2" title="Systems that aren't databases">
+        <P>
+          Connect <strong>SharePoint</strong> and its lists enumerate as schemas you can query. Run a <strong>Splunk</strong> search and the results come
+          back as a table you can JOIN to your business data. A live <strong>Google Sheet</strong> is just another table — and so is a REST, GraphQL,
+          gRPC, WebSocket, or RSS endpoint, registered as a governed table that federated joins reach transparently.
+        </P>
+      </RuledCard>
+      <RuledCard rule="mint" weight={4} titleSize={26} as="h2" title="Shaping is a declaration, not a program">
+        <P>
+          Non-relational data is where pipelines are born: the response is nested, the document has an array inside it, the location is a pile of
+          files, so somebody writes code to flatten it and a procedure enters the path permanently. We start from the premise that the variety is
+          smaller than it looks — a modest set of structure types, each with a short declarative rule for projecting it into rows and columns. The path
+          to the collection and the fields to lift from it. A sampled document schema, with the steward's explicit types overriding what was inferred.
+          A crawled location that catalogs what it finds. Once it's flat, everything after it is SQL, and SQL is a thing a machine can read back.
+        </P>
+        <TextLink href="/why/materialized-views" arrow>Why that removes the downstream pain</TextLink>
+      </RuledCard>
+      <RuledCard rule="mint" weight={4} titleSize={26} as="h2" title="Graph and RDF are first-class">
+        <P>
+          Neo4j and SPARQL sources are not adapters bolted onto a relational core. They participate in the same federated model, the same relationship
+          registry, and the same governance layers — which is what makes a Cypher traversal across a relational source and a graph source a single
+          legal query rather than two queries and a join in application code.
+        </P>
+      </RuledCard>
+    </Grid>
+  </Sec>
 
-  <Section tone="forest" labelledBy="shaping-title">
-    <SplitHeader eyebrow="Shaping" title="Shaping is a declaration, not a program" titleId="shaping-title">
-      <p class="t-body-lg pv-body">
-        Non-relational data is where pipelines are born: the response is nested, the document has an array inside it, the location is a pile
-        of files, so somebody writes code to flatten it and a procedure enters the path permanently. We start from the premise that the
-        variety is smaller than it looks — a modest set of structure types, each with a short declarative rule for projecting it into rows
-        and columns. The path to the collection and the fields to lift from it. A sampled document schema, with the steward’s explicit types
-        overriding what was inferred. A crawled location that catalogs what it finds. Once it’s flat, everything after it is SQL, and SQL is a
-        thing a machine can read back.
-      </p>
-      <div style="padding-top: 8px">
-        <Links items={[{ label: 'Why that removes the downstream pain', href: '/why/materialized-views' }]} />
-      </div>
-    </SplitHeader>
-  </Section>
-
-  <Section tone="surface" labelledBy="graph-title">
-    <SplitHeader eyebrow="Graph and RDF" eyebrowTone="vermilion" title="Graph and RDF are first-class" titleId="graph-title">
-      <p class="t-body-lg pv-body">
-        Neo4j and SPARQL sources are not adapters bolted onto a relational core. They participate in the same federated model, the same
-        relationship registry, and the same governance layers — which is what makes a Cypher traversal across a relational source and a
-        graph source a single legal query rather than two queries and a join in application code.
-      </p>
-    </SplitHeader>
-  </Section>
-
-  <Section id="the-53" labelledBy="all-title">
-    <Block>
-      <SplitHeader eyebrow="Every source type" eyebrowTone="forest" title="The 53" titleId="all-title">
-        <p class="t-body-lg pv-body">
-          Every registrable source type, grouped by what it is. Each one registers the same way and lands under the same governance; the
-          per-type connection fields are in the <a class="pv-inline-link" href="/docs/sources/">source reference</a>.
-        </p>
-      </SplitHeader>
-      <Grid min={280} gap={32}>
-        {
-          SOURCE_GROUPS.map((g) => (
-            <RuleCard title={g.name} index={`${g.items.length} ${g.items.length === 1 ? 'type' : 'types'}`}>
-              <Tags items={g.items.map((label) => ({ label }))} />
-            </RuleCard>
-          ))
-        }
+  <Sec band="white" id="the-53" labelledBy="the-53-title">
+    <Stack gap={48}>
+      <Two>
+        <Head>
+          <Heading level="section-sm" id="the-53-title">The 53</Heading>
+        </Head>
+        <P>
+          Every registrable source type, grouped by what it is. Each one registers the same way and lands under the same governance; the per-type
+          connection fields are in the <a href="/docs/sources/">source reference</a>.
+        </P>
+      </Two>
+      <Grid min={260} gap={40}>
+        {SOURCE_GROUPS.map((g) => <SourceGroup title={g.title} items={g.items} count />)}
       </Grid>
-    </Block>
-  </Section>
+    </Stack>
+  </Sec>
 
-  <Section tone="ink" labelledBy="observability-title">
-    <SplitHeader eyebrow="Audit" eyebrowTone="vermilion" title="Observability as data" titleId="observability-title">
-      <p class="t-body-lg pv-body">
-        Traces, metrics, and logs are collected via OpenTelemetry, compacted into Iceberg, and registered as queryable tables — so the audit
-        trail is a source like any other, joinable to the business data it describes.
-      </p>
-      <div style="padding-top: 8px">
+  <Sec labelledBy="observability-title">
+    <Two>
+      <Head>
+        <Eyebrow tone="vermilion">Audit</Eyebrow>
+        <Heading level="section-sm" id="observability-title">Observability as data</Heading>
+      </Head>
+      <Copy>
+        <P>
+          Traces, metrics, and logs are collected via OpenTelemetry, compacted into Iceberg, and registered as queryable tables — so the audit trail is
+          a source like any other, joinable to the business data it describes.
+        </P>
         <Links
-          items={[
+          links={[
             { label: 'How every source gets governed', href: '/why/governance' },
             { label: 'Deriving datasets on top', href: '/why/materialized-views' },
           ]}
         />
-      </div>
-    </SplitHeader>
-  </Section>
+      </Copy>
+    </Two>
+  </Sec>
 </BaseLayout>

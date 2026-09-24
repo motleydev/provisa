@@ -18,8 +18,6 @@ export default defineConfig({
   integrations: [
     // Design-system components render to static HTML; none are hydrated.
     react(),
-    sitemap({
-      filter: (page) => !page.includes('/design-system'),
-    }),
+    sitemap(),
   ],
 });

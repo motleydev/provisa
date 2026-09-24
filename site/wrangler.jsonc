@@ -16,10 +16,6 @@
     }
   ]
 
-  // functions/api/demo.js ("Book a demo") uses the same D1 binding (table
-  // demo_requests in schema.sql) and, when RESEND_API_KEY is set, emails a
-  // notification to DEMO_NOTIFY_TO (a plain variable; defaults to license@provisa.dev).
-  //
   // REQ-1793 (license registration, functions/api/register.js + functions/api/register/confirm.js)
   // needs two secrets, set once via `wrangler pages secret put <NAME> --project-name provisa-dev`
   // (never in this file — see scripts/generate_license_keypair.py for how to produce them):

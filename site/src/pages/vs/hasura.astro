@@ -1,98 +1,136 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { Block, CodeBlock, ComparisonTable, Links, PageHero, RuleList, Section, SplitHeader } from '../../components/ds';
-import { LINKS } from '../../data/site';
+import {
+  CodeBlock,
+  ComparisonTable,
+  Copy,
+  Eyebrow,
+  Head,
+  Heading,
+  HeroCTAs,
+  ItemList,
+  Lede,
+  Links,
+  P,
+  PageHero,
+  Sec,
+  Stack,
+  Two,
+} from '../../components/ds';
+import { INNER_CTAS } from '../../data/site';
 
-const convert = `
-# Read a Hasura v2 metadata directory, write a Provisa config
+const convert = `# Read a Hasura v2 metadata directory, write a Provisa config
 python -m provisa.hasura_v2 ./hasura/metadata -o provisa.yaml
 
 # Validate without writing, map schemas onto domains, override connections
 python -m provisa.hasura_v2 ./hasura/metadata --dry-run
 python -m provisa.hasura_v2 ./hasura/metadata --domain-map public=sales billing=finance`;
-
-const converts = [
-  '**Sources** — Postgres, Citus, MySQL, MS SQL, and BigQuery connections map to Provisa sources.',
-  '**Tables and columns** — with per-role select permissions becoming column visibility.',
-  '**Row permissions** — Hasura boolean expressions convert to SQL row-level security rules.',
-  '**Relationships** — object and array relationships become registered, governed relationships.',
-  '**Remote schemas** — mapped to GraphQL remote sources.',
-  '**Actions** — HTTP-handler actions become webhooks; others land as function placeholders.',
-  '**Event triggers and cron triggers** — carried across as event and scheduled triggers.',
-  '**Roles and rate limits** — preserved as Provisa roles.',
-];
-
-const gains = [
-  { label: 'Query languages', them: 'GraphQL', us: 'GraphQL, SQL, and Cypher over the same model' },
-  { label: 'Ways in', them: 'HTTP GraphQL', us: 'pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, MCP' },
-  { label: 'Sources', them: 'Relational databases, plus remote schemas', us: '53 source types — graph, RDF, files, SharePoint, Splunk, and API endpoints as governed tables' },
-  { label: 'Analytics', them: 'Aggregates over the source', us: 'Cross-source federation and layered materialized views with recorded transforms' },
-  { label: 'AI access', them: '—', us: 'An MCP server where the OAuth token maps to a role, so agents inherit the same governance' },
-  { label: 'Deployment', them: 'Container', us: 'Desktop installer, a single wheel for airgaps, Helm, or Terraform' },
-];
 ---
 
 <BaseLayout
   title="Coming from Hasura v2 — Provisa"
   description="The v2 idea, continued. Point the converter at your Hasura v2 metadata directory and get a Provisa config: tables, permissions, relationships, remote schemas, actions, and triggers — keep the per-role GraphQL API, gain SQL, Cypher, and eight more protocols."
-  current="/vs/starburst"
+  active="Compare"
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'Coming from Hasura' }]}
-    eyebrow="Coming from Hasura v2"
-    eyebrowTone="cobalt"
-    title="Where the v2 idea kept going."
-    lede="Instant, per-role, metadata-driven APIs over your own databases was the right idea. Provisa takes it further rather than sideways — same premise, more languages, more ways in, and governance that holds on all of them. Bring your metadata with you: the converter reads a Hasura v2 metadata directory and emits a Provisa config, tables, permissions, relationships, remote schemas, actions, and triggers included."
-    actions={[
-      { label: 'Book a demo', href: '#contact' },
-      { label: 'Download Provisa', href: LINKS.download, variant: 'outline' },
-    ]}
-  >
-    <CodeBlock slot="aside" code={convert} head="One command" accent="cobalt" label="Convert a Hasura v2 metadata directory to a Provisa config" />
+  <PageHero crumb="Coming from Hasura">
+    <Eyebrow tone="cobalt">Coming from Hasura v2</Eyebrow>
+    <Heading level="page">Where the v2 idea kept going.</Heading>
+    <Lede>
+      Instant, per-role, metadata-driven APIs over your own databases was the right idea. Provisa takes it further rather than sideways — same
+      premise, more languages, more ways in, and governance that holds on all of them.
+    </Lede>
+    <P>
+      Bring your metadata with you: the converter reads a Hasura v2 metadata directory and emits a Provisa config, tables, permissions, relationships,
+      remote schemas, actions, and triggers included.
+    </P>
+    <HeroCTAs primary={INNER_CTAS.primary} secondary={INNER_CTAS.secondary} />
   </PageHero>
 
-  <Section tone="surface" labelledBy="converts-title">
-    <SplitHeader eyebrow="The converter" eyebrowTone="forest" title="What converts" titleId="converts-title">
-      <RuleList items={converts} label="What the converter maps" />
-      <p class="t-body-lg pv-body">
-        Anything the converter can’t map cleanly is reported as a warning rather than silently dropped, so the gaps are a list you work
-        through, not a surprise you find in production.
-      </p>
-    </SplitHeader>
-  </Section>
+  <Sec band="white" labelledBy="command-title">
+    <Stack gap={40}>
+      <Head>
+        <Eyebrow>Migration</Eyebrow>
+        <Heading level="section-sm" id="command-title">One command</Heading>
+      </Head>
+      <CodeBlock code={convert} topRule="cobalt" label="Convert a Hasura v2 metadata directory to a Provisa config" />
+    </Stack>
+  </Sec>
 
-  <Section labelledBy="keep-title">
-    <SplitHeader eyebrow="Continuity" eyebrowTone="cobalt" title="What you keep" titleId="keep-title">
-      <p class="t-body-lg pv-body">
-        A per-role GraphQL API over your database, generated from metadata, with permissions enforced at query time. That model was right, and
-        Provisa keeps it: per-role schemas, field-level visibility, cursor pagination, aggregates, and Apollo Automatic Persisted Queries. No
-        new modeling universe to learn first, no rewrite as the price of admission.
-      </p>
-    </SplitHeader>
-  </Section>
-
-  <Section tone="surface" labelledBy="gain-title">
-    <Block gap={40}>
-      <SplitHeader eyebrow="What changes" eyebrowTone="vermilion" title="What you gain" titleId="gain-title" />
-      <ComparisonTable caption="Hasura v2 and Provisa compared" them="Hasura v2" rows={gains} />
-    </Block>
-  </Section>
-
-  <Section tone="ink" labelledBy="staying-title">
-    <SplitHeader eyebrow="Portability" eyebrowTone="vermilion" title="On staying put" titleId="staying-title">
-      <p class="t-body-lg pv-body">
-        Provisa is a handful of primitives compiled deterministically — domains, tables, relationships, masking, views. Your model is portable
-        declarative config and the SQL it compiles is yours to read and export, so the next migration, whenever it comes and wherever it goes,
-        starts from a file you already own.
-      </p>
-      <div style="padding-top: 8px">
-        <Links
+  <Sec labelledBy="converts-title">
+    <Two>
+      <Head>
+        <Heading level="section-sm" id="converts-title">What converts</Heading>
+      </Head>
+      <Stack gap={24}>
+        <ItemList
           items={[
+            '<strong>Sources</strong> — Postgres, Citus, MySQL, MS SQL, and BigQuery connections map to Provisa sources.',
+            '<strong>Tables and columns</strong> — with per-role select permissions becoming column visibility.',
+            '<strong>Row permissions</strong> — Hasura boolean expressions convert to SQL row-level security rules.',
+            '<strong>Relationships</strong> — object and array relationships become registered, governed relationships.',
+            '<strong>Remote schemas</strong> — mapped to GraphQL remote sources.',
+            '<strong>Actions</strong> — HTTP-handler actions become webhooks; others land as function placeholders.',
+            '<strong>Event triggers and cron triggers</strong> — carried across as event and scheduled triggers.',
+            '<strong>Roles and rate limits</strong> — preserved as Provisa roles.',
+          ]}
+        />
+        <P>
+          Anything the converter can't map cleanly is reported as a warning rather than silently dropped, so the gaps are a list you work through, not
+          a surprise you find in production.
+        </P>
+      </Stack>
+    </Two>
+  </Sec>
+
+  <Sec band="white" labelledBy="keep-title">
+    <Two>
+      <Head>
+        <Heading level="section-sm" id="keep-title">What you keep</Heading>
+      </Head>
+      <Heading level="lede" as="p">
+        A per-role GraphQL API over your database, generated from metadata, with permissions enforced at query time. That model was right, and Provisa
+        keeps it: per-role schemas, field-level visibility, cursor pagination, aggregates, and Apollo Automatic Persisted Queries. No new modeling
+        universe to learn first, no rewrite as the price of admission.
+      </Heading>
+    </Two>
+  </Sec>
+
+  <Sec labelledBy="gain-title">
+    <Stack gap={40}>
+      <Heading level="section-sm" id="gain-title">What you gain</Heading>
+      <ComparisonTable
+        caption="Hasura v2 and Provisa compared"
+        columns={['Hasura v2', 'Provisa']}
+        rows={[
+          ['Query languages', 'GraphQL', 'GraphQL, SQL, and Cypher over the same model'],
+          ['Ways in', 'HTTP GraphQL', 'pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, MCP'],
+          ['Sources', 'Relational databases, plus remote schemas', '53 source types — graph, RDF, files, SharePoint, Splunk, and API endpoints as governed tables'],
+          ['Analytics', 'Aggregates over the source', 'Cross-source federation and layered materialized views with recorded transforms'],
+          ['AI access', '—', 'An MCP server where the OAuth token maps to a role, so agents inherit the same governance'],
+          ['Deployment', 'Container', 'Desktop installer, a single wheel for airgaps, Helm, or Terraform'],
+        ]}
+      />
+    </Stack>
+  </Sec>
+
+  <Sec band="white" labelledBy="staying-title">
+    <Two>
+      <Head>
+        <Heading level="section-sm" id="staying-title">On staying put</Heading>
+      </Head>
+      <Copy>
+        <P>
+          Provisa is a handful of primitives compiled deterministically — domains, tables, relationships, masking, views. Your model is portable
+          declarative config and the SQL it compiles is yours to read and export, so the next migration, whenever it comes and wherever it goes, starts
+          from a file you already own.
+        </P>
+        <Links
+          links={[
             { label: 'Our position on lock-in', href: '/why/no-lock-in' },
             { label: 'Download Provisa', href: '/#download' },
           ]}
         />
-      </div>
-    </SplitHeader>
-  </Section>
+      </Copy>
+    </Two>
+  </Sec>
 </BaseLayout>

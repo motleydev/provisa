@@ -1,12 +1,15 @@
+import type { RoleState } from './forms';
+
 /**
- * Behaviors for the interactive components, attached once to the document by
- * event delegation, so they work for markup rendered on the server or later
- * by React alike:
+ * Behaviors for the interactive components, attached once to the document
+ * by event delegation:
  *
- * - Tabs, CodeTabs and RoleSwitcher (`[data-pv-tabs]` with ARIA tabs):
- *   click to select; Left/Right/Home/End move between tabs.
+ * - CodeTabs (`[data-pv-tabs]`, ARIA tabs): click to select; Left/Right/
+ *   Home/End move between tabs.
  * - Menu (`details[data-pv-menu]`): closes on Escape, on a click outside it,
  *   and after following one of its links.
+ * - RoleDemo (`[data-pv-roledemo]`): the role buttons swap in that role's
+ *   guard state and rows.
  *
  * Accordions are native `<details name>` and need nothing here.
  */
@@ -22,6 +25,12 @@ export function initBehaviors(doc: Document = document): void {
     const tab = target.closest<HTMLElement>('[data-pv-tabs] [role="tab"]');
     if (tab) {
       selectTab(tab);
+      return;
+    }
+
+    const toggle = target.closest<HTMLButtonElement>('[data-pv-roledemo] [data-pv-toggle]');
+    if (toggle) {
+      selectRole(toggle);
       return;
     }
 
@@ -70,4 +79,30 @@ function selectTab(tab: HTMLElement): void {
     const panel = panelId ? tab.ownerDocument.getElementById(panelId) : null;
     if (panel) panel.hidden = !on;
   }
+}
+
+function selectRole(button: HTMLButtonElement): void {
+  const demo = button.closest<HTMLElement>('[data-pv-roledemo]');
+  if (!demo) return;
+  const roles = JSON.parse(demo.dataset.pvRoledemo ?? '[]') as RoleState[];
+  const state = roles.find((r) => r.role === button.dataset.pvToggle);
+  if (!state) return;
+
+  for (const b of Array.from(demo.querySelectorAll<HTMLButtonElement>('[data-pv-toggle]'))) {
+    b.setAttribute('aria-pressed', String(b === button));
+  }
+  const sw = demo.querySelector<HTMLElement>('[data-pv-switch]');
+  if (sw) {
+    sw.dataset.on = String(state.guard);
+    const label = sw.querySelector('[data-pv-switch-state]');
+    if (label) label.textContent = state.guard ? 'on' : 'off';
+  }
+  const rows = Array.from(demo.querySelectorAll<HTMLElement>('.pv-roledemo__val'));
+  state.rows.forEach((r, i) => {
+    const el = rows[i];
+    if (!el) return;
+    el.textContent = r.value;
+    if (r.warn) el.dataset.warn = 'true';
+    else delete el.dataset.warn;
+  });
 }

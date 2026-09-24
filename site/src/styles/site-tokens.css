@@ -1,0 +1,23 @@
+/*
+ * Additions to the style guide's tokens. Each exists because a style-guide
+ * value fails WCAG 2.2 AA where the site needs it, or because the style guide
+ * has no value for it at all. Keep this list short.
+ */
+:root {
+  /* Vermilion as small text (eyebrows, mono labels, indices) on paper, white
+     and vermilion-tint. --vermilion is 3.9:1 on paper; this is 5.3:1. */
+  --vermilion-text: #bf3a14;
+
+  /* Input borders need 3:1 against white; --rule-input is 1.5:1. */
+  --field-border: #928c80;
+
+  /* Focus ring. */
+  --focus: var(--cobalt);
+}
+
+/* The style guide's 40px gutter, narrowed on phones. */
+@media (max-width: 640px) {
+  :root {
+    --gutter: 20px;
+  }
+}

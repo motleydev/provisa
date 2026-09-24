@@ -1,178 +1,167 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
-  Block,
-  Card,
-  CodeBlock,
+  Chips,
+  Eyebrow,
   Grid,
+  Head,
+  Heading,
+  HeroCTAs,
+  HeroStack,
+  Lede,
   Links,
+  P,
   PageHero,
-  ProtocolList,
-  Section,
-  SplitHeader,
+  RuledCard,
+  Sec,
   Stack,
-  StackCells,
-  StackFills,
+  StackArrow,
+  StackBox,
   StackNote,
-  TintCard,
+  StackPanel,
+  Two,
 } from '../../components/ds';
-import { LINKS } from '../../data/site';
+import { INNER_CTAS } from '../../data/site';
 
-const languages = [
-  {
-    name: 'GraphQL',
-    wire: 'HTTP',
-    tone: 'cobalt' as const,
-    body: 'Per-role schemas with field-level visibility, cursor pagination, and aggregates. The schema only contains registered relationships, so a query over an unapproved path cannot be written at all. Apollo Automatic Persisted Queries are included.',
-  },
-  {
-    name: 'SQL',
-    wire: 'pgwire · JDBC',
-    tone: 'forest' as const,
-    body: 'Full SQL over federated data, correlated subqueries included. Cross-source joins fan out through the federation engine. Single-source queries skip federation and go straight to the driver: transactional, under 100ms.',
-  },
-  {
-    name: 'Cypher',
-    wire: 'Bolt',
-    tone: 'vermilion' as const,
-    body: 'Graph queries over the same federated model. Traverse relationships as edges, union sources into one node label, and walk variable-length paths, under the same governance as SQL and GraphQL.',
-  },
-];
-
-const protocols = [
-  {
-    name: 'pgwire',
-    meta: 'port 5439',
-    body: 'psql, DBeaver, DataGrip, pandas `read_sql`, and anything else that speaks the Postgres protocol. `pg_catalog` is answered in memory, so schema browsers, foreign-key arrows, and autocomplete work with no Postgres behind them.',
-    code: 'psql -h provisa -p 5439',
-  },
-  {
-    name: 'Bolt',
-    meta: 'Neo4j',
-    body: 'Neo4j Browser, Bloom, and the official drivers run Cypher against the federated graph. Each role appears as a `provisa_<role>` database, so the database picker is the governance boundary.',
-    code: 'bolt://provisa:7687',
-  },
-  {
-    name: 'Arrow Flight',
-    meta: 'gRPC · columnar',
-    body: 'Arrow record batches streamed out with no row-by-row serialization. Accepts SQL or GraphQL. Result sets are unbounded; nothing is held server-side while the client reads.',
-    code: 'grpc://provisa:8815',
-  },
-  {
-    name: 'gRPC model API',
-    meta: 'generated .proto',
-    body: 'Typed query and insert RPCs per table, with streamed responses. The `.proto` is regenerated when the model changes, with no separate build step.',
-    code: 'provisa.v1.ProvisaService/QueryOrders',
-  },
-  {
-    name: 'JDBC, REST, JSON:API',
-    meta: 'OpenAPI 3.1',
-    body: 'Tableau, Power BI, and DBeaver connect over JDBC. Applications get plain REST at `/data/rest/{table}` and JSON:API 1.1 at `/data/jsonapi/{table}` over the same model, described by a generated OpenAPI document for typed SDKs.',
-    code: 'GET /data/rest/orders',
-  },
-  {
-    name: 'Airport',
-    meta: 'DuckDB',
-    body: 'Any DuckDB client attaches Provisa as a database and queries the governed model locally. Filters and projections push down; writes update by primary key.',
-    code: "ATTACH 'grpc://provisa' AS p (TYPE AIRPORT)",
-  },
-  {
-    name: 'WebSocket and SSE',
-    meta: 'subscriptions',
-    body: 'Near-real-time change events. The backend is your choice: Postgres notifications, MongoDB change streams, CDC, or polling, with optional fan-out over Kafka.',
-    code: 'subscription { orders { id } }',
-  },
-];
-
-const domainSql = `
--- Each domain is a schema
-SELECT s.id, s.total, f.invoice_no
-FROM sales.orders s
-JOIN finance.orders f ON f.order_id = s.id;`;
+const PROTOCOLS = ['pgwire', 'Bolt', 'Arrow Flight', 'gRPC', 'JDBC', 'REST', 'WebSocket', 'Airport', 'MCP'];
 ---
 
 <BaseLayout
   title="Query interfaces & wire protocols — Provisa"
   description="Three query languages and nine wire protocols over one federated model: GraphQL, SQL, Cypher over pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, and MCP."
-  current="/why/interfaces"
+  active="Interfaces"
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'Interfaces' }]}
-    eyebrow="Query languages and wire protocols"
-    eyebrowTone="cobalt"
-    title="Three languages. Nine protocols. One model."
-    lede="The query language and the wire protocol are separate choices. Every entry point resolves against the same federated model and passes through the same governance. No path in skips it."
-    actions={[
-      { label: 'Book a demo', href: '#contact' },
-      { label: 'Start a free trial', href: LINKS.cloud, variant: 'outline' },
-    ]}
-  >
-    <Stack slot="aside" label="Three languages over nine protocols">
-      <StackFills
-        items={[
-          { label: 'GraphQL', tone: 'cobalt' },
-          { label: 'SQL', tone: 'forest' },
-          { label: 'Cypher', tone: 'vermilion' },
-        ]}
-      />
-      <StackCells items={['pgwire', 'Bolt', 'Arrow Flight', 'gRPC', 'JDBC', 'REST', 'WebSocket', 'Airport', 'MCP']} />
+  <PageHero crumb="Interfaces">
+    <Eyebrow tone="cobalt">Query interfaces &amp; wire protocols</Eyebrow>
+    <Heading level="page">Three languages. Nine protocols. One model.</Heading>
+    <Lede>
+      The query language and the wire protocol are independent choices. Every entry point resolves against the same federated model and passes
+      through the same governance — there is no path in that skips it.
+    </Lede>
+    <P>
+      One model does not mean one namespace. You divide sources into <strong>domains</strong>, and a domain is what a SQL client sees as a schema —
+      so <code>sales.orders</code> and <code>finance.orders</code> stay distinct while resolving through the same governed model.
+    </P>
+    <HeroCTAs primary={INNER_CTAS.primary} secondary={INNER_CTAS.secondary} />
+    <HeroStack slot="aside" label="Three languages over nine protocols, one model">
+      <StackBox label="QUERY LANGUAGES">GraphQL · SQL · Cypher</StackBox>
+      <StackArrow />
+      <StackPanel label="WIRE PROTOCOLS · NINE">
+        <Chips items={PROTOCOLS} />
+      </StackPanel>
       <StackNote label="ONE MODEL">Same compiler, same six governance layers</StackNote>
-    </Stack>
+    </HeroStack>
   </PageHero>
 
-  <Section tone="surface" labelledBy="domains-title">
-    <SplitHeader eyebrow="Domains" eyebrowTone="forest" title="One model, many namespaces" titleId="domains-title">
-      <p class="t-body-lg pv-body">
-        Sources are divided into domains, and a SQL client sees each domain as a schema. <code>sales.orders</code> and
-        <code>finance.orders</code> stay distinct while resolving through the same governed model.
-      </p>
-      <CodeBlock code={domainSql} comments="dash" accent="forest" label="Query two domains as two schemas" />
-    </SplitHeader>
-  </Section>
-
-  <Section labelledBy="languages-title">
-    <Block>
-      <SplitHeader eyebrow="Query languages" eyebrowTone="cobalt" title="Pick the language that fits the question" titleId="languages-title">
-        <p class="t-body-lg pv-body">
-          All three compile against the same registered model, so the relationships, masking, and row filters are identical whichever one
-          you write.
-        </p>
-      </SplitHeader>
-      <Grid min={300} gap={16}>
-        {languages.map((l) => <TintCard tone={l.tone} title={l.name} meta={l.wire} body={l.body} titleClass="t-h3-lg" />)}
+  <Sec band="white" labelledBy="languages-title">
+    <Stack gap={40}>
+      <Heading level="section-sm" id="languages-title">Query languages</Heading>
+      <Grid min={280} gap={40}>
+        <RuledCard rule="cobalt" weight={4} titleSize={23} title="GraphQL">
+          <p>
+            Per-role schemas with field-level visibility, cursor pagination, and aggregates. The schema is constrained to registered relationships,
+            so a query that traverses an unapproved path cannot be expressed — it is <em>valid by construction</em> rather than rejected at runtime.
+            Apollo Automatic Persisted Queries are included.
+          </p>
+        </RuledCard>
+        <RuledCard rule="forest" weight={4} titleSize={23} title="SQL">
+          <p>
+            Full SQL over federated data, correlated subqueries and all. Cross-source joins fan out through the federation engine; single-source
+            queries bypass federation entirely and route direct to the driver, transactional and sub-100ms.
+          </p>
+        </RuledCard>
+        <RuledCard rule="vermilion" weight={4} titleSize={23} title="Cypher">
+          <p>
+            Graph queries over the same federated model. Traverse relationships as edges, union sources into a single node label, and walk
+            variable-length paths — under identical governance to the SQL and GraphQL paths.
+          </p>
+        </RuledCard>
       </Grid>
-    </Block>
-  </Section>
+    </Stack>
+  </Sec>
 
-  <Section tone="surface" labelledBy="protocols-title">
-    <Block>
-      <SplitHeader eyebrow="Wire protocols" eyebrowTone="vermilion" title="Connect with the client you already use" titleId="protocols-title">
-        <p class="t-body-lg pv-body">Each protocol is a way in, not a separate product. Nothing on this list has its own policy engine.</p>
-      </SplitHeader>
-      <ProtocolList items={protocols} />
-    </Block>
-  </Section>
+  <Sec band="forest" labelledBy="protocols-title">
+    <Stack gap={40}>
+      <Heading level="section-sm" id="protocols-title">Wire protocols</Heading>
+      <Grid min={300} gap={40}>
+        <RuledCard title="pgwire — port 5439">
+          <p>
+            Any Postgres client connects: psql, DBeaver, DataGrip, pandas <code>read_sql</code>, or anything else speaking the frontend/backend
+            protocol. <code>pg_catalog</code> is answered in-memory, so schema browsers, foreign-key arrows, and autocomplete work without a real
+            Postgres behind them.
+          </p>
+        </RuledCard>
+        <RuledCard title="Bolt (Neo4j)">
+          <p>
+            Neo4j Browser, Bloom, and the official drivers run Cypher over Bolt against the federated graph. Each role surfaces as a <code
+              >provisa_&lt;role&gt;</code
+            > database, so the client's database picker is the governance boundary.
+          </p>
+        </RuledCard>
+        <RuledCard title="Arrow Flight">
+          <p>
+            Arrow record batches streamed over gRPC — columnar all the way out, with no row-by-row serialization between the engine and the client.
+            Accepts GraphQL or SQL. Result sets are unbounded: nothing is materialized server-side while the client reads.
+          </p>
+        </RuledCard>
+        <RuledCard title="gRPC model API">
+          <p>
+            A <code>.proto</code> is generated from the registered schema: typed query and insert RPCs per table, with streamed responses. Regenerating
+            is a consequence of changing the model, not a separate build step.
+          </p>
+        </RuledCard>
+        <RuledCard title="JDBC, REST, and JSON:API">
+          <p>
+            BI tools — Tableau, Power BI, DBeaver — connect over JDBC. Applications get two HTTP shapes over the same model: plain REST at <code
+              >/data/rest/{'{table}'}</code
+            >, with filter, ordering, pagination, and field selection as query parameters, and JSON:API 1.1 at <code>/data/jsonapi/{'{table}'}</code> with
+            sparse fieldsets and filter expressions. Both are described by a generated OpenAPI 3.1 document, so a client generator produces a typed SDK
+            without anyone hand-writing a spec.
+          </p>
+        </RuledCard>
+        <RuledCard title="Airport (DuckDB)">
+          <p>
+            Any DuckDB client attaches Provisa as a database — <code>ATTACH 'grpc://host' AS p (TYPE AIRPORT)</code> — and queries the governed federated
+            model from local DuckDB. Filters and projections push down; writes update by primary key.
+          </p>
+        </RuledCard>
+        <RuledCard title="WebSocket and SSE">
+          <p>
+            Subscriptions stream near-real-time change events. The backend is your choice: Postgres native notification, MongoDB change streams, CDC,
+            or polling — and events can fan out over Kafka.
+          </p>
+        </RuledCard>
+      </Grid>
+    </Stack>
+  </Sec>
 
-  <Section tone="forest" labelledBy="agents-title">
-    <SplitHeader eyebrow="For AI agents" title="Agents get the same governed path as people" titleId="agents-title">
-      <Card
-        variant="paper"
-        title="MCP server"
-        body="A Model Context Protocol server, over stdio and remote Streamable HTTP, exposes governed, federated data to agents like Claude as tools. The OAuth token maps to a role, so every agent call passes the same six layers as a human query. There is no bypass and no separate policy to keep in sync."
-      />
-      <Card
-        variant="paper"
-        title="Natural language"
-        body="NL to SQL, Cypher, or GraphQL, powered by Claude, with a validation loop so a generated query is reviewed before anything executes."
-      />
-      <div style="padding-top: 8px">
+  <Sec labelledBy="agents-title">
+    <Two>
+      <Head>
+        <Eyebrow>AI &amp; automation</Eyebrow>
+        <Heading level="section-sm" id="agents-title">For AI agents</Heading>
+      </Head>
+      <Stack gap={40}>
+        <RuledCard rule="vermilion" weight={4} titleSize={23} title="MCP server">
+          <p>
+            A Model Context Protocol server — stdio and remote Streamable HTTP — exposes your governed, federated data to agents like Claude as tools.
+            The OAuth token maps to a role, so every agent call is governed by the same six layers as a human query. Agents get no bypass, and no
+            separate policy to keep in sync.
+          </p>
+        </RuledCard>
+        <RuledCard rule="vermilion" weight={4} titleSize={23} title="Natural language">
+          <p>
+            NL→SQL, Cypher, or GraphQL powered by Claude, with an interactive validation loop so a generated query is reviewed before anything
+            executes.
+          </p>
+        </RuledCard>
         <Links
-          items={[
-            { label: 'How governance applies to all of them', href: '/why/governance' },
-            { label: 'What makes the layer active', href: '/why/active-semantic-layer' },
+          links={[
+            { label: 'How governance applies to every one of them', href: '/why/governance' },
+            { label: 'Download Provisa', href: '/#download' },
           ]}
         />
-      </div>
-    </SplitHeader>
-  </Section>
+      </Stack>
+    </Two>
+  </Sec>
 </BaseLayout>

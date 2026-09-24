@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { ApiForm, Button, Feature, Field, FormStatus, Honeypot, PageHero, Section } from '../components/ds';
-import { LINKS } from '../data/site';
+import { ApiForm, Button, Eyebrow, Field, FormStatus, Heading, Honeypot, Lede, P, PageHero, Sec, Two } from '../components/ds';
 ---
 
 <BaseLayout
@@ -9,52 +8,54 @@ import { LINKS } from '../data/site';
   description="Free Provisa license registration. We collect basic usage information only — Provisa collects no telemetry and never phones home."
   contact={false}
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'Register' }]}
-    eyebrow="Free license"
-    title="Register your Provisa install"
-    lede="A license is FREE — it exists only so we can gather basic usage information, because Provisa collects **no telemetry** and never phones home. Functionality is not affected or degraded whether or not you register."
-  />
+  <PageHero crumb="Register">
+    <Eyebrow>Free license</Eyebrow>
+    <Heading level="page">Register your Provisa install</Heading>
+    <Lede>
+      A license is FREE — it exists only so we can gather basic usage information, because Provisa collects <strong>no telemetry</strong> and never
+      phones home. Functionality is not affected or degraded whether or not you register.
+    </Lede>
+  </PageHero>
 
-  <Section tone="surface" labelledBy="register-form-title">
-    <Feature eyebrow="Business Source License 1.1" eyebrowTone="cobalt" title="Registering doesn’t mean you owe anything" titleId="register-form-title">
-      <p class="t-body-lg pv-body">
-        Under the <a class="pv-inline-link" href="/terms#the-software">Business Source License 1.1</a>, non-production use — including
-        evaluation — is free forever, for any size organization. Production use is also free for any organization that, together with its
-        affiliates, has fewer than 100 employees and contractors and under $1,000,000 in annual revenue, budget, or expenditures — most people
-        registering here qualify.
-      </p>
-      <p class="t-body-lg pv-body">
-        Would rather skip self-hosting entirely? Try <a class="pv-inline-link" href={LINKS.cloud} target="_blank" rel="noopener"
-          >cloud.provisa.dev</a
-        > instead. Questions about a commercial license: <a class="pv-inline-link" href={LINKS.license}>license@provisa.dev</a>.
-      </p>
+  <Sec band="white" label="Registration">
+    <Two min={420}>
+      <div class="pv-head">
+        <Eyebrow tone="cobalt">Business Source License 1.1</Eyebrow>
+        <P>
+          Registering doesn't mean you owe anything: under the <a href="/terms#the-software">Business Source License 1.1</a>, non-production use —
+          including evaluation — is free forever, for any size organization. Production use is also free for any organization that, together with its
+          affiliates, has fewer than 100 employees and contractors and under $1,000,000 in annual revenue, budget, or expenditures — most people
+          registering here qualify. Would rather skip self-hosting entirely? Try <a href="https://cloud.provisa.dev">cloud.provisa.dev</a> instead.
+          Questions about a commercial license: <a href="mailto:license@provisa.dev">license@provisa.dev</a>.
+        </P>
+      </div>
       <ApiForm
-        slot="aside"
-        className="pv-demo pv-tone-paper"
+        id="register"
+        className="pv-formcard"
         endpoint="/api/register"
         success="Check your email — click the confirmation link to receive your license file."
         label="Register your Provisa install"
       >
-        <h2 class="t-h3">Your details</h2>
-        <div class="pv-demo__grid">
+        <h2 class="pv-formcard__title">Your details</h2>
+        <div class="pv-formcard__grid">
           <Field id="reg-company" label="Company" name="company" autoComplete="organization" required />
           <Field id="reg-position" label="Position / title" name="position" autoComplete="organization-title" required />
-          <Field id="reg-first" label="First name" name="first_name" autoComplete="given-name" required />
-          <Field id="reg-last" label="Last name" name="last_name" autoComplete="family-name" required />
           <Field id="reg-role" label="Role" name="role" placeholder="e.g. admin, engineer" required />
           <Field id="reg-phone" label="Phone" name="phone" type="tel" autoComplete="tel" optional />
+          <Field id="reg-first" label="First name" name="first_name" autoComplete="given-name" required />
+          <Field id="reg-last" label="Last name" name="last_name" autoComplete="family-name" required />
         </div>
         <Field id="reg-email" label="Email" name="email" type="email" autoComplete="email" placeholder="you@company.com" required />
-        <Field id="reg-machine" label="Machine ID" name="machine_id" placeholder="From: provisa license status" required />
+        <Field id="reg-machine" label="Machine ID" name="machine_id" placeholder="From `provisa license status`" required />
         <Honeypot name="website" />
-        <Button type="submit" size="lg" block>Register</Button>
+        <Button type="submit" block>Register</Button>
         <FormStatus />
-        <p class="pv-demo__fine t-fine">
-          We’ll email a confirmation link — click it to receive your signed license file. See the <a href="/privacy">privacy policy</a> and
-          <a href="/terms">terms</a>.
+        <p class="pv-fine">
+          We'll email a confirmation link — click it to receive your signed license file. See the <a href="/privacy">privacy policy</a> and <a
+            href="/terms">terms</a
+          >.
         </p>
       </ApiForm>
-    </Feature>
-  </Section>
+    </Two>
+  </Sec>
 </BaseLayout>

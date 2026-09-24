@@ -24,16 +24,3 @@ CREATE TABLE IF NOT EXISTS license_registrations (
   confirmed_at  TEXT,
   UNIQUE (email, machine_id)
 );
-
--- "Book a demo" requests from the contact band on every page (functions/api/demo.js).
--- `page` is the path the form was submitted from, taken from the Referer header.
-CREATE TABLE IF NOT EXISTS demo_requests (
-  id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  name        TEXT NOT NULL,
-  email       TEXT NOT NULL,
-  company     TEXT NOT NULL,
-  title       TEXT,
-  message     TEXT,
-  page        TEXT,
-  created_at  TEXT NOT NULL DEFAULT (datetime('now'))
-);

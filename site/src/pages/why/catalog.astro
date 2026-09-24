@@ -1,93 +1,111 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { CodeBlock, Feature, Links, PageHero, Section, SplitHeader, Stack, StackCells, StackHead, StackNote } from '../../components/ds';
-import { LINKS } from '../../data/site';
+import {
+  Chips,
+  Copy,
+  Eyebrow,
+  Grid,
+  Head,
+  Heading,
+  HeroCTAs,
+  HeroStack,
+  Lede,
+  Links,
+  P,
+  PageHero,
+  RuledCard,
+  Sec,
+  StackHead,
+  StackNote,
+  StackPanel,
+  Two,
+} from '../../components/ds';
+import { INNER_CTAS } from '../../data/site';
 
-const address = [
-  { t: '# a governed value, by business identity', k: 'c' as const },
-  'provisa://<org>/<domain>/<table>/pk=<id>/<column>',
-  '',
-  { t: '# resolves over REST or MCP, optionally as of a point in time', k: 'c' as const },
-  { t: '# physical URIs are refused', k: 'c' as const },
-].map((line) => (typeof line === 'string' ? line : [line]));
+const CATALOGS = ['OpenMetadata', 'DataHub', 'Collibra', 'Atlan', 'Apache Atlas', 'OpenLineage'];
 ---
 
 <BaseLayout
   title="Feeds the catalog you already bought — Provisa"
   description="One registration publishes to OpenMetadata, DataHub, Collibra, Atlan, Apache Atlas, and OpenLineage — with lineage stitched on business identity and every governed value addressable."
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'Catalog' }]}
-    eyebrow="Fits your stack"
-    title="It feeds the catalog you already bought."
-    lede="Provisa is not another place your metadata goes to die. The model that governs your queries publishes outward to the tools your organization already runs — and addresses every governed value it holds."
-    actions={[
-      { label: 'Book a demo', href: '#contact' },
-      { label: 'Start a free trial', href: LINKS.cloud, variant: 'outline' },
-    ]}
-  >
-    <Stack slot="aside" label="One registration, six catalog destinations">
+  <PageHero crumb="Fits your stack">
+    <Eyebrow>Fits your stack</Eyebrow>
+    <Heading level="page">It feeds the catalog you already bought.</Heading>
+    <Lede>
+      Provisa is not another place your metadata goes to die. The model that governs your queries publishes outward to the tools your organization
+      already runs — and addresses every governed value it holds.
+    </Lede>
+    <HeroCTAs primary={INNER_CTAS.primary} secondary={INNER_CTAS.secondary} />
+    <HeroStack slot="aside" label="One registration, six catalog destinations">
       <StackHead>ONE REGISTRATION · tables, columns, tags, classifications, lineage</StackHead>
-      <StackCells items={['OpenMetadata', 'DataHub', 'Collibra', 'Atlan', 'Apache Atlas', 'OpenLineage']} />
+      <StackPanel label="SIX DESTINATIONS">
+        <Chips items={CATALOGS} />
+      </StackPanel>
       <StackNote label="PUBLISHED">From the admin console, or on a cron</StackNote>
-    </Stack>
+    </HeroStack>
   </PageHero>
 
-  <Section tone="surface" labelledBy="publish-title">
-    <SplitHeader eyebrow="Catalog export" eyebrowTone="cobalt" title="Publishes to your catalog" titleId="publish-title">
-      <p class="t-body-lg pv-body">
-        One registration, six destinations: <strong>OpenMetadata</strong>, <strong>DataHub</strong>, <strong>Collibra</strong>,
-        <strong>Atlan</strong>, <strong>Apache Atlas</strong>, and <strong>OpenLineage</strong>. Tables, columns, tags, classifications, and
-        lineage flow out as first-class catalog assets, from the admin console or from <code>provisa metadata export</code> on a cron.
-      </p>
-      <p class="t-body-lg pv-body">
-        The point is not that Provisa has a catalog. It is that the metadata is a byproduct of the thing that already has to be correct — the
-        model that executes and governs your queries — rather than a parallel description maintained by hand and drifting from the moment it
-        is written.
-      </p>
-    </SplitHeader>
-  </Section>
+  <Sec band="white" labelledBy="publishes-title">
+    <Two>
+      <Head>
+        <Heading level="section-sm" id="publishes-title">Publishes to your catalog</Heading>
+      </Head>
+      <Copy>
+        <Heading level="lede">
+          One registration, six destinations: <strong>OpenMetadata</strong>, <strong>DataHub</strong>, <strong>Collibra</strong>, <strong>Atlan</strong>,
+          <strong>Apache Atlas</strong>, and <strong>OpenLineage</strong>. Tables, columns, tags, classifications, and lineage flow out as first-class
+          catalog assets, from the admin console or from <code>provisa metadata export</code> on a cron.
+        </Heading>
+        <P>
+          The point is not that Provisa has a catalog. It is that the metadata is a byproduct of the thing that already has to be correct — the model
+          that executes and governs your queries — rather than a parallel description maintained by hand and drifting from the moment it is written.
+        </P>
+      </Copy>
+    </Two>
+  </Sec>
 
-  <Section labelledBy="lineage-title">
-    <SplitHeader eyebrow="Lineage" eyebrowTone="forest" title="Lineage that survives re-platforming" titleId="lineage-title">
-      <p class="t-body-lg pv-body">
-        Assets are stitched on <strong>business identity</strong>, not physical location. Move a table from Oracle to Postgres and its catalog
-        entry, lineage, and history follow the business entity instead of shattering into a new asset with no past. A migration doesn’t reset
-        your catalog to zero.
-      </p>
-    </SplitHeader>
-  </Section>
+  <Sec label="Lineage and data quality">
+    <Grid min={380} gap={48} gapX={64}>
+      <RuledCard rule="cobalt" weight={4} titleSize={28} as="h2" title="Lineage that survives re-platforming">
+        <P>
+          Assets are stitched on <strong>business identity</strong>, not physical location. Move a table from Oracle to Postgres and its catalog entry,
+          lineage, and history follow the business entity instead of shattering into a new asset with no past. A migration doesn't reset your
+          catalog to zero.
+        </P>
+      </RuledCard>
+      <RuledCard rule="forest" weight={4} titleSize={28} as="h2" title="Data quality, without a second engine">
+        <P>
+          Point <strong>Soda</strong> at a governed table and register the contract as a source. You get scan history, a quality scorecard, and
+          lineage from each failing check back to the table it guards — with scans triggered by <em>change</em> rather than by a cron guess. Provisa
+          ships no data-quality engine and doesn't ask you to retire yours.
+        </P>
+      </RuledCard>
+    </Grid>
+  </Sec>
 
-  <Section tone="forest" labelledBy="quality-title">
-    <SplitHeader eyebrow="Data quality" title="Data quality, without a second engine" titleId="quality-title">
-      <p class="t-body-lg pv-body">
-        Point <strong>Soda</strong> at a governed table and register the contract as a source. You get scan history, a quality scorecard, and
-        lineage from each failing check back to the table it guards — with scans triggered by <em>change</em> rather than by a cron guess.
-        Provisa ships no data-quality engine and doesn’t ask you to retire yours.
-      </p>
-    </SplitHeader>
-  </Section>
-
-  <Section tone="surface" labelledBy="address-title">
-    <Feature eyebrow="Addressing" eyebrowTone="vermilion" title="Every value has an address" titleId="address-title">
-      <p class="t-body-lg pv-body">
-        A governed value is addressable as <code>provisa://&lt;org&gt;/&lt;domain&gt;/&lt;table&gt;/pk=&lt;id&gt;/&lt;column&gt;</code> and
-        resolves over REST or MCP — optionally <em>as of</em> a point in time. Exported documents, lineage nodes, audit records, and AI-agent
-        citations carry links that resolve back to the live governed value, under the same policy as any other read.
-      </p>
-      <p class="t-body-lg pv-body">
-        Only semantic addresses dereference. Physical URIs are refused, so a citation can never leak a location — which matters most when the
-        thing doing the citing is an agent whose output you cannot review line by line.
-      </p>
-      <div style="padding-top: 8px">
+  <Sec band="white" labelledBy="address-title">
+    <Two>
+      <Head>
+        <Heading level="section-sm" id="address-title">Every value has an address</Heading>
+      </Head>
+      <Copy>
+        <P>
+          A governed value is addressable as <code>provisa://&lt;org&gt;/&lt;domain&gt;/&lt;table&gt;/pk=&lt;id&gt;/&lt;column&gt;</code> and resolves over
+          REST or MCP — optionally <em>as of</em> a point in time. Exported documents, lineage nodes, audit records, and AI-agent citations carry links
+          that resolve back to the live governed value, under the same policy as any other read.
+        </P>
+        <P>
+          Only semantic addresses dereference. Physical URIs are refused, so a citation can never leak a location — which matters most when the thing
+          doing the citing is an agent whose output you cannot review line by line.
+        </P>
         <Links
-          items={[
+          links={[
             { label: 'The governance underneath', href: '/why/governance' },
             { label: 'Why your semantics stay yours', href: '/why/no-lock-in' },
           ]}
         />
-      </div>
-      <CodeBlock slot="aside" code={address} comments="none" head="semantic address" accent="vermilion" label="The shape of a semantic address" />
-    </Feature>
-  </Section>
+      </Copy>
+    </Two>
+  </Sec>
 </BaseLayout>

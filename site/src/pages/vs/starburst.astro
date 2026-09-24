@@ -1,135 +1,135 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
-  Block,
-  Checklist,
+  ChoiceCard,
+  Chips,
   ComparisonTable,
+  Copy,
+  Eyebrow,
   Grid,
+  Head,
+  Heading,
+  HeroCTAs,
+  HeroStack,
+  Lede,
   Links,
+  P,
   PageHero,
-  Section,
-  SplitHeader,
+  Sec,
   Stack,
   StackArrow,
+  StackBox,
   StackPanel,
-  Tags,
-  TintCard,
+  Two,
 } from '../../components/ds';
-import { LINKS } from '../../data/site';
+import { INNER_CTAS } from '../../data/site';
 
-const rows = [
-  { label: 'What it is', them: 'A query engine and lakehouse platform', us: 'A semantic and governance layer over an engine you choose' },
-  { label: 'Query languages', them: 'SQL', us: 'SQL, GraphQL, and Cypher over one model' },
-  { label: 'Ways in', them: 'JDBC/ODBC, REST, client drivers', us: 'pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, MCP' },
-  { label: 'Writes', them: 'Analytical, engine-mediated', us: 'Transactional writes routed direct to the driver, under 100ms' },
-  {
-    label: 'The engine',
-    them: 'Is the product',
-    us: 'Is a swappable component: Trino, Starburst, DuckDB, ClickHouse, Postgres, Snowflake, Databricks, BigQuery',
-  },
-  { label: 'Smallest deployment', them: 'A cloud service or a cluster', us: '`pip install "provisa[embedded]"`. No Docker, no JVM, no root.' },
-];
-
-const engines = ['Trino', 'DuckDB', 'ClickHouse', 'Postgres', 'Snowflake', 'Databricks', 'BigQuery'];
+const ENGINES = ['Trino', 'DuckDB', 'ClickHouse', 'Postgres', 'Snowflake', 'Databricks', 'BigQuery'];
 ---
 
 <BaseLayout
   title="Provisa and Starburst — Provisa"
   description="Starburst is a federated query engine. Provisa is a governed semantic layer that can run on Starburst, Trino, or the engine of your choice — adding GraphQL and Cypher, writes, and query-time governance."
-  current="/vs/starburst"
+  active="Compare"
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'vs Starburst' }]}
-    eyebrow="Provisa and Starburst"
-    eyebrowTone="cobalt"
-    title="Provisa and Starburst solve different halves."
-    lede="Starburst is a Trino-based query engine and lakehouse platform. Provisa is a governed semantic layer that sits above an engine, and that engine can be Starburst. The useful question is which layer you’re missing."
-    actions={[
-      { label: 'Book a demo', href: '#contact' },
-      { label: 'Start a free trial', href: LINKS.cloud, variant: 'outline' },
-    ]}
-  >
-    <Stack slot="aside" label="Provisa above an execution engine">
-      <StackPanel label="PROVISA · SEMANTIC + GOVERNANCE LAYER" variant="cobalt">
-        <span class="t-body">SQL, GraphQL, Cypher · nine protocols · six governance layers · MCP</span>
-      </StackPanel>
+  <PageHero crumb="vs Starburst">
+    <Eyebrow tone="cobalt">Provisa and Starburst</Eyebrow>
+    <Heading level="page">Provisa and Starburst solve different halves.</Heading>
+    <Lede>
+      Starburst is a Trino-based query engine and lakehouse platform. Provisa is a governed semantic layer that sits <em>above</em> an engine —
+      including Starburst. The real comparison is not head-to-head; it's which layer you're missing.
+    </Lede>
+    <HeroCTAs primary={INNER_CTAS.primary} secondary={INNER_CTAS.secondary} />
+    <HeroStack slot="aside" label="Provisa above an execution engine">
+      <StackBox label="PROVISA · SEMANTIC + GOVERNANCE LAYER">SQL, GraphQL, Cypher · nine protocols · six governance layers · MCP</StackBox>
       <StackArrow />
       <StackPanel label="EXECUTION ENGINE · YOUR CHOICE">
-        <Tags items={[{ label: 'Starburst', tone: 'ink' }, ...engines.map((label) => ({ label }))]} />
+        <Chips items={[{ label: 'Starburst', tone: 'ink' }, ...ENGINES]} />
       </StackPanel>
-    </Stack>
+    </HeroStack>
   </PageHero>
 
-  <Section tone="surface" labelledBy="overlap-title">
-    <SplitHeader eyebrow="Where they overlap" eyebrowTone="forest" title="Both federate without moving the data" titleId="overlap-title">
-      <p class="t-body-lg pv-body">
-        Both query heterogeneous sources in place, and both make the case against copying everything into one warehouse first.
-      </p>
-      <p class="t-lead-serif">
-        If your problem is SQL analytics over many systems at scale, Starburst solves it well, and Provisa is happy to use it as the execution
-        engine.
-      </p>
-    </SplitHeader>
-  </Section>
+  <Sec band="white" labelledBy="overlap-title">
+    <Two>
+      <Head>
+        <Heading level="section-sm" id="overlap-title">Where they overlap</Heading>
+      </Head>
+      <Heading level="lede" as="p">
+        Both federate queries across heterogeneous sources without moving the data, and both make a strong argument against copying everything into
+        one warehouse first. If your problem is "SQL analytics over many systems at scale," Starburst solves it well, and Provisa is happy to use it
+        as the execution engine.
+      </Heading>
+    </Two>
+  </Sec>
 
-  <Section labelledBy="differ-title">
-    <Block gap={40}>
-      <SplitHeader eyebrow="Where they differ" eyebrowTone="cobalt" title="Side by side" titleId="differ-title">
-        <p class="t-body-lg pv-body">One is an engine. The other is the layer that describes, governs, and serves data on top of one.</p>
-      </SplitHeader>
-      <ComparisonTable caption="Starburst and Provisa compared" them="Starburst" rows={rows} />
-    </Block>
-  </Section>
+  <Sec labelledBy="differ-title">
+    <Stack gap={40}>
+      <Heading level="section-sm" id="differ-title">Where they differ</Heading>
+      <ComparisonTable
+        caption="Starburst and Provisa compared"
+        columns={['Starburst', 'Provisa']}
+        rows={[
+          ['What it is', 'A query engine and lakehouse platform', 'A semantic and governance layer over an engine you choose'],
+          ['Query languages', 'SQL', 'SQL, GraphQL, and Cypher over one model'],
+          ['Ways in', 'JDBC/ODBC, REST, client drivers', 'pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, MCP'],
+          ['Writes', 'Analytical, engine-mediated', 'Transactional writes routed direct to the driver, sub-100ms'],
+          ['The engine', 'Is the product', 'Is a swappable component — Trino, Starburst, DuckDB, ClickHouse, Postgres, Snowflake, Databricks, BigQuery'],
+          ['Smallest deployment', 'Cloud service or a cluster', '<code>pip install "provisa[embedded]"</code> — no Docker, no JVM, no root'],
+        ]}
+      />
+    </Stack>
+  </Sec>
 
-  <Section tone="forest" labelledBy="both-title">
-    <SplitHeader eyebrow="Use both" title="Already on Starburst? Keep it." titleId="both-title">
-      <p class="t-body-lg pv-body">
-        Provisa registers Starburst as the federation engine and adds what an engine does not provide: per-role GraphQL schemas, Cypher over
-        the same model, governed relationships that decide which joins are legal, six layers of query-time governance on every transport,
-        and an MCP server that gives agents the same governed access as a person.
-      </p>
-      <p class="t-body-lg">
-        The engine keeps doing what it is good at. Your semantics and policy stop living inside it, which is what makes the engine replaceable
-        later.
-      </p>
-    </SplitHeader>
-  </Section>
+  <Sec band="white" labelledBy="both-title">
+    <Two>
+      <Head>
+        <Heading level="section-sm" id="both-title">Use both</Heading>
+      </Head>
+      <Copy>
+        <P>
+          If you already run Starburst, Provisa registers it as the federation engine and adds what an engine does not provide: per-role GraphQL
+          schemas, Cypher over the same model, governed relationships that constrain which joins are legal, six layers of query-time governance on
+          every transport, and an MCP server that gives AI agents the same governed access as a human — with no bypass.
+        </P>
+        <P>
+          The engine keeps doing what it is good at. What changes is that your semantics and policy stop living inside it, which is what makes the
+          engine replaceable later.
+        </P>
+      </Copy>
+    </Two>
+  </Sec>
 
-  <Section labelledBy="choosing-title">
-    <Block gap={40}>
-      <SplitHeader eyebrow="Choosing" eyebrowTone="vermilion" title="When one of them is enough" titleId="choosing-title">
-        <p class="t-body-lg pv-body">Plenty of teams need only one. These are the honest cases for each.</p>
-      </SplitHeader>
+  <Sec label="Choosing">
+    <Stack gap={40}>
       <Grid min={380} gap={16}>
-        <TintCard tone="cobalt" size="lg" title="Choose Provisa alone when" plainTitle>
-          <Checklist
-            tone="cobalt"
-            items={[
-              'You need GraphQL or Cypher, not only SQL.',
-              'You have transactional and application traffic, not just analytics.',
-              'Governance must hold identically across every API and protocol, agents included.',
-              'You need to run airgapped from a wheel, or on a laptop, without a cluster.',
-              'You want to change engines later without rewriting queries or policy.',
-            ]}
-          />
-        </TintCard>
-        <TintCard tone="stone" size="lg" title="Choose Starburst alone when">
-          <Checklist
-            items={[
-              'Your workload is large-scale SQL analytics and nothing else.',
-              'You want a managed lakehouse with its own storage architecture and support contract.',
-              'Engine-level access control meets your governance needs.',
-            ]}
-          />
-        </TintCard>
+        <ChoiceCard
+          as="h2"
+          title="Choose Provisa alone when"
+          items={[
+            'You need GraphQL or Cypher, not only SQL.',
+            'You have transactional and application traffic, not just analytics.',
+            'Governance must hold identically across every API and protocol, agents included.',
+            'You need to run in an airgap from a wheel, or on a laptop, without a cluster.',
+            'You want the freedom to change engines later without rewriting queries or policy.',
+          ]}
+        />
+        <ChoiceCard
+          as="h2"
+          tone="ink"
+          title="Choose Starburst alone when"
+          items={[
+            'Your workload is large-scale SQL analytics and nothing else.',
+            'You want a managed lakehouse with its own storage architecture and support contract.',
+            'Your governance needs are met by engine-level access control.',
+          ]}
+        />
       </Grid>
       <Links
-        items={[
+        links={[
           { label: 'Why the engine should be replaceable', href: '/why/no-lock-in' },
-          { label: 'What the layer above the engine does', href: '/why/active-semantic-layer' },
           { label: 'Try Provisa on your own engine', href: '/#download' },
         ]}
       />
-    </Block>
-  </Section>
+    </Stack>
+  </Sec>
 </BaseLayout>

@@ -4,20 +4,15 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "tokens": "node scripts/build-tokens.mjs",
-    "dev": "npm run tokens && astro dev",
-    "build": "npm run tokens && astro check && astro build && node scripts/check-links.mjs",
+    "dev": "astro dev",
+    "build": "astro check && astro build && node scripts/check-links.mjs",
     "preview": "astro preview",
     "check": "astro check",
-    "ds:pack": "node scripts/pack-design-system.mjs",
     "check:links": "node scripts/check-links.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^7.0.0",
     "@astrojs/sitemap": "^3.7.4",
-    "@fontsource-variable/source-serif-4": "^5.3.0",
-    "@fontsource/ibm-plex-mono": "^5.3.0",
-    "@fontsource/public-sans": "^5.3.0",
     "astro": "^7.3.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
@@ -26,7 +21,6 @@
     "@astrojs/check": "^0.9.10",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "esbuild": "^0.28.2",
     "typescript": "^6.0.3"
   }
 }

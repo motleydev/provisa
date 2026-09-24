@@ -1,52 +1,44 @@
 ---
-import { Picture } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
   CodeBlock,
-  Feature,
-  Figure,
+  Copy,
+  Eyebrow,
+  Head,
+  Heading,
+  HeroCTAs,
+  HeroStack,
   LayerDetail,
+  LayerRow,
   Legend,
+  Lede,
   Links,
+  P,
   PageHero,
-  RailLayout,
-  RoleSwitcher,
-  Section,
-  Stack,
+  RailGrid,
+  RoleDemo,
+  Sec,
   StackHead,
   StackNote,
-  StackRow,
+  Two,
+  type RoleState,
 } from '../../components/ds';
-import { LAYER_DETAILS, LAYER_GROUPS } from '../../data/governance';
-import { LINKS } from '../../data/site';
-import graphView from '../../assets/graph-view.png';
+import { LAYER_GROUPS, LAYERS, PLAN_OUT } from '../../data/governance';
+import { INNER_CTAS } from '../../data/site';
 
-const applied = (k: string, v = 'applied') => ({ k, v, ok: true });
-const roles = [
-  {
-    name: 'Analyst',
-    on: true,
-    rows: [applied('JOINs and traversals', 'registered relationships only'), applied('Row-level security'), applied('Column masking'), applied('Audit row', 'written')],
-  },
-  {
-    name: 'AI agent',
-    on: true,
-    rows: [applied('JOINs and traversals', 'registered relationships only'), applied('Row-level security'), applied('Column masking'), applied('Audit row', 'written')],
-  },
-  {
-    name: 'Trusted role',
-    on: false,
-    rows: [
-      { k: 'JOINs and traversals', v: 'unconstrained', ok: false },
-      applied('Row-level security'),
-      applied('Column masking'),
-      applied('Audit row', 'written'),
-    ],
-  },
+const guarded = (value: string, warn = false) => [
+  { label: 'JOINs and traversals', value, warn },
+  { label: 'Row-level security', value: 'applied' },
+  { label: 'Column masking', value: 'applied' },
+  { label: 'Audit row', value: 'written' },
+];
+const roles: RoleState[] = [
+  { role: 'Analyst', guard: true, rows: guarded('registered relationships only') },
+  { role: 'AI agent', guard: true, rows: guarded('registered relationships only') },
+  { role: 'Trusted role', guard: false, rows: guarded('unconstrained', true) },
 ];
 
-const auditSql = `
--- The audit trail is a governed table
+const auditSql = `-- The audit trail is a governed table
 SELECT q.role_id, q.table_name,
        q.duration / 1000000 AS ms,
        q.end_timestamp
@@ -58,87 +50,91 @@ ORDER BY q.duration DESC;`;
 <BaseLayout
   title="Active, query-time governance — Provisa"
   description="Six governance layers compiled into every query plan — introspection filtering, public and domain access, row-level security, column masking, and a predicate guard — plus governed relationships."
-  current="/why/governance"
+  active="Governance"
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'Governance' }]}
-    eyebrow="Active, query-time governance"
-    title="Six layers, compiled into the plan."
-    lede="Governance is applied at query time, uniformly, on every language and every transport. Add a source, a column, or a relationship and every layer applies automatically — there is nothing to remember and nothing to re-apply per API."
-    actions={[
-      { label: 'Book a demo', href: '#contact' },
-      { label: 'Start a free trial', href: LINKS.cloud, variant: 'outline' },
-    ]}
-  >
-    <Stack slot="aside" label="The six layers a query passes through">
+  <PageHero crumb="Governance">
+    <Eyebrow>Active, query-time governance</Eyebrow>
+    <Heading level="page">Six layers, compiled into the plan.</Heading>
+    <Lede>
+      Governance is applied at query time, uniformly, on every language and every transport. Add a source, a column, or a relationship and every
+      layer applies automatically — there is nothing to remember and nothing to re-apply per API.
+    </Lede>
+    <HeroCTAs primary={INNER_CTAS.primary} secondary={INNER_CTAS.secondary} />
+    <HeroStack slot="aside" label="The six layers every query passes through">
       <StackHead>GraphQL · SQL · Cypher → any of nine protocols</StackHead>
-      {LAYER_DETAILS.map((l, i) => <StackRow index={String(i)} label={l.title} tone={l.tone} href={`#layer-${i}`} />)}
-      <StackNote label="PLAN OUT">One compiled plan, policy already inside it — plus the audit row</StackNote>
-    </Stack>
+      {LAYERS.map((l, i) => <LayerRow idx={String(i)} title={l.long} tone={l.tone} href={`#layer-${i}`} />)}
+      <StackNote label="PLAN OUT">{PLAN_OUT}</StackNote>
+    </HeroStack>
   </PageHero>
 
-  <Section tone="surface" labelledBy="layers-title">
-    <RailLayout>
-      <Fragment slot="rail">
-        <h2 class="t-h2" id="layers-title">The layers</h2>
-        <Legend items={LAYER_GROUPS} />
-      </Fragment>
-      <LayerDetail layers={LAYER_DETAILS} />
-    </RailLayout>
-  </Section>
+  <Sec band="white" labelledBy="layers-title">
+    <RailGrid sticky>
+      <Heading slot="side" level="section-sm" id="layers-title">The layers</Heading>
+      <Legend slot="side" groups={LAYER_GROUPS} />
+      <div class="pv-details">
+        {
+          LAYERS.map((l, i) => (
+            <LayerDetail id={`layer-${i}`} num={String(i)} group={LAYER_GROUPS[l.group].name} tone={l.tone} title={l.long}>
+              <P>
+                <Fragment set:html={l.body} />
+              </P>
+            </LayerDetail>
+          ))
+        }
+      </div>
+    </RailGrid>
+  </Sec>
 
-  <Section labelledBy="relationships-title">
-    <Feature
-      eyebrow="Governed relationships"
-      eyebrowTone="cobalt"
-      title="Relationships are governed too"
-      titleId="relationships-title"
-      lead="A JOIN, or a graph traversal, is legal only if it matches a registered, approved relationship. Unapproved paths are rejected and logged."
-    >
-      <p class="t-body-lg pv-body">
-        That is what lets the query and graph explorers be genuinely open: people can roam the model freely, and AI agents can discover
-        what connects to what, while every path stays inside the edges policy sanctioned. Each relationship carries a human- and
-        agent-readable reason for why the traversal exists, so the model explains itself to whoever — or whatever — is reading it.
-      </p>
-      <Figure slot="aside" accent="cobalt" caption="The federated model as a live graph — every edge a registered, approved relationship.">
-        <Picture
-          src={graphView}
-          formats={['avif', 'webp']}
-          widths={[640, 960, 1280]}
-          sizes="(min-width: 1320px) 600px, (min-width: 1000px) 45vw, 100vw"
-          alt="The federated model explored as a live graph: domains, node labels, and the relationships between them."
-        />
-      </Figure>
-    </Feature>
-  </Section>
+  <Sec labelledBy="relationships-title">
+    <Two>
+      <Head>
+        <Heading level="section-sm" id="relationships-title">Relationships are governed too</Heading>
+      </Head>
+      <Copy>
+        <Heading level="lede">A JOIN, or a graph traversal, is legal only if it matches a registered, approved relationship. Unapproved paths are rejected and logged.</Heading>
+        <P>
+          That is what lets the query and graph explorers be genuinely open: people can roam the model freely, and AI agents can discover what
+          connects to what, while every path stays inside the edges policy sanctioned. Each relationship carries a human- and agent-readable reason
+          for why the traversal exists, so the model explains itself to whoever — or whatever — is reading it.
+        </P>
+      </Copy>
+    </Two>
+  </Sec>
 
-  <Section tone="forest" labelledBy="capability-title">
-    <Feature eyebrow="Per-role capability" title="It’s a per-role capability" titleId="capability-title">
-      <p class="t-body-lg pv-body">
-        The guardrail is a single flag on the role. Leave it on for analysts and agents who should stay on the rails; take the training
-        wheels off for a trusted role and it writes unconstrained JOINs across the whole federated model. Same governed path, same RLS and
-        masking — just without the relationship guard.
-      </p>
-      <RoleSwitcher slot="aside" id="roles" label="Role" flag="relationship_guard" roles={roles} />
-    </Feature>
-  </Section>
+  <Sec band="forest" labelledBy="per-role-title">
+    <Two center min={460}>
+      <Head>
+        <Eyebrow>Per-role capability</Eyebrow>
+        <Heading level="section-sm" id="per-role-title">It’s a per-role capability</Heading>
+        <P>
+          The guardrail is a single flag on the role. Leave it on for analysts and agents who should stay on the rails; take the training wheels off
+          for a trusted role and it writes unconstrained JOINs across the whole federated model. Same governed path, same RLS and masking — just
+          without the relationship guard.
+        </P>
+      </Head>
+      <RoleDemo roles={roles} />
+    </Two>
+  </Sec>
 
-  <Section labelledBy="audit-title">
-    <Feature eyebrow="Audit" eyebrowTone="vermilion" title="Observability as data" titleId="audit-title">
-      <p class="t-body-lg pv-body">
-        Traces, metrics, and logs are collected via OpenTelemetry, compacted into Iceberg, and registered as queryable tables. Join
-        <code>customers</code> to <code>queries</code> to see who ran what and how long it took — the audit trail is a governed table like any
-        other, not a log file you grep.
-      </p>
-      <div style="padding-top: 8px">
+  <Sec labelledBy="audit-title">
+    <Two center min={460}>
+      <Head>
+        <Eyebrow tone="vermilion">Audit</Eyebrow>
+        <Heading level="section-sm" id="audit-title">Observability as data</Heading>
+        <P>
+          Traces, metrics, and logs are collected via OpenTelemetry, compacted into Iceberg, and registered as queryable tables. Join <code
+            >customers</code
+          > to <code>queries</code> to see who ran what and how long it took — the audit trail is a governed table like any other, not a log file you
+          grep.
+        </P>
         <Links
-          items={[
+          links={[
             { label: 'Every interface it applies to', href: '/why/interfaces' },
             { label: 'Why the model outlives the engine', href: '/why/no-lock-in' },
           ]}
         />
-      </div>
-      <CodeBlock slot="aside" code={auditSql} comments="dash" head="psql · port 5439" accent="vermilion" label="Query the audit trail over psql" />
-    </Feature>
-  </Section>
+      </Head>
+      <CodeBlock title="psql · port 5439" topRule="vermilion" code={auditSql} />
+    </Two>
+  </Sec>
 </BaseLayout>

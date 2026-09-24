@@ -1,97 +1,104 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { Block, ComparisonTable, Links, PageHero, Section, SplitHeader, Stack, StackHead, StackNote, StackRow } from '../../components/ds';
-import { LINKS } from '../../data/site';
-
-const rows = [
-  {
-    label: 'Query languages',
-    them: 'SQL, with REST and GraphQL publication',
-    us: 'GraphQL, SQL, and Cypher as peers over one model — Cypher and graph traversal are first-class, not published views',
-  },
-  { label: 'Ways in', them: 'JDBC/ODBC, REST, OData, GraphQL', us: 'pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, and MCP' },
-  {
-    label: 'Execution',
-    them: 'Its own optimizer and execution engine',
-    us: 'The engine is yours to choose — Trino, DuckDB, ClickHouse, Postgres, Snowflake, Databricks, BigQuery, or the embedded engine',
-  },
-  {
-    label: 'Graph and RDF sources',
-    them: 'Available as sources',
-    us: 'First-class in the model — Neo4j and SPARQL participate in the same relationship registry and traversals',
-  },
-  {
-    label: 'AI access',
-    them: 'Platform AI features',
-    us: 'An MCP server where the OAuth token maps to a role, so agents get the same six governance layers and no bypass',
-  },
-  { label: 'Smallest deployment', them: 'Platform install or managed cloud', us: '`pip install "provisa[embedded]"` — one wheel, no Docker, no JVM, no root' },
-  { label: 'Model portability', them: 'Platform-native modeling', us: 'Declarative config in git, promoted as a diff; the compiled SQL is yours to read and export' },
-];
+import {
+  ComparisonTable,
+  Copy,
+  Eyebrow,
+  Head,
+  Heading,
+  HeroCTAs,
+  HeroStack,
+  LayerRow,
+  Lede,
+  Links,
+  P,
+  PageHero,
+  Sec,
+  Stack,
+  StackHead,
+  StackNote,
+  Two,
+} from '../../components/ds';
+import { INNER_CTAS } from '../../data/site';
 ---
 
 <BaseLayout
   title="Provisa and Denodo — Provisa"
   description="Both are data virtualization with unified semantics and governance. Provisa differs on the way in — GraphQL, Cypher, and nine wire protocols — on engine choice, and on how small the smallest deployment is."
-  current="/vs/starburst"
+  active="Compare"
 >
-  <PageHero
-    crumbs={[{ label: 'Provisa', href: '/' }, { label: 'vs Denodo' }]}
-    eyebrow="Provisa and Denodo"
-    eyebrowTone="cobalt"
-    title="Same category. Different center of gravity."
-    lede="Denodo and Provisa agree on the premise: unified semantics and governed access over distributed data, without duplicating it. They differ on how you get in, what runs the query, and how small the smallest useful deployment is."
-    actions={[
-      { label: 'Book a demo', href: '#contact' },
-      { label: 'Start a free trial', href: LINKS.cloud, variant: 'outline' },
-    ]}
-  >
-    <Stack slot="aside" label="Where Provisa and Denodo differ">
+  <PageHero crumb="vs Denodo">
+    <Eyebrow tone="cobalt">Provisa and Denodo</Eyebrow>
+    <Heading level="page">Same category. Different center of gravity.</Heading>
+    <Lede>
+      Denodo and Provisa agree on the premise: unified semantics and governed access over distributed data, without duplicating it. They differ on
+      how you get in, what runs the query, and how small the smallest useful deployment is.
+    </Lede>
+    <HeroCTAs primary={INNER_CTAS.primary} secondary={INNER_CTAS.secondary} />
+    <HeroStack slot="aside" label="Where Provisa and Denodo differ">
       <StackHead>SHARED PREMISE · unified semantics, governed access, data left in place</StackHead>
-      <StackRow index="01" label="How you get in" tone="cobalt" tall />
-      <StackRow index="02" label="What runs the query" tone="forest" tall />
-      <StackRow index="03" label="How small the smallest deployment is" tone="vermilion" tall />
+      <LayerRow idx="01" title="How you get in" tone="cobalt" href="#differ" />
+      <LayerRow idx="02" title="What runs the query" tone="forest" href="#differ" />
+      <LayerRow idx="03" title="How small the smallest deployment is" tone="vermilion" href="#differ" />
       <StackNote label="THE DIFFERENCE">Center of gravity, not category</StackNote>
-    </Stack>
+    </HeroStack>
   </PageHero>
 
-  <Section tone="surface" labelledBy="agree-title">
-    <SplitHeader eyebrow="Where they agree" eyebrowTone="forest" title="Both are data virtualization, not another warehouse" titleId="agree-title">
-      <p class="t-body-lg pv-body">
-        Both are data virtualization rather than another warehouse. Both put a semantic layer over heterogeneous sources, govern access
-        centrally, and optimize queries so that leaving data in place doesn’t mean paying for it in latency.
-      </p>
-      <p class="t-lead-serif">If you are evaluating Denodo, you have already accepted the argument Provisa makes.</p>
-    </SplitHeader>
-  </Section>
+  <Sec band="white" labelledBy="agree-title">
+    <Two>
+      <Head>
+        <Heading level="section-sm" id="agree-title">Where they agree</Heading>
+      </Head>
+      <Heading level="lede" as="p">
+        Both are data virtualization rather than another warehouse. Both put a semantic layer over heterogeneous sources, govern access centrally, and
+        optimize queries so that leaving data in place doesn't mean paying for it in latency. If you are evaluating Denodo, you have already accepted
+        the argument Provisa makes.
+      </Heading>
+    </Two>
+  </Sec>
 
-  <Section labelledBy="differ-title">
-    <Block gap={40}>
-      <SplitHeader eyebrow="Where they differ" eyebrowTone="cobalt" title="Side by side" titleId="differ-title" />
-      <ComparisonTable caption="Denodo and Provisa compared" them="Denodo" rows={rows} />
-    </Block>
-  </Section>
+  <Sec id="differ" labelledBy="differ-title">
+    <Stack gap={40}>
+      <Heading level="section-sm" id="differ-title">Where they differ</Heading>
+      <ComparisonTable
+        caption="Denodo and Provisa compared"
+        columns={['Denodo', 'Provisa']}
+        rows={[
+          ['Query languages', 'SQL, with REST and GraphQL publication', 'GraphQL, SQL, and Cypher as peers over one model — Cypher and graph traversal are first-class, not published views'],
+          ['Ways in', 'JDBC/ODBC, REST, OData, GraphQL', 'pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, and MCP'],
+          ['Execution', 'Its own optimizer and execution engine', 'The engine is yours to choose — Trino, DuckDB, ClickHouse, Postgres, Snowflake, Databricks, BigQuery, or the embedded engine'],
+          ['Graph and RDF sources', 'Available as sources', 'First-class in the model — Neo4j and SPARQL participate in the same relationship registry and traversals'],
+          ['AI access', 'Platform AI features', 'An MCP server where the OAuth token maps to a role, so agents get the same six governance layers and no bypass'],
+          ['Smallest deployment', 'Platform install or managed cloud', '<code>pip install "provisa[embedded]"</code> — one wheel, no Docker, no JVM, no root'],
+          ['Model portability', 'Platform-native modeling', 'Declarative config in git, promoted as a diff; the compiled SQL is yours to read and export'],
+        ]}
+      />
+    </Stack>
+  </Sec>
 
-  <Section tone="forest" labelledBy="evaluation-title">
-    <SplitHeader eyebrow="Evaluating" title="The evaluation that separates them" titleId="evaluation-title">
-      <p class="t-body-lg pv-body">
-        Ask what happens on a Tuesday afternoon. Can an analyst point psql at it and get a governed answer? Can a developer query the same
-        model in GraphQL without a publication step? Can an agent connect and inherit the analyst’s policy rather than a service account’s?
-        Can you run the whole thing on a laptop to try something, and in an airgap without mirroring a container registry?
-      </p>
-      <p class="t-body-lg pv-body">
-        Those are the questions Provisa is built to answer yes to. On the classic enterprise virtualization checklist — breadth of connectors,
-        optimizer maturity, a support organization with two decades behind it — Denodo is the incumbent, and that deserves real weight in your
-        evaluation.
-      </p>
-      <div style="padding-top: 8px">
+  <Sec band="white" labelledBy="evaluation-title">
+    <Two>
+      <Head>
+        <Heading level="section-sm" id="evaluation-title">The evaluation that separates them</Heading>
+      </Head>
+      <Copy>
+        <P>
+          Ask what happens on a Tuesday afternoon. Can an analyst point psql at it and get a governed answer? Can a developer query the same model in
+          GraphQL without a publication step? Can an agent connect and inherit the analyst's policy rather than a service account's? Can you run the
+          whole thing on a laptop to try something, and in an airgap without mirroring a container registry?
+        </P>
+        <P>
+          Those are the questions Provisa is built to answer yes to. On the classic enterprise virtualization checklist — breadth of connectors,
+          optimizer maturity, a support organization with two decades behind it — Denodo is the incumbent, and that deserves real weight in your
+          evaluation.
+        </P>
         <Links
-          items={[
+          links={[
             { label: 'Every way in', href: '/why/interfaces' },
             { label: 'Try it on a laptop', href: '/#download' },
           ]}
         />
-      </div>
-    </SplitHeader>
-  </Section>
+      </Copy>
+    </Two>
+  </Sec>
 </BaseLayout>
