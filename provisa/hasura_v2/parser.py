@@ -389,6 +389,10 @@ def _warn_unconverted_files(md: Path, collector: WarningCollector) -> None:  # R
     truthiness test. An empty ``allow_list.yaml`` is silent; a populated one is not.
 
     Searched at the directory root and under each ``databases/<name>/``, and reported once per key.
+
+    ``source_path`` is relative to ``md``. ``/admin/import/hasura/preview`` returns it to the
+    browser, and an upload is staged to a server temp directory — so an absolute path would both
+    show the operator a path that does not exist on their machine and expose the staging root.
     """
     search_dirs = [md]
     databases_dir = md / "databases"
@@ -406,7 +410,7 @@ def _warn_unconverted_files(md: Path, collector: WarningCollector) -> None:  # R
                 None,
             )
             if hit is not None:
-                collector.warn(key, _UNCONVERTED_MESSAGE.format(key=key), str(hit))
+                collector.warn(key, _UNCONVERTED_MESSAGE.format(key=key), str(hit.relative_to(md)))
                 break
 
 

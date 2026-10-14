@@ -148,13 +148,21 @@ def test_section_under_databases_reports_once(tmp_path: Path):
     assert _categories(collector) == ["allowlist", "rest_endpoints"]
 
 
-def test_source_path_names_the_file_that_triggered_the_warning(tmp_path: Path):
-    """An operator reading the warning needs to know which file to carry forward by hand."""
+def test_source_path_names_the_file_relative_to_the_export(tmp_path: Path):
+    """An operator reading the warning needs to know which file to carry forward by hand.
+
+    Relative, not absolute: the import preview endpoint returns this to the browser and an upload
+    is staged to a server temp directory, so an absolute path names nothing on their machine.
+    """
     md = tmp_path / "metadata"
     _write(md, "tables.yaml", [])
     _write(md, "allow_list.yaml", _ALLOWLIST)
+    _write(md / "databases" / "default", "rest_endpoints.yaml", _REST_ENDPOINTS)
 
     collector = WarningCollector()
     parse_metadata_dir(md, collector)
 
-    assert collector.warnings[0].source_path == str(md / "allow_list.yaml")
+    assert [w.source_path for w in collector.warnings] == [
+        "allow_list.yaml",
+        "databases/default/rest_endpoints.yaml",
+    ]
