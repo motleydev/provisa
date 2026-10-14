@@ -23291,3 +23291,39 @@ A labelled diagram on the site is built from `Schematic` (`.pv-schem`), not from
 **Code:** site/design-system/provisa.css (`.pv-schem`), site/design-system/partials/schematic.html
 
 **Tests:** site/design-system/verify-ui.mjs (section 9), site/design-system/check-contrast.mjs
+
+### REQ-2021 · Marketing & Design System {#REQ-2021}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+The struck-claim list is one module, `site/claim-bans.mjs`, carrying each struck string with the reason it was struck, and every site checker reads it rather than keeping a copy. `site/verify-claims.mjs` sweeps that list across every `.html` page under `site/` except `site/design-system/`, which is the component kit and is `check-kit.mjs`'s. The sweep needs no browser and no server, because `site/` has no build step and the served bytes are the bytes on disk. A struck claim is struck on whichever page it appears: a list checked against one page is not a claim check, which is how `/why/one-model` shipped "85+", "six layers" and "No invalid join ever runs on your data" past a green `verify-home.mjs` (PRO-27). "62 connectors" and "six governance layers" join the list. HTML comments are excluded before matching: a struck string inside a comment is not copy a reader or a crawler is served, and the comments on these pages quote the struck strings in order to name the rule.
+
+**Use case:** A claim the SME struck cannot reappear on any page of the site, and a reviewer checking the whole site for it runs one command that needs nothing installed.
+
+**Code:** site/claim-bans.mjs, site/verify-claims.mjs, site/verify-home.mjs
+
+**Tests:** site/verify-claims.mjs
+
+### REQ-2022 · Marketing & Design System {#REQ-2022}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+The claim sweep also enforces three things no string ban can see. A count of source types on any page is 72, 63 or 37 and nothing else (`docs/claim-audit.md` §1.1 and §1.2) — the failure this catches is a page contradicting itself, as `/why/one-model` did with an "All 62 connectors" link under a "72 connectors" sentence. A page using both "six governed surfaces" and "sixteen surfaces" carries the distinguishing sentence, per [REQ-2018](#REQ-2018). The spine sentence keeps its "up to six" qualifier, per [REQ-2016](#REQ-2016): the check is on the sentences that deliver — "answered on six governed surfaces", "six governed surfaces answer" — not on a later back-reference to the six on a page that already stated the spine with its qualifier.
+
+**Use case:** The numbers on the site are reproducible and mutually consistent, and a page cannot drift into contradicting its own figures between one paragraph and the link beneath it.
+
+**Code:** site/verify-claims.mjs
+
+**Tests:** site/verify-claims.mjs
+
+### REQ-2023 · Marketing & Design System {#REQ-2023}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A page may carry a struck string only through an exception declared in `site/verify-claims.mjs`'s `EXCEPTIONS`, scoped to that one string on that one page and naming the requirement that mandates it. One exists: `/demos` links a `cloud.provisa.dev` sandbox because [REQ-2006](#REQ-2006) specifies that button, the ban being on offering the host as a conversion rather than on the demo sandbox. The sweep holds each exception to two further assertions, so that an exception cannot quietly become a licence: the page still contains the string, or the exception is stale and fails; and, for the hosted host, the page does not sell it — no "free trial", "hosted service" or "sign up for" wording — because the hosted conversion stays withdrawn.
+
+**Use case:** The one page that must name the hosted host can name it, every other page still cannot, and an exception that has outlived its reason fails the check instead of outliving it silently.
+
+**Code:** site/verify-claims.mjs
+
+**Tests:** site/verify-claims.mjs
