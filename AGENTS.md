@@ -9,23 +9,9 @@ On any new requirement, constraint, feature, or design decision: append inline a
 
 # Swarm Mode (Self-Claim)
 
-All agents operate autonomously. No lead assignment required.
-
-## After completing any task:
-1. Check the task list — find the lowest-ID task that is **unblocked** AND **unowned**
-2. Claim it by marking yourself as owner, status "in_progress"
-3. Begin work immediately
-
-## Rules:
-- Never wait for assignment — self-claim the lowest unblocked/unowned task
-- If no tasks available, report idle and stop
-- Respect module boundaries — only claim tasks in your domain
-- Run the verification command for your module when done
-- After completing a task, loop back to step 1 — always pull the next task
-- Idle teammates self-claim immediately rather than reporting back to lead
-
-## Spawning Teammates
-Include: 1) Which module(s) they own 2) Files to read first 3) Verification command 4) What NOT to touch
+Read `refs/swarm-mode.md`. These rules used to be written out here and imported
+from nowhere; `CLAUDE.md` pointed at a copy that did not exist. The reference is
+now the one copy both files read.
 
 # Roles
 When acting in a named role, read the corresponding `agents/<name>.md` file before proceeding.
