@@ -53,6 +53,22 @@ def _include_ctor(loader: Any, node: Any) -> str:
 _HasuraLoader.add_constructor("!include", _include_ctor)
 
 
+# REQ-2034: sections of the export the converter has no target for, paired with the file each
+# occupies in a CLI metadata directory. One table so the directory reader and the document reader
+# report the same five keys with the same wording. The Hasura CLI writes the allowlist as
+# ``allow_list.yaml`` while the metadata API names the same section ``allowlist``; both spellings
+# are matched and both report under the API key.
+_UNCONVERTED_SECTIONS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("query_collections", ("query_collections.yaml",)),
+    ("allowlist", ("allow_list.yaml", "allowlist.yaml")),
+    ("rest_endpoints", ("rest_endpoints.yaml",)),
+    ("network", ("network.yaml",)),
+    ("opentelemetry", ("opentelemetry.yaml",)),
+)
+
+_UNCONVERTED_MESSAGE = "{key} is present in the export and is not converted"
+
+
 def _load_yaml(path: Path) -> Any:
     """Load a YAML file, returning None if it doesn't exist. Tolerates the Hasura ``!include`` tag."""
     if not path.exists():
@@ -359,7 +375,39 @@ def parse_metadata_dir(
     if isinstance(api_limits, dict):
         metadata.api_limits = api_limits
 
+    _warn_unconverted_files(md, collector)  # REQ-2034
+
     return metadata
+
+
+def _warn_unconverted_files(md: Path, collector: WarningCollector) -> None:  # REQ-2034
+    """Report the five unconverted sections found as files in a metadata directory.
+
+    ``parse_metadata_document`` reports these from an inline document. ``hasura metadata export``
+    writes the directory layout instead, and writes every one of these files whether or not the
+    section is configured — so presence is judged on content, matching the document reader's
+    truthiness test. An empty ``allow_list.yaml`` is silent; a populated one is not.
+
+    Searched at the directory root and under each ``databases/<name>/``, and reported once per key.
+    """
+    search_dirs = [md]
+    databases_dir = md / "databases"
+    if databases_dir.exists():
+        search_dirs.extend(sorted(d for d in databases_dir.iterdir() if d.is_dir()))
+
+    for key, filenames in _UNCONVERTED_SECTIONS:
+        for directory in search_dirs:
+            hit = next(
+                (
+                    directory / name
+                    for name in filenames
+                    if (directory / name).exists() and _load_yaml(directory / name)
+                ),
+                None,
+            )
+            if hit is not None:
+                collector.warn(key, _UNCONVERTED_MESSAGE.format(key=key), str(hit))
+                break
 
 
 def parse_metadata_document(
@@ -415,12 +463,12 @@ def parse_metadata_document(
     if isinstance(api_limits, dict):
         metadata.api_limits = api_limits
 
-    # Sections of the export the converter has no target for. The directory reader simply never
-    # opens their files; a document carries them inline, so they are reported rather than dropped
-    # silently — an administrator who relies on one learns it did not come across.
-    for key in ("query_collections", "allowlist", "rest_endpoints", "network", "opentelemetry"):
+    # Sections of the export the converter has no target for. A document carries them inline;
+    # _warn_unconverted_files reads the same five keys off a metadata directory (REQ-2034), so
+    # either layout tells an administrator who relies on one that it did not come across.
+    for key, _filenames in _UNCONVERTED_SECTIONS:
         if doc.get(key):
-            collector.warn(key, f"{key} is present in the export and is not converted")
+            collector.warn(key, _UNCONVERTED_MESSAGE.format(key=key))
     return metadata
 
 
