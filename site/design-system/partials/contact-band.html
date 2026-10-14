@@ -1,5 +1,14 @@
 <!-- ContactBand. The page-closing band: a call to action beside the demo
-     form. Tones: forest (default) and pv-contact--inverse (ink). -->
+     form. Tones: forest (default) and pv-contact--inverse (ink).
+
+     The band's own actions are the download-and-register path, and the demo
+     form beside them is the contact path. The kit led with `Start a free trial
+     → cloud.provisa.dev`; there is no managed service to start, in any tense
+     (PRO-24, and PRO-2 plan revision 3 for the header). The two links after it
+     were `href="#"`. A page that wants a heavier primary puts a pv-btn in a
+     pv-row above these links, as Home does. -->
+<!-- /install is an owed route — check-kit.mjs carries it, with the link count
+     already waiting on it. The download that works today is /dl/<platform>. -->
 <section class="pv-contact" id="contact">
   <div class="pv-contact__inner pv-container">
     <div class="pv-contact__copy">
@@ -8,9 +17,8 @@
       <p class="pv-contact__sub">One binary, one config file, and a database
         you already have.</p>
       <div class="pv-contact__links">
-        <a class="pv-link pv-link--inverse" href="https://cloud.provisa.dev">Start a free trial</a>
-        <a class="pv-link pv-link--inverse" href="#">Try it on your data</a>
-        <a class="pv-link pv-link--inverse" href="#">Download</a>
+        <a class="pv-link pv-link--inverse" href="/install">Download Provisa</a>
+        <a class="pv-link pv-link--inverse" href="/register">Get a free licence</a>
       </div>
     </div>
     <form class="pv-form" method="post" action="/api/demo">

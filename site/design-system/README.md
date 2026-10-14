@@ -18,7 +18,8 @@ Open `/design-system/` on a running site to see every component rendered.
 | `provisa.js` | Theme toggle, mobile drawer, accordion, code tabs, switch, toggle buttons. Progressive enhancement over markup that renders without it. |
 | `partials/` | One copy-pasteable HTML fragment per component, plus `head.html`. |
 | `index.html` | The component gallery. Fetches each partial, so it can never drift from them. |
-| `check-contrast.mjs` | Parses `tokens.css` and asserts WCAG AA on 63 colour pairs in both themes. |
+| `check-contrast.mjs` | Parses `tokens.css` and asserts WCAG AA on 72 colour pairs in both themes. |
+| `check-kit.mjs` | Resolves every internal `href` in `site/` and asserts every prose class is capped at the measure. No browser. |
 | `verify-ui.mjs` | 103 browser assertions: header composition, both themes, the verified widths, the nav breakpoint, a keyboard pass. Needs Playwright. |
 
 A page includes `partials/head.html` and then composes partials. There is no
@@ -67,14 +68,23 @@ kept outside its component list: `partials/section.html` (the band wrapper and
 the rail grid) and `partials/contact-band.html`.
 
 `SiteHeader` carries the nav `Platform · Governance · Industries · Interfaces ·
-Sources · Compare`, then the theme toggle, a `Start free trial` text link to
-cloud.provisa.dev, and a `Book a demo` button. `UtilityBar` carries Docs,
+Sources · Compare`, then the theme toggle, a `Get a free licence` text link to
+`/register`, and a `Book a demo` button. `UtilityBar` carries Docs,
 Support and Register. `SiteFooter` carries three columns — Platform, Compare,
 Get started — plus a subscribe field.
 
-Three of those differ from the kit, on instruction from [PRO-2](/PRO/issues/PRO-2)'s
+Four of those differ from the kit, on instruction from [PRO-2](/PRO/issues/PRO-2)'s
 plan revisions rather than by retuning:
 
+- **The secondary action is the free licence, not a hosted trial.** Plan
+  revision 3 withdraws the trial, so the *run it for my team* path converts to
+  `/register` and a conversation, and no page links cloud.provisa.dev. The
+  label is two characters longer than `Start free trial`, which is why
+  `--bp-nav` went from 1280px to 1300px — see the note on that token.
+  `ContactBand` and the `Button` specimen kept the trial anyway, and
+  `/platform` shipped it in both the header and the drawer; all three are
+  corrected under [PRO-24](/PRO/issues/PRO-24), which is also where the ladder
+  below is written down.
 - **Six nav items, not seven.** Insights is out of v1 and has no route, so it is
   not built as a dead link (revision 2). The drawer carries the same six.
 - **No hosted-service notice in the utility bar.** We do not offer a managed
@@ -85,6 +95,50 @@ plan revisions rather than by retuning:
 
 The theme toggle is also new: it sits right of the nav on desktop, as the first
 item in the actions cluster, and in the drawer on mobile.
+
+### The CTA ladder
+
+Three rungs, in this order, on every page. A new page picks its labels from
+here rather than from whichever page it was copied from — that is how the
+withdrawn trial survived in three places after revision 3 retired it.
+
+| Rung | Action | Route | Where it appears |
+| --- | --- | --- | --- |
+| Primary | `Download Provisa` / `Install it yourself` | `/install` | The page-closing band, as a `pv-btn` in a `pv-row` |
+| Primary, continued | `Get a free licence` | `/register` | Beside the download, and the header's and drawer's secondary slot |
+| Secondary | `Book a demo` | `#contact`, the band's own demo form | The header button, the drawer, the footer |
+
+The licence is free, is a registration artifact, and never gates or degrades
+functionality (REQ-1137) — so download-and-register is one path, not two, and
+the page may name either end of it. The demo form is the contact path for a
+reader who will not install anything before a conversation; it is the
+alternative to the download, never the only thing on offer.
+
+Nothing on the site links `cloud.provisa.dev` as a way to run Provisa. There is
+no managed service, in any tense, and "coming soon" is not available either
+(`docs/marketing.md`). `/install` is an owed route — `check-kit.mjs` tracks it
+with its link count — and the download that resolves today is `/dl/<platform>`.
+
+### What the pages have added since the port
+
+Each entry is a page that asked the kit for something it did not have. The rule
+is that the page raises it here rather than writing the rule into itself, so
+the second page to want it finds it built.
+
+| Added | For | What it is |
+| --- | --- | --- |
+| `LayerRow` `pv-layer--detail` | [PRO-14](/PRO/issues/PRO-14) §3 | A tinted row that also carries `pv-layer__where` and `pv-layer__desc`. The kit put the description on the list variant only, which has no per-row tone and only works on a forest band, so a page could have the colour semantic or the prose and never both. Omit `pv-layer__idx` for an unnumbered row; the index track still holds, so the titles line up. |
+| `LayerRow` `pv-layer--outside`, and `--group-outside` | Same | A fourth tone, slate, for a row that sits in the list but is not one of the three. Governance's approval hook is outside the trio because it is outside the query plan. The three aliases read the kit's own neutral ramp, so the palette gains no hue and the brand trio stays three. |
+| `.pv-note` | Same | A mono footnote at the body colour and the body line height. The kit could set a footnote in mono only by also setting it quieter, and a page whose argument is its disclosures cannot put one in a lighter colour than the claim it qualifies. |
+| `.pv-measure` | Same | `max-width: var(--measure)` as a utility. `.pv-p` caps itself; a Callout did not, and a card grid forces its section's prose out to the container, because `pv-grid--3` cannot resolve to three columns inside the rail's two-thirds column. |
+
+One fix rather than an addition, in the same pass: `FigPanel`'s `pv-fig--rings`
+indexed its ring sizes with `:nth-child`, which counts the `FIG.` label span as
+child 1. Every ring took the size of the ring before it, the outer 84% ring was
+never drawn, and the innermost had no rule, no `--w` and therefore no width —
+so the kit's six-ring governance figure rendered five and lost its vermilion
+core. It is `:nth-of-type` now, with the core on `:last-of-type` so a figure
+built with fewer rings still converges on vermilion.
 
 ## The six gaps, closed
 
@@ -201,10 +255,10 @@ untouched:
 | `--switch-edge` | ink / `--on-ink-1` | The kit's off track is 1.9:1 against paper, so the control had no visible boundary. A 1px edge on the track and the knob gives it one. |
 
 **Contrast is checked, not asserted.** `node site/design-system/check-contrast.mjs`
-parses `tokens.css`, resolves every alias for both themes and tests 63 pairs:
+parses `tokens.css`, resolves every alias for both themes and tests 72 pairs:
 4.5:1 for text under 24px, 3:1 for display and for control boundaries, 1.2:1
 for hairlines and illustrative figure geometry, which carry no information on
-their own and are measured rather than waived. 126/126 pass. Run it after
+their own and are measured rather than waived. 144/144 pass. Run it after
 touching any value in `tokens.css`.
 
 ### The mobile header
@@ -267,6 +321,59 @@ wide, the same read as on a laptop.
 
 Verified at 2560px in both themes.
 
+### Which classes the measure applies to
+
+"Prose never follows the container" only held for `.pv-p` and `.pv-h--lede`.
+Three other classes set running copy and had no cap, which never showed in the
+kit's own sample pages because its ruled cards are always in a multi-column
+grid. It shows the moment a card set is in a grid that has collapsed to one
+track while the container is still wide — `pv-grid--2` at a 768px viewport is a
+single 691px column, where a `.pv-ruled__body` paragraph set about 92
+characters against the kit's 68. Found while building `/vs/starburst`.
+
+Six classes now carry the cap, and `check-kit.mjs` asserts each one:
+
+| Class | Cap |
+| --- | --- |
+| `.pv-p`, `.pv-note`, `.pv-measure`, `.pv-h--lede` | `max-width: var(--measure)` |
+| `.pv-ruled__body` | `max-width: var(--measure)` |
+| `.pv-layer__desc` | `max-width: var(--measure)`, after the flex basis, so a row still proportions itself 1:1.4 below the measure |
+| `.pv-choice__items li` | `grid-template-columns: 20px minmax(0, var(--measure))` |
+
+Two things to know about the shape of that table. The cap is 68 **characters**,
+not a pixel width, so a class set in `--type-body-sm` lands about 80px short of
+`.pv-p` — same read, narrower box. And `.pv-choice__items li` caps its text
+track rather than itself, because the row carries the hairline that separates
+one item from the next and that rule has to span the card; capping the row would
+leave a card full of short rules.
+
+### The chrome links canonical routes
+
+Every page in `site/` declares an extensionless `<link rel="canonical">`, so
+the chrome links that form and no other: `/why/governance`, never
+`/why/governance.html` and never `/governance/`.
+
+This started as one dead link. The nav's `Compare` pointed at `/vs/`, which has
+no `index.html`, and `Governance` and `Interfaces` pointed at `/governance/`
+and `/interfaces/` while the pages live at `/why/governance` and
+`/why/interfaces` — four 404s in the primary nav, each already inlined into
+four pages, because a page that copies the chrome copies whatever the chrome
+got wrong. `check-kit.mjs` now resolves every internal `href` in `site/` under
+Cloudflare Pages' own rules and asserts that the partials carry no `.html` and
+no directory form.
+
+`/pricing/` is the one exception, and only because `verify-ui.mjs` asserts that
+exact string on the footer's Editions link. Reconcile the two together.
+
+Seven routes are linked but not built, so the check records them rather than
+failing on them — `PENDING` in `check-kit.mjs` names each one and who owes it.
+Two are worth knowing about here: `/install` is the Download CTA on Home,
+Platform and Interfaces, which makes it the costliest page not yet built, and
+`/industries` is the one nav item with no page anywhere. The six nav items come
+from [PRO-2](/PRO/issues/PRO-2)'s plan revision 2, so whether Industries keeps
+a dead href or leaves the nav until its page exists is the Content Manager's
+call, not the kit's.
+
 ## Verification
 
 Both checks are scripts, so they are re-runnable rather than a claim in a
@@ -275,9 +382,14 @@ comment. Run the site locally and open `/design-system/` to look at it:
 ```sh
 python3 -m http.server 8731 --directory site &
 
-node site/design-system/check-contrast.mjs            # 126/126
+node site/design-system/check-contrast.mjs            # 144/144
+node site/design-system/check-kit.mjs                 # 10/10, no browser
 node site/design-system/verify-ui.mjs http://127.0.0.1:8731   # 103/103
 ```
+
+`check-kit.mjs` is the one that needs neither Playwright nor a server. Run it
+on any change to the chrome or to a prose class — it is the check that the
+links go somewhere and that the measure is still applied.
 
 `verify-ui.mjs` needs Playwright, which is deliberately not a dependency of this
 repo — `site/` has no build step and should not acquire one. Install it wherever
@@ -297,7 +409,7 @@ build issue says must not appear. The `.mjs` half is the render pass at
 360/768/1280/1920/2560 in both themes.
 
 - **Contrast.** `check-contrast.mjs` parses `tokens.css`, resolves every alias
-  for both themes and tests 63 pairs. 126/126.
+  for both themes and tests 72 pairs. 144/144.
 - **The header composition.** Six nav items and no Insights link; the toggle in
   both the header and the drawer, two-state; the utility bar carrying no
   hosted-service notice; the Editions link pointing at `/pricing/`.
