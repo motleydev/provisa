@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>One model — Provisa</title>
-  <meta name="description" content="Federation, metrics, ontology and governance from a single model. Nothing to keep in sync. Federation across 72 connectors reaching 85+ kinds of source, metrics defined once, the glossary as a graph, and six governance layers compiled into every query plan." />
+  <meta name="description" content="Federation, metrics, ontology and governance from a single model. Nothing to keep in sync. 72 source types with 63 reachable and 37 read live on a Trino engine, metrics defined once, the glossary as a graph, and five governance layers compiled into every query plan." />
   <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -63,20 +63,33 @@
 
         <h2 id="federation">Federation</h2>
         <p>
-          72 connectors reaching 85+ kinds of source, including Salesforce, ServiceNow and Stripe, are reached in place.
-          The SaaS systems the business runs on are tables beside the databases, with no
-          pipeline into a warehouse first. You register the tables you want; nothing a
+          72 source types. On a Trino engine, 63 are reachable and 37 are read live with no
+          copy. Salesforce, ServiceNow, SharePoint, Splunk and cloud resource inventory are
+          among the live ones, with predicates pushed into the API and aggregates run above
+          it. So the SaaS systems the business runs on are tables beside the databases, with
+          no pipeline into a warehouse first. You register the tables you want; nothing a
           source offers is registered for you.
         </p>
         <p>
           Ask once in English and up to six governed surfaces answer — SQL, GraphQL, Cypher,
           gRPC, JSON:API and OpenAPI — each one generated for the asking role and run through
-          the same compiled governance. Or write the query yourself — SQL, GraphQL or Cypher —
+          the same compiled governance. Three of those six are protocols rather than
+          languages: gRPC, JSON:API and OpenAPI come back as the request a client of that
+          protocol would send and the envelope it would receive, computed through the governed
+          pipeline rather than over a socket, and they express row, aggregate and group-by
+          questions. An arbitrary question is carried by SQL, GraphQL and Cypher; the other
+          three say so rather than guess.
+        </p>
+        <p>
+          Or write the query yourself — SQL, GraphQL or Cypher —
           on whichever of the seven listeners your client speaks: HTTP, gRPC, Arrow Flight,
-          pgwire, Bolt, Airport and MCP. Any
+          pgwire, Bolt, Airport and MCP. Fifteen client-facing surfaces ride those seven, and
+          the sixteenth goes the other way — a governed change stream out to a Kafka topic.
+          Those sixteen surfaces are ways in and out; the six governed surfaces above are what
+          one English question comes back on. Different count, different thing. Any
           Postgres-wire client can connect, so a BI tool or a metrics tool can sit on top.
-          <a href="/why/sources">All 62
-          connectors.</a> <a href="/why/interfaces">The surfaces and listeners.</a>
+          <a href="/why/sources">All 72 source
+          types.</a> <a href="/why/interfaces">The surfaces and listeners.</a>
         </p>
 
         <h2 id="metrics">Metrics</h2>
@@ -110,18 +123,24 @@
 
         <h2 id="governance">Governance</h2>
         <p>
-          Six layers are compiled into every query plan, on every language and every
-          protocol: introspection filtering, public access, domain access, row-level
-          security, column visibility and masking, and a predicate guard with approval.
-          The policy is part of the plan that runs, so no route in goes around it.
+          Five layers are compiled into every query plan, on every language and every
+          protocol: introspection filtering, domain access, row-level security, column
+          visibility and masking, and a predicate guard. The policy is part of the plan that
+          runs, so no route in goes around it. Beside them, outside the plan, is the approval
+          hook: your own decision service can refuse the statement before it runs. Public-column
+          publishing — serving a published column to an unauthenticated reader — is designed
+          and not built, so it is not a layer and is not counted here.
           <a href="/why/governance">How each layer works.</a>
         </p>
         <p>
-          No invalid join ever runs on your data. A JOIN or a graph traversal is legal only
-          if it matches a registered, approved relationship, and a refused join names the
-          valid paths. Roles are governed by default; opting out is a deliberate grant of the
-          ignore-relationships right to a role you trust. An agent's token maps to a role, so
-          an agent gets the same layers a person does.
+          Every join in SQL and Cypher must match a relationship someone approved. In
+          high-security mode that is not bypassable, by anyone — including a role granted the
+          bypass by mistake. A JOIN or a graph traversal is legal only if it matches a
+          registered, approved relationship, and a refused join names the valid paths. Outside
+          high-security mode the guard is governance policy with two bypasses we would rather
+          you heard from us, and it is skipped for GraphQL, where relationship fields are
+          pre-approved by the schema itself. An agent's token maps to a role, so an agent gets
+          the same layers a person does.
         </p>
 
         <h2>Alongside context layers</h2>
@@ -133,7 +152,7 @@
       </div>
 
       <div class="doc-next">
-        <a class="more" href="/why/governance">The six governance layers</a>
+        <a class="more" href="/why/governance">The five governance layers</a>
         <a class="more" href="/why/interfaces">Seven listeners, sixteen surfaces</a>
         <a class="more" href="/#download">Try it</a>
       </div>

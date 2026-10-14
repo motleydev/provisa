@@ -19,6 +19,7 @@
  * alone rather than exported over every binary on the box.
  */
 import { chromium } from "playwright";
+import { BANNED, servedCopy } from "./claim-bans.mjs";
 
 const LAUNCH = process.env.PLAYWRIGHT_LD_LIBRARY_PATH
   ? { env: { ...process.env, LD_LIBRARY_PATH: process.env.PLAYWRIGHT_LD_LIBRARY_PATH } }
@@ -35,44 +36,16 @@ const ok = (n, c, d = "") => results.push({ n, pass: !!c, d });
  * be a real id on the section that links out to wherever its content went. */
 const ANCHORS = ["governance", "interfaces", "sources", "deploy", "download"];
 
-/* Every sentence the SME struck, with the reason it was struck. Each is a
- * claim regression, not a style preference — see §6 of `brief-home`.
+/* The struck claims now live in `claim-bans.mjs`, shared with
+ * `verify-claims.mjs`, which sweeps the same list across every page in
+ * `site/` — this file only ever scanned `/`, which is how `/why/one-model`
+ * kept "85+" and "six layers" (PRO-27). Add a ban there, not here.
  *
- * `Starburst` is deliberately not in this list even though PRO-10 names it:
+ * `Starburst` is deliberately not in that list even though PRO-10 names it:
  * the ban is on naming Starburst as the coordinator you already run, and the
  * page says "the Trino-protocol coordinator you already operate" instead. The
  * one occurrence left is the SiteFooter's link to /vs/starburst, which is the
  * comparison page itself. Checked separately, below. */
-const BANNED = [
-  ["85+", "no derivation in the repo reaches 85; the page says 72 / 63 / 37"],
-  ["no invalid join", "the join guard is policy, not a hard boundary"],
-  ["never runs on your data", "same — the guard has documented bypasses"],
-  ["60-million", "a table size is not a result"],
-  ["60M", "same"],
-  ["sub-100ms", "not reproducible from the repo"],
-  ["six layers", "five, numbered 0-4, plus an approval hook beside them"],
-  ["6 layers", "same"],
-  ["Apache 2", "the Change License is GPL-2.0-or-later"],
-  ["coming soon", "SaaS is not offered — not deferred"],
-  ["in development", "same"],
-  ["managed hosting", "same"],
-  ["all-in-one", "off the brand pages by standing instruction"],
-  ["single platform", "same"],
-  ["one platform for everything", "same"],
-  ["cloud.provisa.dev", "withdrawn as a conversion in plan revision 3"],
-  ["SOC 2", "no compliance certification name appears on any page"],
-  ["ISO 27001", "same"],
-  ["HIPAA", "same"],
-  ["GDPR", "same"],
-  ["FedRAMP", "same"],
-  ["PCI", "same"],
-  ["21 SQLAlchemy", "the arithmetic is right but the figure invites a recount"],
-  ["21 keys", "same — use the structural sentence"],
-  ["six every time", "the spine's qualifier 1: six is the capability, not a count per question"],
-  ["all six surfaces answer", "same — write it as 'up to six'"],
-  ["three ways to ask", "the old spine; §5 is six governed surfaces (claim-audit §5.1c)"],
-  ["nine protocols", "the framing double-counts — seven listeners, sixteen surfaces"],
-];
 
 const browser = await chromium.launch(LAUNCH);
 
@@ -82,8 +55,12 @@ const res = await fetch(ORIGIN + "/");
 ok("/ serves 200", res.status === 200, String(res.status));
 const src = await res.text();
 
+/* Comments excluded, as in the sweep: a struck claim inside an HTML comment is
+ * not copy anyone is served, and the comments on this page quote the struck
+ * strings in order to name the rule. */
+const copy = servedCopy(src);
 for (const [s, why] of BANNED) {
-  const n = (src.match(new RegExp(s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi")) || []).length;
+  const n = (copy.match(new RegExp(s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi")) || []).length;
   ok(`struck claim absent: ${s}`, n === 0, n ? `${n}× — ${why}` : "");
 }
 
