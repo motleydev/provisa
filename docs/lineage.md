@@ -74,14 +74,54 @@ An edge from a command call is rendered as a dashed purple line in the UI.
 
 ## Federation-wide graph (REQ-1161)
 
-The federation graph merges every registered MV's per-statement lineage into one provenance graph.
-Node identity is `relation.column` — a view's output column and another view's input reference
-to the same column collapse to one node. The result is a single DAG from base source columns to
-every derived dataset in the platform. [tool-verified: `build_federation_graph` in merge.py:205-229
-and `qualify_outputs` in graph.py:275-299]
+The federation graph merges the per-statement lineage of every registered view and materialized
+view into one provenance graph. Node identity is `relation.column` — a view's output column and
+another view's input reference to the same column collapse to one node. The result is a single DAG
+from base source columns to every derived dataset in the platform. The MV registry contributes no
+nodes of its own; it marks which of those relations are materialization boundaries, so cycle
+characterization sees the version cuts. [tool-verified: `_registry_views` in lineage_router.py,
+`build_federation_graph` in merge.py:205-229, `qualify_outputs` in graph.py:275-299]
 
 Use `focus`, `direction`, and `depth` to scope the view at federation scale without recomputing
 the graph. [tool-verified: `slice_graph` in merge.py:160-189]
+
+A registered relation that nothing derives from, and that derives from nothing, still appears — as
+one isolated `source` node per column (REQ-1626). Absence from this graph therefore reads as *not
+reachable*, never as *not derived*. Registered relations are also handed to the parser as known
+relations, so a bare table reference in a view's SQL stitches to the registered relation instead of
+standing as a second node for the same data; a bare name matching more than one registered relation
+is left unstitched rather than guessed. [tool-verified: `_with_registry_columns` in
+lineage_router.py, `_bare_to_full` in merge.py]
+
+### How it is rendered (REQ-1627)
+
+A federation-wide graph carries more nodes than a column-per-node render can show, so it arrives
+**collapsed**: one node per relation, labelled with its column count, expanded per relation on
+click, with expand-all and collapse-all for the whole graph. An edge between two collapsed
+relations rolls up into one edge carrying the count of columns it stands for. The same graph opens
+in a near-fullscreen modal that shares collapse state with the inline panel, so opening it
+continues the trace rather than restarting it. [tool-verified: `LineageDag.tsx`, `LineagePage.tsx`]
+
+### Reading the graph through a role (REQ-1625, REQ-1628)
+
+The federation graph is read through a role, picked on the lineage form itself rather than taken
+from the NavBar role picker: the NavBar picks which of the user's own roles they act as, this picks
+whose data is being analysed. The `roles` parameter names **any** role in the organisation,
+including roles the caller does not hold, because the analytic use is exactly to read the federation
+from another role's vantage point. No selection means every role.
+
+**It is a lens, not a redaction.** The columns the named roles can query *seed* the graph, and the
+walk from those seeds runs **upstream and unrestricted** — every ancestor of a seed is returned in
+full, whether or not that role could query it. What is reachable only *downstream* of the seeds
+belongs to another role's perspective and is cut. The `domains` filter likewise restricts which
+relations may **seed**, never which may be an ancestor, so a chain that crosses an unchecked domain
+is not severed. A cycle survives the cut only when the whole loop is inside the perspective.
+
+Because reading the federation through an arbitrary role discloses which columns that role can
+query — the same disclosure `visible_to` is — the perspective carries the right that governance
+metadata carries: `view_governance`. Without it, the role picker and the Complete Lineage control
+are absent. [tool-verified: `ancestor_closure` and `_role_seeds` in merge.py:215-234 and
+lineage_router.py:191-214, `require_capability_request` at lineage_router.py:287]
 
 ## Cycles (REQ-1161)
 
@@ -102,7 +142,10 @@ means two views reference each other with no snapshot in between.
 
 ## API
 
-Both endpoints are **static** — they read definitions and contracts, not data.
+Both endpoints are **static** — they read definitions and contracts, not data. Both require the
+`view_governance` capability: a provenance graph names columns, and column names are themselves
+disclosure. [tool-verified: `require_capability_request(request, "view_governance")` at
+lineage_router.py:117 and :287]
 
 ### POST /admin/lineage/graph
 
@@ -145,22 +188,26 @@ Returns HTTP 422 when the SQL cannot be parsed.
 
 ### GET /admin/lineage/federation
 
-Returns the merged provenance graph over all MVs in the registry.
+Returns the merged provenance graph over every registered view and materialized view. Requires
+`view_governance`.
 
 ```http
 GET /admin/lineage/federation
 GET /admin/lineage/federation?focus=orders.id&direction=downstream&depth=3
+GET /admin/lineage/federation?roles=analyst_eu&domains=sales,finance
 ```
 
-[tool-verified: `federation_graph` endpoint at lineage_router.py:73-98]
+[tool-verified: `federation_graph` endpoint at lineage_router.py:275-339]
 
-Query parameters [tool-verified: function signature at lineage_router.py:73-76]:
+Query parameters [tool-verified: function signature at lineage_router.py:275-283]:
 
 | Parameter | Values | Default | Effect |
 | --- | --- | --- | --- |
 | `focus` | A node id | — | Scope the response to the sub-graph around this node |
 | `direction` | `upstream` \| `downstream` \| `both` | `both` | Which direction to traverse from `focus` |
 | `depth` | integer | unbounded | Maximum hop distance from `focus` |
+| `domains` | Comma-separated domain ids | every domain | Restrict which relations may **seed** the graph. Never restricts which may be an ancestor |
+| `roles` | Comma-separated role names | every role | The perspective the graph is read from: the columns those roles can query seed it, and the walk runs upstream from there. Any role in the org, not only one the caller holds |
 
 Response is the same shape as the statement graph, with a `cycles` field added
 [tool-verified: `MergedGraph.to_dict` in merge.py:60-64]:

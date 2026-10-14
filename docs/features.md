@@ -128,7 +128,7 @@ A metric is a named, governed aggregate with its own definition. You write it on
 The business glossary maps plain-language terms to the physical fields behind them. Terms can be derived from column names or written by hand, scoped to one or more domains, related to other terms, and owned by a curator. A term with relationships cannot be deleted. Reading the glossary and administering it are separate rights.
 { #glossary-tags-ontology-terms }
 
-Tags come from one org-wide registry. A tag can apply to sources, tables, columns or relationships, can take a parameter such as the entity a column holds, and is assigned by people rather than automatically. A few system tags have fixed meaning, and the deprecated tag works on any model object. Tags travel with metadata exports and show up in catalog comments.
+Tags come from one org-wide registry. A tag can apply to sources, tables, columns or relationships, can take a parameter such as the entity a column holds, and is assigned by people rather than automatically. A few system tags have fixed meaning. The deprecated tag works on sources, tables and views, columns and relationships; extending it to metrics, commands, roles and row-level rules is in progress (REQ-1979). Tags travel with metadata exports and show up in catalog comments.
 { #glossary-tags-ontology-tags }
 
 The glossary and the tag graph are data. Terms, their physical references and relationships, and every tag assignment can be queried like any other table in the meta domain, so a report or an agent can ask what a column means or what is tagged sensitive.
