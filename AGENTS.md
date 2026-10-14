@@ -27,6 +27,10 @@ All agents operate autonomously. No lead assignment required.
 ## Spawning Teammates
 Include: 1) Which module(s) they own 2) Files to read first 3) Verification command 4) What NOT to touch
 
+# Site Tasks
+
+One branch and one pull request per site task, cut from the integration branch, gated by `.github/workflows/site-review.yml` and `.github/workflows/site-review-browser.yml`. An issue is `done` when its pull request merges, not when its commits exist locally. Read `docs/ops/site-task-pipeline.md` before starting a site task.
+
 # Roles
 When acting in a named role, read the corresponding `agents/<name>.md` file before proceeding.
 

@@ -41,6 +41,10 @@ When reviewing inherited READMEs, vendor docs, or PRs with doc changes: spawn th
 
 Both agents read `.claude/refs/prose-quality.md` before acting. The PostToolUse prose hook (`hooks/prose-check.py`) blocks writes to `.md` files containing banned AI-smell phrases.
 
+## Site Tasks
+
+One branch and one pull request per site task, cut from the integration branch, gated by `site-review.yml` and `site-review-browser.yml`. An issue is `done` when its pull request merges, not when its commits exist locally. The convention is `docs/ops/site-task-pipeline.md`; read it before starting a site task.
+
 ## Bug Reporting
 
 After confirming a bug (reproduced or root-caused): use the `github-issue` skill (`.claude/skills/github-issue/SKILL.md`) to deduplicate and file. Never create an issue for an unverified bug.
