@@ -23219,3 +23219,75 @@ The marketing site has a single CTA ladder with three fixed rungs, written in si
 **Code:** `site/design-system/README.md`, `site/design-system/check-page-platform.py`
 
 **Tests:** —
+
+### REQ-2015 · Marketing & Design System {#REQ-2015}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+The site's message spine is "ask once in English, and up to six governed surfaces answer — SQL, GraphQL, Cypher, gRPC, JSON:API and OpenAPI, each generated for the asking role and run through the same compiled governance". This spine replaces "one model, three languages" wherever it appears: Home hero, Home §5 CodeTabs, Platform lead, Interfaces lead, the kit's Accordion title and TextLink sample, /why/one-model's federation paragraph, and /vs/starburst's meta description. The spine embodies the decision recorded in docs/claim-audit.md §5.1a–c (PRO-8), executed site-side on PRO-26.
+
+**Use case:** Visitors understand Provisa's unique value in a single consistent message across every marketing surface: one natural-language question answered on multiple governed protocol surfaces, not three language choices.
+
+**Code:** —
+
+**Tests:** —
+
+### REQ-2016 · Marketing & Design System {#REQ-2016}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+Three qualifiers are mandatory wherever the spine ([REQ-2015](#REQ-2015)) appears. (a) "up to six" — six is the capability, never a count promised per question. (b) gRPC, JSON:API and OpenAPI are the request a client would send plus the envelope it would receive, computed through the governed pipeline, not a network round trip. (c) Those three express row, aggregate and group-by questions only; anything else returns the branch's "not applicable". Qualifier (a) travels in the spine sentence itself and a page that drops it fails review outright; (b) and (c) must be visible on the same page, in page text or in a footnote per that page's design.
+
+**Use case:** The marketing message is precise and defensible; prospects know that not every question lands on every surface, and that gRPC et al. are governed outputs, not separate backend deployments.
+
+**Code:** —
+
+**Tests:** —
+
+### REQ-2017 · Marketing & Design System {#REQ-2017}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+The query-language claim is NOT the spine and is not rewritten by [REQ-2015](#REQ-2015): "Starburst speaks SQL; Provisa speaks SQL, GraphQL and Cypher over one model" stays on /vs/starburst (lede at :164, structural-difference row at :448) and in any comparison-table cell of the same shape, because Starburst's protocol surface count was never audited ([REQ-2015](#REQ-2015) is a site governance claim, not a competitive claim).
+
+**Use case:** The comparison with Starburst is scoped to query languages, not to all six governed surfaces, and the claim is not overstated relative to what Starburst's marketing discloses.
+
+**Code:** —
+
+**Tests:** —
+
+### REQ-2018 · Marketing & Design System {#REQ-2018}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+"Six governed surfaces" (what one English question comes back on) and "sixteen surfaces" (the client-facing protocol surfaces riding seven listeners) are different counts of different things; any page using both must say so. Home §6 carries that sentence. The two terms must not appear on the same page without clarification.
+
+**Use case:** Marketing collateral is internally consistent; readers do not confuse the surfaces a question lands on with the total protocol surface area of the system.
+
+**Code:** —
+
+**Tests:** —
+
+### REQ-2019 · Marketing & Design System {#REQ-2019}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+"Nine protocols" is struck sitewide. The framing is seven listeners and sixteen surfaces, per [REQ-2018](#REQ-2018). No page references "nine protocols" in any tense or context.
+
+**Use case:** Marketing terminology is unified and aligned with the governance and protocol surface counts defined in [REQ-2015](#REQ-2015), [REQ-2018](#REQ-2018), and docs/claim-audit.md.
+
+**Code:** —
+
+**Tests:** —
+
+### REQ-2020 · Marketing & Design System {#REQ-2020}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+A labelled diagram on the site is built from `Schematic` (`.pv-schem`), not from `FigPanel`, and its nodes and connectors are text in document order: nothing inside a schematic carries `aria-hidden`, `aria-label` or `role`, so the written order of the nodes and wires is the reading order a screen reader and the stacked form under 900px both get. The canvas does not clip — a label that no longer fits where it was positioned escapes its canvas and fails `verify-ui.mjs` rather than being silently cut off.
+
+**Use case:** A region, lineage or topology diagram is readable rather than decorative, and a figure whose labels have outgrown their positions fails loudly instead of shipping truncated.
+
+**Code:** site/design-system/provisa.css (`.pv-schem`), site/design-system/partials/schematic.html
+
+**Tests:** site/design-system/verify-ui.mjs (section 9), site/design-system/check-contrast.mjs

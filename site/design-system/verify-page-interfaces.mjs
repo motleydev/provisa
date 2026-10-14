@@ -60,7 +60,11 @@ ok("every default cell carries its port or says there is none",
 
 const notes = await page.$$eval(".pv-table", (ts) => {
   const after = [];
-  let n = ts[0].parentElement.nextElementSibling;
+  /* The footnotes are the matrix's own next siblings. Walking the *parent's*
+   * siblings reads nothing: `.pv-table` sits inside the section's container,
+   * and the container has no sibling, so both footnote checks failed against
+   * a page that carries them. */
+  let n = ts[0].nextElementSibling;
   while (n) { after.push(n.textContent.replace(/\s+/g, " ").trim()); n = n.nextElementSibling; }
   return after.join(" ");
 });
