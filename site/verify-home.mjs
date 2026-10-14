@@ -163,11 +163,21 @@ for (const theme of THEMES) {
     !!(await page.$("#contact")));
 
   /* Links out to pages that do not exist yet are omitted, not left at a 404
-   * (brief §8). These four are Phase 2 and 3. */
-  for (const dead of ["/why/one-model", "/why/sources.html#", "/why/no-lock-in", "/pricing"]) {
+   * (brief §8). These three are Phase 2 and 3.
+   *
+   * `/why/one-model` was a fourth entry. It is not one any more: the page was
+   * rebuilt on the kit under PRO-28, so §5's held-back "Read the model page →"
+   * ships with it and the assertion that it must not would now fail on the
+   * link it was written to withhold. */
+  for (const dead of ["/why/sources.html#", "/why/no-lock-in", "/pricing"]) {
     const inMain = await page.$$eval(`main a[href*="${dead.replace('#', '')}"]`, (as) => as.length);
     ok(`${theme}: no body link to ${dead.replace('#', '')}`, inMain === 0, String(inMain));
   }
+
+  /* And the link itself, asserted rather than merely permitted — PRO-28 item 3
+   * is that the page and its inbound link land together. */
+  ok(`${theme}: §5 links the rebuilt model page`,
+    (await page.$$eval('main a[href*="/why/one-model"]', (as) => as.length)) === 1);
 
   ok(`${theme}: the utility bar carries no hosted-service notice`,
     !/hosted service|free trial/i.test(

@@ -412,10 +412,27 @@ node site/design-system/verify-page-interfaces.mjs http://127.0.0.1:8731   # 70/
 serves, and the stdlib handler 404s on it. Either server works for the scripts
 that ask for a `.html` file or a directory index.
 
-The Python half is the composition and claim-regression check: it reads the
+The first half is the composition and claim-regression check: it reads the
 built HTML, asserts what the brief is specific about, and greps the strings the
 build issue says must not appear. The `.mjs` half is the render pass at
 360/768/1280/1920/2560 in both themes.
+
+The language of the first half is the page's own call — Interfaces and Platform
+are Python, Governance, vs Starburst and One model are `.mjs`:
+
+```sh
+node site/design-system/check-page-one-model.mjs        # 76/76, no browser
+node site/design-system/verify-page-one-model.mjs http://127.0.0.1:8731   # 261/261
+```
+
+One model asks for `/why/one-model` too, so it wants `serve.py` for the same
+reason Interfaces does.
+
+What a page checker no longer owns is the struck-claim list.
+`site/verify-claims.mjs` sweeps it across every page in `site/` (REQ-2021), so a
+per-page copy of it would be the drift that module exists to prevent. One model
+is the page that proves the point: its checker asserts composition and the
+audit's copy word for word, and nothing about the ban list.
 
 - **Contrast.** `check-contrast.mjs` parses `tokens.css`, resolves every alias
   for both themes and tests 72 pairs. 144/144.
