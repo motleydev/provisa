@@ -5,7 +5,9 @@ CRITICAL: All Playwright tests must import `test` from `./coverage`, never direc
 CRITICAL: Test errors must be resolved whether preexisting or not. Never skip or ignore failing tests.
 
 # Requirements Tracking
-On any new requirement, constraint, feature, or design decision: append inline a requirements-tracking step. Read `agents/requirements-tracker.md` for format, then append to `docs/arch/requirements.md`. Silent — skip implementation details, bugs, questions.
+On any new requirement, constraint, feature, or design decision: append inline a requirements-tracking step. Read `agents/requirements-tracker.md` for format, then add the requirement to `docs/arch/requirements.yaml` and run `make sync-reqs`. Silent — skip implementation details, bugs, questions.
+
+`docs/arch/requirements.md` is generated from that YAML. Writing the `.md` loses the requirement at the next regeneration.
 
 # Swarm Mode (Self-Claim)
 
@@ -25,4 +27,10 @@ Available roles: agent-writer, architect, bug-fixer, code-reviewer, debugger, do
 # Skills
 Before applying a skill, read the corresponding `skills/<name>/SKILL.md` file.
 
-Available skills: anti-patterns, async-patterns, audit-workflow, bug-reporter, code-review, commit-message, debug-python, dependency-rules, domain-model, next-phase, project-layout, pytest-patterns, python-style, test-first, test-tiers, venv-setup
+Available skills: anti-patterns, async-patterns, audit-workflow, bug-reporter, code-review, commit-message, debug-python, dependency-rules, domain-model, github-issue, next-phase, project-layout, puppeteer-debugging, pytest-patterns, python-style, react-graphql, test-first, test-tiers, venv-setup
+
+Every name above has a file. Three were cited from elsewhere and are now on the list too:
+`github-issue` (`CLAUDE.md`), `puppeteer-debugging` (`agents/debugger.md`,
+`agents/bug-fixer.md`) and `react-graphql` (`provisa-ui/eslint.config.js`). Do not add a
+name here without the file — a pointer to a missing skill is the silent error handling the
+first `CRITICAL` above bans.
