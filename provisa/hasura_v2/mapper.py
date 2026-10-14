@@ -601,12 +601,13 @@ def convert_metadata(
     all_functions: list[Function] = []
     all_event_triggers: list[EventTrigger] = []
 
-    # Every computed field in the export becomes a command named for the field (_map_table,
-    # below), and commands share one address space with webhooks (REQ-1385). Hasura lets the
-    # function behind a computed field be tracked as well, and a tracked function becomes a
-    # command named for the function — so the two can claim one name. Read the claimed names
-    # before any mapping runs: the collision crosses sources, and the table pass for a later
-    # source would otherwise run after the tracked-function pass for an earlier one.
+    # REQ-2041. Every computed field in the export becomes a command named for the field
+    # (_map_table, below), and commands share one address space with webhooks (REQ-1385).
+    # Hasura lets the function behind a computed field be tracked as well, and a tracked
+    # function becomes a command named for the function — so the two can claim one name. Read
+    # the claimed names before any mapping runs: the collision crosses sources, and the table
+    # pass for a later source would otherwise run after the tracked-function pass for an
+    # earlier one.
     computed_field_claims = {
         cf.name: (ht.schema_name, ht.name)
         for hs in metadata.sources

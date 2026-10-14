@@ -23543,3 +23543,15 @@ runner, one second apart.
 **Code:** `scripts/install-env.sh`
 
 **Tests:** n/a — a constraint on how the wrapper is called.
+
+### REQ-2041 · Hasura v2 Import: Command-Name Collision Resolution {#REQ-2041}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+In Hasura v2 import, when a computed field and a tracked function in the same or different sources claim the same command name, the computed field wins and the tracked function is dropped (not an error). Commands and webhooks share one address space (REQ-1385), making such configurations unrepresentable. The drop is reported as a [functions] warning naming both claimants and their remedies: untrack the function in Hasura v2 or rename the computed field. Collision detection scans all sources' computed fields before any mapping runs, enabling cross-source collision detection — the table pass for a later source would otherwise run after the tracked-function pass for an earlier source and miss it.
+
+**Use case:** A Hasura v2 export has a computed field `get_claims` on table `entities` and a tracked function `get_claims` in the same or different database. The importer must not fail; it drops the tracked function and reports the collision with both remedies.
+
+**Code:** `provisa/hasura_v2/mapper.py`
+
+**Tests:** `tests/unit/test_hasura_v2.py` (`TestComputedFieldAndTrackedFunctionShareAName`)
