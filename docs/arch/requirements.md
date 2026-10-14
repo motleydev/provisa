@@ -23555,3 +23555,26 @@ In Hasura v2 import, when a computed field and a tracked function in the same or
 **Code:** `provisa/hasura_v2/mapper.py`
 
 **Tests:** `tests/unit/test_hasura_v2.py` (`TestComputedFieldAndTrackedFunctionShareAName`)
+
+### REQ-2043 · CI & Verification {#REQ-2043}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A site task ships on its own branch, cut from the integration branch, and its own
+pull request. The issue closes on the merge of that pull request, not on the
+existence of its commits. Two workflows gate a pull request touching `site/**`:
+`site-review.yml` for the browserless checkers and `site-review-browser.yml` for
+the Playwright pass at every verified width in both themes. The monorepo jobs —
+`ruff + pyright`, `tsc + vitest`, `pytest tests/unit`, `Validate
+requirements.yaml` — are red on `main` independently of any site work and are
+not a verdict on a page.
+
+**Use case:** Ten issues read `done` with commits only on
+`pro8-source-corrections-claim-sets`, and thirteen further commits for `done`
+issues existed only in one agent checkout, unpushed to any remote. Five agents
+shared one branch feeding one pull request of 93 files and +15,904 lines, so no
+page was reviewed before the board called it done.
+
+**Code:** `docs/ops/site-task-pipeline.md`, `.github/workflows/site-review.yml`
+
+**Tests:** n/a — a constraint on how a site task is delivered.
