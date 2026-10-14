@@ -54,6 +54,9 @@ jobs:
       - name: Token contrast, light and dark
         run: node site/design-system/check-contrast.mjs
 
+      - name: Page structure — /install
+        run: node site/design-system/check-page-install.mjs
+
       - name: Page structure — /why/governance
         run: node site/design-system/check-page-governance.mjs
 
