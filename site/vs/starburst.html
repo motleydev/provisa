@@ -595,7 +595,11 @@
 
             <tr>
               <th scope="row">AI agent</th>
-              <td>Their documentation describes no MCP server</td>
+              <td>A hosted MCP server in Galaxy, and an MCP endpoint in
+                Enterprise behind
+                <code>starburst.mcp.enabled=true</code> — read-only SQL
+                (<code>SELECT</code>, <code>SHOW</code>, <code>EXPLAIN</code>),
+                scoped to the privileges of the authenticating identity</td>
               <td data-highlight>A governed MCP server, scoped to the identity
                 behind the token</td>
             </tr>

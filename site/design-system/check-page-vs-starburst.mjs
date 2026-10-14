@@ -34,6 +34,8 @@ const FORBIDDEN = [
   ["no subscription",      "Galaxy has Kafka streaming ingest, GA"],
   ["no streaming support", "Same"],
   ["no domain model",      "Galaxy has data products as an access-control entity"],
+  ["no MCP server",        "Wrong. docs.starburst.io publishes an MCP server page for Galaxy (hosted, OAuth, read-only SQL) and one for Enterprise (starburst.mcp.enabled)"],
+  ["describes no MCP",     "Same. PRO-20: the fifth negative absolute, and false like the other four"],
   ["operationally heavy",  "An undefended pejorative, on the page whose credibility rests on conceding first"],
   ["six layers",           "Five compiled, plus an approval hook"],
   ["6 layers",             "Same"],
@@ -87,6 +89,7 @@ const REQUIRED = [
   ["embedded tier runs on DuckDB",     "C-22, the third"],
   ["in high-security mode it is not bypassable", "C-17. The absolute cannot ship without this"],
   ["PostgreSQL control plane",         "C-18. The qualifier travels with the claim"],
+  ["starburst.mcp.enabled=true",       "§6 AI agent. PRO-20's verified replacement for the MCP negative"],
 ];
 
 /* Links the build notes hold back until the pages they point at exist.
