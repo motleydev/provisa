@@ -23339,3 +23339,63 @@ Browser render-pass verification of a site/ page must be run against a server th
 **Code:** site/design-system/serve.py
 
 **Tests:** site/design-system/verify-page-interfaces.mjs
+
+### REQ-2025 · Marketing & Design System {#REQ-2025}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+/why/one-model is built on the Home chrome (fonts.css/tokens.css/provisa.css, the inline theme bootstrap, pv-utility, pv-header, the drawer, pv-skip, SiteFooter), no page-level CSS, and the audit's copy is carried verbatim into kit components rather than reworded. The old page's site/styles.css, Google Fonts link, and mismatched navigation are asserted absent by name, not merely assumed gone.
+
+**Use case:** A page rebuilt on the kit uses only the shared chrome, and migrated copy is not accidentally reworded in the transition.
+
+**Code:** site/why/one-model.html, site/design-system/check-page-one-model.mjs
+
+**Tests:** site/design-system/check-page-one-model.mjs
+
+### REQ-2026 · Marketing & Design System {#REQ-2026}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+Every page built on the kit carries its own pair of checkers on the documented split — one that needs no browser (composition plus the page's copy word for word) and one .mjs render pass at 360/768/1280/1920/2560 in both themes against the extensionless production route. A page checker does not restate the struck-claim list, because [REQ-2021](#REQ-2021) sweeps it site-wide; duplicating it is the drift that module exists to prevent.
+
+**Use case:** Each page validates its composition and copy independently; the sitewide claim sweep ([REQ-2021](#REQ-2021)) centrally enforces struck claims across all pages to prevent checker fragmentation and checker drift.
+
+**Code:** site/design-system/check-page-one-model.mjs, site/design-system/verify-page-one-model.mjs
+
+**Tests:** site/design-system/check-page-one-model.mjs, site/design-system/verify-page-one-model.mjs
+
+### REQ-2027 · Marketing & Design System {#REQ-2027}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A page whose content is running prose and nothing else measures its prose: every .pv-p and every Callout carrying prose is capped at --measure, and the render pass asserts the widest block against the resolved cap at every width. A Callout does not cap itself, so it carries the .pv-measure utility.
+
+**Use case:** Prose readability is preserved at every viewport width; the render pass confirms no line exceeds the configured measure.
+
+**Code:** site/design-system/provisa.css (--measure), site/design-system/verify-page-one-model.mjs
+
+**Tests:** site/design-system/verify-page-one-model.mjs
+
+### REQ-2028 · Marketing & Design System {#REQ-2028}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+The governance figure on /why/one-model draws five rings — one per layer compiled into the query plan — and does not draw the approval hook, which sits outside the plan. The render pass measures five painted widths closing on the vermilion core rather than counting markup, because pv-fig--rings has rendered one ring fewer than it was given before.
+
+**Use case:** The figure's ring count is verified by render width, not by markup count, catching silent off-by-one rendering errors.
+
+**Code:** site/design-system/verify-page-one-model.mjs
+
+**Tests:** site/design-system/verify-page-one-model.mjs
+
+### REQ-2029 · Marketing & Design System {#REQ-2029}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+A dead-link assertion that exists only because a page is unbuilt is removed when that page lands, and replaced by an assertion of the link. site/verify-home.mjs now asserts Home §5's "Read the model page →" TextLink to /why/one-model instead of asserting no body link to it.
+
+**Use case:** Once a page is built and live, its link is asserted as functional rather than asserted as dead; the dead-link check ceases to apply.
+
+**Code:** site/verify-home.mjs
+
+**Tests:** site/verify-home.mjs
