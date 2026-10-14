@@ -13,6 +13,7 @@ into a sysroot, and print the environment that aims nix-ld at it.
 
     eval "$(python3 site/design-system/browser-deps.py --prefix /somewhere/durable)"
     (cd provisa-ui && npx --no-install playwright install chromium)
+    ln -s provisa-ui/node_modules node_modules   # so an import from site/ resolves
     python3 site/design-system/serve.py 8743 &
     node site/design-system/verify-page-vs-starburst.mjs http://127.0.0.1:8743
 
