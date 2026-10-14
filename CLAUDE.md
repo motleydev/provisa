@@ -35,11 +35,11 @@ On any new requirement, constraint, feature, or design decision: spawn a backgro
 
 ## Documentation
 
-When features are complete and need documentation, or existing docs are stale: spawn the doc-writer agent (`agents/doc-writer.md`). It reads source before writing, tags claims as `[tool-verified]` or `[inferred]`, and follows the prose rules in `.claude/refs/prose-quality.md`.
+When features are complete and need documentation, or existing docs are stale: spawn the doc-writer agent (`agents/doc-writer.md`). It reads source before writing, tags claims as `[tool-verified]` or `[inferred]`, and follows the prose rules in `refs/prose-quality.md`.
 
 When reviewing inherited READMEs, vendor docs, or PRs with doc changes: spawn the doc-reviewer agent (`agents/doc-reviewer.md`). It audits for prose quality, accuracy, completeness, and structure — does not rewrite unless asked.
 
-Both agents read `.claude/refs/prose-quality.md` before acting. The PostToolUse prose hook (`hooks/prose-check.py`) blocks writes to `.md` files containing banned AI-smell phrases.
+Both agents read `refs/prose-quality.md` before acting. The PostToolUse prose hook (`hooks/prose-check.py`, wired in the tracked `.claude/settings.json`) fails any `.md` write whose new text carries a banned phrase, and names each one. It checks the text the write introduced rather than the whole file, so a document with pre-existing hits can still be appended to — those are `agents/doc-reviewer.md`'s to find.
 
 ## Site Tasks
 
@@ -47,8 +47,8 @@ One branch and one pull request per site task, cut from the integration branch, 
 
 ## Bug Reporting
 
-After confirming a bug (reproduced or root-caused): use the `github-issue` skill (`.claude/skills/github-issue/SKILL.md`) to deduplicate and file. Never create an issue for an unverified bug.
+After confirming a bug (reproduced or root-caused): use the `github-issue` skill (`skills/github-issue/SKILL.md`) to deduplicate and file. Never create an issue for an unverified bug.
 
 ## Swarm Mode & Teammate Spawning
 
-@.claude/refs/swarm-mode.md
+@refs/swarm-mode.md
