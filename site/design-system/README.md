@@ -283,6 +283,19 @@ node site/design-system/verify-ui.mjs http://127.0.0.1:8731   # 103/103
 repo — `site/` has no build step and should not acquire one. Install it wherever
 you are running from: `npm i playwright && npx playwright install chromium`.
 
+Pages built on the kit add their own pair, named for the page, on the same
+split — one script that needs nothing and one that needs a browser:
+
+```sh
+python3 site/design-system/check-page-interfaces.py      # 66/66, no browser
+node site/design-system/verify-page-interfaces.mjs http://127.0.0.1:8731
+```
+
+The Python half is the composition and claim-regression check: it reads the
+built HTML, asserts what the brief is specific about, and greps the strings the
+build issue says must not appear. The `.mjs` half is the render pass at
+360/768/1280/1920/2560 in both themes.
+
 - **Contrast.** `check-contrast.mjs` parses `tokens.css`, resolves every alias
   for both themes and tests 63 pairs. 126/126.
 - **The header composition.** Six nav items and no Insights link; the toggle in

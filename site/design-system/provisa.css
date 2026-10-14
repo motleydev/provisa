@@ -451,6 +451,14 @@ img,svg{max-width:100%}
   color:var(--text-emphasis-small);
 }
 .pv-callout__body{font-size:var(--type-body-sm);line-height:1.5}
+/* The forest tone. The kit drew the Callout in vermilion only, which is the
+ * wrong half of the pair whenever a page states what is uniform beside what is
+ * not — /why/interfaces §3 is exactly that. Both values are existing group
+ * tokens, so this adds a tone and no colour: --group-get is the forest rule
+ * and --group-get-text is the cut that clears AA at the 13px label, the same
+ * value --text-link already uses for 13px link text in both themes. */
+.pv-callout--get{border-left-color:var(--group-get)}
+.pv-callout--get .pv-callout__label{color:var(--group-get-text)}
 .pv-callout--inverse{
   padding:18px 24px;
   gap:14px 20px;
