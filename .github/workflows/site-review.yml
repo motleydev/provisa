@@ -1,0 +1,95 @@
+name: Site Review Gate
+
+# The browserless half of the site's own checkers, run on every pull request that
+# touches site/. Until this workflow they ran only when a person remembered to type
+# `node site/verify-claims.mjs`, which is how /why/one-model shipped "85+", "six
+# layers" and "No invalid join ever runs on your data" past a green verify-home.mjs
+# (PRO-27): the checker existed, nothing ran it.
+#
+# Everything here is node builtins or the Python standard library over the bytes on
+# disk — site/ has no build step, so the served bytes are the checked bytes. No npm
+# ci, no pip install, no browser, no server, no secrets. The browser half
+# (verify-ui.mjs and the verify-page-*.mjs family) needs Playwright and a served
+# site/ and is deliberately not in this job; it belongs in a workflow that can pay
+# for a Chromium download.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - site/**
+      - .github/workflows/site-review.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to the same ref supersedes the run before it.
+concurrency:
+  group: site-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  claims:
+    name: struck claims + design system
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Each checker prints one PASS/ok line per assertion and exits non-zero on the
+      # first failure, so a red step names the check and its numbers. They are listed
+      # one per step rather than looped so that the failing step name says which
+      # checker failed without opening the log.
+      - name: Struck claims across every page
+        run: node site/verify-claims.mjs
+
+      - name: Design system kit
+        run: node site/design-system/check-kit.mjs
+
+      - name: Token contrast, light and dark
+        run: node site/design-system/check-contrast.mjs
+
+      - name: Page structure — /why/governance
+        run: node site/design-system/check-page-governance.mjs
+
+      - name: Page structure — /why/one-model
+        run: node site/design-system/check-page-one-model.mjs
+
+      - name: Page structure — /vs/starburst
+        run: node site/design-system/check-page-vs-starburst.mjs
+
+      # Two page checkers are Python rather than node. They use the standard library
+      # only — re and html.parser — so they need no more setup than the runner's
+      # python3, and the drift step below globs on the check-/verify- name rather
+      # than on an extension so a checker in a third language cannot hide either.
+      - name: Page structure — /why/interfaces
+        run: python3 site/design-system/check-page-interfaces.py
+
+      - name: Page structure — /platform
+        run: python3 site/design-system/check-page-platform.py
+
+      # A checker that exists and is not wired into this job is the PRO-27 failure
+      # again one level up: green CI that never ran the check. This step discovers
+      # every browserless checker under site/ and fails if one is not named above,
+      # so adding a checker without gating it cannot pass silently. A checker that
+      # imports playwright is the browser half and is excluded by that import.
+      - name: Every browserless checker is gated
+        run: |
+          missing=0
+          while IFS= read -r f; do
+            if grep -q "playwright" "$f"; then continue; fi
+            if ! grep -q " $f\$" .github/workflows/site-review.yml; then
+              echo "FAIL  $f is a browserless checker that no step in this workflow runs"
+              missing=1
+            fi
+          done < <(find site \( -name 'check-*' -o -name 'verify-*' \) -type f | sort)
+          if [ "$missing" -ne 0 ]; then
+            echo "Add a step for each checker listed above, or give it a playwright import if it is a browser check."
+            exit 1
+          fi
+          echo "ok    every browserless checker under site/ has a step"

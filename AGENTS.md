@@ -5,7 +5,7 @@ CRITICAL: All Playwright tests must import `test` from `./coverage`, never direc
 CRITICAL: Test errors must be resolved whether preexisting or not. Never skip or ignore failing tests.
 
 # Requirements Tracking
-On any new requirement, constraint, feature, or design decision: append inline a requirements-tracking step. Read `.claude/agents/requirements-tracker.md` for format, then append to `docs/arch/requirements.md`. Silent — skip implementation details, bugs, questions.
+On any new requirement, constraint, feature, or design decision: append inline a requirements-tracking step. Read `agents/requirements-tracker.md` for format, then append to `docs/arch/requirements.md`. Silent — skip implementation details, bugs, questions.
 
 # Swarm Mode (Self-Claim)
 
@@ -28,9 +28,9 @@ All agents operate autonomously. No lead assignment required.
 Include: 1) Which module(s) they own 2) Files to read first 3) Verification command 4) What NOT to touch
 
 # Roles
-When acting in a named role, read the corresponding `.claude/agents/<name>.md` file before proceeding.
+When acting in a named role, read the corresponding `agents/<name>.md` file before proceeding.
 
-Available roles: agent-writer, architect, bug-fixer, code-reviewer, debugger, doc-writer, marketer, refactorer, requirements-tracker, sql-analyst, test-strategist
+Available roles: agent-writer, architect, bug-fixer, code-reviewer, debugger, doc-reviewer, doc-writer, marketer, refactorer, requirements-tracker, sql-analyst, test-strategist
 
 # Skills
 Before applying a skill, read the corresponding `.claude/skills/<name>/SKILL.md` file.

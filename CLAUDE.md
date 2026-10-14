@@ -31,13 +31,13 @@ Each has its own control plane, config, ports, and volumes. Before any command t
 
 ## Requirements Tracking
 
-On any new requirement, constraint, feature, or design decision: spawn a background haiku agent. It reads `.claude/agents/requirements-tracker.md` for format, then appends to `docs/arch/requirements.md`. Silent — skip implementation details, bugs, questions.
+On any new requirement, constraint, feature, or design decision: spawn a background haiku agent. It reads `agents/requirements-tracker.md` for format, then appends to `docs/arch/requirements.md`. Silent — skip implementation details, bugs, questions.
 
 ## Documentation
 
-When features are complete and need documentation, or existing docs are stale: spawn the doc-writer agent (`.claude/agents/doc-writer.md`). It reads source before writing, tags claims as `[tool-verified]` or `[inferred]`, and follows the prose rules in `.claude/refs/prose-quality.md`.
+When features are complete and need documentation, or existing docs are stale: spawn the doc-writer agent (`agents/doc-writer.md`). It reads source before writing, tags claims as `[tool-verified]` or `[inferred]`, and follows the prose rules in `.claude/refs/prose-quality.md`.
 
-When reviewing inherited READMEs, vendor docs, or PRs with doc changes: spawn the doc-reviewer agent (`.claude/agents/doc-reviewer.md`). It audits for prose quality, accuracy, completeness, and structure — does not rewrite unless asked.
+When reviewing inherited READMEs, vendor docs, or PRs with doc changes: spawn the doc-reviewer agent (`agents/doc-reviewer.md`). It audits for prose quality, accuracy, completeness, and structure — does not rewrite unless asked.
 
 Both agents read `.claude/refs/prose-quality.md` before acting. The PostToolUse prose hook (`hooks/prose-check.py`) blocks writes to `.md` files containing banned AI-smell phrases.
 
