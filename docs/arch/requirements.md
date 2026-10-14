@@ -23207,3 +23207,15 @@ Each tour declares its prerequisites, what its steps show of the org beyond the 
 **Code:** —
 
 **Tests:** —
+
+### REQ-2014 · Marketing & Design System {#REQ-2014}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+The marketing site has a single CTA ladder with three fixed rungs, written in site/design-system/README.md under "The CTA ladder" so pages source labels from the kit rather than copy: (1) Primary—download-and-register: "Download Provisa" to /install and "Get a free licence" to /register as one rung (the licence is free, a registration artifact, does not gate functionality per [REQ-1137](#REQ-1137)); (2) Secondary—contact path: "Book a demo" to page-closing band's demo form at #contact (alternative to installing, never the only action); (3) No page links cloud.provisa.dev as a way to run Provisa, in any tense; "coming soon" and "in development" are not available; no managed-hosting SKU (go-to-market is licence sales per docs/marketing.md). Label specimens are propagation sources; the rule lives in the kit and per-page checkers, not only in plan revisions.
+
+**Use case:** A new page reads CTA labels from site/design-system/README.md; no label escapes into specimen code that later spreads to other pages.
+
+**Code:** `site/design-system/README.md`, `site/design-system/check-page-platform.py`
+
+**Tests:** —
