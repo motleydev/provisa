@@ -23480,3 +23480,53 @@ the converted number, instead of discovering the role serving six times its v2 r
 **Code:** site/vs/hasura.html, docs/import.md
 
 **Tests:** site/verify-claims.mjs
+
+## 14. CI & Verification
+
+### REQ-2034 · CI & Verification {#REQ-2034}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+Paperclip agent runners are NixOS systems with no `apt-get`, no `nix` on `PATH`, and no FHS library directory. The `nix` binary is available at `/run/current-system/sw/bin/nix` and the binary cache is reachable; missing toolchains are a `nix build` away rather than blockers.
+
+**Use case:** NixOS runners require verification scripts to discover and use nix from its canonical location, avoiding hard failures when standard tools are absent.
+
+**Code:** `scripts/nix-verify-env.sh`, `site/verify-*.mjs`
+
+**Tests:** Verified by running site verification suites on NixOS runners (6c1da7485).
+
+### REQ-2035 · CI & Verification {#REQ-2035}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+Browser verification on NixOS runners runs as `scripts/nix-verify-env.sh browser <command>`, which sets `PLAYWRIGHT_LD_LIBRARY_PATH` to a nix-built chromium runtime closure. Playwright's downloaded chromium otherwise exits on missing `libnspr4.so`.
+
+**Use case:** Browser verification scripts can run without requiring chromium's transitive dependencies to be available system-wide, by building them once in nix.
+
+**Code:** `scripts/nix-verify-env.sh`, `site/verify-*.mjs`
+
+**Tests:** `site/verify-home.mjs` returns 115/115 passed against `site/` served on 127.0.0.1:8731 (6c1da7485).
+
+### REQ-2036 · CI & Verification {#REQ-2036}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+Install verification on NixOS runners runs as `scripts/nix-verify-env.sh install <command>`, which puts nix's python 3.12 and postgresql 16 ahead of the runner's python 3.13 on `PATH`, and sets `LD_LIBRARY_PATH` to libstdc++ and zlib so the embedded tier's manylinux wheels load.
+
+**Use case:** The embedded tier's manylinux wheels can be installed and provisa can boot to completion without requiring exact version matches against the runner's system python and libraries.
+
+**Code:** `scripts/nix-verify-env.sh`
+
+**Tests:** `pip install "provisa[embedded]"` installs provisa 0.1.0a479 from PyPI on python 3.12.14, and `provisa run --demo` boots to "Provisa is ready" (6c1da7485).
+
+### REQ-2037 · CI & Verification {#REQ-2037}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+When wrapping a command in `bash -c` on a runner that sets `BASH_ENV`, use `env -u BASH_ENV bash -c` instead of a bare `bash -c`. The rc file loaded by `BASH_ENV` re-prepends the runner's own python 3.13 to `PATH`, undoing the environment setup.
+
+**Use case:** Commands that depend on PATH modifications (e.g. nix's python 3.12) will not silently revert to the runner's system python when wrapped in a shell.
+
+**Code:** `scripts/nix-verify-env.sh`
+
+**Tests:** Verified by inspection during NixOS runner setup (6c1da7485).
