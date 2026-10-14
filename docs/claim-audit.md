@@ -743,7 +743,13 @@ Designer.
 4. **Approved joins.** "Every join in SQL and Cypher must match a relationship someone approved. In
    high-security mode that is not bypassable, by anyone." Verified per the 1.6 rewrite. **Never the
    absolute form.**
-5. **Three languages, one model.** SQL, GraphQL and Cypher over the same semantic model. Verified.
+5. **Ask once in English; six governed surfaces answer.** SQL, GraphQL, Cypher, gRPC, JSON:API and
+   OpenAPI, each generated for the asking role and run through the same compiled governance.
+   Verified per 5.1a. **This is the spine as of 2026-10-14 and it replaces "three languages, one
+   model" in every spine position on this page, the §5 CodeTabs block included.** All three
+   qualifiers in 5.1b must be visible where it appears — particularly that six is the capability,
+   not a count the reader should expect to see. The three query languages remain the right claim
+   where the sentence is about query languages; see 5.1c.
 6. **Five listeners, nine ways in.** pgwire, Bolt, Arrow Flight (carrying Flight SQL, JDBC and
    Airport), gRPC, HTTP (GraphQL, REST, JSON:API, OpenAPI, MCP, WebSocket). Verified per 1.5.
    **Not "nine protocols".**
@@ -831,7 +837,9 @@ Not on Home: any compliance name, any latency number, any SaaS implication, "sta
 ### Page 4 — Interfaces
 
 1. **One model under every surface.** GraphQL is the canonical schema; REST, JSON:API, OpenAPI and
-   gRPC are derived from it. Verified, `docs/features.md:427`.
+   gRPC are derived from it. Verified, `docs/features.md:427`. **This page is where the spine's
+   six surfaces are proved**: the same derivation that makes gRPC and JSON:API free of extra
+   modelling is why one English question can come back on all six (5.1a). Lead with it here.
 2. **Governance is uniform; command invocation is not.** State the first, qualify the second.
    Verified per 1.5.
 3. **The five listeners and nine ways in**, as a table with the mapping shown so JDBC and Airport
@@ -924,7 +932,13 @@ I have struck. It reads as a vendor flyer. Rebuild it:
 Verified against the code and the requirements, not against `docs/regions-demo.md`. Read the claim
 strength verdict first: it changes what the rest of this list is allowed to sound like.
 
-**Claim strength: narrow page, cleared. Strong page, refused.** The enforcement code is present and
+**Claim strength: narrow page, cleared. Strong page, refused. Ratified 2026-10-14 — the page ships
+narrow, with the Swiss/German worked example as a sketch.** That decision is now the brief for
+whoever builds the page: everything below is in scope, nothing above the line is, and the worked
+example at the end of this section carries its two mandatory fixes into the sketch — it is drawn as
+a modelling choice someone made, not as behaviour the platform imposes.
+
+The enforcement code is present and
 specific — `provisa/security/residency.py` (REQ-1921), `provisa/federation/query_residency.py`
 (REQ-1922), `provisa/core/regions.py` (REQ-1921/1922) — with unit, UI and e2e tests
 (`tests/unit/test_data_residency.py`, `provisa-ui/src/pages/__tests__/SecurityPage.residency.test.tsx`,
@@ -1181,13 +1195,14 @@ write a page, a roadmap line or a sales sentence off them until they are.
    (`:956`, `:972`). It is role-checked in the sense the claim needs: the run fetches role-scoped SDL,
    resolves the role through `require_role`, and binds that role's RLS context and domain access
    (`runner.py:531-571`). So "one model, three languages" is a true statement about the *query
-   languages* and an undersell as a description of what one question produces. My recommendation: keep
-   "three languages" where it describes SQL, GraphQL and Cypher — it is the claim a reader can check
-   in a minute — and add the stronger one as its own claim rather than replacing it: *ask once in
-   English, get six role-checked artifacts: SQL, GraphQL, Cypher, gRPC, JSON:API and OpenAPI.* Two
-   qualifiers travel with it: the surfaces are generated queries and request shapes, not six running
-   endpoints conjured per question, and per-branch failures are per-branch — a page must not imply six
-   for six every time. Verify those two before it goes on Home.
+   languages* and an undersell as a description of what one question produces.
+
+   **Decision, 2026-10-14: the spine is replaced, not supplemented.** I had recommended adding the
+   six-surface claim alongside "three languages"; the call went the other way and six surfaces is now
+   the spine. One consequence of that is mine to carry rather than the deciders': a spine is quoted
+   back at us by people who did not read the qualifier, so I re-audited the claim at spine strength
+   before writing it down. §5.1a is that re-audit, §5.1b is the wording the spine may use, and §5.1c
+   is where the replacement reaches and where it must stop.
 2. **Creation-request queue and steward workflow — exists in code, absent from the site.** Not a gap
    in the product, a gap in the story: `_queue_creation_request` (REQ-434,
    `provisa/api/admin/schema_common.py:137`) with the response code
@@ -1207,3 +1222,100 @@ write a page, a roadmap line or a sales sentence off them until they are.
 5. **Test environments, branched models, synthetic generation from profiles at full scale** — no
    first-pass match for branched models or synthetic generation; the profiler exists
    (`provisa/profiler/`), which is where "from profiles" would start. Unaudited.
+
+---
+
+### 5.1a — the six-surface claim, re-audited at spine strength
+
+Read 2026-10-14 against `provisa/nl/runner.py`, `provisa/nl/executor.py` and
+`provisa-ui/src/pages/NlPage.tsx`. Four findings, two of which correct what §5.1 first said.
+
+**All six are generated *and run*. That is stronger than the first pass claimed.** Every target is in
+`_QUERY_TARGETS` (`runner.py:851`), and each generated query is handed to
+`provisa/nl/executor.py::execute` (`runner.py:983`), which routes every branch through the one
+compiled governance pipeline — `_govern_and_route_compiled` → `_execute_plan`, the same entrypoint
+the live Bolt session and the REST/JSON:API readers use (`executor.py:117-129`, `:156-170`). The
+first pass's qualifier, "generated queries and request shapes, not six running endpoints", was wrong
+in one direction: these are answers, not drafts.
+
+**It was also too generous in the other direction, and this is the one a sceptical engineer will
+test.** The three protocol surfaces are *the request a client would send, plus the envelope that
+client would receive*, computed through the governed pipeline — not a round trip over a gRPC channel
+or an HTTP socket. `_execute_grpc` shapes the result into the `{Type}AggregateResult` /
+`{Type}GroupByRow` structure the real servicer carries, and the code states the intent in as many
+words: the NL preview "must look like what the gRPC client actually receives"
+(`executor.py:253-258`). That is defensible and worth saying plainly. What we may not imply is that
+Provisa dialled its own gRPC server six times.
+
+**Role-checked holds for all six.** Role-scoped SDL and the role's GraphQL schema
+(`runner.py:766-767`, `executor.py:150-152`), the role resolved through `require_role` with its
+domain access (`executor.py:103`), and governance applied by the compiled pipeline on every branch,
+the protocol branches included.
+
+**The six are not six independent attempts — this is the qualifier most likely to be lost in a
+design pass.** SQL and GraphQL are scheduled first, and Cypher (non-strict), gRPC, JSON:API and
+OpenAPI all await them (`runner.py:918-940`, `:969-974`). A failed shared table-selection step, or a
+failed SQL *and* GraphQL pair, takes the dependent four down with it. Degradation is correlated, not
+independent.
+
+**Three of the six answer only some question shapes.** gRPC, JSON:API and OpenAPI express exactly
+three things: a single-table row fetch, an aggregate-only, and a group-by-plus-aggregate with a
+nodes projection (`runner.py:400-505`). A question they cannot express returns the sentinel
+`NOT_APPLICABLE`, which the UI renders as that branch's own state
+(`provisa-ui/src/pages/NlPage.tsx:380`). The product is already honest about this on screen; a page
+that is less honest than the product is the worst of the available positions. SQL, GraphQL and
+Cypher are the three that carry an arbitrary question.
+
+### 5.1b — the spine, in the words a page may use
+
+> **Ask once in English. Provisa answers on six governed surfaces — SQL, GraphQL, Cypher, gRPC,
+> JSON:API and OpenAPI — each one generated for the asking role and run through the same compiled
+> governance.**
+
+Three qualifiers travel with it and I will check every page for them:
+
+1. **"Six surfaces" is what the platform answers on, not a promise of six answers per question.**
+   Write it as capability, never as a count the reader should expect to see. "Up to six" is
+   acceptable; "six every time" is not.
+2. **gRPC, JSON:API and OpenAPI are the request and the response envelope a client of those
+   protocols would exchange** — computed through the governed pipeline. Not a network round trip.
+3. **Those three cover row, aggregate and group-by questions**; anything else comes back as that
+   branch's "not applicable", exactly as the product shows it. The arbitrary question is carried by
+   SQL, GraphQL and Cypher.
+
+A page with the spine and without qualifier 1 is the page I will send back.
+
+### 5.1c — where the replacement reaches, and where it stops
+
+Replace it wherever "one model, three languages" is the **top-line message**: the Home hero and
+§5 CodeTabs block, the Platform and Interfaces leads, the accordion title, the kit's text-link
+sample, and the `<meta name="description">` of any page whose description opens with it. Those are
+spine positions and they now carry §5.1b.
+
+Do **not** rewrite a claim that is specifically about *query languages*, because that is a different
+claim and not the spine:
+
+- **`/vs/starburst`.** The row that earns its keep there is "Starburst speaks SQL; Provisa speaks
+  SQL, GraphQL and Cypher over one model" — audited against Starburst Enterprise 482-e.3 LTS for
+  query languages. We have not audited Starburst's protocol surface count, so a six-versus-one row
+  would assert something about a competitor we did not check. Keep the language row; add the spine as
+  its own line if the page wants it.
+- **Page 5's structural-difference row** and any comparison table cell with the same shape.
+- **`docs/features.md:496`**, which describes the three-language parallel answer as a feature. It is
+  a feature description rather than the spine — but it is now incomplete, and it is *generated*
+  ("Do not hand-edit", from `docs/arch/features.yaml` via `scripts/gen_features_doc.py`). So the fix
+  is a change to the YAML and a regeneration by whoever owns the product docs, not a copy edit, and
+  it is out of scope here. Worth doing: that paragraph is what an engineer reads after the page
+  sells them, and it currently contradicts the spine by omission.
+
+Files carrying the old spine as of 2026-10-14, for whoever executes the swap:
+`site/index.html:408` and `:423-426` (the §5 CodeTabs heading, "the same question, three ways to
+ask"), `site/design-system/partials/accordion.html:32`,
+`site/design-system/partials/text-link.html:5`, `site/why/one-model.html:133`, and
+`site/vs/starburst.html:10` (meta description), `:164` and `:448` — the Starburst three being the
+keep-the-language-row cases above, so only the meta description needs a decision.
+
+One thing to fix while that file is open, unrelated to the spine and already struck in 1.5:
+`site/why/one-model.html:133` reads "Three languages, nine protocols". **Nine protocols** is the
+form Page 1 item 6 rules out — it is five listeners and nine ways in. Whoever edits that link should
+correct both halves in one pass.
