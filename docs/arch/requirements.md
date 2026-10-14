@@ -23555,3 +23555,17 @@ In Hasura v2 import, when a computed field and a tracked function in the same or
 **Code:** `provisa/hasura_v2/mapper.py`
 
 **Tests:** `tests/unit/test_hasura_v2.py` (`TestComputedFieldAndTrackedFunctionShareAName`)
+
+### REQ-2042 · Marketing & Design System {#REQ-2042}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A marketing page does not go live describing converter or product behaviour that is true in the repository but not yet in a published release. The site and product ship on separate trains — the site deploys from this repository while a reader obtains the converter from a GitHub release or `pip install provisa` — so merging a fix to main publishes the page while the reader still has the old artifact. Where a page's copy depends on such a fix, the page is held on a release gate rather than carrying a version-conditional caveat. The gate is recorded in three places: the page brief's header, the page register's state cell, and a numbered acceptance criterion on the build issue that names the command proving it. `/vs/hasura` carries gates on REQ-2034 (both Hasura export layouts report the five unconverted sections) and REQ-2041 (a computed field and a tracked function claiming one command name warns instead of crashing).
+
+**Use case:** A reader runs the exact command the page prints, against the release the page's own download link gives them, and the output matches what the page said it would be.
+
+The gate is executable rather than remembered. `site/design-system/check-page-vs-hasura.mjs` runs the acceptance criterion's two commands against the converter an interpreter resolves, and fails by default; `--pre-release` downgrades it to a report, which is the build-and-commit phase the brief authorises and is not what a deploy runs. A converter resolved out of this repository's source tree fails the gate rather than satisfying it, because the gate is on the artifact the reader installs and a source-tree pass is the confusion it exists to prevent.
+
+**Code:** `site/vs/hasura.html`, `site/design-system/check-page-vs-hasura.mjs`
+
+**Tests:** `site/design-system/check-page-vs-hasura.mjs` (the release-gate section), `site/design-system/verify-page-vs-hasura.mjs`

@@ -1,186 +1,1286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coming from Hasura v2 — Provisa</title>
-  <meta name="description" content="The v2 idea, continued. Point the converter at your Hasura v2 metadata directory and get a Provisa config: tables, permissions, relationships, remote schemas, actions, and triggers — keep the per-role GraphQL API, gain SQL, Cypher, and eight more protocols." />
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../styles.css" />
-  <link rel="canonical" href="https://provisa.dev/vs/hasura" />
+<!-- partials/head.html, verbatim but for the title, the description and the
+     canonical link. Order matters: fonts before tokens before provisa.css, and
+     the theme bootstrap before anything paints.
+
+     This file is a rebuild, not a new page. The old one was on the pre-kit
+     stylesheet (site/styles.css) and is indexed at /vs/hasura; the route does
+     not move and there is no redirect. Two things from the old file had to come
+     across rather than be rewritten from the brief, and both are below: the
+     PRO-34 rate-limit correction (§4 RuledCard 3 and §5 Panel 6) and the
+     comment recording why that sentence may not change back (§5 Panel 6). -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coming from Hasura — Provisa</title>
+<meta name="description" content="Your Hasura v2 metadata is a file, and Provisa reads it — tables, relationships, permissions, actions and cron triggers among them. Row filters that traverse a relationship are not among the things it reads, so the import is the start of a review rather than the end of a migration. The gap list is on the page.">
+<link rel="icon" href="/favicon.svg">
+<link rel="canonical" href="https://provisa.dev/vs/hasura">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+
+<!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
+     external script runs after first paint, which is exactly the flash of the
+     wrong theme this prevents. -->
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="nav" id="nav">
-    <div class="container nav-inner">
-      <a class="brand" href="/" aria-label="Provisa home">
-        <svg class="brand-mark" viewBox="0 0 512 512" width="28" height="28" aria-hidden="true">
-          <rect width="512" height="512" rx="112" fill="#1F2933" />
-          <g transform="translate(48,66) scale(4.0)">
-            <rect x="30" y="18" width="15" height="64" rx="7" fill="#ffffff" />
-            <circle cx="52" cy="35" r="22" fill="#ffffff" />
-            <circle cx="52" cy="34" r="10.5" fill="#1F2933" />
-            <circle cx="52" cy="34" r="4.5" fill="#10B981" />
-          </g>
-        </svg>
-        <span class="brand-word">Provisa</span>
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<!-- UtilityBar — partials/utility-bar.html. -->
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<!-- SiteHeader — partials/site-header.html, and the same bytes /vs/starburst
+     ships but for one attribute.
+
+     The kit's `Compare` item targets /vs/starburst. That is a different page
+     from this one, so this file does not carry aria-current="page" on it: a
+     current-page marker on a link that navigates away is the one way this
+     attribute misleads a screen reader. The footer's Compare column has an
+     entry for this route and that is where the marker goes. The nav item
+     itself stays as the shared chrome has it — raised on PRO-3, where the fix
+     is one file. -->
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
       </a>
-      <nav class="nav-links" aria-label="Primary">
-        <a href="/#interfaces">Interfaces</a>
-        <a href="/#governance">Governance</a>
-        <a href="/#sources">Sources</a>
-        <a href="/demos">Live demos</a>
-        <a href="/docs">Docs</a>
-        <a class="nav-cta" href="/#download">Download</a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
       </nav>
     </div>
-  </header>
+  </div>
+</div>
 
-  <main id="main" class="doc">
-    <div class="container">
-      <div class="doc-head">
-        <p class="crumb"><a href="/">Provisa</a> <span>/</span> <span>Coming from Hasura</span></p>
-        <h1>Where the v2 idea kept going.</h1>
-        <p class="lead">
-          Instant, per-role, metadata-driven APIs over your own databases was the right
-          idea. Provisa takes it further rather than sideways — same premise, more
-          languages, more ways in, and governance that holds on all of them. Bring your
-          metadata with you: the converter reads a Hasura v2 metadata directory and emits
-          a Provisa config, tables, permissions, relationships, remote schemas, actions,
-          and triggers included.
-        </p>
+<main id="main">
+
+  <!-- ==================================================================
+       §1 Hero. Breadcrumb + Eyebrow + Heading + Emph.
+
+       No FigPanel, and not by omission: the image-register has no slot for a
+       /vs/* page (IMG-15 is the Compare hub, not a comparison), and a figure
+       above the fold pushes §5 further down, which is the one thing this page
+       cannot afford. If the VP wants a slot it goes between §6 and §7, never
+       above §5.
+
+       The standfirst names four things and points at §3's table for the rest.
+       It is not an eleven-item list and must not become one again: every item
+       in the long version was cited, so this was never a claims problem — an
+       evaluator scanning for their own permission shape cannot find it in
+       prose that long. §3's table is where comprehensiveness belongs.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container pv-stack pv-stack--lg">
+
+      <!-- Breadcrumb. `Compare` is not a link: the hub does not exist yet
+           (build note 3) and /vs/ has no index, so the only honest middle
+           crumb is the label. -->
+      <nav class="pv-crumb" aria-label="Breadcrumb">
+        <a href="/">Provisa</a>
+        <span aria-hidden="true">/</span>
+        <span>Compare</span>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Coming from Hasura</span>
+      </nav>
+
+      <div class="pv-stack">
+        <div class="pv-eyebrow">Migrating</div>
+        <h1 class="pv-h pv-h--hero">Your v2 metadata is a file.
+          <em class="pv-emph">Provisa reads it.</em></h1>
       </div>
 
-      <div class="doc-body">
-        <h2>One command</h2>
-        <div class="dist-terminal" role="img" aria-label="Convert a Hasura v2 metadata directory to a Provisa config">
-          <div class="term-bar"><span></span><span></span><span></span></div>
-          <pre><code><span class="c-comment"># Read a Hasura v2 metadata directory, write a Provisa config</span>
-<span class="c-cmd">python</span> -m provisa.hasura_v2 ./hasura/metadata <span class="c-flag">-o</span> provisa.yaml
+      <div class="pv-stack">
+        <p class="pv-p pv-p--lede">Point the converter at the directory
+          <code>hasura metadata export</code> gave you and it writes a Provisa
+          configuration — permissions, relationships, actions and cron triggers
+          among them, and the rest of the export named row by row in the table
+          below.</p>
 
-<span class="c-comment"># Validate without writing, map schemas onto domains, override connections</span>
-<span class="c-cmd">python</span> -m provisa.hasura_v2 ./hasura/metadata <span class="c-flag">--dry-run</span>
-<span class="c-cmd">python</span> -m provisa.hasura_v2 ./hasura/metadata <span class="c-flag">--domain-map</span> public=sales billing=finance</code></pre>
-        </div>
-
-        <h2>What converts</h2>
-        <ul>
-          <li><strong>Sources</strong> — Postgres, Citus, MySQL, MS SQL, and BigQuery connections map to Provisa sources.</li>
-          <li><strong>Tables and columns</strong> — with per-role select permissions becoming column visibility.</li>
-          <li><strong>Row permissions</strong> — Hasura boolean expressions convert to SQL row-level security rules.</li>
-          <li><strong>Relationships</strong> — object and array relationships become registered, governed relationships.</li>
-          <li><strong>Remote schemas</strong> — mapped to GraphQL remote sources.</li>
-          <li><strong>Actions</strong> — HTTP-handler actions become webhooks; others land as function placeholders.</li>
-          <li><strong>Event triggers and cron triggers</strong> — carried across as event and scheduled triggers.</li>
-          <!-- "preserved as Provisa roles" was false for the rate limit. Hasura's
-               `rate_limit` is per minute and Provisa's `requests_per_second` is per
-               second, so `provisa/hasura_v2/mapper.py:260` rounds and floors at 1:
-               10/min lands at 1 rps = 60/min (6x looser), 150/min lands at 2 rps =
-               120/min (tighter), and the value is exact only at a multiple of 60.
-               `node_limit` and `time_limit` convert exactly; `depth_limit` is dropped
-               by design (mapper.py:253-254). PRO-34. This sentence may not reacquire
-               preservation language while the conversion rounds without a warning —
-               `verify-claims.mjs` holds that. -->
-          <li><strong>Roles and API limits</strong> — roles and their capabilities convert, and per-role query-complexity and query-time limits convert exactly. A Hasura per-minute rate limit becomes a per-second one: exact at a multiple of 60 and rounded otherwise, so re-check the rate on every throttled role.</li>
-        </ul>
-        <p>
-          Anything the converter can't map cleanly is reported as a warning rather than
-          silently dropped, so the gaps are a list you work through, not a surprise you
-          find in production.
-        </p>
-
-        <h2>What you keep</h2>
-        <p>
-          A per-role GraphQL API over your database, generated from metadata, with
-          permissions enforced at query time. That model was right, and Provisa keeps it:
-          per-role schemas, field-level visibility, cursor pagination, aggregates, and
-          Apollo Automatic Persisted Queries. No new modeling universe to learn first, no
-          rewrite as the price of admission.
-        </p>
-
-        <h2>What you gain</h2>
-        <div class="cmp-wrap">
-          <table class="cmp">
-            <thead>
-              <tr><th>&nbsp;</th><th>Hasura v2</th><th>Provisa</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th>Query languages</th>
-                <td>GraphQL</td>
-                <td class="is-us">GraphQL, SQL, and Cypher over the same model</td>
-              </tr>
-              <tr>
-                <th>Ways in</th>
-                <td>HTTP GraphQL</td>
-                <td class="is-us">pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, MCP</td>
-              </tr>
-              <tr>
-                <th>Sources</th>
-                <td>Relational databases, plus remote schemas</td>
-                <td class="is-us">72 source types; on a Trino engine 63 are reachable and 37 are read live with no copy — graph, RDF, files, SharePoint, Salesforce, ServiceNow, Splunk, and API endpoints as governed tables</td>
-              </tr>
-              <tr>
-                <th>Analytics</th>
-                <td>Aggregates over the source</td>
-                <td class="is-us">Cross-source federation and layered materialized views with recorded transforms</td>
-              </tr>
-              <tr>
-                <th>AI access</th>
-                <td>—</td>
-                <td class="is-us">An MCP server where the OAuth token maps to a role, so agents inherit the same governance</td>
-              </tr>
-              <tr>
-                <th>Deployment</th>
-                <td>Container</td>
-                <td class="is-us">Desktop installer, a single wheel for airgaps, Helm, or Terraform</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2>On staying put</h2>
-        <p>
-          Provisa is a handful of primitives compiled deterministically — domains, tables,
-          relationships, masking, views. Your model is portable declarative config and the
-          SQL it compiles is yours to read and export, so the next migration, whenever it
-          comes and wherever it goes, starts from a file you already own.
-        </p>
+        <p class="pv-p">One thing it does not read: <em class="pv-emph">a row
+          filter that traverses a relationship.</em> That is the most common
+          permission shape in a multi-tenant v2 app, it is not converted, and
+          until the converter is fixed <strong>it does not warn</strong>. This
+          is a migration with a review step in the middle, and this page would
+          rather say so than find out with you — start at
+          <a class="pv-link pv-link--inline" href="#gaps">what does not
+          convert</a> if you would rather read that first.</p>
       </div>
 
-      <div class="doc-next">
-        <a class="more" href="/why/no-lock-in">Our position on lock-in</a>
-        <a class="more" href="/#download">Download Provisa</a>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §2 Run it. CodeTabs ×2 + SectionLabel + CodeBlock + Callout.
+
+       Two routes, each complete on its own. The CLI takes a metadata
+       *directory* and calls parse_metadata_dir unconditionally; the metadata
+       API's consolidated document is an upload and goes to the admin import
+       tab. An earlier revision offered the API export as an alternative inside
+       the CLI flow, which led a reader who drives Hasura over HTTP into a dead
+       end two commands in. Do not re-merge the two routes.
+
+       The two tabs compose: tab 1 writes the directory tab 2 converts. An
+       earlier revision exported with `--output metadata.yaml` and then
+       converted `./metadata`, which gets a reader a file and then a missing
+       directory on the page's primary command path.
+
+       Each panel carries its code block and its prose, so it is a
+       pv-codetabs__panel--prose with a pv-code inside rather than a bare
+       code panel.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container pv-stack pv-stack--lg">
+
+      <div class="pv-seclabel">
+        <span class="pv-seclabel__num">01</span>
+        <span class="pv-seclabel__text">Two routes</span>
+      </div>
+
+      <h2 class="pv-h pv-h--section">Run it</h2>
+
+      <p class="pv-p">Export your metadata the way you already do:</p>
+
+      <div class="pv-codetabs">
+        <div class="pv-codetabs__tabs" role="tablist" aria-label="Export, then convert">
+          <button class="pv-codetabs__tab" type="button" role="tab" id="t-export"
+                  aria-controls="p-export" aria-selected="true">
+            <span class="pv-codetabs__lang">Export</span>
+            <span class="pv-codetabs__wire">hasura cli</span>
+          </button>
+          <button class="pv-codetabs__tab" type="button" role="tab" id="t-convert"
+                  aria-controls="p-convert" aria-selected="false" tabindex="-1">
+            <span class="pv-codetabs__lang">Convert</span>
+            <span class="pv-codetabs__wire">provisa</span>
+          </button>
+        </div>
+
+        <div class="pv-codetabs__panel pv-codetabs__panel--prose" role="tabpanel"
+             id="p-export" aria-labelledby="t-export">
+          <div class="pv-code">
+            <pre>hasura metadata export</pre>
+          </div>
+          <p class="pv-p pv-p--sm">That writes the <code>metadata/</code>
+            directory — a <code>databases/</code> tree with one file per table
+            and an <code>!include</code> index, plus <code>actions.yaml</code>,
+            <code>cron_triggers.yaml</code>, <code>api_limits.yaml</code>,
+            <code>inherited_roles.yaml</code> and the rest beside it. It is the
+            directory the next tab converts.</p>
+        </div>
+
+        <div class="pv-codetabs__panel pv-codetabs__panel--prose" role="tabpanel"
+             id="p-convert" aria-labelledby="t-convert" hidden>
+          <div class="pv-code">
+            <pre>python -m provisa.hasura_v2 ./metadata -o config.yaml</pre>
+          </div>
+          <p class="pv-p pv-p--sm">The converter reads a metadata
+            <strong>directory</strong> — the layout
+            <code>hasura metadata export</code> produces, including its
+            <code>!include</code> index, or the flat <code>tables.yaml</code> /
+            <code>actions.yaml</code> layout. Omit <code>-o</code> and it writes
+            to stdout.</p>
+
+          <div class="pv-table">
+            <table>
+              <caption class="pv-sr">The converter's five flags and what each
+                one does</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Flag</th>
+                  <th scope="col">What it does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row"><code>-o</code>, <code>--output</code></th>
+                  <td>Output YAML path. Default stdout</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>--source-overrides</code></th>
+                  <td>Per-source connection overrides: host, port,
+                    credentials</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>--domain-map</code></th>
+                  <td><code>SCHEMA=DOMAIN</code> pairs. Anything unmapped keeps
+                    its name</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>--auth-env-file</code></th>
+                  <td>A <code>.env</code> file. Converts JWT and JWK config, the
+                    admin secret and the claims map</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>--dry-run</code></th>
+                  <td>Parse and validate, write nothing</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="pv-seclabel">
+        <span class="pv-seclabel__num">02</span>
+        <span class="pv-seclabel__text">If you drive Hasura over HTTP</span>
+      </div>
+
+      <p class="pv-p">The metadata API returns one consolidated document rather
+        than a directory:</p>
+
+      <div class="pv-code">
+<pre>curl -X POST http://localhost:8080/v1/metadata \
+  -H "X-Hasura-Admin-Secret: &lt;secret&gt;" \
+  -d '{"type":"export_metadata","args":{}}' &gt; metadata.json</pre>
+      </div>
+
+      <p class="pv-p">That document is an upload, not a command-line argument —
+        the CLI above takes a directory. Take it to <strong>Admin → Import
+        Hasura Config</strong>, which reads a consolidated <code>.json</code>,
+        <code>.yaml</code> or <code>.yml</code> document as well as a
+        <code>.zip</code> of an export directory, and runs the same parser and
+        mapper the CLI runs.</p>
+
+      <div class="pv-callout">
+        <span class="pv-callout__label">IMPORT TAB</span>
+        <span class="pv-callout__body">No shell, no config round-trip:
+          <strong>Admin → Import Hasura Config</strong> runs the same converters
+          either way. Upload the document or a zipped v2 metadata directory, map
+          schemas to domains, and the server returns the counts, the converter’s
+          warnings and the generated configuration — editable in place, with
+          nothing written until you press apply. An import is always a merge
+          into what the organization already has.</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §3 What converts. ComparisonTable, 18 rows × 2 columns.
+
+       The row-filter row carries its qualifier in the cell, not in a footnote.
+       `claim-set-vs-hasura` §1 forbids a "select permissions → column
+       visibility plus row rules" row without the row-filter disclosure beside
+       it, which is what the bolded clause is.
+
+       Do not shorten a cell to make the column fit and do not replace one with
+       an em-dash. Every cell is cited in the brief's §6; a cell that loses its
+       qualifier stops being the claim that was verified.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container pv-stack pv-stack--lg">
+
+      <div class="pv-seclabel">
+        <span class="pv-seclabel__num">03</span>
+        <span class="pv-seclabel__text">Coverage</span>
+      </div>
+
+      <h2 class="pv-h pv-h--section">What converts</h2>
+
+      <div class="pv-table">
+        <table>
+          <caption class="pv-sr">What a Hasura v2 export converts to, across
+            eighteen kinds of metadata object</caption>
+          <thead>
+            <tr>
+              <th scope="col">In your v2 export</th>
+              <th scope="col" data-highlight>What you get</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <th scope="row">Sources</th>
+              <td data-highlight>A Provisa source per database. Connection
+                details come from <code>--source-overrides</code> or the import
+                tab, since the export names databases by environment
+                variable</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Tracked tables</th>
+              <td data-highlight>A table with <code>publish: true</code></td>
+            </tr>
+
+            <tr>
+              <th scope="row"><code>custom_name</code> and
+                <code>custom_root_fields</code></th>
+              <td data-highlight>A table alias — <code>select</code>, then
+                <code>select_by_pk</code>, then <code>custom_name</code></td>
+            </tr>
+
+            <tr>
+              <th scope="row">Custom column names</th>
+              <td data-highlight>Column aliases</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Object relationships</th>
+              <td data-highlight>A <code>many-to-one</code> relationship. One
+                declared by foreign-key column alone names no target in the
+                export; the converter resolves it through the inverse array
+                relationship</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Array relationships</th>
+              <td data-highlight>A <code>one-to-many</code> relationship</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Select permissions, columns</th>
+              <td data-highlight>Per-role column visibility</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Select permissions, row filters</th>
+              <td data-highlight>A row-security rule — <strong>for predicates on
+                the table’s own columns, and for <code>_exists</code>. Not for a
+                filter that traverses a relationship.</strong></td>
+            </tr>
+
+            <tr>
+              <th scope="row">Insert and update permissions</th>
+              <td data-highlight>Writable columns per role</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Delete permissions</th>
+              <td data-highlight>A <code>write</code> capability on the
+                role</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Inherited roles</th>
+              <td data-highlight>Converted</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Computed fields</th>
+              <td data-highlight>A <code>functions[]</code> entry with
+                <code>kind: query</code></td>
+            </tr>
+
+            <tr>
+              <th scope="row">Tracked functions</th>
+              <td data-highlight>A <code>functions[]</code> entry, declared
+                <code>returns: void</code> and visible to <code>org_admin</code>
+                until you finish it</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Actions with an HTTP handler</th>
+              <td data-highlight>A <code>webhooks[]</code> mutation. A non-HTTP
+                handler becomes a <code>functions[]</code> placeholder with a
+                warning to review it</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Cron triggers</th>
+              <td data-highlight>A scheduler entry, with the cron expression and
+                the enabled flag</td>
+            </tr>
+
+            <tr>
+              <th scope="row"><code>api_limits</code></th>
+              <td data-highlight>A per-role rate, query-complexity and
+                query-time limit. Complexity comes from <code>node_limit</code>;
+                <code>depth_limit</code> has no counterpart and is dropped by
+                design</td>
+            </tr>
+
+            <tr>
+              <th scope="row">Remote schemas</th>
+              <td data-highlight>A <code>graphql_remote</code> source, plus one
+                landed table per Query root field your role SDLs expose. A
+                non-null root argument becomes a native-filter column. A remote
+                schema with no permissions lands nothing, because the export
+                carries no other statement of its shape</td>
+            </tr>
+
+            <tr>
+              <th scope="row">A session variable in a filter</th>
+              <td data-highlight><code>X-Hasura-User-Id</code> becomes
+                <code>current_setting('provisa.user_id')</code>, bound from the
+                identity’s user id and claims at query time</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pv-callout pv-callout--get">
+        <span class="pv-callout__label">AT PREVIEW</span>
+        <span class="pv-callout__body">A v2 export names columns but carries no
+          types, and a tracked table with no permission names no columns. The
+          preview fills both in: it reads each reachable source’s
+          <code>information_schema.columns</code>, types every untyped column,
+          and lands every column of a table v2 exposed to nobody but its admin —
+          visible to <code>org_admin</code> alone, because that is who could see
+          it in v2. A source the preview cannot reach is reported, and its
+          columns stay untyped for you to finish before apply.</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §4 What you get that v2 did not have. RuledCard ×4.
+
+       pv-grid--2 and not --4: card 3 is a four-sentence paragraph and a
+       four-track grid would hand it a 230px column.
+
+       RuledCard 3 is the PRO-34 correction, carried over from the pre-kit
+       version of this file. It read "Rate limits that travel … the limits you
+       set in v2 are part of the design", which was false: Hasura's
+       `rate_limit` is per minute, Provisa's `requests_per_second` is per
+       second, and `provisa/hasura_v2/mapper.py:258` divides and rounds with a
+       floor of 1 and no warning — 10/min arrives serving 60/min, 150/min
+       arrives held to 120/min, exact only at a multiple of 60. `node_limit`
+       and the time limit convert exactly; `depth_limit` is dropped by design.
+       REQ-2033 forbids the old framing site-wide and `site/verify-claims.mjs`
+       enforces it as a scoped window check, so this card may not reacquire
+       preservation language — "preserved", "unchanged", "carried over",
+       "carried across", "intact", "untouched", "as-is" — within 90 characters
+       of a rate or an API limit. The arithmetic is §5 Panel 6.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container pv-stack pv-stack--lg">
+
+      <div class="pv-seclabel">
+        <span class="pv-seclabel__num">04</span>
+        <span class="pv-seclabel__text">The upside</span>
+      </div>
+
+      <h2 class="pv-h pv-h--section">What you get that v2 did not have</h2>
+
+      <div class="pv-grid pv-grid--2">
+
+        <!-- The three-language form is deliberate and is not the six-surface
+             spine. `docs/claim-audit.md` §5.1c says not to rewrite a claim
+             that is specifically about query languages, because that is a
+             different claim from the spine, and this card's claim is about
+             query languages. Written down so a later sitewide sweep does not
+             "fix" it. -->
+        <div class="pv-ruled">
+          <span class="pv-ruled__num">01</span>
+          <h3 class="pv-ruled__title">SQL and Cypher, not only GraphQL</h3>
+          <div class="pv-ruled__body">The same model answers GraphQL, SQL and
+            Cypher, with domain membership native to each. Your v2 permissions
+            become the governance on all three rather than on the GraphQL
+            endpoint alone.</div>
+        </div>
+
+        <div class="pv-ruled">
+          <span class="pv-ruled__num">02</span>
+          <h3 class="pv-ruled__title">Policy compiled into the statement</h3>
+          <div class="pv-ruled__body">Five governance layers compile into one
+            query plan before execution, at one place every surface goes
+            through, plus an approval hook that runs before the plan and is not
+            one of them.</div>
+        </div>
+
+        <div class="pv-ruled">
+          <span class="pv-ruled__num">03</span>
+          <h3 class="pv-ruled__title">API limits are in the configuration</h3>
+          <div class="pv-ruled__body"><code>api_limits</code> becomes a per-role
+            limit in the configuration rather than a setting on one deployment.
+            Query complexity and query time convert exactly. The rate does not:
+            v2 counts requests per minute and Provisa counts them per second, so
+            re-read the rate on every throttled role — the arithmetic is in
+            §5.</div>
+        </div>
+
+        <div class="pv-ruled">
+          <span class="pv-ruled__num">04</span>
+          <h3 class="pv-ruled__title">Sources beyond Postgres</h3>
+          <div class="pv-ruled__body">72 source types. On a Trino engine, 63 are
+            reachable and 37 are read live with no copy.</div>
+        </div>
+
+      </div>
+
+      <div class="pv-contact__links">
+        <a class="pv-link" href="/why/governance">The five layers, in
+          detail<span class="pv-link__arrow"> →</span></a>
+        <a class="pv-link" href="/why/interfaces">Every way in<span class="pv-link__arrow"> →</span></a>
       </div>
     </div>
-  </main>
+  </section>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div class="brand">
-        <svg class="brand-mark" viewBox="0 0 512 512" width="24" height="24" aria-hidden="true">
-          <rect width="512" height="512" rx="112" fill="#1F2933" />
-          <g transform="translate(48,66) scale(4.0)">
-            <rect x="30" y="18" width="15" height="64" rx="7" fill="#ffffff" />
-            <circle cx="52" cy="35" r="22" fill="#ffffff" />
-            <circle cx="52" cy="34" r="10.5" fill="#1F2933" />
-            <circle cx="52" cy="34" r="4.5" fill="#10B981" />
-          </g>
-        </svg>
-        <span class="brand-word">Provisa</span>
+  <!-- ==================================================================
+       §5 What does not convert. Callout + ComparisonTable ×2 + CodeBlock +
+       Accordion.
+
+       THIS SECTION IS THE PAGE. Three things about it are acceptance criteria
+       on the build issue (PRO-39) and an SME position on the record, not
+       preferences:
+
+       1. It sits immediately after §4 and before §7. Moving it below §7
+          reverses the page's argument: the credibility strategy is to put the
+          gap list above the fold of the second screen, because a reader who
+          finds the row-filter gap themselves after reading a coverage table
+          has caught us, and a reader who reads it from us has been told.
+
+       2. The leading Callout carries the same visual weight as §3's table.
+          Concretely: this section is the same `pv-section` treatment §3 is,
+          its lead is the kit's Callout at the primary vermilion tone with no
+          weight-reducing modifier (--inverse, --get and --outside are all
+          lighter), and the disclosure's own table is the same `pv-table`
+          component §3's coverage table is. Demoting it — a footnote, a lighter
+          type colour, an accordion panel, pv-p--sm, pv-note — breaks the page.
+          `check-page-vs-hasura.mjs` asserts all of it.
+
+       3. The allowlist row says `allow_list.yaml`, with the underscore. A CLI
+          export writes the file as `allow_list.yaml`; `allowlist` is the
+          metadata API's key for the same section. Both are real, only one is
+          in the directory §2 converts, and a reader who greps their export for
+          the wrong one finds nothing and concludes our gap list is
+          approximate. A design pass that "tidies" the file name to match the
+          section key beside it reintroduces exactly the defect the SME caught,
+          and it looks like a typo fix on the way past. The checker asserts the
+          literal `allow_list.yaml` and forbids `allowlist.yaml`.
+
+       Why the gap list is here at all: a published gap list with a silent
+       permissive bug behind it is worse than no gap list at all, so the
+       disclosure is not a concession the page makes reluctantly — it is the
+       page's entire credibility and the reason anyone believes the rest of it.
+       PRO-13 is open and unassigned.
+       ================================================================== -->
+  <section class="pv-section" id="gaps">
+    <div class="pv-container pv-stack pv-stack--lg">
+
+      <div class="pv-seclabel">
+        <span class="pv-seclabel__num">05</span>
+        <span class="pv-seclabel__text">The gap list</span>
       </div>
-      <p class="footer-note">Config-driven data virtualization. Business Source License 1.1 — non-production use (including evaluation) is free forever, for any size organization. Production use is also free for organizations that, together with their affiliates, have under 100 employees and contractors and under $1M in annual revenue, budget, or expenditures; others need a <a href="mailto:license@provisa.dev">commercial license</a> for production use.</p>
-      <nav class="footer-links" aria-label="Footer">
+
+      <h2 class="pv-h pv-h--section">What does not convert</h2>
+
+      <div class="pv-callout">
+        <span class="pv-callout__label">NOT CONVERTED</span>
+        <span class="pv-callout__body"><strong>Row filters that traverse a
+          relationship are not converted, and the converter does not tell
+          you.</strong> A v2 filter like
+          <code>{"members": {"user_id": {"_eq": "X-Hasura-User-Id"}}}</code>
+          reads <code>members</code> as a column and <code>user_id</code> as an
+          operator on it. There are three outcomes and none of them is an
+          error:</span>
+      </div>
+
+      <div class="pv-table">
+        <table>
+          <caption class="pv-sr">What a v2 row filter converts to, and what each
+            outcome means for the role</caption>
+          <thead>
+            <tr>
+              <th scope="col">What you wrote in v2</th>
+              <th scope="col">What the converter produces</th>
+              <th scope="col">What that means</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <th scope="row"><code>{"user_id": {"_eq": "X-Hasura-User-Id"}}</code></th>
+              <td><code>user_id = current_setting('provisa.user_id')</code></td>
+              <td>Correct</td>
+            </tr>
+
+            <tr>
+              <th scope="row"><code>{"members": {"user_id": {"_eq": "X-Hasura-User-Id"}}}</code></th>
+              <td><code>members /* unsupported op: user_id */</code></td>
+              <td>A rule exists on the role and restricts nothing</td>
+            </tr>
+
+            <tr>
+              <th scope="row"><code>{"_and": [{"project": {"id": {"_eq": …}}}, {"deleted": {"_eq": false}}]}</code></th>
+              <td><code>(project /* unsupported op: id */ AND deleted = FALSE)</code></td>
+              <td>Narrower or broader than the original, with no indication
+                which</td>
+            </tr>
+
+            <tr>
+              <th scope="row">An operator the converter does not know</th>
+              <td><code>TRUE</code>, which is then discarded</td>
+              <td><strong>The role imports with no row restriction at
+                all</strong></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- This paragraph is the claim set's requirement, not the page's
+           choice. It does not move into a footnote and it does not lose the
+           `_exists` rewrite, which is the only actionable half of it. -->
+      <p class="pv-p"><strong>So: review every role’s row rules against your v2
+        permissions before the deployment serves traffic.</strong> The rules
+        that need rewriting by hand are the ones that reach through a
+        relationship. An <code>_exists</code> subquery converts correctly and is
+        the shape to rewrite them into — a v2 <code>_exists</code> on
+        <code>public.project</code> comes out as
+        <code>EXISTS (SELECT 1 FROM public.project WHERE owner_id = current_setting('provisa.user_id'))</code>.</p>
+
+      <h3 class="pv-h pv-h--sub">Reported and not converted</h3>
+
+      <!-- "from a CLI metadata directory and from a metadata-API document
+           alike" is true of this repository and of no release a reader can
+           install yet: `parse_metadata_dir` only started reporting the same
+           five keys the document reader always reported with REQ-2034
+           (PRO-32), landed 14 Oct 2026, and CHANGELOG.md's newest release is
+           v0.1.0-alpha.481 of 13 Oct 2026. That is acceptance criterion 7 and
+           it is a release gate on go-live, not a hedge inside the copy: the
+           alternative was a version-conditional caveat inside the gap list, on
+           the one page whose argument is that we are exact about our own
+           limits, that someone then has to remember to delete.
+           `check-page-vs-hasura.mjs` carries the gate as a release
+           precondition so it is not in anybody's head. -->
+      <p class="pv-p">Five sections of the export have no target in a Provisa
+        configuration. Each one is reported — from a CLI metadata directory and
+        from a metadata-API document alike — so nothing disappears quietly in
+        either layout. Two of the five are load-bearing and worth planning for
+        before you convert.</p>
+
+      <div class="pv-table">
+        <table>
+          <caption class="pv-sr">The five export sections that are reported and
+            not converted, with the file each one is in</caption>
+          <thead>
+            <tr>
+              <th scope="col">Section</th>
+              <th scope="col">The file in a CLI export</th>
+              <th scope="col">Why it matters</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <th scope="row"><code>allowlist</code></th>
+              <td><code>allow_list.yaml</code></td>
+              <td>If you ran v2 with an allowlist you were running it as a
+                security control. It does not come across</td>
+            </tr>
+
+            <tr>
+              <th scope="row"><code>rest_endpoints</code></th>
+              <td><code>rest_endpoints.yaml</code></td>
+              <td>Usually in production clients’ URLs. They do not come
+                across</td>
+            </tr>
+
+            <tr>
+              <th scope="row"><code>query_collections</code></th>
+              <td><code>query_collections.yaml</code></td>
+              <td>The collections an allowlist refers to</td>
+            </tr>
+
+            <tr>
+              <th scope="row"><code>network</code></th>
+              <td><code>network.yaml</code></td>
+              <td>Not converted</td>
+            </tr>
+
+            <tr>
+              <th scope="row"><code>opentelemetry</code></th>
+              <td><code>opentelemetry.yaml</code></td>
+              <td>Not converted</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <p class="pv-p">The warnings arrive under an
+        <code>Import warnings (n):</code> heading at the end of the run.
+        Converting a directory export with a populated allowlist in it
+        contributes this line, which names the section, the file it was found
+        in, and what was done with it:</p>
+
+      <div class="pv-code">
+<pre>  [allowlist] [allow_list.yaml] allowlist is present in the export and is not converted</pre>
+      </div>
+
+      <p class="pv-p">The section is named by its metadata-API key and the file
+        by its name on disk, which for the allowlist are one underscore apart —
+        <code>allowlist</code> against <code>allow_list.yaml</code>. It is the
+        only row here where the two differ, and the warning prints both so you
+        never have to guess which to search for. From a consolidated document
+        there is no file to name, so the line is the same without the bracket.
+        Warnings go to stderr, so they are still on your terminal when the
+        configuration goes to a file.</p>
+
+      <h3 class="pv-h pv-h--sub">Converted, with something to check</h3>
+
+      <!-- Seven panels. Panels 6 and 7 are the two defects the SME found by
+           running the converter rather than by reading it; both are silent,
+           both are small, and disclosing them costs a paragraph each.
+
+           The Accordion is the right component for these seven and the wrong
+           one for the row-filter disclosure above, which is why that one is a
+           Callout at the top of the section and not panel 8. -->
+      <div class="pv-acc pv-acc--numbered">
+
+        <div class="pv-acc__item">
+          <button class="pv-acc__btn" type="button" aria-expanded="true" aria-controls="a-gap1">
+            <span class="pv-acc__num">01</span>
+            <span class="pv-acc__title">A select permission with
+              <code>columns: "*"</code></span>
+            <span class="pv-acc__sign" aria-hidden="true"></span>
+          </button>
+          <!-- "loud on the import tab, silent on the command line" is the
+               whole point of this panel. An earlier revision said "this gap is
+               loud: the warning fires", which told a reader following §2 that
+               they would be warned. They would not: the typing pass runs from
+               the preview endpoint only (import_router.py:203-206), and the
+               SME's CLI run against a `columns: "*"` export printed two
+               warnings, neither about the wildcard, and exited 0. -->
+          <div class="pv-acc__panel" id="a-gap1">
+            <p class="pv-p">A wildcard column permission imports as a single
+              placeholder column named <code>*</code>, which is not expanded to
+              the table’s real columns and is not read as “all columns”
+              anywhere — so the role that had every column arrives able to see
+              none of them, and you list the columns it should see. <strong>On
+              the import tab the preview names it</strong> —
+              <code>&lt;source&gt;: &lt;schema&gt;.&lt;table&gt;.* is not a column of the source table; it stays untyped</code>
+              — <strong>and from the command line it is not warned about at all;
+              the untyped column is refused when you apply.</strong> Either way
+              it cannot reach production silently.</p>
+          </div>
+        </div>
+
+        <div class="pv-acc__item">
+          <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-gap2">
+            <span class="pv-acc__num">02</span>
+            <span class="pv-acc__title">Event triggers</span>
+            <span class="pv-acc__sign" aria-hidden="true"></span>
+          </button>
+          <div class="pv-acc__panel" id="a-gap2" hidden>
+            <p class="pv-p">Converted to per-table event-trigger config —
+              operations, webhook URL, retry policy — with a warning that
+              fidelity is limited. Verify each one rather than assuming it or
+              rewriting it.</p>
+          </div>
+        </div>
+
+        <div class="pv-acc__item">
+          <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-gap3">
+            <span class="pv-acc__num">03</span>
+            <span class="pv-acc__title">An object relationship declared by
+              foreign key alone</span>
+            <span class="pv-acc__sign" aria-hidden="true"></span>
+          </button>
+          <div class="pv-acc__panel" id="a-gap3" hidden>
+            <p class="pv-p">The export names no target table, so the converter
+              resolves it through the inverse array relationship. Where there is
+              no inverse the relationship is <strong>dropped</strong>, with a
+              warning telling you to declare it with
+              <code>manual_configuration</code> or add it after import.</p>
+          </div>
+        </div>
+
+        <div class="pv-acc__item">
+          <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-gap4">
+            <span class="pv-acc__num">04</span>
+            <!-- The <wbr> is a break opportunity and not a character: this is
+                 the one panel title that is a single unbreakable token, and in
+                 the numbered Accordion's `48px 1fr auto` grid its min-content
+                 width (252px) exceeds the 1fr track at 360px and pushes the
+                 +/− sign past the viewport edge. Breaking after the `=` costs
+                 nothing — the tag strips out of every copy comparison, so the
+                 title is still the brief's string exactly. -->
+            <span class="pv-acc__title"><code>AUTH_PROVIDER=<wbr>webhook</code></span>
+            <span class="pv-acc__sign" aria-hidden="true"></span>
+          </button>
+          <div class="pv-acc__panel" id="a-gap4" hidden>
+            <p class="pv-p">Not supported. Configure an explicit provider —
+              firebase, keycloak, oauth or simple — and the converter warns if
+              your <code>.env</code> carries the webhook setting. A
+              <code>CLAIMS_MAP</code> that is not valid JSON is also warned
+              rather than guessed at.</p>
+          </div>
+        </div>
+
+        <!-- `mapper.py:637-663` converts every tracked function identically;
+             there is no simple-versus-complex branch anywhere, so the old
+             "simple cases convert, complex ones need manual work" implied a
+             classifier the code does not have. `docs/import.md:92` is where
+             the vague version still lives and is a source correction, not a
+             page one. -->
+        <div class="pv-acc__item">
+          <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-gap5">
+            <span class="pv-acc__num">05</span>
+            <span class="pv-acc__title">Custom SQL functions</span>
+            <span class="pv-acc__sign" aria-hidden="true"></span>
+          </button>
+          <div class="pv-acc__panel" id="a-gap5" hidden>
+            <p class="pv-p">Every tracked function converts to a
+              <code>functions[]</code> entry, but the converter cannot read the
+              function body: each one lands declared as returning
+              <code>void</code> and visible to <code>org_admin</code> alone. Set
+              the return type and the roles on each function you want exposed —
+              the entry is a stub with the right name, not a finished
+              definition.</p>
+          </div>
+        </div>
+
+        <!-- PRO-34, carried over from the pre-kit version of this file. This
+             panel and §4 RuledCard 3 are the two places the rate conversion is
+             stated, and neither may reacquire preservation language while the
+             conversion rounds without a warning: REQ-2033, and
+             `site/verify-claims.mjs` holds it as a scoped window check —
+             "preserved", "unchanged", "carried over", "carried across",
+             "intact", "untouched" or "as-is" within 90 characters of a rate
+             limit, an API limit, requests per second or a throttle. The
+             pre-kit version of this page is the page that failed that check. A
+             design pass that compresses this panel can reintroduce the
+             failure, so run `node site/verify-claims.mjs` as part of the
+             change rather than after it. -->
+        <div class="pv-acc__item">
+          <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-gap6">
+            <span class="pv-acc__num">06</span>
+            <span class="pv-acc__title">Rate limits convert per second, not per
+              minute</span>
+            <span class="pv-acc__sign" aria-hidden="true"></span>
+          </button>
+          <div class="pv-acc__panel" id="a-gap6" hidden>
+            <p class="pv-p">v2 sets requests per minute and Provisa sets
+              requests per second, so the import divides by 60 and rounds, with
+              a floor of one. A role throttled to 10 requests a minute arrives
+              serving 60; one set to 150 a minute arrives held to 120. The value
+              is exact at a multiple of 60 and rounded otherwise, in either
+              direction, with no warning. Query complexity and query time
+              convert exactly. Re-read the rate on every role you throttled on
+              purpose.</p>
+          </div>
+        </div>
+
+        <!-- REQ-2041 (PRO-33). Before that fix the same export ends the run
+             with an unhandled pydantic_core.ValidationError and exit 1 — from
+             the first command on this page. That is why acceptance criterion
+             7's release gate covers REQ-2041 as well as REQ-2034, and why the
+             last sentence of this panel names the gate rather than pretending
+             the traceback never shipped. -->
+        <div class="pv-acc__item">
+          <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-gap7">
+            <span class="pv-acc__num">07</span>
+            <span class="pv-acc__title">A computed field and a tracked function
+              with the same name</span>
+            <span class="pv-acc__sign" aria-hidden="true"></span>
+          </button>
+          <div class="pv-acc__panel" id="a-gap7" hidden>
+            <p class="pv-p">Commands and webhooks share one address space, so
+              one name addresses one thing. If your export tracks the function
+              behind a computed field as well, the computed field is kept — it
+              carries the return shape — and the tracked function is dropped
+              with a <code>[functions]</code> warning naming both claimants. To
+              carry both: untrack the function in Hasura, or rename the computed
+              field. On releases before this was fixed the same export ends the
+              run with a Python traceback instead; that is what the release gate
+              in acceptance criterion 7 is for.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pv-contact__links">
+        <a class="pv-link" href="https://provisa.dev/docs/import">Importing from
+          Hasura, in full<span class="pv-link__arrow"> →</span></a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §6 Preview before you apply. CodeBlock + Callout.
+
+       An earlier revision opened this section with `--dry-run` and called it
+       previewing. The typing warnings of the §3 callout and §5 panel 1 do not
+       exist on that path, so the page was over-promising the CLI — which is
+       the one thing this page cannot do. The two surfaces are named
+       separately and stay that way.
+
+       The counted summary is the answer to the question this reader asks that
+       the page used to be silent on: how long does it take. We cannot invent a
+       number, but the warnings are counted and the gap list is enumerable, so
+       an unbounded commitment becomes a bounded task.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container pv-stack pv-stack--lg">
+
+      <div class="pv-seclabel">
+        <span class="pv-seclabel__num">06</span>
+        <span class="pv-seclabel__text">Before you apply</span>
+      </div>
+
+      <h2 class="pv-h pv-h--section">Preview before you apply</h2>
+
+      <p class="pv-p">The converter’s warnings are the most useful thing it
+        produces. Run it twice: once to read them, once to keep the output.</p>
+
+      <div class="pv-code">
+        <pre>python -m provisa.hasura_v2 ./metadata --dry-run</pre>
+      </div>
+
+      <p class="pv-p"><code>--dry-run</code> parses, converts and validates the
+        result against the configuration model, prints
+        <code>Dry run: validation passed.</code> and then the warning summary,
+        and writes nothing. Both go to stderr.</p>
+
+      <p class="pv-p">The two surfaces do not print the same warnings, and it is
+        worth knowing which you are reading. <strong>The command line reports
+        what the parser and mapper found</strong> in your export: dropped
+        relationships, placeholder handlers, unconverted sections, the name
+        collision in §5. <strong>The import tab reports those and then one more
+        pass</strong> — it reads each source’s real columns, so the
+        unreachable-source, untyped-column and <code>columns: "*"</code>
+        warnings exist only there.</p>
+
+      <div class="pv-callout">
+        <span class="pv-callout__label">SIZING THE REVIEW</span>
+        <span class="pv-callout__body">The summary counts them —
+          <code>Import warnings (3):</code> and a category on every line — so
+          the output tells you how big the review is before you commit to it.
+          Two things to check in it every time, because neither is an error and
+          both change who can see what: <strong>a
+          <code>[relationships]</code> warning</strong>, which means a
+          relationship was dropped, and <strong>every role’s row rules</strong>,
+          against the v2 permissions they came from.</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §7 When Provisa is not the answer. RuledCard ×2.
+
+       Conceded, unhedged, and after §5 rather than before it.
+
+       Card 1's added clause is one clause and no more: self-hosted is the
+       answer to the residency and air-gap requirements that bring enterprise
+       buyers to this category, and leaving that unstated is not honesty. The
+       concession itself keeps its last sentence (REQ-2014) and the page makes
+       no quantified claim from the clause.
+
+       Card 2 is already at the limit of what the evidence supports — the
+       GraphQL schema is generated per role (`provisa/compiler/schema_gen.py`),
+       nothing diffs it against the v2 schema and no test asserts equivalence.
+       The SME's answer to "how much stronger can this be put" was "not at
+       all". Hold it against pressure.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container pv-stack pv-stack--lg">
+
+      <div class="pv-seclabel">
+        <span class="pv-seclabel__num">07</span>
+        <span class="pv-seclabel__text">Conceded</span>
+      </div>
+
+      <h2 class="pv-h pv-h--section">When Provisa is not the answer</h2>
+
+      <div class="pv-grid pv-grid--2">
+
+        <div class="pv-ruled">
+          <span class="pv-ruled__num">01</span>
+          <h3 class="pv-ruled__title">You want a managed service</h3>
+          <div class="pv-ruled__body">Provisa does not offer one. It is
+            self-hosted: your infrastructure, your cloud, or air-gapped — which
+            is the only configuration some regulated buyers can accept, and no
+            help at all if zero operations is your requirement. If it is, this
+            is a disadvantage and there is no version of it that is not.</div>
+        </div>
+
+        <div class="pv-ruled">
+          <span class="pv-ruled__num">02</span>
+          <h3 class="pv-ruled__title">You need your v2 app to keep working
+            unchanged</h3>
+          <div class="pv-ruled__body">The import produces a Provisa
+            configuration, not a Hasura-compatible endpoint. Your GraphQL schema
+            is regenerated from the model, so client queries are checked against
+            the new schema rather than guaranteed by it, and the row rules in §5
+            need review before anything serves traffic.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §8 v2 and DDN, in Hasura's own words. Callout ×2 + body.
+
+       No sentence in this section may be added, glossed or paraphrased at
+       build. `WIP` and `❌` are quoted tokens from a table with no legend, so
+       they are quoted as tokens: "work in progress", "on the roadmap" and "not
+       finished yet" are all claims about another company's intent and are
+       forbidden on this page, as is any characterisation of Hasura's
+       priorities, commitment or pricing intent. Distribution here is warm
+       outbound to former Hasura contacts and ex-Hasura sales engineers —
+       people who still talk to people who work there — and the sentence that
+       gets screenshotted and forwarded costs us the network the page exists to
+       reach. `check-page-vs-hasura.mjs` forbids the strings.
+
+       The section outline names a CodeBlock here. There is no code in this
+       section's copy and inventing one would mean inventing content, which is
+       exactly what build note 4 forbids; the quoted tokens take inline <code>
+       instead.
+
+       One cell of `docs/competitive_analysis.md` licenses this section — line
+       79, Hasura v2 Upgrade Path, read 2026-10-14 against Hasura's published
+       documentation. Lines 18-20 record that the rest of that column is
+       undated and licenses no Hasura negative, and that still holds. The
+       correction that dated line 79 also killed a falsehood we were one
+       revision from publishing: "v2 is effectively end-of-life" was not merely
+       unverified, it was false, and Hasura's own documentation is why.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container pv-stack pv-stack--lg">
+
+      <div class="pv-seclabel">
+        <span class="pv-seclabel__num">08</span>
+        <span class="pv-seclabel__text">Hasura’s own words</span>
+      </div>
+
+      <h2 class="pv-h pv-h--section">v2 and DDN, in Hasura’s own words</h2>
+
+      <div class="pv-callout pv-callout--outside">
+        <span class="pv-callout__label">DATELINE</span>
+        <span class="pv-callout__body">Read from Hasura’s published
+          documentation on 14 October 2026.</span>
+      </div>
+
+      <p class="pv-p">Hasura’s upgrade guide states: <em>“Currently, there is no
+        in-place upgrade path from Hasura v2 to Hasura DDN.”</em> The three
+        strategies it documents — GraphQL-based routing, URL-based routing, and
+        parallel deployment with phased deprecation — all run v2 and DDN side by
+        side while features move across by hand.</p>
+
+      <p class="pv-p">Hasura’s own v2-to-DDN API parity table lists
+        <strong>Cron Trigger</strong> as <code>❌</code>, and <strong>Event
+        Trigger</strong> and <strong>API Limits</strong> as <code>WIP</code>.
+        Those are three of the things the converter on this page reads out of
+        your v2 metadata — §3 above.</p>
+
+      <div class="pv-callout pv-callout--get">
+        <span class="pv-callout__label">STILL SUPPORTED</span>
+        <span class="pv-callout__body">Hasura also states that <em>“Hasura v2 is
+          still supported and will be maintained according to our LTS
+          policy”</em>, and their version-support policy lists v2.45 as Active
+          LTS supported through December 2027 and v2.50 as Active LTS planned
+          through December 2028. This page makes no argument that you have to
+          move. It argues only that if you do, your v2 metadata is a file either
+          way.</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §9 Conversion. Heading + Button + TextLink.
+
+       REQ-2014 rung 1 then rung 2: the free licence is the primary and the
+       conversation is the alternative. REQ-2014 pairs the licence CTA with
+       "Download Provisa" → /install as one rung; this page uses half a rung,
+       because /install does not exist (PRO-17) and seven links on three pages
+       already wait on it. The download route that resolves today is
+       /dl/<platform> and this page needs neither.
+
+       `All comparisons → /compare` is held back until the hub ships.
+       ================================================================== -->
+  <section class="pv-section pv-section--tight">
+    <div class="pv-container pv-stack pv-stack--lg">
+
+      <h2 class="pv-h pv-h--section">Try it on your own metadata</h2>
+
+      <p class="pv-p">The converter is in the package. Register for a free
+        licence, point it at your <code>metadata/</code> directory, and read the
+        warnings before you decide anything.</p>
+
+      <div class="pv-row">
+        <a class="pv-btn" href="/register">Get a free licence</a>
+        <a class="pv-link" href="#contact">Book a demo<span class="pv-link__arrow"> →</span></a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       ContactBand. The shared chrome every rebuilt page ships, and the target
+       §9's TextLink, the header button and the utility bar all point at. Its
+       heading is the form's name rather than new copy: §9 is the brief's
+       conversion block and this band is the form it jumps to.
+
+       The band's own `Start a free trial → cloud.provisa.dev` and `Download`
+       links are out. We offer no managed service to start a trial on, in any
+       tense, which is also what §7 card 1 concedes.
+       ================================================================== -->
+  <section class="pv-contact" id="contact">
+    <div class="pv-contact__inner pv-container">
+      <div class="pv-contact__copy">
+        <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h2 class="pv-h pv-h--cta">Book a demo.</h2>
+        <div class="pv-contact__links">
+          <a class="pv-link pv-link--inverse" href="/platform">What the model
+            is<span class="pv-link__arrow"> →</span></a>
+        </div>
+      </div>
+      <form class="pv-form" method="post" action="/api/demo">
+        <h3 class="pv-form__title">Book a demo</h3>
+        <div class="pv-form__grid">
+          <label class="pv-sr" for="c-name">Full name</label>
+          <input class="pv-input" id="c-name" name="name" autocomplete="name" placeholder="Full name" required>
+          <label class="pv-sr" for="c-email">Work email</label>
+          <input class="pv-input" id="c-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+        </div>
+        <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<!-- SiteFooter — partials/site-footer.html, verbatim, and the same bytes Home
+     and /vs/starburst ship. The Compare column marks this page with
+     aria-current, which is where the marker belongs: the header's `Compare`
+     item points at /vs/starburst, a different page.
+
+     The footer keeps its /why/no-lock-in entry, because the chrome is shared
+     and that route resolves today. The held-back-link check in
+     check-page-vs-hasura.mjs is scoped to <main> for the same reason: /compare
+     and /install are held back from this page's copy, not forked out of a
+     footer every other page ships. -->
+
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+          Licence 1.1 — non-production use (including evaluation) is free
+          forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Active Semantic Layer</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/platform/views">Materialized views</a>
+        <a href="/platform/catalog">Catalog</a>
+        <a href="/why/no-lock-in">No lock-in</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
         <a href="/vs/starburst">vs Starburst</a>
-        <a href="/vs/hasura">Coming from Hasura</a>
         <a href="/vs/denodo">vs Denodo</a>
-        <a href="/docs">Docs</a>
+        <a href="/vs/hasura" aria-current="page">Coming from Hasura</a>
       </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
     </div>
-  </footer>
+    <div class="pv-footer__bottom">
+      <span>© Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
