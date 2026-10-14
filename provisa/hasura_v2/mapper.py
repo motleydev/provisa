@@ -601,6 +601,19 @@ def convert_metadata(
     all_functions: list[Function] = []
     all_event_triggers: list[EventTrigger] = []
 
+    # Every computed field in the export becomes a command named for the field (_map_table,
+    # below), and commands share one address space with webhooks (REQ-1385). Hasura lets the
+    # function behind a computed field be tracked as well, and a tracked function becomes a
+    # command named for the function — so the two can claim one name. Read the claimed names
+    # before any mapping runs: the collision crosses sources, and the table pass for a later
+    # source would otherwise run after the tracked-function pass for an earlier one.
+    computed_field_claims = {
+        cf.name: (ht.schema_name, ht.name)
+        for hs in metadata.sources
+        for ht in hs.tables
+        for cf in ht.computed_fields
+    }
+
     for hs in metadata.sources:
         fk_targets = _fk_targets(hs)  # REQ-1680
         virtual = _virtual_names(hs)
@@ -635,6 +648,19 @@ def convert_metadata(
 
         # Tracked functions
         for hf in hs.functions:
+            claim = computed_field_claims.get(hf.name)
+            if claim is not None:
+                claim_schema, claim_table = claim
+                collector.warn(
+                    "functions",
+                    f"Tracked function {hf.schema_name}.{hf.name} and the computed field "
+                    f"{hf.name!r} on {claim_schema}.{claim_table} both ask for the command "
+                    f"name {hf.name!r}, and a command name addresses one thing. The computed "
+                    f"field is kept — it carries the return shape and the table reads it — and "
+                    f"the tracked function is dropped. To carry both: untrack "
+                    f"{hf.schema_name}.{hf.name} in Hasura, or rename the computed field.",
+                )
+                continue
             all_functions.append(
                 Function(
                     name=hf.name,
