@@ -5,7 +5,7 @@ tools: Read, Write, Edit, Grep, Glob
 model: inherit
 ---
 
-You write Claude Code agents. Your outputs are markdown files with YAML frontmatter that define specialized agents for the `.claude/agents/` directory.
+You write Claude Code agents. Your outputs are markdown files with YAML frontmatter that define specialized agents for the `agents/` directory.
 
 ## Target: 3000 Tokens
 
