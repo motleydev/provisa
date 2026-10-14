@@ -23448,3 +23448,73 @@ written as a statement about the competitor's documentation on a date.
 **Code:** docs/competitive_analysis.md
 
 **Tests:** site/verify-claims.mjs
+
+### REQ-2043 · Documentation & Developer Experience {#REQ-2043}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+The agent contract (prose rules, swarm rules, skills) is tracked at the repository root in `refs/` and `skills/`, as siblings of `agents/`, rather than under `.claude/` which is gitignored for the commercial plugin and unreachable in clones.
+
+**Use case:** The contract is accessible in all contexts where the repo is cloned: Claude Code, Codex, Paperclip, and local copies.
+
+**Code:** refs/, agents/, .gitignore (`skills/` lands with its content, PRO-42)
+
+### REQ-2044 · Documentation & Developer Experience {#REQ-2044}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+The banned-phrase list has exactly one home: the `banned-phrases` fence in `refs/prose-quality.md`. No other instruction file carries a copy.
+
+**Use case:** Modifications to the banned list propagate instantly to all prose checks without requiring file synchronization.
+
+**Code:** refs/prose-quality.md, hooks/prose-check.py
+
+### REQ-2045 · Documentation & Developer Experience {#REQ-2045}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+The `hooks/prose-check.py` PostToolUse hook fails any `.md` write if the newly introduced text carries a banned phrase. It does not check the whole file; pre-existing banned phrases are not failures.
+
+**Use case:** Requirements tracking can append to `docs/arch/requirements.md` without blocking on pre-existing banned phrases that existed before a task began.
+
+**Code:** hooks/prose-check.py
+
+### REQ-2046 · Documentation & Developer Experience {#REQ-2046}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+`refs/prose-quality.md` is the only `.md` file exempted from the prose-check hook, named by exact path in the hook configuration.
+
+**Use case:** The file that documents the banned-phrase list itself can mention those phrases without triggering the check it defines.
+
+**Code:** hooks/prose-check.py, refs/prose-quality.md
+
+### REQ-2047 · Infrastructure {#REQ-2047}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+Project-level Claude Code hooks are wired in `.claude/settings.json`, a tracked file; `settings.local.json` remains per-machine and untracked. `.gitignore` uses `/.claude/*` rather than `/.claude/` so that git never descends into the excluded directory, and negations under it are not inert.
+
+**Use case:** Shared hook configuration reaches all instances of the project, while per-machine customization stays private.
+
+**Code:** .claude/settings.json, .gitignore
+
+### REQ-2048 · Testing & Quality {#REQ-2048}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+Every `check-*` and `verify-*` file under `site/` must have a corresponding step in either `site-review.yml` (browserless half) or `site-review-browser.yml` (Playwright-importing half). Each workflow fails if a checker has no step.
+
+**Use case:** A new checker cannot land ungated; its presence in the workflow gate is a precondition of merge.
+
+**Code:** site/, site-review.yml, site-review-browser.yml
+
+### REQ-2049 · Infrastructure {#REQ-2049}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+`site/design-system/browser-deps.py --prefix` places the Playwright browser download under the prefix alongside the Debian sysroot, so the entire browser runtime moves together with a single flag.
+
+**Use case:** A single environment variable controls where all browser artifacts land, allowing one container to outlive the run.
+
+**Code:** site/design-system/browser-deps.py
