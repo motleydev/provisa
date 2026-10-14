@@ -23399,3 +23399,52 @@ A dead-link assertion that exists only because a page is unbuilt is removed when
 **Code:** site/verify-home.mjs
 
 **Tests:** site/verify-home.mjs
+
+### REQ-2030 · Marketing & Design System {#REQ-2030}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+Dating a competitor column does not date its cells. A cell in `docs/competitive_analysis.md` may
+back a published negative claim only if it carries its own `(Verified <date>, <documentation>)`
+stamp naming the product version and documentation area it was read against. An unstamped cell in a
+dated column remains under the undated-column rule.
+
+**Use case:** A page author can tell from the cell alone whether a claim is publishable, instead of
+inferring it from a column-level date that may cover only some cells.
+
+**Code:** docs/competitive_analysis.md
+
+**Tests:** site/verify-claims.mjs
+
+### REQ-2031 · Marketing & Design System {#REQ-2031}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+Before a competitor negative is published, the competitor's nearest documented capability is named
+in the same cell and the distinction drawn from it. Neo4j 2026.09 property-based access control is
+named before any row-level-security distinction; GraphOS Router authorization directives are named
+before any platform-enforcement distinction; Apollo Connectors are named before any
+source-connection distinction; GraphOS Router entity caching is named before any
+security-partitioned-cache distinction.
+
+**Use case:** A competitor's sales engineer reading the page finds their own capability
+acknowledged, so the distinction that follows is credible rather than discreditable.
+
+**Code:** docs/competitive_analysis.md
+
+**Tests:** site/verify-claims.mjs
+
+### REQ-2032 · Marketing & Design System {#REQ-2032}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+A bare "Not available" or "No X" in a competitor column is a defect, not a claim. Natural language
+query was published as "Not available" for both Neo4j and Apollo GraphOS while Neo4j documented
+`Text2CypherRetriever` and Apollo MCP Server was generally available. A capability negative is
+written as a statement about the competitor's documentation on a date.
+
+**Use case:** The published comparison cannot be refuted by one link to the competitor's own docs.
+
+**Code:** docs/competitive_analysis.md
+
+**Tests:** site/verify-claims.mjs
