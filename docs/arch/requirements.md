@@ -23448,3 +23448,23 @@ written as a statement about the competitor's documentation on a date.
 **Code:** docs/competitive_analysis.md
 
 **Tests:** site/verify-claims.mjs
+
+### REQ-2033 · Marketing & Design System {#REQ-2033}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+No page claims a migrated limit is preserved on a dimension the converter does not carry exactly.
+Hasura v2's `rate_limit` is per minute and a role's `requests_per_second` is per second, so the
+import rounds and floors at 1: a role set to 10 requests per minute arrives serving 60, one set to
+150 per minute arrives throttled to 120, and the value is exact only at a multiple of 60. A page
+states which dimensions convert exactly and tells the reader to re-read the rate on every throttled
+role. The word is not banned site-wide — a cron expression is preserved, and a lineage graph
+preserves its CTEs and joins — so the check is a scoped window: preservation language in the same
+sentence as a rate or API limit fails.
+
+**Use case:** A buyer migrating an expensive reporting role throttled on purpose is told to check
+the converted number, instead of discovering the role serving six times its v2 rate in production.
+
+**Code:** site/vs/hasura.html, docs/import.md
+
+**Tests:** site/verify-claims.mjs
