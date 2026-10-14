@@ -31,7 +31,9 @@ Each has its own control plane, config, ports, and volumes. Before any command t
 
 ## Requirements Tracking
 
-On any new requirement, constraint, feature, or design decision: spawn a background haiku agent. It reads `agents/requirements-tracker.md` for format, then appends to `docs/arch/requirements.md`. Silent — skip implementation details, bugs, questions.
+On any new requirement, constraint, feature, or design decision: spawn a background haiku agent. It reads `agents/requirements-tracker.md` for format, then adds the requirement to `docs/arch/requirements.yaml` and runs `make sync-reqs`. Silent — skip implementation details, bugs, questions.
+
+`docs/arch/requirements.md` is generated from that YAML and says so on line 3. A requirement appended to the `.md` is deleted by the next `make sync-reqs`, and an id numbered from the `.md`'s tail collides with another branch's. See `skills/audit-workflow/SKILL.md`.
 
 ## Documentation
 

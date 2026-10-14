@@ -11,7 +11,7 @@ Reference project skills: python-style, code-review, anti-patterns — read the 
 
 **TypeScript: run `cd provisa-ui && npx tsc -b 2>&1 | head -50` immediately when any `.ts`/`.tsx` file is in scope. Do not infer type correctness. Zero errors required.**
 
-**Requirements source of truth:** `docs/arch/requirements.md` — check changed code against stated requirements. Flag violations (e.g., silent error handling, missing security enforcement).
+**Requirements source of truth:** `docs/arch/requirements.yaml` — check changed code against stated requirements. (`docs/arch/requirements.md` is generated from it; read the YAML, which carries the `scenario`, `code` and `tests` fields you are checking against.) Flag violations (e.g., silent error handling, missing security enforcement).
 
 ## Primary Review Focus
 
