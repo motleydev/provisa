@@ -23327,3 +23327,15 @@ A page may carry a struck string only through an exception declared in `site/ver
 **Code:** site/verify-claims.mjs
 
 **Tests:** site/verify-claims.mjs
+
+### REQ-2024 · Marketing & Design System {#REQ-2024}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+Browser render-pass verification of a site/ page must be run against a server that resolves pages by their extensionless production route (e.g. /why/interfaces, not /why/interfaces.html), because nav links and Cloudflare Pages both address pages that way. `site/design-system/serve.py` is that server — it resolves `path`, then `path.html`, then `path/index.html` like Pages does. `python3 -m http.server --directory site` must not be used for verify scripts that assert on a route, as it 404s on extensionless routes. Scripts that request `.html` files or directory indexes may use either server.
+
+**Use case:** Verify scripts test the site in the routing pattern that users and production see, not an alternate pattern that silently passes while users hit 404s.
+
+**Code:** site/design-system/serve.py
+
+**Tests:** site/design-system/verify-page-interfaces.mjs
