@@ -18024,6 +18024,18 @@ The import preview types the imported design from its sources. A Hasura export n
 
 **Tests:** `tests/unit/test_import_typing.py`, `tests/integration/test_hasura_v2_live_import.py`
 
+### REQ-2034 · Hasura v2 Import: Unconverted Sections {#REQ-2034}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+Hasura v2 import reports the five unconverted export sections (query_collections, allowlist, rest_endpoints, network, opentelemetry) identically from both the consolidated metadata document and the CLI metadata directory. Both readers share one reporting table so they cannot drift. In a directory, presence is judged on file content rather than file existence; both the CLI spelling `allow_list.yaml` and the API spelling `allowlist.yaml` match and report under the API key `allowlist`. Each key is reported once across the directory root and all `databases/<name>/` subdirectories.
+
+**Use case:** Administrators using either Hasura export format receive consistent unconverted-section warnings, enabling uniform migration guidance and preventing silent loss of configuration sections.
+
+**Code:** `provisa/hasura_v2/parser.py` (_UNCONVERTED_SECTIONS, _warn_unconverted_files, parse_metadata_dir, parse_metadata_document)
+
+**Tests:** `tests/unit/test_hasura_unconverted_sections.py`
+
 ## 4. Source Connectors
 
 ### REQ-1692 · Replica Strategy {#REQ-1692}
@@ -23448,3 +23460,98 @@ written as a statement about the competitor's documentation on a date.
 **Code:** docs/competitive_analysis.md
 
 **Tests:** site/verify-claims.mjs
+
+### REQ-2033 · Marketing & Design System {#REQ-2033}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+No page claims a migrated limit is preserved on a dimension the converter does not carry exactly.
+Hasura v2's `rate_limit` is per minute and a role's `requests_per_second` is per second, so the
+import rounds and floors at 1: a role set to 10 requests per minute arrives serving 60, one set to
+150 per minute arrives throttled to 120, and the value is exact only at a multiple of 60. A page
+states which dimensions convert exactly and tells the reader to re-read the rate on every throttled
+role. The word is not banned site-wide — a cron expression is preserved, and a lineage graph
+preserves its CTEs and joins — so the check is a scoped window: preservation language in the same
+sentence as a rate or API limit fails.
+
+**Use case:** A buyer migrating an expensive reporting role throttled on purpose is told to check
+the converted number, instead of discovering the role serving six times its v2 rate in production.
+
+**Code:** site/vs/hasura.html, docs/import.md
+
+**Tests:** site/verify-claims.mjs
+
+## 14. CI & Verification
+
+### REQ-2038 · CI & Verification {#REQ-2038}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A missing toolchain on the agent runners is not a blocker. The runners are NixOS
+with no `apt-get`, no FHS library directory, and no `nix` on `PATH` — which is
+what made two verifications look impossible rather than merely awkward. `nix` is
+at `/run/current-system/sw/bin/nix` whether or not `PATH` names it, and the
+binary cache is reachable, so anything in nixpkgs is a `nix build` away. A
+verification that cannot run for want of an interpreter or a shared object is
+reported as the environment gap it is, with the closure that closes it, not as a
+property of the thing being verified.
+
+**Use case:** Two site verifications sat unrunnable for a day on the reading that
+the sandbox could not host them. Both ran the same afternoon once nix was found
+where NixOS keeps it.
+
+**Code:** `scripts/install-env.sh`, `site/design-system/browser-deps.py`
+
+**Tests:** n/a — a constraint on how runner gaps are triaged.
+
+### REQ-2039 · CI & Verification {#REQ-2039}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+The install page's blocks are executed against the interpreter they name, not
+the one the runner ships. `scripts/install-env.sh <command>` puts nix's python
+3.12 and postgresql 16 ahead of the runner's 3.13 on `PATH`, and sets
+`LD_LIBRARY_PATH` to libstdc++ and zlib so the embedded tier's manylinux wheels
+load: duckdb's `_duckdb.so` wants `libstdc++.so.6` by bare soname and finds
+nothing at an FHS path, so `provisa run` otherwise dies on `import duckdb`
+immediately after an install that reported success. Not glibc — a second glibc on
+`LD_LIBRARY_PATH` would be swapped under every process the command starts.
+
+**Use case:** The page tells a reader to run two blocks. Nobody had run either,
+because the runner's 3.13 is the one interpreter the package excludes.
+
+**Code:** `scripts/install-env.sh`
+
+**Tests:** `pip install "provisa[embedded]"` installs provisa 0.1.0a479 from PyPI
+on python 3.12.14, and `provisa run --demo` then boots to `Provisa is ready —
+http://127.0.0.1:3000/?tour=1` (448f26f85).
+
+### REQ-2040 · CI & Verification {#REQ-2040}
+
+**Status:** ✓ accepted · **Priority:** SHOULD · **Type:** constraint
+
+A command handed to an environment wrapper is run directly, not inside a bare
+`bash -c`. The agent runners set `BASH_ENV`, so a nested shell re-runs that rc
+file and re-prepends the runner's own python 3.13 — the wrapper's work is undone
+silently and the symptom is the exact failure the wrapper exists to prevent.
+`env -u BASH_ENV bash -c` where a shell is genuinely needed.
+
+**Use case:** `install-env.sh install bash -c 'python3 -V'` answered 3.13 while
+`install-env.sh python3 -V` answered 3.12.14, from the same wrapper, on the same
+runner, one second apart.
+
+**Code:** `scripts/install-env.sh`
+
+**Tests:** n/a — a constraint on how the wrapper is called.
+
+### REQ-2041 · Hasura v2 Import: Command-Name Collision Resolution {#REQ-2041}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+In Hasura v2 import, when a computed field and a tracked function in the same or different sources claim the same command name, the computed field wins and the tracked function is dropped (not an error). Commands and webhooks share one address space (REQ-1385), making such configurations unrepresentable. The drop is reported as a [functions] warning naming both claimants and their remedies: untrack the function in Hasura v2 or rename the computed field. Collision detection scans all sources' computed fields before any mapping runs, enabling cross-source collision detection — the table pass for a later source would otherwise run after the tracked-function pass for an earlier source and miss it.
+
+**Use case:** A Hasura v2 export has a computed field `get_claims` on table `entities` and a tracked function `get_claims` in the same or different database. The importer must not fail; it drops the tracked function and reports the collision with both remedies.
+
+**Code:** `provisa/hasura_v2/mapper.py`
+
+**Tests:** `tests/unit/test_hasura_v2.py` (`TestComputedFieldAndTrackedFunctionShareAName`)

@@ -92,6 +92,7 @@ A Hasura export names columns without types, and a tracked table with no permiss
 - **Remote schemas** convert to `graphql_remote` source entries and are landed as tables from the role permission SDLs; a remote schema with no permissions lands nothing, since the export carries no other statement of its shape (REQ-1681)
 - **Custom SQL functions** require review — simple cases convert to `functions[]` entries, complex ones need manual work
 - **Cron triggers** convert to `scheduler` config entries, preserving the cron expression and enabled flag
+- **Per-role `api_limits`** become the role's rate and query limits (REQ-1174). `node_limit` → `max_query_complexity` and `time_limit` → `max_query_time_ms` convert exactly. `depth_limit` is dropped: a deeper query compiles to a statement with more relations and joins, which the complexity limit already prices. Hasura's `rate_limit` is per minute and `requests_per_second` is per second, so the rate is exact only at a multiple of 60 and is rounded otherwise, in either direction and with no warning today — a role set to 10 requests per minute imports at 1 rps and serves 60 per minute, and one set to 150 per minute imports at 2 rps and serves 120. Read the converted `requests_per_second` on every throttled role before apply
 
 ---
 

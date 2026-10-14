@@ -13,6 +13,7 @@
 
 from pathlib import Path
 
+import pytest
 import yaml
 
 from provisa.core.models import ProvisaConfig
@@ -841,3 +842,73 @@ class TestFkTargetResolution:
         assert not any(r.id == "albums.artist" for r in cfg.relationships)
         assert not any(r.target_table_id.endswith(".") for r in cfg.relationships)
         assert any(w.category == "relationships" and "artist_id" in w.message for w in col.warnings)
+
+
+class TestComputedFieldAndTrackedFunctionShareAName:
+    """Hasura allows the function behind a computed field to be tracked as well; both want the
+    same command name, and commands share one address space with webhooks (REQ-1385)."""
+
+    def _md(self, *, same_source: bool):
+        from provisa.hasura_v2.models import (
+            HasuraComputedField,
+            HasuraFunction,
+            HasuraMetadata,
+            HasuraSource,
+            HasuraTable,
+        )
+
+        task = HasuraTable(name="task", schema_name="public")
+        task.computed_fields.append(
+            HasuraComputedField(
+                name="task_label", function_name="task_label", function_schema="public"
+            )
+        )
+        tracked = HasuraFunction(name="task_label", schema_name="public")
+        if same_source:
+            return HasuraMetadata(
+                sources=[HasuraSource(name="default", tables=[task], functions=[tracked])]
+            )
+        # The tracked function is read before the computed field, so the collision is only
+        # visible to a pass that reads every source's computed fields first.
+        return HasuraMetadata(
+            sources=[
+                HasuraSource(name="aaa", functions=[tracked]),
+                HasuraSource(name="zzz", tables=[task]),
+            ]
+        )
+
+    @pytest.mark.parametrize("same_source", [True, False])
+    def test_the_computed_field_is_kept_and_the_tracked_duplicate_warns(self, same_source: bool):
+        from provisa.hasura_v2.mapper import convert_metadata
+        from provisa.import_shared.warnings import WarningCollector
+
+        col = WarningCollector()
+        cfg = convert_metadata(self._md(same_source=same_source), collector=col)
+
+        named = [f for f in cfg.functions if f.name == "task_label"]
+        assert len(named) == 1
+        assert named[0].returns == "task"  # the computed field's conversion, not returns=void
+        warning = next(w for w in col.warnings if w.category == "functions")
+        assert "task_label" in warning.message
+        assert "untrack" in warning.message.lower()
+        assert "rename the computed field" in warning.message
+
+    def test_a_tracked_function_no_computed_field_claims_still_converts(self):
+        from provisa.hasura_v2.mapper import convert_metadata
+        from provisa.hasura_v2.models import HasuraFunction, HasuraMetadata, HasuraSource
+        from provisa.import_shared.warnings import WarningCollector
+
+        col = WarningCollector()
+        cfg = convert_metadata(
+            HasuraMetadata(
+                sources=[
+                    HasuraSource(
+                        name="default",
+                        functions=[HasuraFunction(name="archive_task", schema_name="public")],
+                    )
+                ]
+            ),
+            collector=col,
+        )
+        assert [f.name for f in cfg.functions] == ["archive_task"]
+        assert not any(w.category == "functions" for w in col.warnings)
