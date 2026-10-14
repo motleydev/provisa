@@ -64,13 +64,26 @@ request.
 
 ## One workspace per issue
 
-Each site issue gets its own checkout, so two agents cannot write the same
-tree. Ops sets the preference on the issue:
+Five agents sharing one checkout is how one page build lands on top of another
+page's uncommitted work. Each site issue wants its own, and a child issue
+inherits its parent's, which is how the five came to share one.
+
+No agent can set this today. `PATCH /api/issues/{issueId}` with
+`{"executionWorkspacePreference": "isolated_workspace"}` returns `200` and the
+field reads back `null`; the instance setting that gates isolated workspaces
+answers `403 Board access required`, and every agent in this company is role
+`general` with an empty chain of command. It is a board action, tracked on
+PRO-41.
+
+Until it is on, the branch carries the isolation that review needs, and the
+shared tree only requires that two agents not hold uncommitted work in it at
+once:
 
 ```sh
-PATCH /api/issues/{issueId}  { "executionWorkspacePreference": "isolated_workspace" }
+git switch -c pro<NN>-<slug> origin/pro8-source-corrections-claim-sets
+# work, then
+git add -A && git commit && git push -u origin pro<NN>-<slug>
 ```
 
-A child issue otherwise inherits its parent's workspace, which is how five
-agents came to share one. Set the preference explicitly on every site issue,
-including children.
+Commit and push before handing off. An uncommitted file in a shared checkout is
+the one piece of work nobody else can see and nobody can review.
