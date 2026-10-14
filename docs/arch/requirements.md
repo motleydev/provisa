@@ -18024,6 +18024,18 @@ The import preview types the imported design from its sources. A Hasura export n
 
 **Tests:** `tests/unit/test_import_typing.py`, `tests/integration/test_hasura_v2_live_import.py`
 
+### REQ-2034 · Hasura v2 Import: Unconverted Sections {#REQ-2034}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+Hasura v2 import reports the five unconverted export sections (query_collections, allowlist, rest_endpoints, network, opentelemetry) identically from both the consolidated metadata document and the CLI metadata directory. Both readers share one reporting table so they cannot drift. In a directory, presence is judged on file content rather than file existence; both the CLI spelling `allow_list.yaml` and the API spelling `allowlist.yaml` match and report under the API key `allowlist`. Each key is reported once across the directory root and all `databases/<name>/` subdirectories.
+
+**Use case:** Administrators using either Hasura export format receive consistent unconverted-section warnings, enabling uniform migration guidance and preventing silent loss of configuration sections.
+
+**Code:** `provisa/hasura_v2/parser.py` (_UNCONVERTED_SECTIONS, _warn_unconverted_files, parse_metadata_dir, parse_metadata_document)
+
+**Tests:** `tests/unit/test_hasura_unconverted_sections.py`
+
 ## 4. Source Connectors
 
 ### REQ-1692 · Replica Strategy {#REQ-1692}
