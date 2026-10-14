@@ -11,10 +11,17 @@ runs an FHS binary against whatever NIX_LD_LIBRARY_PATH points at.
 So: fetch the Debian bookworm packages that carry those objects, unpack them
 into a sysroot, and print the environment that aims nix-ld at it.
 
-    eval "$(python3 site/design-system/browser-deps.py)"
-    npx playwright install chromium
-    python3 -m http.server 8743 --directory site &
+    eval "$(python3 site/design-system/browser-deps.py --prefix /somewhere/durable)"
+    (cd provisa-ui && npx --no-install playwright install chromium)
+    python3 site/design-system/serve.py 8743 &
     node site/design-system/verify-page-vs-starburst.mjs http://127.0.0.1:8743
+
+--prefix wants a path outside the checkout that survives the run: without it both
+the sysroot and the 900MB browser land in scratch and are deleted, so the next
+pass re-downloads them. serve.py rather than `http.server` because two checkers
+request the extensionless production route. The playwright that installs the
+browser must be provisa-ui's -- it is the one this repo pins, and a browser build
+only drives the playwright it shipped with.
 
 glibc is deliberately not taken from Debian — nix-ld supplies the host's, which
 is newer than bookworm's and serves the Debian libraries' symbols. Everything
