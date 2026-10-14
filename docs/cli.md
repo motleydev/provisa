@@ -89,6 +89,30 @@ Set them to override the defaults that `load_profile("native", ...)` would other
 
 [tool-verified: `_apply_demo_config()` at cli.py:67-80; `_apply_embedded_env()` at cli.py:83-116]
 
+The API process the CLI starts inherits the rest of the environment, so the settings the
+registry binds to a variable can also be set on the `provisa run` line. These are read when the
+servers start, not by the CLI:
+
+| Variable | Setting | Default | Effect |
+| --- | --- | --- | --- |
+| `PROVISA_PGWIRE_PORT` | `server.pgwire_port` | `0` — listener off | Binds the PostgreSQL wire listener on `0.0.0.0:<port>` when non-zero (REQ-527, REQ-1913) |
+| `PROVISA_PGWIRE_CERT` / `PROVISA_PGWIRE_KEY` | — | unset — TLS off | PEM certificate and key; both present wraps pgwire connections in TLS (REQ-530) |
+
+Two things override or suppress the variable:
+
+- A value saved through the settings page wins over the environment — the resolution order is
+  stored, env, config, default. The variable decides the port on an install that has never saved
+  one.
+- Under `security.mode=high` the pgwire listener is never started whatever the port says, and the
+  reason is logged at warning level (REQ-693).
+
+A pgwire startup failure is logged and does not stop the boot: the HTTP API still comes up, so a
+refused `psql` connection can sit behind an otherwise healthy `provisa run`. The log line to look
+for is `pgwire server listening on 0.0.0.0:<port>`.
+
+[tool-verified: `settings_catalog.py:618-629`; `resolve()` order at `settings_registry.py:421-434`;
+startup, high-security skip and `except Exception` at `app_startup.py:419-467`]
+
 ### Startup sequence
 
 1. Platform check — aborts with a clear message on unsupported Python or missing pgserver.
