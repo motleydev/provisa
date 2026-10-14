@@ -161,7 +161,12 @@ def main():
     print(f'export FONTCONFIG_FILE="{prefix}/etc/fonts/fonts.conf"')
     print(f'export FONTCONFIG_PATH="{prefix}/etc/fonts"')
     print(f'export XDG_DATA_DIRS="{prefix}/usr/share"')
-    print(f'export PLAYWRIGHT_BROWSERS_PATH="{os.path.join(scratch, "browsers")}"')
+    # Under the prefix, not under scratch: the browser build and the sysroot it
+    # is linked against have to live or die together. Pinning this to scratch
+    # made --prefix durable for the Debian libraries and nowhere for Chromium,
+    # so every run re-downloaded the browser into a directory the runner then
+    # deleted (PRO-38).
+    print(f'export PLAYWRIGHT_BROWSERS_PATH="{os.path.join(prefix, "browsers")}"')
 
 
 if __name__ == "__main__":
