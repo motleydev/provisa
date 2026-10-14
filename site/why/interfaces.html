@@ -55,12 +55,12 @@
         Provisa
       </a>
       <nav class="pv-header__nav" aria-label="Main">
-        <a href="/platform/">Platform</a>
-        <a href="/governance/">Governance</a>
-        <a href="/industries/">Industries</a>
+        <a href="/platform">Platform</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/industries">Industries</a>
         <a href="/why/interfaces" aria-current="page">Interfaces</a>
-        <a href="/why/sources.html">Sources</a>
-        <a href="/vs/">Compare</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/vs/starburst">Compare</a>
       </nav>
       <div class="pv-header__actions">
         <div class="pv-theme" role="group" aria-label="Theme">
@@ -88,12 +88,12 @@
         <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
       </div>
       <nav class="pv-drawer__nav" aria-label="Main">
-        <a href="/platform/">Platform</a>
-        <a href="/governance/">Governance</a>
-        <a href="/industries/">Industries</a>
+        <a href="/platform">Platform</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/industries">Industries</a>
         <a href="/why/interfaces" aria-current="page">Interfaces</a>
-        <a href="/why/sources.html">Sources</a>
-        <a href="/vs/">Compare</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/vs/starburst">Compare</a>
       </nav>
       <div class="pv-drawer__actions">
         <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
@@ -134,6 +134,27 @@
                 on how you asked. Translation belongs to the compiler, not to
                 the protocol you connected with — pgwire, Flight, GraphQL and
                 the rest produce the same SQL for the same question.</p>
+              <!-- Spine position, and the page that proves it (PRO-26;
+                   claim-audit Page 4 item 1, §5.1b). GraphQL is the canonical
+                   schema and REST, JSON:API, OpenAPI and gRPC are derived from
+                   it — that derivation is why one English question comes back
+                   on six surfaces with no extra modelling, so the lead says
+                   both. Qualifier 1, "up to six", stays in the sentence. -->
+              <p class="pv-p">One schema is the reason the count is possible:
+                GraphQL is canonical, and REST, JSON:API, OpenAPI and gRPC are
+                derived from it. So a question asked once in English comes back
+                on up to six governed surfaces — SQL, GraphQL, Cypher, gRPC,
+                JSON:API and OpenAPI — each one generated for the asking role
+                and run through the same compiled governance. Nobody modelled
+                those six separately; there is only the one model.</p>
+              <p class="pv-p pv-p--sm">Three of those six are protocols rather
+                than languages, and they behave accordingly: gRPC, JSON:API and
+                OpenAPI come back as the request a client of that protocol would
+                send and the envelope it would receive, computed through the
+                governed pipeline rather than over a socket, and they express
+                row, aggregate and group-by questions. An arbitrary question is
+                carried by SQL, GraphQL and Cypher; the other three say so
+                rather than guess.</p>
             </div>
           </div>
           <div class="pv-rail__rail">
@@ -768,19 +789,19 @@ tbl = conn.cursor().execute(
         </div>
         <nav class="pv-footer__col" aria-labelledby="f-platform">
           <h2 id="f-platform">Platform</h2>
-          <a href="/platform/">Active Semantic Layer</a>
+          <a href="/platform">Active Semantic Layer</a>
           <a href="/why/interfaces">Interfaces</a>
-          <a href="/governance/">Governance</a>
-          <a href="/why/sources.html">Sources</a>
-          <a href="/platform/views.html">Materialized views</a>
-          <a href="/platform/catalog.html">Catalog</a>
-          <a href="/why/no-lock-in.html">No lock-in</a>
+          <a href="/why/governance">Governance</a>
+          <a href="/why/sources">Sources</a>
+          <a href="/platform/views">Materialized views</a>
+          <a href="/platform/catalog">Catalog</a>
+          <a href="/why/no-lock-in">No lock-in</a>
         </nav>
         <nav class="pv-footer__col" aria-labelledby="f-compare">
           <h2 id="f-compare">Compare</h2>
-          <a href="/vs/starburst.html">vs Starburst</a>
-          <a href="/vs/denodo.html">vs Denodo</a>
-          <a href="/vs/hasura.html">Coming from Hasura</a>
+          <a href="/vs/starburst">vs Starburst</a>
+          <a href="/vs/denodo">vs Denodo</a>
+          <a href="/vs/hasura">Coming from Hasura</a>
         </nav>
         <nav class="pv-footer__col" aria-labelledby="f-start">
           <h2 id="f-start">Get started</h2>
@@ -806,8 +827,8 @@ tbl = conn.cursor().execute(
       <div class="pv-footer__bottom">
         <span>© Provisa</span>
         <div class="pv-footer__legal">
-          <a href="/privacy.html">Privacy</a>
-          <a href="/terms.html">Terms</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
         </div>
       </div>
     </div>

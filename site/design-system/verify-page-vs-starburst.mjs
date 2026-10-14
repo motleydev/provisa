@@ -58,7 +58,7 @@ for (const theme of THEMES) {
         if (r.width === 0 && r.height === 0) continue;
         /* A scroll container is allowed to hold something wider than itself;
          * that is what it is for. Measure the container, not its content. */
-        if (el.closest(".pv-table") && !el.classList.contains("pv-table")) continue;
+        if (el.closest(".pv-table, .pv-code") && !el.classList.contains("pv-table")) continue;
         if (r.right > w + 1 || r.left < -1) out.push(el.className || el.tagName);
       }
       return out.slice(0, 5);
@@ -128,13 +128,16 @@ for (const theme of THEMES) {
        && dateline.includes("481-e is the current STS"),
        `${at}: the dateline ships with both products and the version pair`);
 
-    /* The nav and the drawer swap at --bp-nav, not at this page's breakpoints. */
+    /* The nav and the drawer swap at --bp-nav, not at this page's breakpoints,
+     * so read the token off the element rather than writing the number out
+     * here: moving --bp-nav must not silently fail this page. */
     const nav = await page.evaluate(() => ({
       nav: getComputedStyle(document.querySelector(".pv-header__nav")).display !== "none",
       menu: getComputedStyle(document.querySelector(".pv-header__menu")).display !== "none",
+      bp: parseInt(getComputedStyle(document.documentElement).getPropertyValue("--bp-nav"), 10),
     }));
     ok(nav.nav !== nav.menu, `${at}: exactly one of the nav and the menu button shows`);
-    ok(width >= 1280 ? nav.nav : nav.menu, `${at}: the right one shows`);
+    ok(width >= nav.bp ? nav.nav : nav.menu, `${at}: the right one shows for --bp-nav ${nav.bp}px`);
 
     ok(errors.length === 0, `${at}: no console errors (${errors.slice(0, 2).join(" | ")})`);
 

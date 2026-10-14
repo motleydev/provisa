@@ -61,6 +61,18 @@ img,svg{max-width:100%}
   outline-color:var(--focus-ring-inverse);
 }
 
+/* Anchor landing. The header is sticky and --header-h tall, so a fragment
+ * target scrolled to y=0 sits underneath it — the id resolves, the reader
+ * arrives, and the thing they came for is hidden behind the nav. Every
+ * element that can be a scroll destination clears the header instead.
+ *
+ * scroll-margin only has an effect when the element is actually scrolled to,
+ * so the broad selector costs nothing on the ids that are never targets. It
+ * reads --header-h rather than 76px, so the header and the offset cannot
+ * drift apart (PRO-10; Home's five inbound anchors are the first page to
+ * need it, every page with an in-page link needs it after). */
+[id]{scroll-margin-top:calc(var(--header-h) + var(--space-24))}
+
 /* The kit has one transition (the switch knob). Honour a visitor who has
  * asked for less motion anyway, and cover anything a page adds later. */
 @media (prefers-reduced-motion:reduce){
@@ -138,12 +150,33 @@ img,svg{max-width:100%}
 .pv-section--brand-alt .pv-p{color:var(--text-on-brand-alt)}
 .pv-section--inverse .pv-p{color:var(--text-on-inverse-2)}
 
+/* A mono note under a table or a figure. It is the body colour and the body
+ * line height, not --text-muted and not smaller, because the kit had no way
+ * to set a footnote in mono without also setting it quieter — and a page
+ * whose argument is its disclosures cannot put one in a lighter colour than
+ * the claim it qualifies. Mono is the only difference. */
+.pv-note{
+  max-width:var(--measure);
+  font-family:var(--font-mono);
+  font-size:var(--type-mono);
+  line-height:1.7;
+  color:var(--text-body);
+  text-wrap:pretty;
+}
+
 /* Stack: the kit's one-dimensional flex column, as a utility, because 24 of
  * the 30 components are composed inside one. */
 .pv-stack{display:flex;flex-direction:column;gap:var(--space-24)}
 .pv-stack--sm{gap:var(--space-14)}
 .pv-stack--lg{gap:var(--space-40)}
 .pv-row{display:flex;flex-wrap:wrap;gap:var(--space-12);align-items:center}
+
+/* The measure, as a utility. .pv-p caps itself, but a Callout does not, and a
+ * page that puts one at container width — which a card grid forces, because
+ * pv-grid--3 cannot resolve to three columns inside the rail's two-thirds
+ * column — sets a line of 15px copy 160 characters long. The token existed;
+ * the only way to apply it was to be a paragraph. */
+.pv-measure{max-width:var(--measure)}
 
 /* The kit's section grid: a label-and-figure rail beside a wide body column,
  * one third to two thirds.
@@ -394,12 +427,19 @@ img,svg{max-width:100%}
   height:auto;
   aspect-ratio:1;
 }
-.pv-fig--rings .pv-fig__s:nth-child(1){width:84%;background:var(--fig-paper)}
-.pv-fig--rings .pv-fig__s:nth-child(2){width:70%;background:var(--fig-bg-see)}
-.pv-fig--rings .pv-fig__s:nth-child(3){width:56%;background:var(--fig-paper)}
-.pv-fig--rings .pv-fig__s:nth-child(4){width:42%;background:var(--fig-bg-see)}
-.pv-fig--rings .pv-fig__s:nth-child(5){width:28%;background:var(--fig-paper)}
-.pv-fig--rings .pv-fig__s:nth-child(6){width:14%;background:var(--fig-bg-run)}
+/* Indexed with :nth-of-type, which counts the <i> shapes. It was :nth-child,
+ * which counts the FIG label <span> as child 1 — so every ring took the ring
+ * before it, the outer 84% ring was never drawn, and the innermost had no rule
+ * at all, no --w, and therefore no width: a six-ring figure rendered five and
+ * lost its core. The core is :last-of-type rather than a sixth index, so a
+ * figure built with fewer rings still converges on vermilion. */
+.pv-fig--rings .pv-fig__s:nth-of-type(1){width:84%;background:var(--fig-paper)}
+.pv-fig--rings .pv-fig__s:nth-of-type(2){width:70%;background:var(--fig-bg-see)}
+.pv-fig--rings .pv-fig__s:nth-of-type(3){width:56%;background:var(--fig-paper)}
+.pv-fig--rings .pv-fig__s:nth-of-type(4){width:42%;background:var(--fig-bg-see)}
+.pv-fig--rings .pv-fig__s:nth-of-type(5){width:28%;background:var(--fig-paper)}
+.pv-fig--rings .pv-fig__s:nth-of-type(6){width:14%}
+.pv-fig--rings .pv-fig__s:last-of-type{background:var(--fig-bg-run)}
 
 /* security: twelve ruled lines, at the kit's 6%-of-height pitch, with a
  * vermilion band and a cobalt square over them. The lines are one repeating
@@ -432,6 +472,138 @@ img,svg{max-width:100%}
 }
 
 /* ======================================================================
+ * Brand · Schematic
+ * ====================================================================== */
+
+/* Schematic — the labelled diagram FigPanel cannot draw (PRO-19, scoped on
+ * PRO-3). FigPanel's shapes are empty <i> elements inside one role="img"
+ * panel, so the only text a figure can carry is its FIG corner caption, and a
+ * diagram whose parts are unnamed is decoration. This is the smallest thing
+ * that fixes that: positioned nodes that are real text, and ruled connectors
+ * between them that can be named too.
+ *
+ * Positions are FigPanel's grammar, so the two components are authored the
+ * same way — --l and --w are percentages of the canvas's width, --t of its
+ * height, --h of its height for a vertical wire. The canvas takes its height
+ * from an aspect ratio for the reason FigPanel does: a percentage --t needs a
+ * height that does not depend on the children it is positioning.
+ *
+ * Accessibility is the point of the component, so it is carried by the markup
+ * and not by an aria-label: every node and every wire label is text in
+ * document order, and a figure is a <figure> with a <figcaption>. Document
+ * order is therefore the reading order of the diagram, and it is the same
+ * order at every width. Nothing here is aria-hidden.
+ *
+ * No new tokens: the tones are the existing see/get/run groups and the fourth
+ * slate one, the rules are the hairline and the strong rule, and the labels
+ * are on the mono scale. */
+.pv-schem{
+  position:relative;
+  aspect-ratio:16/9;
+  padding:var(--space-16);
+  border:var(--rule-w) solid var(--border-hairline);
+}
+.pv-schem--tall{aspect-ratio:4/3}
+/* A figure's caption. .pv-note is the kit's mono footnote at the body colour,
+ * which is what a caption carrying a claim has to be; this adds the gap. */
+.pv-schem-fig{display:flex;flex-direction:column;gap:var(--space-12)}
+
+.pv-schem__node{
+  position:absolute;
+  left:calc(var(--l) * 1%);
+  top:calc(var(--t) * 1%);
+  width:calc(var(--w) * 1%);
+  padding:var(--space-10) var(--space-12);
+  background:var(--group-outside-tint);
+  border-left:var(--rule-accent) solid var(--group-outside);
+}
+.pv-schem__node--see{background:var(--group-see-tint);border-left-color:var(--group-see)}
+.pv-schem__node--get{background:var(--group-get-tint);border-left-color:var(--group-get)}
+.pv-schem__node--run{background:var(--group-run-tint);border-left-color:var(--group-run)}
+
+/* The node's name. Mono and the group's text cut, which is the same pairing
+ * LayerRow's index uses on the same tint. */
+.pv-schem__label{
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--type-mono);
+  letter-spacing:0.06em;
+  color:var(--group-outside-text);
+}
+.pv-schem__node--see .pv-schem__label{color:var(--group-see-text)}
+.pv-schem__node--get .pv-schem__label{color:var(--group-get-text)}
+.pv-schem__node--run .pv-schem__label{color:var(--group-run-text)}
+/* One line of prose under the name. Capped at the measure like every other
+ * prose class in the kit, even though a node is narrower than the measure
+ * almost everywhere — the stacked form below is not. */
+.pv-schem__desc{
+  margin-top:var(--space-6);
+  max-width:var(--measure);
+  font-size:var(--type-caption);
+  line-height:var(--type-body-lh);
+  color:var(--text-body);
+}
+
+/* The connector. The rule is the element's own border, so an edge is one
+ * element whether or not it is labelled; the label sits off the rule by
+ * --space-6 and is centred along it. */
+.pv-schem__wire{
+  position:absolute;
+  left:calc(var(--l) * 1%);
+  top:calc(var(--t) * 1%);
+  width:calc(var(--w) * 1%);
+  padding-top:var(--space-6);
+  border-top:var(--rule-w) solid var(--border-strong);
+  font-family:var(--font-mono);
+  font-size:var(--type-mono-xs);
+  letter-spacing:0.08em;
+  color:var(--text-muted);
+  text-align:center;
+}
+.pv-schem__wire--v{
+  width:auto;
+  height:calc(var(--h) * 1%);
+  padding:0 0 0 var(--space-6);
+  border-top:0;
+  border-left:var(--rule-w) solid var(--border-strong);
+  text-align:left;
+}
+/* A refusal, which is a real edge in the model and not a missing one: the
+ * vermilion rule and the vermilion text cut, so the name of the refusal reads
+ * at the body bar. */
+.pv-schem__wire--refused{
+  border-color:var(--group-run);
+  color:var(--group-run-text);
+}
+
+/* Under 900px the canvas stops positioning and becomes a stack: the nodes fall
+ * into document order, the wires keep their labels as list-like rules, and
+ * nothing shrinks below the mono scale. 900px rather than a phone width because
+ * the thing that breaks first is not the viewport, it is the node: a node is a
+ * percentage of the canvas wide and its text is not, so the narrower the
+ * canvas, the taller every node, until the gaps a figure's connectors were
+ * composed into are gone. A diagram wants room, and below this it does not have
+ * any. A media query rather than a container query because the canvas is its
+ * own container and @container never matches the container's own rules; written
+ * out because a media query cannot read a custom property. */
+@media (max-width:899px){
+  .pv-schem{
+    aspect-ratio:auto;
+    display:flex;
+    flex-direction:column;
+    gap:var(--space-12);
+  }
+  .pv-schem__node,.pv-schem__wire{position:static;width:auto;height:auto}
+  .pv-schem__wire{
+    padding:var(--space-3) 0 var(--space-3) var(--space-12);
+    border-top:0;
+    border-left:var(--rule-w) solid var(--border-strong);
+    text-align:left;
+  }
+  .pv-schem__wire--refused{border-left-color:var(--group-run)}
+}
+
+/* ======================================================================
  * Content · Callout, ChoiceCard, RuledCard, TileCard, StatStrip
  * ====================================================================== */
 
@@ -459,6 +631,13 @@ img,svg{max-width:100%}
  * value --text-link already uses for 13px link text in both themes. */
 .pv-callout--get{border-left-color:var(--group-get)}
 .pv-callout--get .pv-callout__label{color:var(--group-get-text)}
+/* The slate tone, for a callout that is a scope statement rather than a
+ * warning or a benefit — Home §9 says there is no managed service to buy, and
+ * both of the kit's other edges read as a verdict on that. Same --group-outside
+ * trio the LayerRow fourth tone uses, so this adds a tone and no colour
+ * (PRO-10). */
+.pv-callout--outside{border-left-color:var(--group-outside)}
+.pv-callout--outside .pv-callout__label{color:var(--group-outside-text)}
 .pv-callout--inverse{
   padding:18px 24px;
   gap:14px 20px;
@@ -480,9 +659,14 @@ img,svg{max-width:100%}
 .pv-choice--ink{background:var(--surface-sunken);border-top-color:var(--border-strong)}
 .pv-choice__title{font-family:var(--font-serif);font-weight:600;font-size:28px}
 .pv-choice__items{display:flex;flex-direction:column;list-style:none;margin:0;padding:0}
+/* The measure is on the text track, not on the row. The row carries the
+ * hairline that separates one item from the next, and that rule is the
+ * component's device — it has to span the card however wide the card is — so
+ * capping the li would leave a card full of short rules. Capping the track
+ * instead stops the prose at 68 characters and lets the row run on. */
 .pv-choice__items li{
   display:grid;
-  grid-template-columns:20px 1fr;
+  grid-template-columns:20px minmax(0,var(--measure));
   gap:var(--space-10);
   padding:12px 0;
   border-top:var(--rule-w) solid var(--border-on-tint);
@@ -514,7 +698,18 @@ img,svg{max-width:100%}
 .pv-ruled:has(.pv-ruled__num){gap:var(--space-10)}
 .pv-ruled__num{font-family:var(--font-mono);font-size:var(--type-mono);color:var(--text-eyebrow)}
 .pv-ruled__title{font-family:var(--font-serif);font-weight:600;font-size:var(--type-h3-sm)}
-.pv-ruled__body{font-size:var(--type-body-sm);line-height:var(--type-body-sm-lh);color:var(--text-body)}
+/* Capped like .pv-p: this is running prose, and the superwide decision is that
+ * a wider container widens the grid and never the line length. The cap is
+ * 68ch at --type-body-sm rather than at --type-body, so it lands ~80px short
+ * of .pv-p's — 68 characters either way, which is the measure's unit. Without
+ * it a ruled card in a grid that has collapsed to one track inherits the whole
+ * track: pv-grid--2 at a 768px viewport is 691px, about 92 characters. */
+.pv-ruled__body{
+  max-width:var(--measure);
+  font-size:var(--type-body-sm);
+  line-height:var(--type-body-sm-lh);
+  color:var(--text-body);
+}
 .pv-section--inverse .pv-ruled__body{color:var(--text-on-inverse-2)}
 .pv-section--brand-alt .pv-ruled__body{color:var(--text-on-brand-alt)}
 
@@ -685,6 +880,23 @@ img,svg{max-width:100%}
 .pv-codetabs__tab[aria-selected="true"] .pv-codetabs__wire{color:var(--text-tab-wire-on)}
 .pv-codetabs__panel{min-height:290px}
 .pv-codetabs__panel[hidden]{display:none}
+/* A panel that carries prose or a table rather than code — /platform §3 tab 3
+ * describes the compile response by field name, and a field table is not a
+ * code block. The tablist stays ink; the panel takes the page surface, so
+ * ComparisonTable, .pv-p and inline <code> work inside it unchanged and flip
+ * with the theme like the rest of the page. Adds no colour: every value here
+ * is an existing alias. */
+.pv-codetabs__panel--prose{
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-20);
+  padding:var(--space-24);
+  background:var(--surface-page);
+  color:var(--text-primary);
+}
+/* .pv-codetabs flips the focus ring for the ink tablist. Inside a prose panel
+ * the page is light again, so the cobalt ring comes back. */
+.pv-codetabs__panel--prose :focus-visible{outline-color:var(--focus-ring)}
 
 /* max-width is what keeps the 640px table inside its column. Without it the
  * scroll container is sized by its content in any shrink-to-fit parent — a
@@ -741,6 +953,9 @@ img,svg{max-width:100%}
 .pv-layer:hover{padding-left:18px;color:var(--text-primary)}
 .pv-layer--get{background:var(--group-get-tint);border-left-color:var(--group-get)}
 .pv-layer--run{background:var(--group-run-tint);border-left-color:var(--group-run)}
+/* The fourth tone, outside the trio. For a row that sits in the same list as
+ * the three but is not one of them; see --group-outside in tokens.css. */
+.pv-layer--outside{background:var(--group-outside-tint);border-left-color:var(--group-outside)}
 .pv-layer__idx{
   font-family:var(--font-mono);
   font-size:var(--type-mono);
@@ -749,7 +964,35 @@ img,svg{max-width:100%}
 }
 .pv-layer--get .pv-layer__idx{color:var(--group-get-text)}
 .pv-layer--run .pv-layer__idx{color:var(--group-run-text)}
+.pv-layer--outside .pv-layer__idx{color:var(--group-outside-text)}
 .pv-layer__title{font-size:var(--type-body-sm);font-weight:500}
+
+/* The detail variant: a tinted row that also carries where the layer is
+ * enforced and what it does. The kit put the description on the list variant
+ * only, which has no per-row tone and only works on a forest band — so a page
+ * could have the colour semantic or the prose, never both.
+ *
+ * It is a div, not the link the plain row is, because there is nowhere to go:
+ * the row is the content. No hover shift for the same reason.
+ *
+ * An unnumbered row omits .pv-layer__idx entirely and the main column is
+ * placed explicitly, so the empty index track still holds and the titles of a
+ * numbered and an unnumbered row line up. */
+.pv-layer--detail{align-items:start;padding:18px 20px 20px 16px}
+.pv-layer--detail:hover{padding-left:16px}
+.pv-layer--detail .pv-layer__main{
+  grid-column:2;
+  flex-direction:column;
+  gap:var(--space-6);
+}
+.pv-layer--detail .pv-layer__idx{line-height:1.5}
+.pv-layer--detail .pv-layer__title{font-size:var(--type-body);line-height:1.5}
+.pv-layer__where{
+  font-family:var(--font-mono);
+  font-size:var(--type-mono-sm);
+  color:var(--text-body);
+}
+.pv-layer--detail .pv-layer__desc{flex:none;min-width:0}
 
 /* The list variant: a ruled row on a forest band. The kit's three fixed
  * tracks were minmax(0,1fr) and minmax(0,1.4fr), which let a cell shrink
@@ -776,13 +1019,23 @@ img,svg{max-width:100%}
   font-size:21px;
   font-weight:400;
 }
+/* The description now has two homes — a tinted row on the page and a ruled
+ * row on a forest band — so its colour is the page one by default and the
+ * band overrides it, rather than the band's colour being the base. */
+/* Capped for the same reason as .pv-ruled__body, and this one is not
+ * hypothetical: a layer row is the full container width, so at 1560px the
+ * description's 1.4 share of the row is ~700px against a 68ch measure of
+ * ~460px. The cap sits after the flex basis, so the row still proportions
+ * itself 1:1.4 wherever the description is under its measure. */
 .pv-layer__desc{
   flex:1.4 1 280px;
   min-width:min(100%,280px);
+  max-width:var(--measure);
   font-size:var(--type-body-sm);
   line-height:1.5;
-  color:var(--text-on-brand-alt);
+  color:var(--text-body);
 }
+.pv-layer--list .pv-layer__desc{color:var(--text-on-brand-alt)}
 
 /* ======================================================================
  * Disclosure · Accordion
@@ -1110,12 +1363,12 @@ img,svg{max-width:100%}
 
 /* --bp-nav, written out: a media query cannot read a custom property. Keep
  * these two bounds and the token in tokens.css in step. */
-@media (max-width:1279px){
+@media (max-width:1299px){
   .pv-header__nav,.pv-header__actions{display:none}
   .pv-header__menu{display:inline-flex}
   .pv-header__inner{gap:var(--space-16)}
 }
-@media (min-width:1280px){
+@media (min-width:1300px){
   /* Belt and braces: a drawer left open by a resize must not cover the page. */
   .pv-drawer{display:none}
 }

@@ -25,7 +25,7 @@ const LAUNCH = process.env.PLAYWRIGHT_LD_LIBRARY_PATH
   : {};
 
 const ORIGIN = (process.argv[2] || "http://127.0.0.1:8731").replace(/\/$/, "");
-const WIDTHS = [360, 768, 1279, 1280, 1920, 2560];
+const WIDTHS = [360, 768, 1299, 1300, 1920, 2560];
 const results = [];
 const ok = (n, c, d = "") => results.push({ n, pass: !!c, d });
 
@@ -48,6 +48,7 @@ async function composedPage() {
   const sw = await fetchText("/design-system/partials/switch.html");
   const form = await fetchText("/design-system/partials/demo-form.html");
   const skip = await fetchText("/design-system/partials/skip-link.html");
+  const schem = await fetchText("/design-system/partials/schematic.html");
   return `<!doctype html><html lang="en"><head><base href="${ORIGIN}/">
 ${head}</head><body>
 ${skip}
@@ -57,7 +58,7 @@ ${header}
   <section class="pv-section"><div class="pv-container pv-stack">
     <h1 class="pv-h pv-h--page">Composed page</h1>
     <p class="pv-p">Body copy to give the container something to measure against.</p>
-    ${accordion}${tabs}${sw}${form}
+    ${accordion}${tabs}${sw}${form}${schem}
   </div></section>
 </main>
 ${footer}
@@ -141,7 +142,13 @@ for (const scheme of ["dark", "light", "no-preference"]) {
 
 /* ---- 3. the toggle, persistence, and no flash ---------------------- */
 {
-  const ctx = await browser.newContext({ colorScheme: "dark" });
+  /* An explicit desktop viewport, above --bp-nav. Playwright's default is
+   * 1280×720, which was above the breakpoint when it was 1280px and is below
+   * it now that it is 1300px — so the header's toggle was in the drawer and
+   * every click in this block timed out. The width is stated here rather than
+   * inherited so that moving --bp-nav again fails the measurement check above
+   * rather than this one. */
+  const ctx = await browser.newContext({ colorScheme: "dark", viewport: { width: 1440, height: 900 } });
   const page = await openComposed(ctx, HTML);
   await page.goto(COMPOSED_URL, { waitUntil: "load" });
   await page.waitForTimeout(250);
@@ -201,7 +208,7 @@ for (const theme of ["light", "dark"]) {
 
     const menuVisible = await page.isVisible(".pv-header__menu");
     const navVisible = await page.isVisible(".pv-header__nav");
-    const wantMenu = w < 1280;
+    const wantMenu = w < 1300;
     ok(`${theme} ${w}px: ${wantMenu ? "menu button" : "nav"} is the one shown`,
       menuVisible === wantMenu && navVisible === !wantMenu,
       `menu=${menuVisible} nav=${navVisible}`);
@@ -425,6 +432,105 @@ for (const theme of ["light", "dark"]) {
     /Public Sans/.test(fams.body) && /Source Serif/.test(fams.h1), JSON.stringify(fams));
   ok("no Inter or JetBrains Mono left", !/Inter|JetBrains/.test(fams.body + fams.h1));
   await ctx.close();
+}
+
+/* ---- 9. Schematic: containment, the reflow, and the names ---------- */
+/* The component positions its children in percentages of a canvas whose height
+ * comes from an aspect ratio, so the one thing that can go wrong is a label
+ * that no longer fits where it was put — a longer word, a different font
+ * metric, a narrower column. The canvas does not clip, deliberately: a clipped
+ * label is a silent failure and an escaping one is a loud one. So the check is
+ * that every node and every wire is inside the canvas at every verified width
+ * in both themes, which is the assertion a mis-authored figure fails. */
+for (const theme of ["light", "dark"]) {
+  for (const w of WIDTHS) {
+    const ctx = await browser.newContext({ viewport: { width: w, height: 900 } });
+    const page = await openComposed(ctx, HTML);
+    await page.addInitScript((t) => { try { localStorage.setItem("provisa-theme", t); } catch {} }, theme);
+    await page.goto(COMPOSED_URL, { waitUntil: "load" });
+    await page.waitForTimeout(350);
+
+    const m = await page.evaluate(() => {
+      const canvas = document.querySelector(".pv-schem");
+      if (!canvas) return null;
+      const c = canvas.getBoundingClientRect();
+      const parts = [...canvas.querySelectorAll(".pv-schem__node,.pv-schem__wire")];
+      const outside = [];
+      for (const el of parts) {
+        const r = el.getBoundingClientRect();
+        const over = [
+          r.left < c.left - 1 && `left by ${(c.left - r.left).toFixed(1)}`,
+          r.right > c.right + 1 && `right by ${(r.right - c.right).toFixed(1)}`,
+          r.top < c.top - 1 && `top by ${(c.top - r.top).toFixed(1)}`,
+          r.bottom > c.bottom + 1 && `bottom by ${(r.bottom - c.bottom).toFixed(1)}`,
+        ].filter(Boolean);
+        if (over.length) {
+          outside.push(`${(el.querySelector(".pv-schem__label")?.textContent
+            || el.textContent).trim().slice(0, 24)}: ${over.join(", ")}`);
+        }
+      }
+      const nodes = [...canvas.querySelectorAll(".pv-schem__node")];
+      const wires = [...canvas.querySelectorAll(".pv-schem__wire")];
+      return {
+        nodes: nodes.length,
+        wires: wires.length,
+        outside,
+        positioned: getComputedStyle(nodes[0]).position,
+        /* Height over width, so the positioned form is measured against the
+           4/3 of pv-schem--tall rather than assumed. */
+        ratio: +(c.height / c.width).toFixed(3),
+        /* Document order is the reading order, and the stacked form has to be
+           in it: every node below the one before it, nothing overlapping. */
+        tops: nodes.map((n) => Math.round(n.getBoundingClientRect().top)),
+        bottoms: nodes.map((n) => Math.round(n.getBoundingClientRect().bottom)),
+        /* Every node and every labelled wire is text. The component exists
+           because FigPanel's geometry was not, so nothing in it may be hidden
+           from the accessibility tree or renamed by an aria-label. */
+        unnamed: nodes.filter((n) =>
+          !(n.querySelector(".pv-schem__label")?.textContent || "").trim()).length,
+        hidden: [...canvas.querySelectorAll("[aria-hidden]")].length,
+        relabelled: [...canvas.querySelectorAll("[aria-label],[role]")].length
+          + (canvas.hasAttribute("aria-label") || canvas.hasAttribute("role") ? 1 : 0),
+        wireRules: wires.map((e) => {
+          const cs = getComputedStyle(e);
+          const vertical = cs.borderTopWidth === "0px";
+          return vertical ? cs.borderLeftWidth : cs.borderTopWidth;
+        }),
+        caption: document.querySelector(".pv-schem-fig > figcaption")?.textContent.trim() || "",
+      };
+    });
+
+    if (!m) { ok(`schematic ${theme} ${w}px: present`, false, "no .pv-schem in the composed page"); await ctx.close(); continue; }
+
+    ok(`schematic ${theme} ${w}px: every node and wire is inside the canvas`,
+      m.outside.length === 0, m.outside.slice(0, 4).join(" | "));
+    ok(`schematic ${theme} ${w}px: three nodes and two wires`,
+      m.nodes === 3 && m.wires === 2, `${m.nodes} nodes, ${m.wires} wires`);
+    ok(`schematic ${theme} ${w}px: every node carries a mono name`,
+      m.unnamed === 0, `${m.unnamed} unnamed`);
+    ok(`schematic ${theme} ${w}px: nothing is hidden from or renamed in the a11y tree`,
+      m.hidden === 0 && m.relabelled === 0,
+      `aria-hidden ${m.hidden}, aria-label/role ${m.relabelled}`);
+    ok(`schematic ${theme} ${w}px: every wire draws a rule`,
+      m.wireRules.length === 2 && m.wireRules.every((r) => parseFloat(r) > 0),
+      m.wireRules.join(" "));
+    ok(`schematic ${theme} ${w}px: the figure has a caption`,
+      /FIG\./.test(m.caption), m.caption.slice(0, 40));
+
+    // The 900px rule in provisa.css, measured on both sides of itself.
+    if (w < 900) {
+      ok(`schematic ${theme} ${w}px: stacked, not positioned`,
+        m.positioned === "static", m.positioned);
+      const ordered = m.tops.every((t, i) => i === 0 || t >= m.bottoms[i - 1]);
+      ok(`schematic ${theme} ${w}px: stacks in document order, no overlap`,
+        ordered, m.tops.join(",") + " / " + m.bottoms.join(","));
+    } else {
+      ok(`schematic ${theme} ${w}px: positioned on a 4/3 canvas`,
+        m.positioned === "absolute" && Math.abs(m.ratio - 0.75) < 0.01,
+        `${m.positioned}, h/w ${m.ratio}`);
+    }
+    await ctx.close();
+  }
 }
 
 await browser.close();

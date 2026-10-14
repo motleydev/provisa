@@ -139,6 +139,11 @@ const PAIRS = [
   ["display emphasis on the page", "text-emphasis", "surface-page", "large"],
   ["small emphasis on the page", "text-emphasis-small", "surface-page", "body"],
   ["small emphasis on a band", "text-emphasis-small", "surface-band", "body"],
+  // The slate Callout tone. A callout keeps the page colour on a band, so the
+  // label is measured against the page in both places; the edge is a control
+  // boundary and takes the 3:1 bar.
+  ["slate callout label", "group-outside-text", "surface-page", "body"],
+  ["slate callout edge", "group-outside", "surface-page", "ui"],
   ["primary button label", "action-primary-text", "action-primary", "body"],
   ["primary button label, hover", "action-primary-text", "action-primary-hover", "body"],
   ["inverse button label", "action-inverse-text", "action-inverse", "body"],
@@ -168,6 +173,15 @@ const PAIRS = [
   ["get tint — index", "group-get-text", "group-get-tint", "body"],
   ["run tint — copy", "text-primary", "group-run-tint", "body"],
   ["run tint — index", "group-run-text", "group-run-tint", "body"],
+  // The fourth tone and the LayerRow description, which the detail variant
+  // sets on a tint rather than on a forest band.
+  ["outside tint — copy", "text-primary", "group-outside-tint", "body"],
+  ["outside tint — index", "group-outside-text", "group-outside-tint", "body"],
+  ["outside tint — rule", "group-outside", "group-outside-tint", "ui"],
+  ["see tint — description", "text-body", "group-see-tint", "body"],
+  ["get tint — description", "text-body", "group-get-tint", "body"],
+  ["run tint — description", "text-body", "group-run-tint", "body"],
+  ["outside tint — description", "text-body", "group-outside-tint", "body"],
   ["table highlight column copy", "text-body", "group-get-tint", "body"],
   ["table highlight column head", "text-link", "group-get-tint", "body"],
   ["chip", "text-primary", "surface-sunken", "body"],
@@ -180,6 +194,16 @@ const PAIRS = [
   // by its own contrast, against the off track by that same edge.
   ["switch edge against the off track", "switch-edge", "switch-track-off", "ui"],
   ["switch knob against the on track", "switch-knob", "switch-on", "ui"],
+  // Schematic (PRO-19). Its node names and prose are already measured above —
+  // a node is a group tint, so "see tint — index" and "see tint — description"
+  // are its label and its desc. What is new is the node's accent rule on its
+  // own tint, which --group-outside already had, and the refusal wire, which
+  // puts a group rule and a group text cut straight onto the page.
+  ["schematic node rule — see", "group-see", "group-see-tint", "ui"],
+  ["schematic node rule — get", "group-get", "group-get-tint", "ui"],
+  ["schematic node rule — run", "group-run", "group-run-tint", "ui"],
+  ["schematic refusal wire", "group-run", "surface-page", "ui"],
+  ["schematic refusal label", "group-run-text", "surface-page", "body"],
   ["fig label on a see ground", "fig-label", "fig-bg-see", "body"],
   ["fig label on a get ground", "fig-label", "fig-bg-get", "body"],
   ["fig label on a run ground", "fig-label-run", "fig-bg-run", "body"],

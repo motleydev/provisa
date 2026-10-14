@@ -188,20 +188,28 @@
  * six nav items, the theme toggle and two calls to action cannot share a 76px
  * row. Used by the header only; everything else is fluid.
  *
- * Measured, not guessed. The row's natural width is 1258px (wordmark 119 + nav
- * 566 + actions 396 + 2×48 gap + 80 gutter); a width sweep in Chromium puts the
+ * Measured, not guessed. The row's natural width is 1282px (wordmark 119 + nav
+ * 566 + actions 420 + 2×48 gap + 80 gutter); a width sweep in Chromium puts the
  * last nav link's right edge past the actions cluster's left edge everywhere
- * below 1220px, and the kit's 48px gap is only intact from 1260px. 1280px is
- * the next clean value above that, and leaves 71px of separation.
+ * below 1244px, and the kit's 48px gap is only intact from 1282px. 1300px is
+ * the next clean value above that.
  *
  * Dropping Insights (plan revision 2) bought back one 15px label, and the theme
  * toggle (also plan revision 2) spent rather more than that, so this went up
  * from the 1040px the seven-item row without a toggle needed.
  *
+ * It then went up again, from 1280px, when the header's secondary action
+ * stopped being `Start free trial`: plan revision 3 withdrew the hosted trial,
+ * so the team path converts to the free licence instead and the label is two
+ * characters longer, which cost the actions cluster 24px and put the row 2px
+ * past the old breakpoint. verify-ui.mjs reads this token and measures the row
+ * against it, so that arrived as a failing check rather than as an overlap
+ * somebody noticed in a screenshot (PRO-10).
+ *
  * CSS cannot read a custom property inside a media query, so the two @media
- * bounds in provisa.css are written out as 1279px/1280px. Change all three
- * together. */
---bp-nav:1280px;
+ * bounds in provisa.css are written out as 1299px/1300px, and verify-ui.mjs
+ * sweeps 1299/1300 to pin both sides. Change all four together. */
+--bp-nav:1300px;
 
 /* Gap scale, copied from the source (not snapped to a grid) */
 --space-3:3px;
@@ -399,6 +407,18 @@
 --group-run-text:light-dark(var(--vermilion-text),var(--vermilion-on-dark));
 --group-run-tint:var(--vermilion-tint);
 --group-run-tint:light-dark(var(--vermilion-tint),#2a1610);
+/* D outside the trio. A fourth, deliberately unbranded tone for a row that
+ * belongs beside the three but is not one of them — /why/governance §3 ends
+ * its five compiled layers with an approval hook that is not compiled into
+ * anything, and the whole point of the row is that it reads as outside.
+ * Slate is the kit's own neutral ramp, not a new hue: no raw token is added
+ * and the brand trio stays three. */
+--group-outside:var(--gray-600);
+--group-outside:light-dark(var(--gray-600),var(--on-ink-3));
+--group-outside-text:var(--gray-700);
+--group-outside-text:light-dark(var(--gray-700),var(--on-ink-2));
+--group-outside-tint:var(--sand);
+--group-outside-tint:light-dark(var(--sand),var(--ink-sunken));
 
 /* --- Figure panels --------------------------------------------------
  * A figure ground is a flat brand field with near-white and near-black

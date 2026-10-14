@@ -51,12 +51,13 @@ comparison tables.
 
 ## Components
 
-All 30, each with a partial under `partials/`.
+Thirty-one, each with a partial under `partials/`: the kit's 30, plus
+`Schematic`, which the kit had nothing equivalent to.
 
 | Group | Components |
 | --- | --- |
 | Actions | `Button`, `TextLink` |
-| Brand | `Wordmark`, `BrandBars`, `FigPanel` |
+| Brand | `Wordmark`, `BrandBars`, `FigPanel`, `Schematic` |
 | Content | `Heading`, `Emph`, `Eyebrow`, `SectionLabel`, `Callout`, `RuledCard`, `TileCard`, `ChoiceCard`, `StatStrip` |
 | Data | `CodeBlock`, `CodeTabs`, `ComparisonTable`, `LayerRow`, `Chip` |
 | Disclosure | `Accordion` |
@@ -130,6 +131,7 @@ the second page to want it finds it built.
 | `LayerRow` `pv-layer--detail` | [PRO-14](/PRO/issues/PRO-14) §3 | A tinted row that also carries `pv-layer__where` and `pv-layer__desc`. The kit put the description on the list variant only, which has no per-row tone and only works on a forest band, so a page could have the colour semantic or the prose and never both. Omit `pv-layer__idx` for an unnumbered row; the index track still holds, so the titles line up. |
 | `LayerRow` `pv-layer--outside`, and `--group-outside` | Same | A fourth tone, slate, for a row that sits in the list but is not one of the three. Governance's approval hook is outside the trio because it is outside the query plan. The three aliases read the kit's own neutral ramp, so the palette gains no hue and the brand trio stays three. |
 | `.pv-note` | Same | A mono footnote at the body colour and the body line height. The kit could set a footnote in mono only by also setting it quieter, and a page whose argument is its disclosures cannot put one in a lighter colour than the claim it qualifies. |
+| `Schematic` | [PRO-19](/PRO/issues/PRO-19), for `/why/data-residency` | The labelled diagram `FigPanel` cannot draw: positioned nodes that are real text, and ruled connectors that can be named. A new component rather than a `FigPanel` variant, because every shape in a `FigPanel` is an empty `<i>` inside one `role="img"`. See **The labelled schematic** below. |
 | `.pv-measure` | Same | `max-width: var(--measure)` as a utility. `.pv-p` caps itself; a Callout did not, and a card grid forces its section's prose out to the container, because `pv-grid--3` cannot resolve to three columns inside the rail's two-thirds column. |
 
 One fix rather than an addition, in the same pass: `FigPanel`'s `pv-fig--rings`
@@ -462,19 +464,66 @@ Manager. Editorial images are a separate process — `FigPanel` is the
 placeholder wherever a figure belongs; see the `image-register` document on
 [PRO-2](/PRO/issues/PRO-2).
 
-### The kit has no labelled schematic
+### The labelled schematic — `Schematic`
 
-Worth knowing before a page asks for one. `FigPanel` is a capable geometric
-primitive — `.pv-fig__s` shapes positioned with `--l/--t/--w/--h`, as squares,
-dots or bars, in any of the see/get/run tones, plus `--rings`, `__lines` and
-`__dots` fields — but every shape is an empty `<i>`, and the only text-bearing
-child in the whole component is `.pv-fig__label`, the `FIG. 01` corner caption.
-The panel is a single `role="img"` with one `aria-label`.
+~~The kit has no labelled schematic.~~ **Built**, under
+[PRO-19](/PRO/issues/PRO-19). What the gap was: `FigPanel` is a capable
+geometric primitive — `.pv-fig__s` shapes positioned with `--l/--t/--w/--h`, as
+squares, dots or bars, in any of the see/get/run tones, plus `--rings`,
+`__lines` and `__dots` fields — but every shape is an empty `<i>`, and the only
+text-bearing child in the whole component is `.pv-fig__label`, the `FIG. 01`
+corner caption. The panel is a single `role="img"` with one `aria-label`. So the
+kit could draw a diagram and not label one, and a diagram whose parts are
+unnamed is decoration.
 
-So the kit can draw a diagram but cannot label one. Anything needing named
-nodes or named edges — the region/manifest diagram `/why/data-residency` will
-want (plan revision 3) is exactly this shape — needs a new component, not a
-`FigPanel` variant. The smallest version consistent with the system would be a
-positioned node that carries a mono label and an accessible name, plus a ruled
-connector; it would reuse the existing tones, hairline and mono scale and add no
-new tokens. Nothing is built, because there is no spec yet.
+`Schematic` is the smallest fix consistent with the system, and adds no tokens:
+
+| Part | What it is |
+| --- | --- |
+| `.pv-schem` | The canvas. Hairline border, `16/9`, or `4/3` with `pv-schem--tall`. Its height comes from the aspect ratio because a percentage `--t` needs a height that does not depend on the children it positions. |
+| `.pv-schem__node` | A positioned node. `--l` and `--w` are percentages of the canvas's width and `--t` of its height — `FigPanel`'s grammar, so the two are authored alike. Four tones: slate by default, then `--see`, `--get`, `--run`, each a group tint with the group's rule as a `--rule-accent` left edge, as `Callout` does. |
+| `.pv-schem__label` | The node's name. Mono at `--type-mono`, in the group's text cut — the pairing `LayerRow`'s index already uses on the same tint. |
+| `.pv-schem__desc` | One line of prose under the name, capped at `--measure`. |
+| `.pv-schem__wire` | A ruled connector, horizontal by default and vertical with `--v`. The rule is the element's own border, so an edge is one element labelled or not; a label sits off the rule and along it. `--refused` makes it vermilion, for an edge that is a refusal rather than a path. |
+| `.pv-schem-fig` | The `<figure>` wrapper, with the caption as a `.pv-note` `<figcaption>`. |
+
+Two properties of it are the point, and both are asserted in `verify-ui.mjs`
+across both themes and the five verified widths:
+
+- **Document order is the reading order.** Nothing in the component is
+  `aria-hidden` and nothing carries an `aria-label` or a `role`, so the order
+  the nodes and wires are written in is the order a screen reader gets. The
+  check fails if any of those attributes appears inside a schematic.
+- **The canvas does not clip, and nothing escapes it.** A clipped label is a
+  silent failure, so there is no `overflow: hidden` to hide one; instead every
+  node and wire is measured against the canvas at each width, and a figure
+  whose label no longer fits where it was put fails loudly. Under 640px the
+  canvas stops positioning and stacks in document order — a 360px viewport
+  cannot hold a diagram whose node is a third of its width without clipping a
+  label or setting it below the mono scale.
+
+`check-contrast.mjs` carries five pairs for it and stays at 100%: the node's
+accent rule on its own tint for the three group tones, and the refusal wire's
+rule and label against the page. The node's name and prose were already
+measured — a node is a group tint, so `see tint — index` and
+`see tint — description` are its label and its description.
+
+**The residency figure is not built yet, and what it may assert is settled.**
+The component is page-agnostic and its specimen diagrams itself, so it asserts
+nothing. The region figure `/why/data-residency` wants is the next step, under
+the claim set ratified on [PRO-8](/PRO/issues/PRO-8) on 2026-10-14
+(`docs/claim-audit.md`, Page 7). That page ships narrow, so the figure:
+
+- may draw the model and the refusals — regions declared in two places, a table
+  or view homed to one region and read only from that region's stores, and a
+  read refused by name (`query.home_region_unavailable`) when the home replica
+  is absent, which is what `pv-schem__wire--refused` exists for;
+- may not depict two regions running, and no screenshot of the regions demo may
+  appear beside it: `docs/regions-demo.md:8` still reads "scaffolded, not yet
+  provable", the two regions share one Postgres, and the draft-table step at
+  `:56` is pending;
+- must read, in the Swiss/German sketch, as a modelling choice someone made
+  rather than as behaviour the platform imposes. "Frankfurt reads only the view"
+  is a choice, and the row-level rule limits by a `home_region` column in the
+  data, not by the object's region metadata — so the figure must not wire a
+  region label to a row-level rule as though one drove the other.
