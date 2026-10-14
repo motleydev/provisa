@@ -401,9 +401,16 @@ Pages built on the kit add their own pair, named for the page, on the same
 split — one script that needs nothing and one that needs a browser:
 
 ```sh
+python3 site/design-system/serve.py 8731 &
+
 python3 site/design-system/check-page-interfaces.py      # 66/66, no browser
-node site/design-system/verify-page-interfaces.mjs http://127.0.0.1:8731
+node site/design-system/verify-page-interfaces.mjs http://127.0.0.1:8731   # 70/70
 ```
+
+`serve.py` rather than `http.server` for this one: the script requests
+`/why/interfaces`, the extensionless route the nav links to and the one Pages
+serves, and the stdlib handler 404s on it. Either server works for the scripts
+that ask for a `.html` file or a directory index.
 
 The Python half is the composition and claim-regression check: it reads the
 built HTML, asserts what the brief is specific about, and greps the strings the

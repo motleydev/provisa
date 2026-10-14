@@ -5,7 +5,9 @@
  * a comment. Needs Playwright, which site/ deliberately does not depend on:
  *   npm i playwright && npx playwright install chromium
  *
- *   python3 -m http.server 8731 --directory site &
+ * The server has to resolve `/why/interfaces` — the extensionless production
+ * route, which `http.server` 404s on and `serve.py` handles:
+ *   python3 site/design-system/serve.py 8731 &
  *   node site/design-system/verify-page-interfaces.mjs http://127.0.0.1:8731
  */
 import { chromium, devices } from "playwright";
