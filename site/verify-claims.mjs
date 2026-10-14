@@ -135,6 +135,34 @@ for (const file of pages) {
     bare.join(" | ") || "");
 }
 
+/* PRO-34: a rate limit is the one import dimension that does not survive the
+ * trip. Hasura's `rate_limit` is per minute, Provisa's `requests_per_second`
+ * is per second, and `provisa/hasura_v2/mapper.py:260` rounds and floors at 1
+ * with no warning — 10/min arrives serving 60/min, 150/min arrives throttled
+ * to 120/min, exact only at a multiple of 60. So no page may tell a buyer the
+ * rate limits came across untouched.
+ *
+ * This is a scoped window check, not a `BANNED` string, because the word is
+ * fine elsewhere: `docs/import.md` preserves the cron expression, and
+ * `/why/materialized-views` preserves CTEs and joins as a graph. What fails is
+ * preservation language in the same sentence as a rate or API limit. Tags are
+ * stripped first, since the claim this is written against was split across a
+ * `<strong>`: "<strong>Roles and rate limits</strong> — preserved". */
+const KEEP = "preserved|unchanged|carried over|carried across|intact|untouched|as-is";
+const LIMIT = "rate limits?|rate_limit|api limits?|api_limits|requests[ _]per[ _]second|throttl\\w*";
+const RATE_KEPT = [
+  new RegExp(`(?:${LIMIT})[^.!?]{0,90}?\\b(?:${KEEP})\\b`, "gi"),
+  new RegExp(`\\b(?:${KEEP})\\b[^.!?]{0,90}?(?:${LIMIT})`, "gi"),
+];
+const plain = (src) => servedCopy(src).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+for (const file of pages) {
+  const rel = path.relative(SITE, file);
+  const copy = plain(fs.readFileSync(file, "utf8"));
+  const hits = RATE_KEPT.flatMap((r) => [...copy.matchAll(r)].map((m) => m[0].trim()));
+  ok(`${rel}: no rate limit is claimed preserved`, hits.length === 0,
+    hits.length ? `${hits.join(" | ")} — PRO-34, the per-minute rate is rounded on import` : "");
+}
+
 let fails = 0;
 for (const r of results) {
   if (!r.pass) fails++;

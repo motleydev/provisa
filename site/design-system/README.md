@@ -397,6 +397,16 @@ links go somewhere and that the measure is still applied.
 repo — `site/` has no build step and should not acquire one. Install it wherever
 you are running from: `npm i playwright && npx playwright install chromium`.
 
+On a runner with no system browser libraries — no `/usr/lib`, no `apt-get` —
+Chromium will not load, and `browser-deps.py` is the way through. It unpacks the
+twenty-odd shared objects into a sysroot and prints the environment that aims
+nix-ld at it, so the render pass runs where it otherwise could not:
+
+```sh
+eval "$(python3 site/design-system/browser-deps.py)"
+npx playwright install chromium
+```
+
 Pages built on the kit add their own pair, named for the page, on the same
 split — one script that needs nothing and one that needs a browser:
 
