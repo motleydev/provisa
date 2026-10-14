@@ -1,0 +1,41 @@
+<!-- CodeTabs. A tablist over one code block per language, with the wire
+     protocol under each tab name. Arrow keys, Home and End move along the
+     list. ids must be unique per instance on a page. -->
+<div class="pv-codetabs">
+  <div class="pv-codetabs__tabs" role="tablist" aria-label="Query languages">
+    <button class="pv-codetabs__tab" type="button" role="tab" id="t-sql"
+            aria-controls="p-sql" aria-selected="true">
+      <span class="pv-codetabs__lang">SQL</span>
+      <span class="pv-codetabs__wire">pgwire</span>
+    </button>
+    <button class="pv-codetabs__tab" type="button" role="tab" id="t-gql"
+            aria-controls="p-gql" aria-selected="false" tabindex="-1">
+      <span class="pv-codetabs__lang">GraphQL</span>
+      <span class="pv-codetabs__wire">http</span>
+    </button>
+    <button class="pv-codetabs__tab" type="button" role="tab" id="t-cypher"
+            aria-controls="p-cypher" aria-selected="false" tabindex="-1">
+      <span class="pv-codetabs__lang">Cypher</span>
+      <span class="pv-codetabs__wire">bolt</span>
+    </button>
+  </div>
+  <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-sql" aria-labelledby="t-sql">
+    <pre>SELECT c.name, o.total
+FROM customers c
+JOIN orders o ON o.customer_id = c.id
+WHERE o.total &gt; 1000;</pre>
+  </div>
+  <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-gql" aria-labelledby="t-gql" hidden>
+    <pre>{
+  customers(where: { orders: { total: { _gt: 1000 } } }) {
+    name
+    orders { total }
+  }
+}</pre>
+  </div>
+  <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-cypher" aria-labelledby="t-cypher" hidden>
+    <pre>MATCH (c:Customer)-[:PLACED]-&gt;(o:Order)
+WHERE o.total &gt; 1000
+RETURN c.name, o.total</pre>
+  </div>
+</div>

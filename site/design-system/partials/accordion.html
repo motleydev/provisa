@@ -1,0 +1,45 @@
+<!-- Accordion. One panel open at a time, as the kit has it. Buttons carry
+     aria-expanded and aria-controls; panels are hidden, not display:none in a
+     class, so the open state is in the DOM and not just in CSS.
+     Variants: faq (default) and pv-acc--numbered. ids must be unique. -->
+<div class="pv-acc">
+  <div class="pv-acc__item">
+    <button class="pv-acc__btn" type="button" aria-expanded="true" aria-controls="a-1">
+      <span class="pv-acc__title">Do I have to move my data?</span>
+      <span class="pv-acc__sign" aria-hidden="true"></span>
+    </button>
+    <div class="pv-acc__panel" id="a-1">
+      <p>No. Provisa reads from the sources you already run and routes writes
+        back to them.</p>
+      <a href="#">How the layer is built →</a>
+    </div>
+  </div>
+  <div class="pv-acc__item">
+    <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-2">
+      <span class="pv-acc__title">Which engine does it use?</span>
+      <span class="pv-acc__sign" aria-hidden="true"></span>
+    </button>
+    <div class="pv-acc__panel" id="a-2" hidden>
+      <p>Whichever you already have. The engine is a swappable component.</p>
+    </div>
+  </div>
+</div>
+
+<div class="pv-acc pv-acc--numbered">
+  <div class="pv-acc__item">
+    <button class="pv-acc__btn" type="button" aria-expanded="true" aria-controls="a-3">
+      <span class="pv-acc__num">01</span>
+      <span class="pv-acc__title">One model, three languages</span>
+      <span class="pv-acc__sign" aria-hidden="true"></span>
+    </button>
+    <div class="pv-acc__panel" id="a-3">
+      <h3 class="pv-acc__lede">Define a model once and query it in SQL,
+        GraphQL or Cypher.</h3>
+      <div class="pv-stack pv-stack--sm">
+        <p>The same rules apply on every protocol, so a policy written once is
+          a policy enforced everywhere.</p>
+        <a href="#">Read the governance model →</a>
+      </div>
+    </div>
+  </div>
+</div>

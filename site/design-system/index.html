@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design system — Provisa</title>
+<meta name="description" content="Every component in the Provisa website design system, rendered from its partial.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+
+<!-- The theme bootstrap, inline and synchronous so there is no flash of the
+     wrong theme. Same code as partials/head.html. -->
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
+
+<style>
+  /* Gallery chrome only. Nothing here belongs to the design system — it is
+     the specimen frame around it, so it is kept apart from provisa.css. */
+  .gal-bar{
+    position:sticky;top:0;z-index:40;
+    display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-16) var(--space-24);
+    padding:var(--space-12) var(--gutter);
+    background:var(--surface-header);
+    backdrop-filter:var(--blur-header);
+    border-bottom:var(--rule-w) solid var(--border-hairline);
+  }
+  .gal-bar__title{font-family:var(--font-serif);font-weight:600;font-size:20px;margin-right:auto}
+  .gal-bar__w{font-family:var(--font-mono);font-size:var(--type-mono-sm);color:var(--text-muted)}
+  .gal-toc{display:flex;flex-wrap:wrap;gap:var(--space-8) var(--space-16);font-size:var(--type-caption)}
+  .gal-toc a{color:var(--text-link);text-decoration:underline;text-underline-offset:3px}
+
+  .gal-group{padding-block:var(--space-56) 0}
+  .gal-group__h{
+    display:flex;align-items:baseline;gap:var(--space-16);
+    padding-bottom:var(--space-10);
+    border-bottom:2px solid var(--border-strong);
+  }
+  .gal-group__n{font-family:var(--font-mono);font-size:var(--type-mono);color:var(--text-eyebrow)}
+
+  .gal-item{padding-block:var(--space-40)}
+  .gal-item+.gal-item{border-top:var(--rule-w) solid var(--border-hairline)}
+  .gal-item__h{
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--space-12) var(--space-16);
+    margin-bottom:var(--space-20);
+  }
+  .gal-item__name{font-family:var(--font-mono);font-size:var(--type-body-sm);font-weight:500}
+  .gal-item__file{font-family:var(--font-mono);font-size:var(--type-mono-sm);color:var(--text-muted)}
+  .gal-item__note{font-size:var(--type-caption);color:var(--text-muted);max-width:var(--measure)}
+  /* Specimens that are a row of things get laid out as a row; ones that are a
+     band or a grid get the full width. */
+  .gal-demo--row{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-16)}
+  .gal-demo--grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:var(--space-32)}
+  .gal-demo--stack{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-24)}
+  /* flex-start sizes each specimen to its content, which is what shows a
+     component's natural width — but a specimen must still not exceed the
+     column. */
+  .gal-demo--row>*,.gal-demo--stack>*{max-width:100%}
+  .gal-demo--bleed{margin-inline:calc(var(--gutter) * -1)}
+  .gal-demo--onink{padding:var(--space-32);background:var(--surface-inverse);color:var(--text-on-inverse)}
+  .gal-demo--onforest{padding:var(--space-32);background:var(--surface-brand-alt);color:var(--text-on-color)}
+  .gal-err{
+    padding:var(--space-20);
+    border-left:var(--rule-accent) solid var(--group-run);
+    background:var(--group-run-tint);
+    font-size:var(--type-body-sm);
+  }
+</style>
+</head>
+<body>
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<div class="gal-bar">
+  <span class="gal-bar__title">Provisa design system</span>
+  <span class="gal-bar__w" id="gal-w">—</span>
+  <div class="pv-theme" role="group" aria-label="Theme">
+    <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+    <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+  </div>
+</div>
+
+<main id="main">
+  <section class="pv-section pv-section--tight">
+    <div class="pv-container pv-stack">
+      <div class="pv-eyebrow">Design system</div>
+      <h1 class="pv-h pv-h--page">Thirty components,<br>one stylesheet</h1>
+      <p class="pv-h pv-h--lede">Every component of the Provisa UI kit, ported to
+        static HTML and CSS and rendered here from the partial a page would copy.
+        Nothing on this page is written twice: each specimen is fetched from
+        <code>site/design-system/partials/</code> at load.</p>
+      <div class="gal-toc" id="gal-toc"></div>
+      <div class="pv-callout">
+        <span class="pv-callout__label">HOW TO READ IT</span>
+        <span class="pv-callout__body">Light is the default for every
+          first-time visitor whatever their operating system is set to; the
+          buttons above reach dark and persist the choice. Resize the window to
+          check a component: the readout beside the title gives the current
+          viewport width. The verified widths are 360, 768, 1280, 1920 and
+          2560.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="pv-container" id="gal-root"></div>
+
+  <section class="pv-section">
+    <div class="pv-container pv-stack">
+      <h2 class="pv-h pv-h--section">The source picker</h2>
+      <p class="pv-p">Generated into the marketing pages by
+        <code>scripts/gen-site-source-picker.mjs</code>, which owns its class
+        names. The design system styles them; it does not emit them. Shown here
+        with three stand-in rows so the styling is reviewable without running
+        the generator.</p>
+      <div class="picker">
+        <section class="picker-cat" data-category="Enterprise">
+          <h3>Enterprise</h3>
+          <ul>
+            <li class="picker-row"><span class="picker-tile" style="background:var(--group-see)" aria-hidden="true">SF</span><span class="picker-name">Salesforce</span></li>
+            <li class="picker-row"><span class="picker-tile" style="background:var(--group-see)" aria-hidden="true">SA</span><span class="picker-name">SAP</span></li>
+          </ul>
+        </section>
+        <section class="picker-cat" data-category="Files">
+          <h3>Files</h3>
+          <ul>
+            <li class="picker-row"><span class="picker-tile" style="background:var(--group-get)" aria-hidden="true">FC</span><span class="picker-name">File crawler</span><ul class="picker-sub"><li>CSV</li><li>Parquet</li><li>DOCX</li></ul></li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* The gallery renders each partial by fetching it, so a component can never
+   drift from the markup this page shows. The inventory below is the order of
+   the README's component table. */
+(() => {
+  "use strict";
+
+  // [group, [component, file, layout, note]]
+  const GROUPS = [
+    ["Layout", [
+      ["Section + rail", "section.html", "bleed", "The band wrapper and the rail grid every page is built from."],
+      ["ContactBand", "contact-band.html", "bleed", "The page-closing band."],
+    ]],
+    ["Actions", [
+      ["Button", "button.html", "row", "Four variants, two sizes, plus a block form."],
+      ["TextLink", "text-link.html", "stack", "Ruled, ink, and inline in a sentence."],
+    ]],
+    ["Brand", [
+      ["Wordmark", "wordmark.html", "row", "Three sizes; the bars are optional."],
+      ["BrandBars", "brand-bars.html", "row", "Cobalt, forest, vermilion."],
+      ["FigPanel", "fig-panel.html", "grid", "The image placeholder for every editorial slot. Eight figures, drawn in CSS."],
+    ]],
+    ["Content", [
+      ["Heading", "heading.html", "stack", "Seven levels, all fluid."],
+      ["Emph", "emph.html", "stack", "Vermilion italic; the darker cut below 24px."],
+      ["Eyebrow", "eyebrow.html", "stack", null],
+      ["SectionLabel", "section-label.html", "row", null],
+      ["Callout", "callout.html", "stack", null],
+      ["RuledCard", "ruled-card.html", "grid", null],
+      ["TileCard", "tile-card.html", "grid", "The numbered industry tile and the resource card."],
+      ["ChoiceCard", "choice-card.html", "grid", null],
+      ["StatStrip", "stat-strip.html", "bleed", null],
+    ]],
+    ["Data", [
+      ["Chip", "chip.html", "row", null],
+      ["CodeBlock", "code-block.html", "grid", "Ink in both themes."],
+      ["CodeTabs", "code-tabs.html", "stack", "A tablist; arrow keys move along it."],
+      ["ComparisonTable", "comparison-table.html", "stack", "Scrolls sideways under 640px rather than reflowing."],
+      ["LayerRow", "layer-row.html", "bleed", "The tinted row, and the list row on a forest band."],
+    ]],
+    ["Disclosure", [
+      ["Accordion", "accordion.html", "stack", "One panel open at a time. Both variants."],
+    ]],
+    ["Forms", [
+      ["Input", "input.html", "row", null],
+      ["Textarea", "textarea.html", "stack", null],
+      ["DemoForm", "demo-form.html", "stack", null],
+      ["SubscribeField", "subscribe-field.html", "stack", null],
+      ["Switch", "switch.html", "stack", null],
+      ["ToggleButtons", "toggle-buttons.html", "stack", null],
+    ]],
+    ["Navigation", [
+      ["UtilityBar", "utility-bar.html", "bleed", null],
+      ["SiteHeader", "site-header.html", "bleed", "Under 1280px the nav collapses into the drawer. The menu button is below that width; try it with a keyboard."],
+      ["Breadcrumb", "breadcrumb.html", "row", null],
+      ["SiteFooter", "site-footer.html", "bleed", null],
+    ]],
+    ["Page chrome", [
+      ["Skip link", "skip-link.html", "stack", "Hidden until focused. Tab from the address bar to see it."],
+      ["Theme toggle", "theme-toggle.html", "row", "The live one is in the bar at the top of this page."],
+    ]],
+  ];
+
+  const root = document.getElementById("gal-root");
+  const toc = document.getElementById("gal-toc");
+  const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+  let n = 0;
+  for (const [group, items] of GROUPS) {
+    n += 1;
+    const sec = document.createElement("section");
+    sec.className = "gal-group";
+    sec.id = slug(group);
+    sec.innerHTML =
+      `<div class="gal-group__h">` +
+      `<span class="gal-group__n">${String(n).padStart(2, "0")}</span>` +
+      `<h2 class="pv-h pv-h--sub">${group}</h2>` +
+      `<span class="gal-item__file">${items.length} component${items.length > 1 ? "s" : ""}</span>` +
+      `</div>`;
+    root.append(sec);
+
+    const link = document.createElement("a");
+    link.href = `#${sec.id}`;
+    link.textContent = group;
+    toc.append(link);
+
+    for (const [name, file, layout, note] of items) {
+      const item = document.createElement("div");
+      item.className = "gal-item";
+      item.id = slug(name);
+      item.innerHTML =
+        `<div class="gal-item__h">` +
+        `<span class="gal-item__name">${name}</span>` +
+        `<span class="gal-item__file">partials/${file}</span>` +
+        (note ? `<span class="gal-item__note">${note}</span>` : "") +
+        `</div>`;
+      const demo = document.createElement("div");
+      demo.className = `gal-demo gal-demo--${layout}`;
+      item.append(demo);
+      sec.append(item);
+
+      fetch(`partials/${file}`)
+        .then((r) => {
+          if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+          return r.text();
+        })
+        .then((html) => {
+          demo.innerHTML = html;
+        })
+        .catch((e) => {
+          demo.innerHTML =
+            `<p class="gal-err"><strong>partials/${file} did not load: ${e.message}.</strong> ` +
+            `This page fetches each partial, which a browser will not do over ` +
+            `<code>file://</code>. Serve the directory over HTTP — ` +
+            `<code>python3 -m http.server --directory site</code>, then open ` +
+            `<code>/design-system/</code>.</p>`;
+        });
+    }
+  }
+
+  // The viewport readout, so a screenshot says what width it was taken at.
+  const w = document.getElementById("gal-w");
+  const show = () => { w.textContent = `${window.innerWidth} × ${window.innerHeight}`; };
+  show();
+  addEventListener("resize", show);
+})();
+</script>
+</body>
+</html>

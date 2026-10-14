@@ -1,0 +1,21 @@
+<!-- DemoForm. Four fields over a textarea and a block button, on paper so it
+     can sit inside a forest or ink contact band. Every field is labelled; the
+     labels are visually hidden here because the placeholder repeats them and
+     the kit's layout has no room, but they are still announced. -->
+<form class="pv-form" method="post" action="/api/demo">
+  <h3 class="pv-form__title">Book a demo</h3>
+  <div class="pv-form__grid">
+    <label class="pv-sr" for="d-name">Full name</label>
+    <input class="pv-input" id="d-name" name="name" autocomplete="name" placeholder="Full name" required>
+    <label class="pv-sr" for="d-email">Work email</label>
+    <input class="pv-input" id="d-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+    <label class="pv-sr" for="d-company">Company</label>
+    <input class="pv-input" id="d-company" name="company" autocomplete="organization" placeholder="Company">
+    <label class="pv-sr" for="d-title">Job title</label>
+    <input class="pv-input" id="d-title" name="title" autocomplete="organization-title" placeholder="Job title">
+  </div>
+  <label class="pv-sr" for="d-what">What would you like to connect?</label>
+  <textarea class="pv-textarea" id="d-what" name="what" rows="3"
+            placeholder="What would you like to connect?"></textarea>
+  <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+</form>

@@ -1,0 +1,38 @@
+<!-- LayerRow. Two variants. The tinted row is a link with a mono index and
+     a title; the list row is a ruled three-column row for a forest band.
+     Tones: default see · pv-layer--get · pv-layer--run. -->
+<a class="pv-layer" href="#">
+  <span class="pv-layer__idx">00</span>
+  <span class="pv-layer__title">Introspection filtering</span>
+</a>
+<a class="pv-layer pv-layer--get" href="#">
+  <span class="pv-layer__idx">03</span>
+  <span class="pv-layer__title">Column masking</span>
+</a>
+<a class="pv-layer pv-layer--run" href="#">
+  <span class="pv-layer__idx">05</span>
+  <span class="pv-layer__title">Query admission</span>
+</a>
+
+<!-- The list variant is white on a forest band, so it ships inside one. Used
+     anywhere else it would be invisible. -->
+<section class="pv-section pv-section--brand-alt pv-section--tight">
+  <div class="pv-container">
+    <div class="pv-layer pv-layer--list">
+      <span class="pv-layer__idx">00</span>
+      <div class="pv-layer__main">
+        <span class="pv-layer__title">Introspection filtering</span>
+        <span class="pv-layer__desc">Schema browsers only ever see what the role
+          is allowed to see.</span>
+      </div>
+    </div>
+    <div class="pv-layer pv-layer--list">
+      <span class="pv-layer__idx">05</span>
+      <div class="pv-layer__main">
+        <span class="pv-layer__title">Query admission</span>
+        <span class="pv-layer__desc">A query that would breach a policy never
+          reaches the engine.</span>
+      </div>
+    </div>
+  </div>
+</section>

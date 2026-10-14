@@ -1,0 +1,438 @@
+/* Provisa website design tokens.
+ *
+ * Three layers, in this order:
+ *
+ *   1. RAW PALETTE   the kit's literal values, extracted verbatim from the
+ *                    "Provisa Website.html" UI kit attached to PRO-2 (bundle
+ *                    namespace ProvisaDesignSystem_af580e). One palette, the
+ *                    same in both themes. Do not retune these, and do not read
+ *                    them from a component.
+ *   2. TYPE + LAYOUT the kit's scales, plus the fluid gutter and the superwide
+ *                    container this repo adds (PRO-3 gaps 4 and 5).
+ *   3. ALIASES       the only layer components are allowed to read. Every alias
+ *                    is declared once, as light-dark(light, dark), so the two
+ *                    themes sit side by side and neither can drift.
+ *
+ * Theme selection is `color-scheme`, so there is no theming media query and no
+ * duplicated alias block:
+ *
+ *   :root              color-scheme: light       — the unconditional default
+ *   [data-theme=light] color-scheme: light       — the toggle's light override
+ *   [data-theme=dark]  color-scheme: dark        — the toggle's dark override
+ *
+ * Light is the default for every first-time visitor regardless of their OS
+ * setting (PRO-2 plan revision 2). Dark is reached only through the header
+ * toggle and persists from then on. There is deliberately no
+ * prefers-color-scheme rule anywhere in the system.
+ *
+ * To change the default theme, change the one `color-scheme` line on :root
+ * below (light | dark | light dark). Nothing else moves.
+ *
+ * Every alias also carries a plain light value on the line above its
+ * light-dark() form, so a browser without light-dark() support renders the
+ * light theme rather than an unstyled page.
+ *
+ * Contrast: site/design-system/check-contrast.mjs parses this file and asserts
+ * WCAG AA for body text and AA Large for display in both themes. Run it after
+ * touching any value here.
+ */
+
+/* ======================================================================
+ * 1. RAW PALETTE — the kit's, verbatim. Not read by components.
+ * ====================================================================== */
+
+:root{
+/* Constants: ink + paper */
+--ink:#16181d;
+--paper:#f8f6f1;
+--white:#ffffff;
+--sand:#ece9e1;
+--sand-2:#efece5;
+
+/* Brand trio (palette option 1: Cobalt · Forest · Vermilion) */
+--cobalt:#2451d8;
+--cobalt-hover:#1a3fb0;
+--cobalt-tint:#e3eafc;
+--cobalt-on-1:#dfe6fa;
+--cobalt-on-2:#e8edf8;
+--cobalt-on-3:#d6e0ff;
+--forest:#0f6b4f;
+--forest-tint:#dff1e9;
+--forest-on-1:#e6efe9;
+--forest-on-2:#b9d6cb;
+--forest-rule:#4f8373;
+--forest-rule-strong:#7fa99a;
+--mint:#8fc2b0;
+--mint-2:#cfe8dd;
+--vermilion:#e24a1f;
+--vermilion-tint:#fde6dc;
+--vermilion-on-dark:#f0b49f;
+--vermilion-highlight:rgba(226,74,31,0.28);
+
+/* Neutral text steps (on paper) */
+--gray-700:#40454d;
+--gray-600:#565b64;
+--gray-500:#7d8189;
+--gray-400:#8a8f98;
+
+/* Rules + borders */
+--rule:#dcd8ce;
+--rule-input:#cfcabe;
+--rule-dashed:#bdb8ac;
+--switch-off:#b8b3a7;
+
+/* Dark surfaces */
+--ink-deep:#0e1013;
+--ink-hover:#23262d;
+--ink-rule:#2c3037;
+--ink-rule-2:#3a3e45;
+--on-ink-1:#f1efe9;
+--on-ink-code:#e7e5df;
+--on-ink-2:#c9c7c1;
+--on-ink-3:#a5a39d;
+--on-ink-tab:#c9cdd3;
+--on-ink-label:#a5aab2;
+
+/* Added by PRO-3, because WCAG needs them and the kit has no equivalent.
+ * Each one is a darker or lighter cut of a kit colour for a use the kit's own
+ * value cannot carry at small sizes; see check-contrast.mjs for the measured
+ * ratio each exists to clear. */
+--vermilion-text:#b83612;     /* vermilion at 4.5:1 on paper, for text under 24px */
+--vermilion-fig:#b03a16;      /* vermilion as a dark-theme figure ground */
+--cobalt-dark:#3d66e8;        /* cobalt raised for a dark page */
+--cobalt-dark-hover:#2f56d4;
+--cobalt-dark-fig:#1b3ea8;
+--cobalt-dark-tint:#1a2033;
+--cobalt-on-dark:#8fa8f5;
+--cobalt-on-dark-2:#dde5fb;
+--forest-dark-fig:#0b5340;
+--forest-dark-tint:#11201a;
+--forest-on-dark-1:#dcece5;
+--ink-sunken:#20242b;         /* the dark-theme answer to --sand */
+--ink-input:#1b1e24;
+--gray-350:#9aa0a8;           /* 4.5:1 on --ink, where --gray-500 is 4.2:1 */
+--switch-off-dark:#7d8189;
+}
+
+/* ======================================================================
+ * 2. TYPE + LAYOUT
+ * ====================================================================== */
+
+:root{
+--font-serif:'Source Serif 4',Georgia,serif;
+--font-sans:'Public Sans',system-ui,sans-serif;
+--font-mono:'IBM Plex Mono',ui-monospace,monospace;
+
+/* Display (Source Serif 4, 600) */
+--type-hero:clamp(44px,6.6vw,96px);
+--type-hero-lh:0.98;
+--type-hero-ls:-0.03em;
+--type-page-title:clamp(44px,6vw,88px);
+--type-page-title-lh:1;
+--type-page-title-ls:-0.025em;
+--type-h2:clamp(34px,4vw,58px);
+--type-h2-lh:1.05;
+--type-h2-ls:-0.025em;
+--type-cta-title:clamp(38px,4.6vw,66px);
+--type-h3-lg:clamp(26px,2.6vw,36px);
+--type-h3:23px;
+--type-h3-sm:22px;
+--type-lede-serif:clamp(20px,1.8vw,25px);
+--type-stat:56px;
+
+/* Body (Public Sans) */
+--type-lede:clamp(18px,1.5vw,21px);
+--type-body:16.5px;
+--type-body-lh:1.65;
+--type-body-sm:15px;
+--type-body-sm-lh:1.6;
+--type-small:14.5px;
+--type-caption:13.5px;
+--type-nav:15px;
+--type-button:15.5px;
+
+/* Eyebrow / labels */
+--type-eyebrow:13px;
+--type-eyebrow-ls:0.12em;
+--type-label:12px;
+
+/* Mono */
+--type-mono:13px;
+--type-mono-sm:12.5px;
+--type-mono-xs:11px;
+--type-code-lh:1.8;
+}
+
+:root{
+/* Layout.
+ *
+ * --container is the kit's 1320px up to ~2160px, then grows to 1560px and
+ * stops — the superwide decision (PRO-3 gap 5). 61vw is the crossover that
+ * reaches 1320px at 2164px and 1560px at 2557px, so no breakpoint is needed
+ * and nothing moves on the widths anyone actually browses at.
+ *
+ * --measure caps running prose independently of the container, so a wider
+ * container widens the grid and the figures but never the line length.
+ *
+ * --gutter replaces the kit's fixed 40px (PRO-3 gap 4): 20px on a 360px phone
+ * instead of 40px, reaching the kit's 40px at 800px and holding there. */
+--container:clamp(1320px,61vw,1560px);
+--measure:68ch;
+--gutter:clamp(20px,5vw,40px);
+--header-h:76px;
+--section-y:clamp(72px,9vw,136px); /* @kind spacing */
+--section-y-sm:clamp(72px,9vw,120px); /* @kind spacing */
+--hero-y-top:clamp(56px,8vw,112px); /* @kind spacing */
+
+/* The one layout breakpoint in the system: the width below which the wordmark,
+ * six nav items, the theme toggle and two calls to action cannot share a 76px
+ * row. Used by the header only; everything else is fluid.
+ *
+ * Measured, not guessed. The row's natural width is 1258px (wordmark 119 + nav
+ * 566 + actions 396 + 2×48 gap + 80 gutter); a width sweep in Chromium puts the
+ * last nav link's right edge past the actions cluster's left edge everywhere
+ * below 1220px, and the kit's 48px gap is only intact from 1260px. 1280px is
+ * the next clean value above that, and leaves 71px of separation.
+ *
+ * Dropping Insights (plan revision 2) bought back one 15px label, and the theme
+ * toggle (also plan revision 2) spent rather more than that, so this went up
+ * from the 1040px the seven-item row without a toggle needed.
+ *
+ * CSS cannot read a custom property inside a media query, so the two @media
+ * bounds in provisa.css are written out as 1279px/1280px. Change all three
+ * together. */
+--bp-nav:1280px;
+
+/* Gap scale, copied from the source (not snapped to a grid) */
+--space-3:3px;
+--space-6:6px;
+--space-8:8px;
+--space-10:10px;
+--space-12:12px;
+--space-14:14px;
+--space-16:16px;
+--space-18:18px;
+--space-20:20px;
+--space-24:24px;
+--space-28:28px;
+--space-32:32px;
+--space-40:40px;
+--space-48:48px;
+--space-56:56px;
+--space-64:64px;
+
+/* Shape: square everywhere */
+--radius:0;
+--rule-w:1px;
+--rule-top-card:4px;
+--rule-accent:6px;
+
+/* Motion: effectively none; one switch transition */
+--ease-switch:left .2s; /* @kind other */
+--blur-header:blur(8px); /* @kind other */
+
+/* Focus, added by PRO-3 (gap 6). */
+--focus-w:2px;
+--focus-offset:2px;
+}
+
+/* ======================================================================
+ * 3. ALIASES — the only layer a component may read.
+ *
+ * Shape of every line:   --alias: light-dark(<light>, <dark>);
+ * preceded by a bare light value as the no-light-dark() fallback.
+ * ====================================================================== */
+
+/* Default theme. Change this one line to pick a different default:
+ *   light       always light unless the visitor's toggle says otherwise (current)
+ *   dark        always dark unless the visitor's toggle says otherwise
+ *   light dark  follow the OS preference */
+:root{color-scheme:light}
+
+/* The persisted toggle's override. provisa.js sets data-theme on <html>. */
+:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
+
+:root{
+/* --- Surfaces ------------------------------------------------------- */
+--surface-page:var(--paper);
+--surface-page:light-dark(var(--paper),var(--ink-deep));
+--surface-band:var(--white);
+--surface-band:light-dark(var(--white),var(--ink));
+--surface-sunken:var(--sand);
+--surface-sunken:light-dark(var(--sand),var(--ink-sunken));
+--surface-input:var(--white);
+--surface-input:light-dark(var(--white),var(--ink-input));
+/* The sticky header: the page colour at 96%, so it flips with the theme.
+ * This replaces the kit's hardcoded rgba(248,246,241,0.96). */
+--surface-header:color-mix(in srgb,var(--surface-page) 96%,transparent);
+
+/* An "inverse" surface is the opposite of the page in both themes: an ink
+ * band on a light page, a paper band on a dark one. */
+--surface-inverse:var(--ink);
+--surface-inverse:light-dark(var(--ink),var(--paper));
+--surface-inverse-hover:var(--ink-hover);
+--surface-inverse-hover:light-dark(var(--ink-hover),var(--sand));
+
+/* Code is always ink, in both themes — a terminal does not invert. */
+--surface-code:var(--ink);
+--surface-code-deep:var(--ink-deep);
+--surface-code-deep:light-dark(var(--ink-deep),#080a0c);
+--surface-code-hover:var(--ink-hover);
+
+/* Brand bands */
+--surface-brand:var(--cobalt);
+--surface-brand:light-dark(var(--cobalt),var(--cobalt-dark-fig));
+--surface-brand-alt:var(--forest);
+--surface-brand-alt:light-dark(var(--forest),var(--forest-dark-fig));
+
+/* --- Text ----------------------------------------------------------- */
+--text-primary:var(--ink);
+--text-primary:light-dark(var(--ink),var(--on-ink-1));
+--text-body:var(--gray-700);
+--text-body:light-dark(var(--gray-700),var(--on-ink-2));
+--text-muted:var(--gray-600);
+--text-muted:light-dark(var(--gray-600),var(--on-ink-3));
+--text-faint:var(--gray-500);
+--text-faint:light-dark(var(--gray-500),var(--on-ink-label));
+--text-on-color:var(--white);
+--text-link:var(--forest);
+--text-link:light-dark(var(--forest),var(--mint));
+--text-eyebrow:var(--forest);
+--text-eyebrow:light-dark(var(--forest),var(--mint));
+/* Emphasis has two cuts: the kit's vermilion for display sizes (AA Large),
+ * and a darker one for text under 24px, where the kit's value is 3.7:1 on
+ * paper. In dark both are the same lifted vermilion. */
+--text-emphasis:var(--vermilion);
+--text-emphasis:light-dark(var(--vermilion),var(--vermilion-on-dark));
+--text-emphasis-small:var(--vermilion-text);
+--text-emphasis-small:light-dark(var(--vermilion-text),var(--vermilion-on-dark));
+
+/* Text on an inverse surface */
+--text-on-inverse:var(--on-ink-1);
+--text-on-inverse:light-dark(var(--on-ink-1),var(--ink));
+--text-on-inverse-2:var(--on-ink-2);
+--text-on-inverse-2:light-dark(var(--on-ink-2),var(--gray-700));
+--text-on-inverse-3:var(--on-ink-3);
+--text-on-inverse-3:light-dark(var(--on-ink-3),var(--gray-600));
+
+/* Text on a brand band */
+--text-on-brand:var(--cobalt-on-2);
+--text-on-brand:light-dark(var(--cobalt-on-2),var(--cobalt-on-dark-2));
+--text-on-brand-alt:var(--forest-on-1);
+--text-on-brand-alt:light-dark(var(--forest-on-1),var(--forest-on-dark-1));
+/* The mono index / label step on a forest band. --forest-on-2 is 4.2:1 there,
+ * which is under AA for 13px, so the alias points one step brighter. */
+--text-on-brand-alt-2:var(--mint-2);
+
+/* Code + tabs, which live on ink in both themes */
+--text-code:var(--on-ink-code);
+--text-code-faint:var(--gray-350);
+--text-code-label:var(--on-ink-label);
+--text-tab:var(--on-ink-tab);
+--text-tab-faint:var(--gray-350);
+--text-tab-wire-on:var(--mint-2);
+
+/* --- Actions -------------------------------------------------------- */
+--action-primary:var(--cobalt);
+--action-primary:light-dark(var(--cobalt),var(--cobalt-dark));
+--action-primary-hover:var(--cobalt-hover);
+--action-primary-hover:light-dark(var(--cobalt-hover),var(--cobalt-dark-hover));
+--action-primary-text:var(--white);
+--action-inverse:var(--ink);
+--action-inverse:light-dark(var(--ink),var(--on-ink-1));
+--action-inverse-hover:var(--ink-hover);
+--action-inverse-hover:light-dark(var(--ink-hover),var(--white));
+--action-inverse-text:var(--white);
+--action-inverse-text:light-dark(var(--white),var(--ink-deep));
+/* The "on colour" button: sits on a brand or ink band, so it is paper-ish in
+ * both themes. */
+--action-on-color:var(--white);
+--action-on-color:light-dark(var(--white),var(--on-ink-1));
+--action-on-color-hover:var(--paper);
+--action-on-color-hover:light-dark(var(--paper),var(--white));
+--action-on-color-text:var(--ink);
+--action-on-color-text:light-dark(var(--ink),var(--ink-deep));
+
+/* --- Borders -------------------------------------------------------- */
+--border-hairline:var(--rule);
+--border-hairline:light-dark(var(--rule),var(--ink-rule));
+--border-strong:var(--ink);
+--border-strong:light-dark(var(--ink),var(--on-ink-3));
+--border-input:var(--rule-input);
+--border-input:light-dark(var(--rule-input),var(--ink-rule-2));
+--border-dashed:var(--rule-dashed);
+--border-dashed:light-dark(var(--rule-dashed),var(--ink-rule-2));
+--border-code:var(--ink-rule);
+--border-code-2:var(--ink-rule-2);
+/* A forest band carries its own scale in both themes, so its internal rule
+ * does not flip. */
+--border-on-brand-alt:var(--forest-rule);
+/* The rule between rows inside a tinted card. */
+--border-on-tint:rgba(22,24,29,0.15);
+--border-on-tint:light-dark(rgba(22,24,29,0.15),rgba(241,239,233,0.18));
+
+/* --- Focus (PRO-3 gap 6) -------------------------------------------- */
+--focus-ring:var(--cobalt);
+--focus-ring:light-dark(var(--cobalt),var(--cobalt-on-dark));
+--focus-ring-inverse:var(--paper);
+--focus-ring-inverse:light-dark(var(--paper),var(--ink-deep));
+
+/* --- Governance group semantics -------------------------------------
+ * A who can see · B what they get · C whether it runs.
+ * The -text cut is the same hue at AA on its own tint. */
+--group-see:var(--cobalt);
+--group-see:light-dark(var(--cobalt),var(--cobalt-on-dark));
+--group-see-text:var(--cobalt);
+--group-see-text:light-dark(var(--cobalt),var(--cobalt-on-dark));
+--group-see-tint:var(--cobalt-tint);
+--group-see-tint:light-dark(var(--cobalt-tint),var(--cobalt-dark-tint));
+--group-get:var(--forest);
+--group-get:light-dark(var(--forest),var(--mint));
+--group-get-text:var(--forest);
+--group-get-text:light-dark(var(--forest),var(--mint));
+--group-get-tint:var(--forest-tint);
+--group-get-tint:light-dark(var(--forest-tint),var(--forest-dark-tint));
+--group-run:var(--vermilion);
+--group-run:light-dark(var(--vermilion),var(--vermilion-on-dark));
+--group-run-text:var(--vermilion-text);
+--group-run-text:light-dark(var(--vermilion-text),var(--vermilion-on-dark));
+--group-run-tint:var(--vermilion-tint);
+--group-run-tint:light-dark(var(--vermilion-tint),#2a1610);
+
+/* --- Figure panels --------------------------------------------------
+ * A figure ground is a flat brand field with near-white and near-black
+ * geometry on it. In dark the grounds go down, not up, so the geometry stays
+ * legible and the FIG label keeps AA. */
+--fig-bg-see:var(--cobalt);
+--fig-bg-see:light-dark(var(--cobalt),var(--cobalt-dark-fig));
+--fig-bg-get:var(--forest);
+--fig-bg-get:light-dark(var(--forest),var(--forest-dark-fig));
+--fig-bg-run:var(--vermilion);
+--fig-bg-run:light-dark(var(--vermilion),var(--vermilion-fig));
+--fig-paper:var(--paper);
+--fig-paper:light-dark(var(--paper),var(--on-ink-1));
+--fig-ink:var(--ink);
+--fig-ink:light-dark(var(--ink),var(--ink-deep));
+--fig-label:var(--white);
+/* White on the kit's vermilion is 4.0:1, under AA for an 11px label, so the
+ * label on a vermilion ground is ink in light. The dark ground is dark enough
+ * for white. */
+--fig-label-run:var(--ink-deep);
+--fig-label-run:light-dark(var(--ink-deep),var(--white));
+
+/* --- Switch --------------------------------------------------------- */
+--switch-on:var(--forest);
+--switch-on:light-dark(var(--forest),var(--mint));
+--switch-track-off:var(--switch-off);
+--switch-track-off:light-dark(var(--switch-off),var(--switch-off-dark));
+--switch-knob:var(--white);
+--switch-knob:light-dark(var(--white),var(--ink-deep));
+/* The track and knob outline. --switch-off against paper is 1.9:1, so without
+ * an edge the control has no visible boundary. */
+--switch-edge:var(--ink);
+--switch-edge:light-dark(var(--ink),var(--on-ink-1));
+
+/* --- Code highlight ------------------------------------------------- */
+--code-highlight:var(--vermilion-highlight);
+}

@@ -1,0 +1,1242 @@
+/* Provisa website design system — components.
+ *
+ * The HTML-and-CSS port of the "Provisa Website.html" UI kit (PRO-3). Every
+ * component in site/design-system/partials/ is styled here and nowhere else.
+ *
+ * Rules this file keeps:
+ *   · It reads the alias layer only. No component reads --ink, --paper,
+ *     --forest, --gray-700 or --rule directly, and no colour is written as a
+ *     literal. tokens.css owns every value.
+ *   · One breakpoint, --bp-nav, for the header. Everything else is clamp(),
+ *     auto-fit or minmax(), as the kit was.
+ *   · --radius: 0 everywhere, 1px hairlines instead of borders and shadows,
+ *     no shadows, and the switch knob is the only transition.
+ *
+ * Load order:  fonts.css, tokens.css, provisa.css.
+ */
+
+/* ======================================================================
+ * Base
+ * ====================================================================== */
+
+*{box-sizing:border-box}
+
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;
+  background:var(--surface-page);
+  color:var(--text-primary);
+  font-family:var(--font-sans);
+  font-size:var(--type-body);
+  line-height:var(--type-body-lh);
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4,h5,h6,p{margin:0}
+
+a{color:var(--text-primary);text-decoration:none}
+a:hover{color:var(--text-link)}
+
+code,kbd,samp,pre{font-family:var(--font-mono)}
+code{font-size:0.9em}
+
+img,svg{max-width:100%}
+
+/* Keyboard focus. One ring, on the alias layer, everywhere — the kit had
+ * none (PRO-3 gap 6). :focus-visible only, so a mouse click never shows it. */
+:focus-visible{
+  outline:var(--focus-w) solid var(--focus-ring);
+  outline-offset:var(--focus-offset);
+}
+/* On an inverse or brand band the cobalt ring disappears, so flip it. */
+.pv-section--inverse :focus-visible,
+.pv-section--brand :focus-visible,
+.pv-section--brand-alt :focus-visible,
+.pv-utility :focus-visible,
+.pv-code :focus-visible,
+.pv-codetabs :focus-visible,
+.pv-contact :focus-visible,
+.pv-fig :focus-visible{
+  outline-color:var(--focus-ring-inverse);
+}
+
+/* The kit has one transition (the switch knob). Honour a visitor who has
+ * asked for less motion anyway, and cover anything a page adds later. */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+
+/* Visually hidden, still read aloud. */
+.pv-sr{
+  position:absolute;
+  width:1px;height:1px;
+  margin:-1px;padding:0;
+  overflow:hidden;
+  clip-path:inset(50%);
+  white-space:nowrap;
+  border:0;
+}
+
+/* Skip link (PRO-3 gap 6): off-screen until focused, then a square ink plate
+ * in the top-left corner. */
+.pv-skip{
+  position:fixed;
+  top:0;left:0;
+  z-index:60;
+  transform:translateY(-110%);
+  padding:12px 18px;
+  background:var(--action-inverse);
+  color:var(--action-inverse-text);
+  font-size:var(--type-body-sm);
+  font-weight:500;
+}
+.pv-skip:focus{transform:translateY(0)}
+.pv-skip:hover{color:var(--action-inverse-text)}
+
+/* ======================================================================
+ * Layout
+ * ====================================================================== */
+
+/* The measure, the gutter and the superwide container all live here; see the
+ * layout block of tokens.css for why each is what it is. */
+.pv-container{
+  max-width:var(--container);
+  margin-inline:auto;
+  padding-inline:var(--gutter);
+}
+
+.pv-section>.pv-container{padding-block:var(--section-y)}
+.pv-section--tight>.pv-container{padding-block:var(--section-y-sm)}
+
+.pv-section--band{
+  background:var(--surface-band);
+  border-top:var(--rule-w) solid var(--border-hairline);
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+}
+.pv-section--brand{background:var(--surface-brand);color:var(--text-on-brand)}
+.pv-section--brand-alt{background:var(--surface-brand-alt);color:var(--text-on-color)}
+.pv-section--inverse{background:var(--surface-inverse);color:var(--text-on-inverse)}
+
+/* Running prose. Capped independently of the container so a superwide screen
+ * widens the grid and the figures, never the line length. */
+.pv-p{
+  max-width:var(--measure);
+  font-size:var(--type-body);
+  line-height:var(--type-body-lh);
+  color:var(--text-body);
+  text-wrap:pretty;
+}
+.pv-p--sm{font-size:var(--type-body-sm);line-height:var(--type-body-sm-lh)}
+.pv-p--lede{font-size:var(--type-lede);line-height:1.55}
+.pv-p+.pv-p{margin-top:var(--space-16)}
+.pv-section--brand-alt .pv-p{color:var(--text-on-brand-alt)}
+.pv-section--inverse .pv-p{color:var(--text-on-inverse-2)}
+
+/* Stack: the kit's one-dimensional flex column, as a utility, because 24 of
+ * the 30 components are composed inside one. */
+.pv-stack{display:flex;flex-direction:column;gap:var(--space-24)}
+.pv-stack--sm{gap:var(--space-14)}
+.pv-stack--lg{gap:var(--space-40)}
+.pv-row{display:flex;flex-wrap:wrap;gap:var(--space-12);align-items:center}
+
+/* The kit's section grid: a label-and-figure rail beside a wide body column,
+ * one third to two thirds.
+ *
+ * The kit built this as an auto-fit grid with `grid-column: span 2` on the
+ * body. On a phone that resolves to one column with the body spanning into an
+ * implicit second, and the section overflows the viewport by 24px. Flex with
+ * a 1:2 grow ratio gives the same proportions where there is room and wraps
+ * where there is not, with no breakpoint. */
+.pv-rail{display:flex;flex-wrap:wrap;gap:48px 64px}
+.pv-rail__rail{
+  flex:1 1 300px;
+  min-width:min(100%,300px);
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-24);
+  align-self:start;
+}
+.pv-rail__body{
+  flex:2 1 600px;
+  min-width:min(100%,600px);
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-40);
+}
+
+/* The kit's card grids, auto-fit so they need no breakpoint. */
+.pv-grid{display:grid;gap:var(--space-40) var(--space-48)}
+.pv-grid--2{grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr))}
+.pv-grid--3{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.pv-grid--4{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.pv-grid--tight{gap:var(--space-24)}
+
+/* ======================================================================
+ * Content · Heading, Emph, Eyebrow, SectionLabel
+ * ====================================================================== */
+
+.pv-h{
+  font-family:var(--font-serif);
+  font-weight:600;
+  text-wrap:balance;
+}
+.pv-h--hero{font-size:var(--type-hero);line-height:var(--type-hero-lh);letter-spacing:var(--type-hero-ls)}
+.pv-h--page{font-size:var(--type-page-title);line-height:var(--type-page-title-lh);letter-spacing:var(--type-page-title-ls)}
+.pv-h--section{font-size:var(--type-h2);line-height:var(--type-h2-lh);letter-spacing:var(--type-h2-ls)}
+.pv-h--cta{font-size:var(--type-cta-title);line-height:1.02;letter-spacing:-0.02em}
+.pv-h--sub{font-size:var(--type-h3-lg);line-height:1.15}
+.pv-h--card{font-size:var(--type-h3);line-height:1.2}
+.pv-h--lede{
+  font-size:var(--type-lede-serif);
+  line-height:1.45;
+  font-weight:400;
+  text-wrap:pretty;
+  max-width:var(--measure);
+}
+
+/* Emphasis inside display type keeps the kit's vermilion; inside anything
+ * under 24px it uses the darker cut, which is where AA actually needs it. */
+.pv-emph{color:var(--text-emphasis);font-style:italic}
+.pv-p .pv-emph,
+.pv-h--card .pv-emph,
+.pv-callout .pv-emph,
+.pv-ruled .pv-emph,
+.pv-acc .pv-emph{color:var(--text-emphasis-small)}
+
+.pv-eyebrow{
+  font-size:var(--type-eyebrow);
+  font-weight:600;
+  letter-spacing:var(--type-eyebrow-ls);
+  text-transform:uppercase;
+  color:var(--text-eyebrow);
+}
+.pv-eyebrow--see{color:var(--group-see-text)}
+.pv-eyebrow--run{color:var(--group-run-text)}
+.pv-eyebrow--ink{color:var(--text-primary)}
+.pv-eyebrow--on-color{color:var(--text-on-color)}
+.pv-eyebrow--on-brand-alt{color:var(--text-on-brand-alt-2)}
+
+.pv-seclabel{display:flex;flex-direction:column;gap:var(--space-10)}
+.pv-seclabel__num{
+  font-family:var(--font-mono);
+  font-size:var(--type-mono);
+  color:var(--text-eyebrow);
+}
+.pv-seclabel__text{
+  font-size:var(--type-eyebrow);
+  font-weight:600;
+  letter-spacing:var(--type-eyebrow-ls);
+  text-transform:uppercase;
+}
+/* On a forest band the index needs the brighter step to stay at AA. */
+.pv-section--brand-alt .pv-seclabel__num,
+.pv-seclabel--on-brand-alt .pv-seclabel__num{color:var(--text-on-brand-alt-2)}
+
+/* ======================================================================
+ * Actions · Button, TextLink
+ * ====================================================================== */
+
+.pv-btn{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:var(--space-8);
+  padding:16px 26px;
+  border:0;
+  border-radius:var(--radius);
+  font-family:var(--font-sans);
+  font-size:var(--type-button);
+  font-weight:500;
+  line-height:1.2;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
+  background:var(--action-primary);
+  color:var(--action-primary-text);
+}
+.pv-btn:hover{background:var(--action-primary-hover);color:var(--action-primary-text)}
+
+/* A bordered variant pays 1px of its padding to the border, so the box
+ * matches the unbordered one — the kit's 15px/25px against 16px/26px. */
+.pv-btn--secondary{
+  padding:15px 25px;
+  background:transparent;
+  color:var(--text-primary);
+  border:var(--rule-w) solid var(--border-strong);
+}
+.pv-btn--secondary:hover{background:var(--action-inverse);color:var(--action-inverse-text)}
+
+.pv-btn--inverse{background:var(--action-inverse);color:var(--action-inverse-text)}
+.pv-btn--inverse:hover{background:var(--action-inverse-hover);color:var(--action-inverse-text)}
+
+.pv-btn--on-color{background:var(--action-on-color);color:var(--action-on-color-text)}
+.pv-btn--on-color:hover{background:var(--action-on-color-hover);color:var(--action-on-color-text)}
+
+.pv-btn--sm{padding:12px 20px;font-size:var(--type-nav)}
+.pv-btn--sm.pv-btn--secondary{padding:11px 19px}
+
+.pv-btn--block{display:flex;width:100%;padding:16px}
+
+.pv-link{
+  color:var(--text-link);
+  font-size:var(--type-nav);
+  font-weight:500;
+  border-bottom:var(--rule-w) solid currentColor;
+  padding-bottom:3px;
+  align-self:flex-start;
+  text-decoration:none;
+}
+.pv-link:hover{color:var(--text-link)}
+.pv-link--ink{color:var(--text-primary)}
+.pv-link--ink:hover{color:var(--text-link)}
+.pv-link--inverse{color:var(--text-on-color)}
+.pv-link--inverse:hover{color:var(--text-on-color)}
+/* Inline in a sentence: an underline rather than a rule, and the sentence's
+ * own size and weight. */
+.pv-link--inline{
+  border-bottom:0;
+  padding-bottom:0;
+  align-self:auto;
+  font-size:inherit;
+  font-weight:inherit;
+  text-decoration:underline;
+  text-underline-offset:4px;
+}
+.pv-link__arrow{font-style:normal}
+
+/* ======================================================================
+ * Brand · Wordmark, BrandBars, FigPanel
+ * ====================================================================== */
+
+.pv-wordmark{
+  display:inline-flex;
+  align-items:center;
+  gap:0.385em;
+  flex:none;
+  font-family:var(--font-serif);
+  font-size:26px;
+  letter-spacing:-0.01em;
+  color:var(--text-primary);
+}
+.pv-wordmark:hover{color:var(--text-primary)}
+.pv-wordmark--inverse,.pv-wordmark--inverse:hover{color:var(--text-on-color)}
+.pv-wordmark--lg{font-size:34px}
+.pv-wordmark--sm{font-size:20px}
+.pv-wordmark__bars{display:flex;gap:max(3px,0.115em)}
+.pv-wordmark__bars i{width:0.23em;height:0.69em;background:var(--group-see)}
+.pv-wordmark__bars i:nth-child(2){background:var(--group-get)}
+.pv-wordmark__bars i:nth-child(3){background:var(--group-run)}
+
+.pv-bars{display:flex;gap:4px}
+.pv-bars i{width:40px;height:6px;background:var(--group-see)}
+.pv-bars i:nth-child(2){background:var(--group-get)}
+.pv-bars i:nth-child(3){background:var(--group-run)}
+
+/* FigPanel — the placeholder every editorial image slot ships with until the
+ * real asset lands (see the image-register document on PRO-2). A flat brand
+ * ground with near-white and near-black geometry on it, drawn in CSS.
+ *
+ * Shapes carry their position as inline custom properties, in the kit's own
+ * units: --l and --w are percentages of the panel's width, --t and --h
+ * percentages of its height. A shape with no --h takes .pv-fig__s--sq and is
+ * square; --dot makes it a circle. container-type is for the dot field, which
+ * is the one figure that needs a vertical measure in horizontal units. */
+.pv-fig{
+  position:relative;
+  container-type:inline-size;
+  aspect-ratio:4/5;
+  overflow:hidden;
+  background:var(--fig-bg-see);
+}
+.pv-fig--get{background:var(--fig-bg-get)}
+.pv-fig--run{background:var(--fig-bg-run)}
+.pv-fig--wide{aspect-ratio:16/9}
+.pv-fig--square{aspect-ratio:1}
+
+.pv-fig__label{
+  position:absolute;
+  top:16px;left:16px;
+  z-index:1;
+  font-family:var(--font-mono);
+  font-size:var(--type-mono-xs);
+  letter-spacing:0.1em;
+  color:var(--fig-label);
+}
+.pv-fig--run .pv-fig__label{color:var(--fig-label-run)}
+
+.pv-fig__s{
+  position:absolute;
+  left:calc(var(--l) * 1%);
+  top:calc(var(--t) * 1%);
+  width:calc(var(--w) * 1%);
+  height:calc(var(--h,0) * 1%);
+  background:var(--fig-paper);
+}
+.pv-fig__s--sq{height:auto;aspect-ratio:1}
+.pv-fig__s--dot{height:auto;aspect-ratio:1;border-radius:50%}
+.pv-fig__s--see{background:var(--fig-bg-see)}
+.pv-fig__s--get{background:var(--fig-bg-get)}
+.pv-fig__s--run{background:var(--fig-bg-run)}
+.pv-fig__s--ink{background:var(--fig-ink)}
+
+/* governance: six concentric squares, alternating paper and cobalt, with a
+ * vermilion core. Widths are percentages of the panel's width, as the kit's
+ * are, and aspect-ratio keeps them square. */
+.pv-fig--rings .pv-fig__s{
+  left:50%;top:50%;
+  translate:-50% -50%;
+  height:auto;
+  aspect-ratio:1;
+}
+.pv-fig--rings .pv-fig__s:nth-child(1){width:84%;background:var(--fig-paper)}
+.pv-fig--rings .pv-fig__s:nth-child(2){width:70%;background:var(--fig-bg-see)}
+.pv-fig--rings .pv-fig__s:nth-child(3){width:56%;background:var(--fig-paper)}
+.pv-fig--rings .pv-fig__s:nth-child(4){width:42%;background:var(--fig-bg-see)}
+.pv-fig--rings .pv-fig__s:nth-child(5){width:28%;background:var(--fig-paper)}
+.pv-fig--rings .pv-fig__s:nth-child(6){width:14%;background:var(--fig-bg-run)}
+
+/* security: twelve ruled lines, at the kit's 6%-of-height pitch, with a
+ * vermilion band and a cobalt square over them. The lines are one repeating
+ * gradient rather than twelve elements; 0.752% and 9.023% are the kit's 0.5%
+ * and 6% of the panel restated as percentages of this 66.5%-tall strip. */
+.pv-fig__lines{
+  position:absolute;
+  left:12%;top:18%;
+  width:76%;height:66.5%;
+  opacity:0.7;
+  background-image:repeating-linear-gradient(
+    var(--fig-paper) 0 0.752%,
+    transparent 0.752% 9.023%
+  );
+}
+
+/* sources: a 6 × 9 field of dots with seven picked out. The field is one
+ * tiled radial gradient; the seven are .pv-fig__s shapes on top. The tile is
+ * stated in cqw because the dots are round: 14cqw across matches the kit's
+ * 14%-of-width column pitch, and 11cqw matches its 8.8%-of-height row pitch
+ * at this panel's 4/5 aspect. */
+.pv-fig__dots{
+  position:absolute;
+  left:10%;top:12%;
+  /* Six columns at a 14cqw pitch end at 5×14+8; nine rows at 11cqw end at
+   * 8×11+8. Anything larger shows a clipped seventh column. */
+  width:78cqw;height:96cqw;
+  background-image:radial-gradient(circle at 4cqw 4cqw,var(--fig-paper) 0 4cqw,transparent 4cqw);
+  background-size:14cqw 11cqw;
+}
+
+/* ======================================================================
+ * Content · Callout, ChoiceCard, RuledCard, TileCard, StatStrip
+ * ====================================================================== */
+
+.pv-callout{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:var(--space-16);
+  padding:18px 20px;
+  background:var(--surface-page);
+  color:var(--text-primary);
+  border-left:var(--rule-accent) solid var(--group-run);
+}
+.pv-callout__label{
+  font-family:var(--font-mono);
+  font-size:var(--type-mono);
+  color:var(--text-emphasis-small);
+}
+.pv-callout__body{font-size:var(--type-body-sm);line-height:1.5}
+.pv-callout--inverse{
+  padding:18px 24px;
+  gap:14px 20px;
+  background:var(--surface-inverse);
+  color:var(--text-on-inverse);
+}
+.pv-callout--inverse .pv-callout__body{flex:1;min-width:min(100%,280px)}
+
+.pv-choice{
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-18);
+  padding:clamp(24px,3vw,36px);
+  background:var(--group-see-tint);
+  border-top:var(--rule-accent) solid var(--group-see);
+}
+.pv-choice--get{background:var(--group-get-tint);border-top-color:var(--group-get)}
+.pv-choice--run{background:var(--group-run-tint);border-top-color:var(--group-run)}
+.pv-choice--ink{background:var(--surface-sunken);border-top-color:var(--border-strong)}
+.pv-choice__title{font-family:var(--font-serif);font-weight:600;font-size:28px}
+.pv-choice__items{display:flex;flex-direction:column;list-style:none;margin:0;padding:0}
+.pv-choice__items li{
+  display:grid;
+  grid-template-columns:20px 1fr;
+  gap:var(--space-10);
+  padding:12px 0;
+  border-top:var(--rule-w) solid var(--border-on-tint);
+  font-size:var(--type-button);
+  line-height:1.55;
+}
+.pv-choice__items li::before{
+  content:"";
+  width:8px;height:8px;
+  margin-top:8px;
+  background:var(--group-see);
+}
+.pv-choice--get .pv-choice__items li::before{background:var(--group-get)}
+.pv-choice--run .pv-choice__items li::before{background:var(--group-run)}
+.pv-choice--ink .pv-choice__items li::before{background:var(--text-primary)}
+
+.pv-ruled{
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-12);
+  padding-top:20px;
+  border-top:var(--rule-w) solid var(--border-strong);
+}
+.pv-ruled--see{border-top-color:var(--group-see)}
+.pv-ruled--get{border-top-color:var(--group-get)}
+.pv-ruled--run{border-top-color:var(--group-run)}
+.pv-ruled--thick{border-top-width:var(--rule-top-card);padding-top:18px}
+.pv-ruled--accent{border-top-width:var(--rule-accent);padding-top:18px}
+.pv-ruled:has(.pv-ruled__num){gap:var(--space-10)}
+.pv-ruled__num{font-family:var(--font-mono);font-size:var(--type-mono);color:var(--text-eyebrow)}
+.pv-ruled__title{font-family:var(--font-serif);font-weight:600;font-size:var(--type-h3-sm)}
+.pv-ruled__body{font-size:var(--type-body-sm);line-height:var(--type-body-sm-lh);color:var(--text-body)}
+.pv-section--inverse .pv-ruled__body{color:var(--text-on-inverse-2)}
+.pv-section--brand-alt .pv-ruled__body{color:var(--text-on-brand-alt)}
+
+/* StatStrip — a full-bleed ruled band of numbers. */
+.pv-stats{
+  background:var(--surface-band);
+  border-top:var(--rule-w) solid var(--border-hairline);
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+}
+.pv-stats__inner{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+}
+.pv-stats__item{
+  display:flex;
+  align-items:baseline;
+  gap:var(--space-14);
+  padding:40px 24px;
+  border-left:var(--rule-w) solid var(--border-hairline);
+}
+.pv-stats__item:first-child{padding-left:0;border-left:0}
+.pv-stats__num{
+  font-family:var(--font-serif);
+  font-size:var(--type-stat);
+  line-height:1;
+  color:var(--group-see);
+}
+.pv-stats__item--get .pv-stats__num{color:var(--group-get)}
+.pv-stats__item--run .pv-stats__num{color:var(--group-run-text)}
+.pv-stats__label{font-size:var(--type-body-sm);color:var(--text-muted)}
+
+/* TileCard — the numbered industry tile, and the resource card. */
+.pv-tile{display:flex;flex-direction:column;gap:var(--space-16);color:var(--text-primary)}
+.pv-tile:hover{color:var(--text-link)}
+.pv-tile__fig{
+  position:relative;
+  container-type:inline-size;
+  aspect-ratio:3/4;
+  overflow:hidden;
+  background:var(--fig-bg-see);
+}
+.pv-tile--get .pv-tile__fig{background:var(--fig-bg-get)}
+.pv-tile--run .pv-tile__fig{background:var(--fig-bg-run)}
+.pv-tile__fig::after{
+  content:"";
+  position:absolute;
+  top:0;right:0;
+  width:34%;
+  aspect-ratio:1;
+  background:var(--fig-bg-run);
+}
+.pv-tile--run .pv-tile__fig::after{background:var(--fig-bg-see)}
+.pv-tile__num{
+  position:absolute;
+  top:18px;left:18px;
+  z-index:1;
+  font-family:var(--font-serif);
+  font-weight:600;
+  font-size:var(--type-stat);
+  line-height:1;
+  color:var(--fig-label);
+}
+.pv-tile--run .pv-tile__num{color:var(--fig-label-run)}
+.pv-tile__title{font-family:var(--font-serif);font-weight:600;font-size:25px;line-height:1.15}
+.pv-tile__body{font-size:var(--type-body-sm);line-height:1.55;color:var(--text-body)}
+
+.pv-tile--resource{
+  gap:var(--space-14);
+  padding-top:18px;
+  border-top:var(--rule-w) solid var(--border-strong);
+}
+.pv-tile--resource .pv-tile__eyebrow{
+  font-size:var(--type-label);
+  font-weight:600;
+  letter-spacing:var(--type-eyebrow-ls);
+  text-transform:uppercase;
+  color:var(--text-eyebrow);
+}
+.pv-tile--resource .pv-tile__title{font-size:24px;line-height:1.2}
+.pv-tile--resource .pv-tile__fig{aspect-ratio:16/10;margin-top:8px}
+.pv-tile--resource .pv-tile__fig::after{
+  top:auto;bottom:0;right:auto;left:8%;
+  width:22%;height:58%;
+  aspect-ratio:auto;
+}
+.pv-tile--resource .pv-tile__fig::before{
+  content:"";
+  position:absolute;
+  left:34%;bottom:0;
+  width:22%;height:34%;
+  background:var(--fig-paper);
+}
+
+/* ======================================================================
+ * Data · Chip, CodeBlock, CodeTabs, ComparisonTable, LayerRow
+ * ====================================================================== */
+
+.pv-chip{
+  display:inline-block;
+  padding:6px 10px;
+  font-size:var(--type-caption);
+  font-weight:500;
+  background:var(--surface-sunken);
+  color:var(--text-primary);
+}
+.pv-chip--strong{font-weight:600}
+.pv-chip--see,.pv-chip--get,.pv-chip--run,.pv-chip--ink{font-weight:600;color:var(--text-on-color)}
+.pv-chip--see{background:var(--surface-brand)}
+.pv-chip--get{background:var(--surface-brand-alt)}
+.pv-chip--run{background:var(--fig-bg-run)}
+.pv-chip--ink{background:var(--action-inverse);color:var(--action-inverse-text)}
+
+/* CodeBlock. Code is ink in both themes; a terminal does not invert. */
+.pv-code{background:var(--surface-code);align-self:start;min-width:0;max-width:100%}
+.pv-code--deep{background:var(--surface-code-deep);border:var(--rule-w) solid var(--border-code)}
+.pv-code--see{border-top:var(--rule-accent) solid var(--group-see)}
+.pv-code--get{border-top:var(--rule-accent) solid var(--group-get)}
+.pv-code--run{border-top:var(--rule-accent) solid var(--group-run)}
+.pv-code__title{
+  padding:12px 20px;
+  border-bottom:var(--rule-w) solid var(--border-code);
+  font-family:var(--font-mono);
+  font-size:11.5px;
+  color:var(--text-code-label);
+}
+.pv-code pre{
+  margin:0;
+  padding:20px 22px;
+  font-size:var(--type-mono);
+  line-height:var(--type-code-lh);
+  overflow-x:auto;
+  color:var(--text-code);
+}
+/* A comment line, which the kit dims. */
+.pv-code__c{color:var(--text-code-faint)}
+.pv-code pre mark{
+  display:block;
+  margin:0 -22px;
+  padding:0 22px;
+  background:var(--code-highlight);
+  color:var(--text-on-color);
+}
+
+.pv-codetabs{background:var(--surface-code);overflow:hidden}
+.pv-codetabs__tabs{
+  display:flex;
+  border-bottom:var(--rule-w) solid var(--border-code);
+  overflow-x:auto;
+}
+.pv-codetabs__tab{
+  flex:1;
+  min-width:84px;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding:13px 12px;
+  border:0;
+  background:transparent;
+  color:var(--text-tab);
+  font-family:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.pv-codetabs__tab:hover{background:var(--surface-code-hover);color:var(--text-on-color)}
+.pv-codetabs__tab[aria-selected="true"]{background:var(--surface-brand-alt);color:var(--text-on-color)}
+.pv-codetabs__lang{font-size:14px;font-weight:600}
+.pv-codetabs__wire{font-family:var(--font-mono);font-size:var(--type-mono-xs);color:var(--text-tab-faint)}
+.pv-codetabs__tab[aria-selected="true"] .pv-codetabs__wire{color:var(--text-tab-wire-on)}
+.pv-codetabs__panel{min-height:290px}
+.pv-codetabs__panel[hidden]{display:none}
+
+/* max-width is what keeps the 640px table inside its column. Without it the
+ * scroll container is sized by its content in any shrink-to-fit parent — a
+ * flex item, a float, a grid cell with min-content — and the page itself
+ * gains 300px of horizontal scroll on a phone. */
+.pv-table{overflow-x:auto;max-width:100%;border-top:2px solid var(--border-strong)}
+.pv-table table{
+  width:100%;
+  min-width:640px;
+  border-collapse:collapse;
+  font-size:var(--type-body-sm);
+  line-height:1.55;
+}
+.pv-table th{
+  padding:16px 20px;
+  text-align:left;
+  font-size:var(--type-mono);
+  font-weight:600;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  border-bottom:var(--rule-w) solid var(--border-strong);
+}
+.pv-table td{
+  padding:16px 20px;
+  vertical-align:top;
+  color:var(--text-body);
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+}
+.pv-table th:first-child,.pv-table td:first-child{padding-left:0;padding-right:20px}
+.pv-table tbody th{
+  font-size:var(--type-body-sm);
+  letter-spacing:normal;
+  text-transform:none;
+  color:var(--text-primary);
+  width:22%;
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+}
+/* The Provisa column. */
+.pv-table th[data-highlight],.pv-table td[data-highlight]{background:var(--group-get-tint)}
+.pv-table th[data-highlight]{color:var(--text-link)}
+.pv-table td[data-highlight]{color:var(--text-primary)}
+
+.pv-layer{
+  display:grid;
+  grid-template-columns:44px 1fr;
+  align-items:center;
+  gap:0;
+  padding:12px 16px 12px 12px;
+  background:var(--group-see-tint);
+  border-left:var(--rule-accent) solid var(--group-see);
+  color:var(--text-primary);
+}
+.pv-layer:hover{padding-left:18px;color:var(--text-primary)}
+.pv-layer--get{background:var(--group-get-tint);border-left-color:var(--group-get)}
+.pv-layer--run{background:var(--group-run-tint);border-left-color:var(--group-run)}
+.pv-layer__idx{
+  font-family:var(--font-mono);
+  font-size:var(--type-mono);
+  font-weight:500;
+  color:var(--group-see-text);
+}
+.pv-layer--get .pv-layer__idx{color:var(--group-get-text)}
+.pv-layer--run .pv-layer__idx{color:var(--group-run-text)}
+.pv-layer__title{font-size:var(--type-body-sm);font-weight:500}
+
+/* The list variant: a ruled row on a forest band. The kit's three fixed
+ * tracks were minmax(0,1fr) and minmax(0,1.4fr), which let a cell shrink
+ * below its own longest word, so on a phone the title overflowed its column.
+ * The index keeps its track; the title and the description share the rest at
+ * the kit's 1:1.4 ratio and stack when they no longer fit. */
+.pv-layer--list{
+  grid-template-columns:56px minmax(0,1fr);
+  gap:var(--space-16);
+  align-items:baseline;
+  padding:20px 0;
+  background:none;
+  border-left:0;
+  border-bottom:var(--rule-w) solid var(--border-on-brand-alt);
+  color:var(--text-on-color);
+}
+.pv-layer--list:hover{padding-left:0;color:var(--text-on-color)}
+.pv-layer--list .pv-layer__idx{color:var(--text-on-brand-alt-2)}
+.pv-layer__main{display:flex;flex-wrap:wrap;gap:var(--space-6) var(--space-16);align-items:baseline}
+.pv-layer--list .pv-layer__title{
+  flex:1 1 200px;
+  min-width:min(100%,200px);
+  font-family:var(--font-serif);
+  font-size:21px;
+  font-weight:400;
+}
+.pv-layer__desc{
+  flex:1.4 1 280px;
+  min-width:min(100%,280px);
+  font-size:var(--type-body-sm);
+  line-height:1.5;
+  color:var(--text-on-brand-alt);
+}
+
+/* ======================================================================
+ * Disclosure · Accordion
+ * ====================================================================== */
+
+.pv-acc{
+  display:flex;
+  flex-direction:column;
+  border-top:var(--rule-w) solid var(--border-strong);
+}
+.pv-acc__item{border-bottom:var(--rule-w) solid var(--border-hairline)}
+.pv-acc__btn{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:var(--space-24);
+  padding:24px 0;
+  background:transparent;
+  border:0;
+  cursor:pointer;
+  text-align:left;
+  font-family:var(--font-serif);
+  color:var(--text-primary);
+}
+.pv-acc__title{font-family:var(--font-serif);font-size:21px}
+.pv-acc__sign{font-size:24px;color:var(--text-link);flex:none;font-family:var(--font-sans)}
+.pv-acc__btn[aria-expanded="true"] .pv-acc__sign::before{content:"−"}
+.pv-acc__btn[aria-expanded="false"] .pv-acc__sign::before{content:"+"}
+.pv-acc__panel{
+  padding:0 48px 28px 0;
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-14);
+}
+.pv-acc__panel[hidden]{display:none}
+.pv-acc__panel p{font-size:var(--type-button);line-height:var(--type-body-lh);color:var(--text-body)}
+.pv-acc__panel a{font-size:var(--type-body-sm);font-weight:500;color:var(--text-link)}
+
+/* The numbered variant: a mono index, a bigger serif question, and a
+ * two-column panel. */
+.pv-acc--numbered .pv-acc__btn{
+  display:grid;
+  grid-template-columns:48px 1fr auto;
+  gap:var(--space-16);
+  align-items:baseline;
+  padding:26px 0;
+  font-family:inherit;
+}
+.pv-acc__num{font-family:var(--font-mono);font-size:var(--type-mono);color:var(--text-eyebrow)}
+.pv-acc--numbered .pv-acc__title{font-size:clamp(22px,2vw,28px)}
+.pv-acc--numbered .pv-acc__sign{font-size:22px}
+.pv-acc--numbered .pv-acc__panel{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));
+  gap:24px 48px;
+  padding:0 0 32px 64px;
+}
+.pv-acc__lede{font-size:19px;font-weight:600;line-height:1.35}
+
+/* ======================================================================
+ * Forms · Input, Textarea, DemoForm, SubscribeField, Switch, ToggleButtons
+ * ====================================================================== */
+
+.pv-input,.pv-textarea{
+  min-width:0;
+  padding:13px 14px;
+  background:var(--surface-input);
+  color:var(--text-primary);
+  border:var(--rule-w) solid var(--border-input);
+  border-radius:var(--radius);
+  font-family:inherit;
+  font-size:var(--type-small);
+}
+.pv-textarea{resize:vertical}
+.pv-input::placeholder,.pv-textarea::placeholder{color:var(--text-muted)}
+.pv-field{display:flex;flex-direction:column;gap:var(--space-6)}
+.pv-field__label{font-size:var(--type-caption);font-weight:500;color:var(--text-muted)}
+
+.pv-form{
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-14);
+  padding:clamp(24px,3vw,40px);
+  background:var(--surface-page);
+  color:var(--text-primary);
+}
+.pv-form__title{font-family:var(--font-serif);font-weight:600;font-size:28px}
+.pv-form__grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:var(--space-12);
+}
+
+.pv-subscribe{display:flex;border:var(--rule-w) solid var(--border-strong)}
+.pv-subscribe input{
+  flex:1;
+  min-width:0;
+  padding:11px 12px;
+  background:transparent;
+  color:var(--text-primary);
+  border:0;
+  font-family:inherit;
+  font-size:var(--type-caption);
+}
+.pv-subscribe input::placeholder{color:var(--text-muted)}
+.pv-subscribe button{
+  padding:0 14px;
+  background:var(--action-inverse);
+  color:var(--action-inverse-text);
+  border:0;
+  font-family:inherit;
+  font-size:var(--type-mono);
+  cursor:pointer;
+}
+
+/* Switch. The track keeps the kit's pill — the one radius in a square system —
+ * and gains a 1px edge, without which the off state is 1.9:1 against paper. */
+.pv-switch{
+  display:inline-flex;
+  align-items:center;
+  gap:var(--space-10);
+  padding:0;
+  background:none;
+  border:0;
+  color:inherit;
+  font-family:var(--font-mono);
+  font-size:var(--type-mono);
+  cursor:pointer;
+}
+.pv-switch__state{font-weight:500}
+.pv-switch__track{
+  position:relative;
+  width:44px;height:24px;
+  flex:none;
+  border:var(--rule-w) solid var(--switch-edge);
+  border-radius:12px;
+  background:var(--switch-track-off);
+}
+.pv-switch[aria-checked="true"] .pv-switch__track{background:var(--switch-on)}
+.pv-switch__track::after{
+  content:"";
+  position:absolute;
+  top:2px;left:2px;
+  width:18px;height:18px;
+  border:var(--rule-w) solid var(--switch-edge);
+  border-radius:50%;
+  background:var(--switch-knob);
+  transition:var(--ease-switch);
+}
+.pv-switch[aria-checked="true"] .pv-switch__track::after{left:22px}
+
+.pv-toggle{display:flex;flex-wrap:wrap;gap:var(--space-8)}
+.pv-toggle button{
+  padding:10px 16px;
+  background:transparent;
+  color:var(--text-primary);
+  border:var(--rule-w) solid var(--border-input);
+  font-family:inherit;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+}
+.pv-toggle button[aria-pressed="true"]{
+  background:var(--action-inverse);
+  color:var(--action-inverse-text);
+  border-color:var(--action-inverse);
+}
+
+/* ======================================================================
+ * Navigation · UtilityBar, SiteHeader, Breadcrumb, SiteFooter
+ * ====================================================================== */
+
+/* The strip carries Docs, Support and Register and nothing else — the kit's
+ * hosted-service notice is gone, because we do not offer one (PRO-2 plan
+ * revision 3). space-between still does the right thing if a left-hand item is
+ * ever added back; with only the links it needs margin-left:auto to sit right. */
+.pv-utility{background:var(--surface-brand);color:var(--text-on-brand);font-size:var(--type-mono)}
+.pv-utility__inner{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
+  gap:var(--space-24);
+  padding-block:9px;
+}
+.pv-utility a{color:var(--text-on-brand)}
+.pv-utility a:hover{color:var(--text-on-color)}
+.pv-utility__links{display:flex;flex-wrap:wrap;gap:22px;margin-left:auto}
+
+.pv-header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:var(--surface-header);
+  backdrop-filter:var(--blur-header);
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+}
+.pv-header--static{position:relative}
+.pv-header__inner{
+  display:flex;
+  align-items:center;
+  gap:48px;
+  height:var(--header-h);
+}
+.pv-header__nav{
+  display:flex;
+  flex:1;
+  min-width:0;
+  align-items:center;
+  column-gap:32px;
+  font-size:var(--type-nav);
+  white-space:nowrap;
+}
+.pv-header__nav a[aria-current="page"]{color:var(--text-link);font-weight:600}
+.pv-header__actions{display:flex;align-items:center;gap:20px;flex:none;white-space:nowrap}
+.pv-header__secondary{font-size:var(--type-nav);font-weight:500}
+
+/* The menu button and the drawer, which the kit has neither of (PRO-3 gap 3).
+ * The kit's nav was a fixed 76px row with overflow:hidden, so its seven items
+ * were clipped rather than collapsed. */
+.pv-header__menu{
+  display:none;
+  align-items:center;
+  gap:var(--space-8);
+  margin-left:auto;
+  padding:10px 14px;
+  background:transparent;
+  color:var(--text-primary);
+  border:var(--rule-w) solid var(--border-strong);
+  font-family:inherit;
+  font-size:var(--type-nav);
+  font-weight:500;
+  cursor:pointer;
+}
+/* Three hairlines, drawn with borders — the system has no shadows, so the
+ * usual box-shadow burger is out. */
+.pv-header__menu i{
+  position:relative;
+  width:16px;height:9px;
+  border-top:var(--rule-w) solid currentColor;
+  border-bottom:var(--rule-w) solid currentColor;
+}
+.pv-header__menu i::after{
+  content:"";
+  position:absolute;
+  left:0;top:4px;
+  width:100%;height:var(--rule-w);
+  background:currentColor;
+}
+
+.pv-drawer{
+  position:fixed;
+  inset:0;
+  z-index:50;
+  display:none;
+  background:var(--surface-page);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.pv-drawer[open],.pv-drawer.is-open{display:block}
+.pv-drawer__inner{
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-8);
+  padding-block:0 var(--space-40);
+}
+.pv-drawer__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-24);
+  height:var(--header-h);
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+  margin-bottom:var(--space-24);
+}
+.pv-drawer__close{
+  padding:10px 14px;
+  background:transparent;
+  color:var(--text-primary);
+  border:var(--rule-w) solid var(--border-strong);
+  font-family:inherit;
+  font-size:var(--type-nav);
+  font-weight:500;
+  cursor:pointer;
+}
+.pv-drawer__nav{display:flex;flex-direction:column}
+.pv-drawer__nav a{
+  padding:18px 0;
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+  font-family:var(--font-serif);
+  font-size:var(--type-h3-sm);
+  font-weight:600;
+}
+.pv-drawer__nav a[aria-current="page"]{color:var(--text-link)}
+.pv-drawer__actions{
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-16);
+  align-items:stretch;
+  padding-top:var(--space-32);
+}
+/* The toggle and the utility items, which live in the actions cluster and the
+ * utility bar on desktop. Below the two calls to action, over a hairline. */
+.pv-drawer__foot{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
+  gap:var(--space-16);
+  margin-top:var(--space-32);
+  padding-top:var(--space-24);
+  border-top:var(--rule-w) solid var(--border-hairline);
+}
+.pv-drawer__utility{
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--space-16);
+  font-family:var(--font-mono);
+  font-size:var(--type-mono-sm);
+  color:var(--text-muted);
+}
+.pv-drawer__utility a{color:var(--text-muted)}
+.pv-drawer__utility a:hover{color:var(--text-link)}
+
+/* --bp-nav, written out: a media query cannot read a custom property. Keep
+ * these two bounds and the token in tokens.css in step. */
+@media (max-width:1279px){
+  .pv-header__nav,.pv-header__actions{display:none}
+  .pv-header__menu{display:inline-flex}
+  .pv-header__inner{gap:var(--space-16)}
+}
+@media (min-width:1280px){
+  /* Belt and braces: a drawer left open by a resize must not cover the page. */
+  .pv-drawer{display:none}
+}
+
+.pv-crumb{display:flex;flex-wrap:wrap;gap:var(--space-10);font-size:14px;color:var(--text-muted)}
+.pv-crumb a{color:var(--text-muted)}
+.pv-crumb a:hover{color:var(--text-link)}
+.pv-crumb [aria-current="page"]{color:var(--text-primary)}
+
+.pv-footer{background:var(--surface-page);border-top:var(--rule-w) solid var(--border-hairline)}
+.pv-footer__inner{display:flex;flex-direction:column;gap:var(--space-56);padding-block:72px 40px}
+.pv-footer__top{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:var(--space-40);
+}
+.pv-footer__brand{
+  grid-column:1/-1;
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-14);
+  max-width:700px;
+}
+.pv-footer__blurb{font-size:var(--type-caption);line-height:var(--type-body-lh);color:var(--text-muted)}
+.pv-footer__col{display:flex;flex-direction:column;gap:var(--space-12);font-size:14px}
+.pv-footer__col h2,.pv-footer__col h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.pv-footer__col a{color:var(--text-primary)}
+.pv-footer__col a:hover{color:var(--text-link)}
+.pv-footer__keep{display:flex;flex-direction:column;gap:var(--space-10);font-size:14px}
+.pv-footer__keep p{font-size:var(--type-mono);line-height:1.5;color:var(--text-muted)}
+.pv-footer__fine{font-size:var(--type-label);color:var(--text-muted)}
+.pv-footer__bottom{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:var(--space-24);
+  padding-top:var(--space-24);
+  border-top:var(--rule-w) solid var(--border-hairline);
+  font-size:var(--type-mono);
+  color:var(--text-muted);
+}
+.pv-footer__bottom a{color:var(--text-muted)}
+.pv-footer__bottom a:hover{color:var(--text-link)}
+.pv-footer__legal{display:flex;flex-wrap:wrap;gap:var(--space-24)}
+
+/* ======================================================================
+ * The contact band — a forest or ink band with a demo form in it.
+ * ====================================================================== */
+
+.pv-contact{background:var(--surface-brand-alt);color:var(--text-on-color)}
+.pv-contact--inverse{background:var(--surface-inverse);color:var(--text-on-inverse)}
+.pv-contact__inner{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));
+  gap:var(--space-64);
+  padding-block:clamp(72px,9vw,128px);
+}
+.pv-contact__copy{display:flex;flex-direction:column;gap:22px}
+.pv-contact__sub{font-size:18px;line-height:1.55;color:var(--text-on-brand-alt)}
+.pv-contact--inverse .pv-contact__sub{color:var(--text-on-inverse-2)}
+.pv-contact__links{display:flex;flex-wrap:wrap;gap:28px;padding-top:var(--space-8)}
+
+/* ======================================================================
+ * The theme toggle (PRO-3 gap 2).
+ * ====================================================================== */
+
+.pv-theme{
+  display:inline-flex;
+  flex:none;
+  border:var(--rule-w) solid var(--border-input);
+}
+.pv-theme button{
+  padding:7px 10px;
+  background:transparent;
+  color:var(--text-muted);
+  border:0;
+  font-family:var(--font-mono);
+  font-size:var(--type-mono-sm);
+  cursor:pointer;
+}
+.pv-theme button[aria-pressed="true"]{background:var(--action-inverse);color:var(--action-inverse-text)}
+
+/* ======================================================================
+ * The generated source-type picker.
+ *
+ * scripts/gen-site-source-picker.mjs writes this markup and owns its class
+ * names; this block is the design system's rendering of them. Changing a name
+ * here without changing the generator breaks the picker.
+ * ====================================================================== */
+
+.picker{column-width:260px;column-gap:var(--space-40);text-align:left}
+.picker-cat{break-inside:avoid;margin:0 0 var(--space-24)}
+.picker-cat h3{
+  margin:0 0 var(--space-10);
+  padding-bottom:var(--space-6);
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+  font-size:var(--type-eyebrow);
+  font-weight:600;
+  letter-spacing:var(--type-eyebrow-ls);
+  text-transform:uppercase;
+  color:var(--text-eyebrow);
+}
+.picker-cat ul{list-style:none;margin:0;padding:0}
+.picker-row{
+  display:flex;
+  align-items:baseline;
+  gap:var(--space-10);
+  padding:var(--space-6) 0;
+  font-size:var(--type-body-sm);
+}
+.picker-mark,.picker-tile{flex:none;align-self:center}
+.picker-tile{
+  display:grid;
+  place-items:center;
+  width:20px;height:20px;
+  font-family:var(--font-mono);
+  font-size:var(--type-mono-xs);
+  color:var(--text-on-color);
+}
+.picker-name{flex:1;min-width:0}
+.picker-sub{
+  list-style:none;
+  display:flex;
+  flex-wrap:wrap;
+  gap:0 var(--space-6);
+  margin:0;
+  padding:0;
+  font-size:var(--type-label);
+  color:var(--text-muted);
+}
+.picker-sub li::after{content:","}
+.picker-sub li:last-child::after{content:""}
