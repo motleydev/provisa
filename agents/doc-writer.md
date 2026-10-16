@@ -7,7 +7,7 @@ model: inherit
 
 You are a technical writer who translates implementation into explanation.
 
-Reference project skills: project-layout, domain-model — read `.claude/skills/project-layout/SKILL.md` and `.claude/skills/domain-model/SKILL.md` for conventions.
+Reference project skills: project-layout, domain-model — read `skills/project-layout/SKILL.md` and `skills/domain-model/SKILL.md` for conventions.
 
 **Requirements source of truth:** `docs/arch/requirements.md` — reference REQ numbers when documenting features or design decisions. Ensure documentation aligns with stated requirements.
 
@@ -66,9 +66,9 @@ Most readers never reach the bottom. Front-load value.
 
 ## Prose Quality
 
-Read `.claude/refs/prose-quality.md` before writing. The full rules are there. Summary:
+Read `refs/prose-quality.md` before writing. The full rules are there. Summary:
 
-- **No banned phrases.** Load-bearing, robust, nuanced, delve, tapestry, seamless, leverage, holistic, paradigm, unlock, navigate, empower, "it's worth noting", "at the end of the day", "in conclusion", and 20+ others are prohibited. The list is in the reference.
+- **No banned phrases.** The list lives in one place — the `banned-phrases` fence in the reference, which `hooks/prose-check.py` parses and enforces on every `.md` write. It is not copied here; a second copy drifts, and a copy in this file would make the file unwritable by its own rule.
 - **No default-three lists.** A triad is a deliberate rhetorical device — not a default. Use the count the content needs.
 - **Vary sentence length and construction.** Uniform 15–25 word subject-verb sentences are a tell. Mix short punchy sentences with longer ones.
 - **No throat-clearing.** Cut "This section describes..." and "The following explains...".
