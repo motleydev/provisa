@@ -36,8 +36,9 @@ main.public.orders.region ─╯──[enrich_grpc_set(...)]──►  e.geo  �
   contract of `enrich_grpc_set`, qualified from the relation named in the call. `geo` is a declared
   *output* of the command, so `orders.geo` is not a node: nothing upstream of `e.geo` exists except
   the declared inputs. The closure connects every declared input to every declared output, so
-  `e.embedding` carries the same two edges. [tool-verified: `_splice_commands` in graph.py:266-285,
-  run on this statement 16 October 2026]
+  `e.embedding` carries the same two edges. [tool-verified: `_splice_commands` in graph.py:266-285;
+  `POST /admin/lineage/graph` called on this statement, 16 October 2026 — eight nodes and seven
+  edges, with `main.public.orders.{id,region}` the only nodes upstream of `e.geo` and `e.embedding`]
 - `e.embedding` and `e.geo` are **command** nodes — the `enrich_grpc_set` boundary.
 - `geo_u` is a **derived** node produced by the `UPPER` SQL function.
 - `orders.id` is also a source node, from `o.id` in the select list — the alias-qualified form,
@@ -169,10 +170,11 @@ Content-Type: application/json
 [tool-verified: `lineage_graph` endpoint at lineage_router.py:45-54, LineageGraphRequest model at
 lineage_router.py:29-31]
 
-The whole response for that statement — six nodes and four edges, printed as the run returned it
-[tool-verified: `lineage_graph_for` (lineage_router.py:50-89, the endpoint's body) run on this exact
-statement with `enrich_grpc_set` declaring `id` and `region` on its relation argument, sqlglot
-30.9.0, 16 October 2026; shape is `LineageGraph.to_dict` in graph.py:82-105]:
+The whole response for that statement — six nodes and four edges, printed as the endpoint returned
+it [tool-verified: `POST /admin/lineage/graph` called over HTTP on a running instance with the
+shipped `enrich_grpc_set` command registered (`config/provisa.yaml`: inputs `id` and `region`,
+outputs `id`, `embedding`, `geo`), sqlglot 30.9.0, 16 October 2026; shape is
+`LineageGraph.to_dict` in graph.py:82-105]:
 
 ```json
 {
