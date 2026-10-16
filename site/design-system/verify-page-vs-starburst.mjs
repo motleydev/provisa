@@ -124,8 +124,8 @@ for (const theme of THEMES) {
         .find((c) => c.querySelector(".pv-callout__label")?.textContent.trim() === "DATELINE");
       return el ? el.textContent.replace(/\s+/g, " ").trim() : null;
     });
-    ok(dateline && dateline.includes("482-e.3 LTS") && dateline.includes("October 2026")
-       && dateline.includes("481-e is the current STS"),
+    ok(dateline && dateline.includes("482-e.4 LTS") && dateline.includes("October 2026")
+       && dateline.includes("483-e is the current STS"),
        `${at}: the dateline ships with both products and the version pair`);
 
     /* The nav and the drawer swap at --bp-nav, not at this page's breakpoints,
