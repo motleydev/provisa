@@ -31,6 +31,9 @@ RUN cd graph-render && npm ci --no-audit --no-fund
 COPY provisa-ui/graph-render/src ./graph-render/src
 COPY provisa-ui/src/components/graph ./src/components/graph
 COPY provisa-ui/src/components/erd/erd-layout-options.ts ./src/components/erd/
+# src/components/graph/graph-model.ts imports it, so esbuild follows it out of the directory
+# above and the stage cannot build without it. No imports of its own.
+COPY provisa-ui/src/lib/browserStorage.ts ./src/lib/
 RUN cd graph-render && npm run build && npm prune --omit=dev
 
 # Stage 3: lean runtime image — no wheels, only app source + installed packages
