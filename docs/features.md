@@ -615,7 +615,7 @@ A graph visible in Provisa can be exported to a real Neo4j instance. Nodes and r
 
 **Available**
 
-Provisa exposes a Model Context Protocol server, so agents such as Claude Desktop can discover the catalog and run governed queries. An agent can also propose a new source or table for a human to approve, but never creates one itself. An optional tool exposes an external decision-evaluation service when its key is configured, and agents can run Cypher under the caller's role.
+Provisa exposes a Model Context Protocol server, so agents such as Claude Desktop can discover the catalog and run governed queries. An agent can also propose a new source or table, and the proposal lands in the creation-request queue for a human to approve. When the caller's own role already holds the registration capability, the agent may register it directly instead, after the user confirms in the same conversation; it never exceeds that role. An optional tool exposes an external decision-evaluation service when its key is configured, and agents can run Cypher under the caller's role.
 { #mcp-server-tools }
 
 The desktop build turns on a local MCP server, bound to loopback. The Explore page gives a copy-ready Claude Desktop configuration with a connect URL that is aware of proxies, and the bundled bridge needs no Node install. The local connector speaks plain HTTP, with optional TLS for public deployments.
