@@ -7,7 +7,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>vs Starburst — Provisa</title>
-<meta name="description" content="Starburst is a query engine and will out-run Provisa on raw analytical scale. Provisa is a governed semantic layer that runs on a Trino-protocol coordinator: ask once in English and up to six governed surfaces answer, with policy compiled into the statement. Compared against Starburst Enterprise 482-e.3 LTS and Starburst Galaxy as documented in October 2026.">
+<meta name="description" content="Starburst is a query engine and will out-run Provisa on raw analytical scale. Provisa is a governed semantic layer that runs on a Trino-protocol coordinator: ask once in English and up to six governed surfaces answer, with policy compiled into the statement. Compared against Starburst Enterprise 482-e.4 LTS and Starburst Galaxy as documented in October 2026.">
 <link rel="icon" href="/favicon.svg">
 <link rel="canonical" href="https://provisa.dev/vs/starburst">
 
@@ -206,7 +206,7 @@
           <h3 class="pv-ruled__title">Query acceleration, as a category</h3>
           <div class="pv-ruled__body">Starburst has a mature cost-based
             optimizer with a statistics pipeline behind it, and its
-            documentation for 482-e.3 LTS and Galaxy describes an entire
+            documentation for 482-e.4 LTS and Galaxy describes an entire
             acceleration layer beyond it: Warp Speed’s automatic smart indexing
             built from observed query characteristics, Cached Views —
             auto-refreshing materialized views with table scan redirection,
@@ -368,7 +368,9 @@
 
             <tr>
               <th scope="row">Semantic model</th>
-              <td>A catalog of tables</td>
+              <td>Their documentation describes data products, curated
+                datasets with metadata and their own privileges, and no metric
+                object a query can address by name</td>
               <td data-highlight>Metrics defined once and usable in each
                 surface’s native syntax, and a concept graph with ten relation
                 types, held separate from the metrics</td>
@@ -472,7 +474,7 @@
           <span class="pv-layer__idx">03</span>
           <div class="pv-layer__main">
             <span class="pv-layer__title">Joins are policy</span>
-            <span class="pv-layer__desc">Their documentation for 482-e.3 LTS
+            <span class="pv-layer__desc">Their documentation for 482-e.4 LTS
               and Galaxy describes no equivalent of a join guard — no
               approval-gated relationship catalog a join must match. In Provisa
               every join in SQL and Cypher must match a relationship someone
@@ -731,9 +733,9 @@ provisa run</pre>
       <div class="pv-callout">
         <span class="pv-callout__label">DATELINE</span>
         <span class="pv-callout__body">Compared against <strong>Starburst
-          Enterprise 482-e.3 LTS</strong> and <strong>Starburst Galaxy</strong>
-          as documented in October 2026. 482-e.3 is the current LTS; 481-e is
-          the current STS. Galaxy ships continuously, so where a row turns on a
+          Enterprise 482-e.4 LTS</strong> and <strong>Starburst Galaxy</strong>
+          as documented in October 2026. 482-e LTS, 482-e.4 at time of
+          writing; 483-e is the current STS. Galaxy ships continuously, so where a row turns on a
           Galaxy capability it is dated, not versioned. Every statement on this
           page about Starburst is a statement about that documentation, which is
           why it is written that way. Competitor capabilities move; ours is the
