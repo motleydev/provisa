@@ -71,7 +71,7 @@ def banned_phrases(reference):
         raise RuntimeError(f"{reference} has no {FENCE} fence to read the list from")
 
     phrases = []
-    for line in lines[start + 1:]:
+    for line in lines[start + 1 :]:
         if line.startswith("```"):
             return phrases
         if line.strip():
@@ -121,8 +121,7 @@ def main():
         return 0
 
     print(
-        f"prose-check: the text just written to {relative} carries "
-        f"{len(found)} banned phrase(s).",
+        f"prose-check: the text just written to {relative} carries {len(found)} banned phrase(s).",
         file=sys.stderr,
     )
     for phrase, number, line in found:
