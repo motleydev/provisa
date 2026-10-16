@@ -53,6 +53,14 @@ def _duck_holder(path: str, read_only: bool) -> str:
     return f"import duckdb\nc = duckdb.connect({path!r}, read_only={read_only})"
 
 
+# DuckDB words the same refusal per OS, because the two take the hold differently: on POSIX it is
+# the advisory lock it could not set, on Windows the share violation the open itself hit. Both are
+# the refusal REQ-1997 rests on, so each OS asserts the sentence it actually gets.
+_HELD_ELSEWHERE_SAYS = (
+    "being used by another process" if sys.platform == "win32" else "Could not set lock on file"
+)
+
+
 def test_duckdb_read_only_opens_share_a_file(duck):
     with _held_elsewhere(_duck_holder(duck, True)):
         con = duckdb.connect(duck, read_only=True)
@@ -62,14 +70,14 @@ def test_duckdb_read_only_opens_share_a_file(duck):
 
 def test_duckdb_a_read_only_holder_keeps_a_read_write_open_out(duck):
     with _held_elsewhere(_duck_holder(duck, True)):
-        with pytest.raises(duckdb.IOException, match="Could not set lock on file"):
+        with pytest.raises(duckdb.IOException, match=_HELD_ELSEWHERE_SAYS):
             duckdb.connect(duck)
 
 
 @pytest.mark.parametrize("read_only", [False, True])
 def test_duckdb_a_read_write_holder_keeps_every_open_out(duck, read_only):
     with _held_elsewhere(_duck_holder(duck, False)):
-        with pytest.raises(duckdb.IOException, match="Could not set lock on file"):
+        with pytest.raises(duckdb.IOException, match=_HELD_ELSEWHERE_SAYS):
             duckdb.connect(duck, read_only=read_only)
 
 
