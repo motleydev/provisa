@@ -27,21 +27,26 @@ JOIN   enrich_grpc_set('main.public.orders') e ON o.id = e.id
 This statement produces three output columns. The graph for `geo_u` looks like:
 
 ```text
-orders.geo  ──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
-orders.id   ─╮                                              (taint closure)
-orders.region ─╯
+main.public.orders.id     ─╮
+main.public.orders.region ─╯──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
+                              (taint closure over the declared input contract)
 ```
 
-- `orders.id`, `orders.region`, and `orders.geo` are **source** nodes (the narrow input contract
-  of `enrich_grpc_set` declares `id` and `region`; the full taint-closure connects all declared
-  inputs to all outputs). [tool-verified: `_splice_commands` in graph.py:223-242]
+- `main.public.orders.id` and `main.public.orders.region` are **source** nodes — the narrow input
+  contract of `enrich_grpc_set`, qualified from the relation named in the call. `geo` is a declared
+  *output* of the command, so `orders.geo` is not a node: nothing upstream of `e.geo` exists except
+  the declared inputs. The closure connects every declared input to every declared output, so
+  `e.embedding` carries the same two edges. [tool-verified: `_splice_commands` in graph.py:266-285,
+  run on this statement 16 October 2026]
 - `e.embedding` and `e.geo` are **command** nodes — the `enrich_grpc_set` boundary.
 - `geo_u` is a **derived** node produced by the `UPPER` SQL function.
+- `orders.id` is also a source node, from `o.id` in the select list — the alias-qualified form,
+  distinct from the command's `main.public.orders.id`.
 
 The command boundary is **not opaque**. Because `enrich_grpc_set` declares its input columns
 (`id`, `region`) and output columns (`id`, `embedding`, `geo`), the lineage engine splices the
 taint closure continuously from the source relation's declared columns to each output.
-[tool-verified: `_splice_commands` and `_input_relation` in graph.py:245-271]
+[tool-verified: `_splice_commands` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 ### Node kinds and visual cues
 
@@ -164,24 +169,43 @@ Content-Type: application/json
 [tool-verified: `lineage_graph` endpoint at lineage_router.py:45-54, LineageGraphRequest model at
 lineage_router.py:29-31]
 
-Response shape [tool-verified: `LineageGraph.to_dict` in graph.py:82-105]:
+The whole response for that statement — six nodes and four edges, printed as the run returned it
+[tool-verified: `lineage_graph_for` (lineage_router.py:50-89, the endpoint's body) run on this exact
+statement with `enrich_grpc_set` declaring `id` and `region` on its relation argument, sqlglot
+30.9.0, 16 October 2026; shape is `LineageGraph.to_dict` in graph.py:82-105]:
 
 ```json
 {
   "nodes": [
-    {"id": "orders.id", "column": "id", "relation": "orders", "kind": "source", "materialized": false}
+    {"id": "id", "column": "id", "relation": null, "kind": "derived", "materialized": false},
+    {"id": "orders.id", "column": "id", "relation": "orders", "kind": "source", "materialized": false},
+    {"id": "embedding", "column": "embedding", "relation": null, "kind": "derived", "materialized": false},
+    {"id": "e.embedding", "column": "embedding", "relation": "e", "kind": "command", "materialized": false},
+    {"id": "main.public.orders.id", "column": "id", "relation": "main.public.orders",
+     "kind": "source", "materialized": false},
+    {"id": "main.public.orders.region", "column": "region", "relation": "main.public.orders",
+     "kind": "source", "materialized": false}
   ],
   "edges": [
-    {
-      "source": "orders.id",
-      "target": "e.id",
-      "transform": "enrich_grpc_set(...)",
-      "ops": [{"name": "enrich_grpc_set", "kind": "command"}]
-    }
+    {"source": "orders.id", "target": "id", "transform": "o.id",
+     "ops": [{"name": "id", "kind": "identity", "args": []}]},
+    {"source": "e.embedding", "target": "embedding", "transform": "e.embedding",
+     "ops": [{"name": "embedding", "kind": "identity", "args": []}]},
+    {"source": "main.public.orders.id", "target": "e.embedding", "transform": "enrich_grpc_set(...)",
+     "ops": [{"name": "enrich_grpc_set", "kind": "command", "args": []}]},
+    {"source": "main.public.orders.region", "target": "e.embedding", "transform": "enrich_grpc_set(...)",
+     "ops": [{"name": "enrich_grpc_set", "kind": "command", "args": []}]}
   ],
   "outputs": ["id", "embedding"]
 }
 ```
+
+Two forms of source id appear, and they are different nodes. `orders.id` is the select list's
+`o.id`, read through the alias. A command's declared inputs are qualified from the literal relation
+argument of the call instead, so they arrive as `main.public.orders.id` and
+`main.public.orders.region`. The two `enrich_grpc_set` edges are the taint closure: every declared
+input of the call, onto the one command output this statement selects. `e.id` is in the join
+condition and never traversed, so it is not a node here.
 
 Returns HTTP 422 when the SQL cannot be parsed.
 [tool-verified: lineage_router.py:51-54]
