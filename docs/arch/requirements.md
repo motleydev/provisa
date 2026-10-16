@@ -18024,18 +18024,6 @@ The import preview types the imported design from its sources. A Hasura export n
 
 **Tests:** `tests/unit/test_import_typing.py`, `tests/integration/test_hasura_v2_live_import.py`
 
-### REQ-2034 · Hasura v2 Import: Unconverted Sections {#REQ-2034}
-
-**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
-
-Hasura v2 import reports the five unconverted export sections (query_collections, allowlist, rest_endpoints, network, opentelemetry) identically from both the consolidated metadata document and the CLI metadata directory. Both readers share one reporting table so they cannot drift. In a directory, presence is judged on file content rather than file existence; both the CLI spelling `allow_list.yaml` and the API spelling `allowlist.yaml` match and report under the API key `allowlist`. Each key is reported once across the directory root and all `databases/<name>/` subdirectories.
-
-**Use case:** Administrators using either Hasura export format receive consistent unconverted-section warnings, enabling uniform migration guidance and preventing silent loss of configuration sections.
-
-**Code:** `provisa/hasura_v2/parser.py` (_UNCONVERTED_SECTIONS, _warn_unconverted_files, parse_metadata_dir, parse_metadata_document)
-
-**Tests:** `tests/unit/test_hasura_unconverted_sections.py`
-
 ## 4. Source Connectors
 
 ### REQ-1692 · Replica Strategy {#REQ-1692}
@@ -23220,6 +23208,8 @@ Each tour declares its prerequisites, what its steps show of the org beyond the 
 
 **Tests:** —
 
+## 0. Architecture & Design Principles
+
 ### REQ-2014 · Marketing & Design System {#REQ-2014}
 
 **Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
@@ -23231,6 +23221,8 @@ The marketing site has a single CTA ladder with three fixed rungs, written in si
 **Code:** `site/design-system/README.md`, `site/design-system/check-page-platform.py`
 
 **Tests:** —
+
+## 10. UI & Admin Surfaces
 
 ### REQ-2015 · Marketing & Design System {#REQ-2015}
 
@@ -23300,9 +23292,9 @@ A labelled diagram on the site is built from `Schematic` (`.pv-schem`), not from
 
 **Use case:** A region, lineage or topology diagram is readable rather than decorative, and a figure whose labels have outgrown their positions fails loudly instead of shipping truncated.
 
-**Code:** site/design-system/provisa.css (`.pv-schem`), site/design-system/partials/schematic.html
+**Code:** `site/design-system/provisa.css`, `site/design-system/partials/schematic.html`
 
-**Tests:** site/design-system/verify-ui.mjs (section 9), site/design-system/check-contrast.mjs
+**Tests:** `site/design-system/verify-ui.mjs`, `site/design-system/check-contrast.mjs`
 
 ### REQ-2021 · Marketing & Design System {#REQ-2021}
 
@@ -23312,9 +23304,9 @@ The struck-claim list is one module, `site/claim-bans.mjs`, carrying each struck
 
 **Use case:** A claim the SME struck cannot reappear on any page of the site, and a reviewer checking the whole site for it runs one command that needs nothing installed.
 
-**Code:** site/claim-bans.mjs, site/verify-claims.mjs, site/verify-home.mjs
+**Code:** `site/claim-bans.mjs`, `site/verify-claims.mjs`, `site/verify-home.mjs`
 
-**Tests:** site/verify-claims.mjs
+**Tests:** `site/verify-claims.mjs`
 
 ### REQ-2022 · Marketing & Design System {#REQ-2022}
 
@@ -23324,9 +23316,9 @@ The claim sweep also enforces three things no string ban can see. A count of sou
 
 **Use case:** The numbers on the site are reproducible and mutually consistent, and a page cannot drift into contradicting its own figures between one paragraph and the link beneath it.
 
-**Code:** site/verify-claims.mjs
+**Code:** `site/verify-claims.mjs`
 
-**Tests:** site/verify-claims.mjs
+**Tests:** `site/verify-claims.mjs`
 
 ### REQ-2023 · Marketing & Design System {#REQ-2023}
 
@@ -23336,9 +23328,9 @@ A page may carry a struck string only through an exception declared in `site/ver
 
 **Use case:** The one page that must name the hosted host can name it, every other page still cannot, and an exception that has outlived its reason fails the check instead of outliving it silently.
 
-**Code:** site/verify-claims.mjs
+**Code:** `site/verify-claims.mjs`
 
-**Tests:** site/verify-claims.mjs
+**Tests:** `site/verify-claims.mjs`
 
 ### REQ-2024 · Marketing & Design System {#REQ-2024}
 
@@ -23348,9 +23340,9 @@ Browser render-pass verification of a site/ page must be run against a server th
 
 **Use case:** Verify scripts test the site in the routing pattern that users and production see, not an alternate pattern that silently passes while users hit 404s.
 
-**Code:** site/design-system/serve.py
+**Code:** `site/design-system/serve.py`
 
-**Tests:** site/design-system/verify-page-interfaces.mjs
+**Tests:** `site/design-system/verify-page-interfaces.mjs`
 
 ### REQ-2025 · Marketing & Design System {#REQ-2025}
 
@@ -23360,9 +23352,9 @@ Browser render-pass verification of a site/ page must be run against a server th
 
 **Use case:** A page rebuilt on the kit uses only the shared chrome, and migrated copy is not accidentally reworded in the transition.
 
-**Code:** site/why/one-model.html, site/design-system/check-page-one-model.mjs
+**Code:** `site/why/one-model.html`, `site/design-system/check-page-one-model.mjs`
 
-**Tests:** site/design-system/check-page-one-model.mjs
+**Tests:** `site/design-system/check-page-one-model.mjs`
 
 ### REQ-2026 · Marketing & Design System {#REQ-2026}
 
@@ -23372,9 +23364,9 @@ Every page built on the kit carries its own pair of checkers on the documented s
 
 **Use case:** Each page validates its composition and copy independently; the sitewide claim sweep ([REQ-2021](#REQ-2021)) centrally enforces struck claims across all pages to prevent checker fragmentation and checker drift.
 
-**Code:** site/design-system/check-page-one-model.mjs, site/design-system/verify-page-one-model.mjs
+**Code:** `site/design-system/check-page-one-model.mjs`, `site/design-system/verify-page-one-model.mjs`
 
-**Tests:** site/design-system/check-page-one-model.mjs, site/design-system/verify-page-one-model.mjs
+**Tests:** `site/design-system/check-page-one-model.mjs`, `site/design-system/verify-page-one-model.mjs`
 
 ### REQ-2027 · Marketing & Design System {#REQ-2027}
 
@@ -23384,9 +23376,9 @@ A page whose content is running prose and nothing else measures its prose: every
 
 **Use case:** Prose readability is preserved at every viewport width; the render pass confirms no line exceeds the configured measure.
 
-**Code:** site/design-system/provisa.css (--measure), site/design-system/verify-page-one-model.mjs
+**Code:** `site/design-system/provisa.css`, `site/design-system/verify-page-one-model.mjs`
 
-**Tests:** site/design-system/verify-page-one-model.mjs
+**Tests:** `site/design-system/verify-page-one-model.mjs`
 
 ### REQ-2028 · Marketing & Design System {#REQ-2028}
 
@@ -23396,9 +23388,9 @@ The governance figure on /why/one-model draws five rings — one per layer compi
 
 **Use case:** The figure's ring count is verified by render width, not by markup count, catching silent off-by-one rendering errors.
 
-**Code:** site/design-system/verify-page-one-model.mjs
+**Code:** `site/design-system/verify-page-one-model.mjs`
 
-**Tests:** site/design-system/verify-page-one-model.mjs
+**Tests:** `site/design-system/verify-page-one-model.mjs`
 
 ### REQ-2029 · Marketing & Design System {#REQ-2029}
 
@@ -23408,173 +23400,134 @@ A dead-link assertion that exists only because a page is unbuilt is removed when
 
 **Use case:** Once a page is built and live, its link is asserted as functional rather than asserted as dead; the dead-link check ceases to apply.
 
-**Code:** site/verify-home.mjs
+**Code:** `site/verify-home.mjs`
 
-**Tests:** site/verify-home.mjs
+**Tests:** `site/verify-home.mjs`
 
 ### REQ-2030 · Marketing & Design System {#REQ-2030}
 
 **Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
 
-Dating a competitor column does not date its cells. A cell in `docs/competitive_analysis.md` may
-back a published negative claim only if it carries its own `(Verified <date>, <documentation>)`
-stamp naming the product version and documentation area it was read against. An unstamped cell in a
-dated column remains under the undated-column rule.
+Dating a competitor column does not date its cells. A cell in `docs/competitive_analysis.md` may back a published negative claim only if it carries its own `(Verified <date>, <documentation>)` stamp naming the product version and documentation area it was read against. An unstamped cell in a dated column remains under the undated-column rule.
 
-**Use case:** A page author can tell from the cell alone whether a claim is publishable, instead of
-inferring it from a column-level date that may cover only some cells.
+**Use case:** A page author can tell from the cell alone whether a claim is publishable, instead of inferring it from a column-level date that may cover only some cells.
 
-**Code:** docs/competitive_analysis.md
+**Code:** `docs/competitive_analysis.md`
 
-**Tests:** site/verify-claims.mjs
+**Tests:** `site/verify-claims.mjs`
 
 ### REQ-2031 · Marketing & Design System {#REQ-2031}
 
 **Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
 
-Before a competitor negative is published, the competitor's nearest documented capability is named
-in the same cell and the distinction drawn from it. Neo4j 2026.09 property-based access control is
-named before any row-level-security distinction; GraphOS Router authorization directives are named
-before any platform-enforcement distinction; Apollo Connectors are named before any
-source-connection distinction; GraphOS Router entity caching is named before any
-security-partitioned-cache distinction.
+Before a competitor negative is published, the competitor's nearest documented capability is named in the same cell and the distinction drawn from it. Neo4j 2026.09 property-based access control is named before any row-level-security distinction; GraphOS Router authorization directives are named before any platform-enforcement distinction; Apollo Connectors are named before any source-connection distinction; GraphOS Router entity caching is named before any security-partitioned-cache distinction.
 
-**Use case:** A competitor's sales engineer reading the page finds their own capability
-acknowledged, so the distinction that follows is credible rather than discreditable.
+**Use case:** A competitor's sales engineer reading the page finds their own capability acknowledged, so the distinction that follows is credible rather than discreditable.
 
-**Code:** docs/competitive_analysis.md
+**Code:** `docs/competitive_analysis.md`
 
-**Tests:** site/verify-claims.mjs
+**Tests:** `site/verify-claims.mjs`
 
 ### REQ-2032 · Marketing & Design System {#REQ-2032}
 
 **Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
 
-A bare "Not available" or "No X" in a competitor column is a defect, not a claim. Natural language
-query was published as "Not available" for both Neo4j and Apollo GraphOS while Neo4j documented
-`Text2CypherRetriever` and Apollo MCP Server was generally available. A capability negative is
-written as a statement about the competitor's documentation on a date.
+A bare "Not available" or "No X" in a competitor column is a defect, not a claim. Natural language query was published as "Not available" for both Neo4j and Apollo GraphOS while Neo4j documented `Text2CypherRetriever` and Apollo MCP Server was generally available. A capability negative is written as a statement about the competitor's documentation on a date.
 
 **Use case:** The published comparison cannot be refuted by one link to the competitor's own docs.
 
-**Code:** docs/competitive_analysis.md
+**Code:** `docs/competitive_analysis.md`
 
-**Tests:** site/verify-claims.mjs
+**Tests:** `site/verify-claims.mjs`
 
 ### REQ-2033 · Marketing & Design System {#REQ-2033}
 
 **Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
 
-No page claims a migrated limit is preserved on a dimension the converter does not carry exactly.
-Hasura v2's `rate_limit` is per minute and a role's `requests_per_second` is per second, so the
-import rounds and floors at 1: a role set to 10 requests per minute arrives serving 60, one set to
-150 per minute arrives throttled to 120, and the value is exact only at a multiple of 60. A page
-states which dimensions convert exactly and tells the reader to re-read the rate on every throttled
-role. The word is not banned site-wide — a cron expression is preserved, and a lineage graph
-preserves its CTEs and joins — so the check is a scoped window: preservation language in the same
-sentence as a rate or API limit fails.
+No page claims a migrated limit is preserved on a dimension the converter does not carry exactly. Hasura v2's `rate_limit` is per minute and a role's `requests_per_second` is per second, so the import rounds and floors at 1: a role set to 10 requests per minute arrives serving 60, one set to 150 per minute arrives throttled to 120, and the value is exact only at a multiple of 60. A page states which dimensions convert exactly and tells the reader to re-read the rate on every throttled role. The word is not banned site-wide — a cron expression is preserved, and a lineage graph preserves its CTEs and joins — so the check is a scoped window: preservation language in the same sentence as a rate or API limit fails.
 
-**Use case:** A buyer migrating an expensive reporting role throttled on purpose is told to check
-the converted number, instead of discovering the role serving six times its v2 rate in production.
+**Use case:** A buyer migrating an expensive reporting role throttled on purpose is told to check the converted number, instead of discovering the role serving six times its v2 rate in production.
 
-**Code:** site/vs/hasura.html, docs/import.md
+**Code:** `site/vs/hasura.html`, `docs/import.md`
 
-**Tests:** site/verify-claims.mjs
+**Tests:** `site/verify-claims.mjs`
 
-## 14. CI & Verification
+## 12. Migration & Compatibility (Hasura)
+
+### REQ-2034 · Hasura v2 Import: Unconverted Sections {#REQ-2034}
+
+**Status:** ✅ complete · **Priority:** MUST · **Type:** structural
+
+Hasura v2 import reports the five unconverted export sections (query_collections, allowlist, rest_endpoints, network, opentelemetry) identically from both the consolidated metadata document and the CLI metadata directory. Both readers share one reporting table so they cannot drift. In a directory, presence is judged on file content rather than file existence; both the CLI spelling `allow_list.yaml` and the API spelling `allowlist.yaml` match and report under the API key `allowlist`. Each key is reported once across the directory root and all `databases/<name>/` subdirectories.
+
+**Use case:** Administrators using either Hasura export format receive consistent unconverted-section warnings, enabling uniform migration guidance and preventing silent loss of configuration sections.
+
+**Code:** `provisa/hasura_v2/parser.py`
+
+**Tests:** `tests/unit/test_hasura_unconverted_sections.py`
+
+## 11. Platform, Infrastructure & Delivery
 
 ### REQ-2038 · CI & Verification {#REQ-2038}
 
 **Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
 
-A missing toolchain on the agent runners is not a blocker. The runners are NixOS
-with no `apt-get`, no FHS library directory, and no `nix` on `PATH` — which is
-what made two verifications look impossible rather than merely awkward. `nix` is
-at `/run/current-system/sw/bin/nix` whether or not `PATH` names it, and the
-binary cache is reachable, so anything in nixpkgs is a `nix build` away. A
-verification that cannot run for want of an interpreter or a shared object is
-reported as the environment gap it is, with the closure that closes it, not as a
-property of the thing being verified.
+A missing toolchain on the agent runners is not a blocker. The runners are NixOS with no `apt-get`, no FHS library directory, and no `nix` on `PATH` — which is what made two verifications look impossible rather than merely awkward. `nix` is at `/run/current-system/sw/bin/nix` whether or not `PATH` names it, and the binary cache is reachable, so anything in nixpkgs is a `nix build` away. A verification that cannot run for want of an interpreter or a shared object is reported as the environment gap it is, with the closure that closes it, not as a property of the thing being verified.
 
-**Use case:** Two site verifications sat unrunnable for a day on the reading that
-the sandbox could not host them. Both ran the same afternoon once nix was found
-where NixOS keeps it.
+**Use case:** Two site verifications sat unrunnable for a day on the reading that the sandbox could not host them. Both ran the same afternoon once nix was found where NixOS keeps it.
 
 **Code:** `scripts/install-env.sh`, `site/design-system/browser-deps.py`
 
-**Tests:** n/a — a constraint on how runner gaps are triaged.
+**Tests:** —
 
 ### REQ-2039 · CI & Verification {#REQ-2039}
 
 **Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
 
-The install page's blocks are executed against the interpreter they name, not
-the one the runner ships. `scripts/install-env.sh <command>` puts nix's python
-3.12 and postgresql 16 ahead of the runner's 3.13 on `PATH`, and sets
-`LD_LIBRARY_PATH` to libstdc++ and zlib so the embedded tier's manylinux wheels
-load: duckdb's `_duckdb.so` wants `libstdc++.so.6` by bare soname and finds
-nothing at an FHS path, so `provisa run` otherwise dies on `import duckdb`
-immediately after an install that reported success. Not glibc — a second glibc on
-`LD_LIBRARY_PATH` would be swapped under every process the command starts.
+The install page's blocks are executed against the interpreter they name, not the one the runner ships. `scripts/install-env.sh <command>` puts nix's python 3.12 and postgresql 16 ahead of the runner's 3.13 on `PATH`, and sets `LD_LIBRARY_PATH` to libstdc++ and zlib so the embedded tier's manylinux wheels load: duckdb's `_duckdb.so` wants `libstdc++.so.6` by bare soname and finds nothing at an FHS path, so `provisa run` otherwise dies on `import duckdb` immediately after an install that reported success. Not glibc — a second glibc on `LD_LIBRARY_PATH` would be swapped under every process the command starts.
 
-**Use case:** The page tells a reader to run two blocks. Nobody had run either,
-because the runner's 3.13 is the one interpreter the package excludes.
+**Use case:** The page tells a reader to run two blocks. Nobody had run either, because the runner's 3.13 is the one interpreter the package excludes.
 
 **Code:** `scripts/install-env.sh`
 
-**Tests:** `pip install "provisa[embedded]"` installs provisa 0.1.0a479 from PyPI
-on python 3.12.14, and `provisa run --demo` then boots to `Provisa is ready —
-http://127.0.0.1:3000/?tour=1` (448f26f85).
+**Tests:** —
 
 ### REQ-2040 · CI & Verification {#REQ-2040}
 
 **Status:** ✓ accepted · **Priority:** SHOULD · **Type:** constraint
 
-A command handed to an environment wrapper is run directly, not inside a bare
-`bash -c`. The agent runners set `BASH_ENV`, so a nested shell re-runs that rc
-file and re-prepends the runner's own python 3.13 — the wrapper's work is undone
-silently and the symptom is the exact failure the wrapper exists to prevent.
-`env -u BASH_ENV bash -c` where a shell is genuinely needed.
+A command handed to an environment wrapper is run directly, not inside a bare `bash -c`. The agent runners set `BASH_ENV`, so a nested shell re-runs that rc file and re-prepends the runner's own python 3.13 — the wrapper's work is undone silently and the symptom is the exact failure the wrapper exists to prevent. `env -u BASH_ENV bash -c` where a shell is genuinely needed.
 
-**Use case:** `install-env.sh install bash -c 'python3 -V'` answered 3.13 while
-`install-env.sh python3 -V` answered 3.12.14, from the same wrapper, on the same
-runner, one second apart.
+**Use case:** `install-env.sh install bash -c 'python3 -V'` answered 3.13 while `install-env.sh python3 -V` answered 3.12.14, from the same wrapper, on the same runner, one second apart.
 
 **Code:** `scripts/install-env.sh`
 
-**Tests:** n/a — a constraint on how the wrapper is called.
+**Tests:** —
+
+## 12. Migration & Compatibility (Hasura)
 
 ### REQ-2041 · Hasura v2 Import: Command-Name Collision Resolution {#REQ-2041}
 
-**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+**Status:** ✅ complete · **Priority:** MUST · **Type:** behavioral
 
-In Hasura v2 import, when a computed field and a tracked function in the same or different sources claim the same command name, the computed field wins and the tracked function is dropped (not an error). Commands and webhooks share one address space (REQ-1385), making such configurations unrepresentable. The drop is reported as a [functions] warning naming both claimants and their remedies: untrack the function in Hasura v2 or rename the computed field. Collision detection scans all sources' computed fields before any mapping runs, enabling cross-source collision detection — the table pass for a later source would otherwise run after the tracked-function pass for an earlier source and miss it.
+In Hasura v2 import, when a computed field and a tracked function in the same or different sources claim the same command name, the computed field wins and the tracked function is dropped (not an error). Commands and webhooks share one address space ([REQ-1385](#REQ-1385)), making such configurations unrepresentable. The drop is reported as a [functions] warning naming both claimants and their remedies: untrack the function in Hasura v2 or rename the computed field. Collision detection scans all sources' computed fields before any mapping runs, enabling cross-source collision detection — the table pass for a later source would otherwise run after the tracked-function pass for an earlier source and miss it.
 
 **Use case:** A Hasura v2 export has a computed field `get_claims` on table `entities` and a tracked function `get_claims` in the same or different database. The importer must not fail; it drops the tracked function and reports the collision with both remedies.
 
 **Code:** `provisa/hasura_v2/mapper.py`
 
-**Tests:** `tests/unit/test_hasura_v2.py` (`TestComputedFieldAndTrackedFunctionShareAName`)
+**Tests:** `tests/unit/test_hasura_v2.py`
+
+## 11. Platform, Infrastructure & Delivery
 
 ### REQ-2043 · CI & Verification {#REQ-2043}
 
 **Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
 
-A site task ships on its own branch, cut from the integration branch, and its own
-pull request. The issue closes on the merge of that pull request, not on the
-existence of its commits. Two workflows gate a pull request touching `site/**`:
-`site-review.yml` for the browserless checkers and `site-review-browser.yml` for
-the Playwright pass at every verified width in both themes. The monorepo jobs —
-`ruff + pyright`, `tsc + vitest`, `pytest tests/unit`, `Validate
-requirements.yaml` — are red on `main` independently of any site work and are
-not a verdict on a page.
+A site task ships on its own branch, cut from the integration branch, and its own pull request. The issue closes on the merge of that pull request, not on the existence of its commits. Two workflows gate a pull request touching `site/**`: `site-review.yml` for the browserless checkers and `site-review-browser.yml` for the Playwright pass at every verified width in both themes. The monorepo jobs — `ruff + pyright`, `tsc + vitest`, `pytest tests/unit`, `Validate requirements.yaml` — are red on `main` independently of any site work and are not a verdict on a page.
 
-**Use case:** Ten issues read `done` with commits only on
-`pro8-source-corrections-claim-sets`, and thirteen further commits for `done`
-issues existed only in one agent checkout, unpushed to any remote. Five agents
-shared one branch feeding one pull request of 93 files and +15,904 lines, so no
-page was reviewed before the board called it done.
+**Use case:** Ten issues read `done` with commits only on `pro8-source-corrections-claim-sets`, and thirteen further commits for `done` issues existed only in one agent checkout, unpushed to any remote. Five agents shared one branch feeding one pull request of 93 files and +15,904 lines, so no page was reviewed before the board called it done.
 
 **Code:** `docs/ops/site-task-pipeline.md`, `.github/workflows/site-review.yml`
 
-**Tests:** n/a — a constraint on how a site task is delivered.
+**Tests:** —

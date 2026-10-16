@@ -754,8 +754,10 @@
   paragraphs:
   - id: response-caching-store-and-opt-in
     text: Provisa can serve a repeated request from a stored result, but only when the request asks for
-      it. A GraphQL query opts in with a directive, a Cypher query with a comment line, and a gRPC call
-      with request metadata. Without it, the request neither reads nor writes the cache. Every response
+      it. A GraphQL query opts in with a directive, a Cypher query with a comment line, a SQL statement
+      with a comment line on pgwire, Flight SQL and SQL over HTTP, a REST or JSON:API call with a request
+      header, and a gRPC call with request metadata. Without it, the request neither reads nor writes
+      the cache. Every response
       says whether it was a hit or a miss. A hit is a real route in the planner, not a side check, so
       a cached answer skips execution entirely. The store is Redis when configured and an embedded fallback
       otherwise.
@@ -1425,3 +1427,57 @@
       the one feature paragraph it serves, and the validator refuses an untagged requirement or a paragraph
       that nothing serves. The published features page, the feature matrix and the roadmap are generated
       from that layer, and internal features never reach them.'
+  - id: engineering-standards-agent-runtime
+    text: 'A missing toolchain on an agent runner is not a reason a verification cannot be run. The runners
+      are NixOS: no apt-get, no FHS library directory, and the interpreter they ship is not the one a
+      document under verification names. A wrapper script puts the named interpreter and database ahead
+      of the runner''s own on PATH and sets the library path the prebuilt wheels need, and it runs the
+      command directly rather than through a nested shell, because the runners set BASH_ENV and a nested
+      shell re-runs it and undoes the ordering.'
+- id: marketing-site
+  name: Marketing site
+  section: Internal (never published)
+  visibility: internal
+  paragraphs:
+  - id: marketing-site-cta-ladder
+    text: 'The marketing site offers the reader one ladder of calls to action, and the rungs are written
+      in the design-system README rather than in each page: download and register as one rung, a contact
+      path as the second, and nothing that offers the hosted plane as a way to run Provisa. A label
+      lives in the kit''s specimens and in the per-page checkers, because a label that exists only in
+      a plan revision is copied out of a specimen weeks later and spreads.'
+  - id: marketing-site-message-spine
+    text: 'The site says one thing about what Provisa is, and says it the same way everywhere: ask once
+      in English, and up to six governed surfaces answer, each generated for the asking role and run
+      through the same compiled governance. Three qualifiers travel with it — six is the capability and
+      never a count promised per question, the three machine surfaces are a request and its envelope
+      computed through the pipeline rather than a network round trip, and they express row, aggregate
+      and group-by questions only. Two counts that sound alike are kept apart: the six surfaces one
+      English question comes back on, and the sixteen client-facing surfaces riding seven listeners.
+      The older framings are struck, and the query-language comparison on the Starburst page is a
+      separate claim that the spine does not rewrite.'
+  - id: marketing-site-claim-governance
+    text: 'A claim on the site is traceable to the audit that cleared it. One module carries every struck
+      string with the reason it was struck and every checker reads that module rather than keeping a
+      copy, so a claim cannot be retired in one page and survive in another. A page may carry a struck
+      string only through an exception scoped to that string on that page and naming the requirement
+      that mandates it. The sweep also enforces what no string ban can see: counts that have a closed
+      set of correct values, and limits a converter does not carry across exactly. A negative claim
+      about a competitor is a statement about that competitor''s documentation on a date — the cell
+      carries its own verification stamp, it names the competitor''s nearest documented capability
+      before drawing a distinction from it, and a bare "not available" is a defect rather than a claim.'
+  - id: marketing-site-design-system
+    text: 'Every page is built from one kit: the shared chrome, the tokens, and no page-level stylesheet.
+      A labelled diagram is built from the schematic component, and its nodes and connectors are text
+      in document order so a screen reader reads the diagram rather than skipping it. A page whose
+      content is running prose measures that prose against the kit''s measure token. The figures carry
+      the same discipline as the copy: the governance figure draws one ring per layer compiled into the
+      query plan and does not draw the approval hook, which sits outside the plan.'
+  - id: marketing-site-review-pipeline
+    text: 'A site task ships on its own branch and its own pull request, and the task closes when that
+      pull request merges rather than when its commits exist. Two workflows gate it: the checkers that
+      need no browser, and a render pass at five widths in both themes. Every page built on the kit
+      carries its own pair of checkers on that split — one for composition and the page''s copy word
+      for word, one for the render — and a workflow fails if a checker beside the site is wired into
+      no step. The render pass runs against a server that resolves pages by their production route,
+      because the navigation links the route and not the file. An assertion that exists only because
+      a page is unbuilt is replaced by an assertion of the link when that page lands.'
