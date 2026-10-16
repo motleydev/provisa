@@ -109,11 +109,17 @@ ok(!hero.includes("pv-rail"), "the hero is single-column, so source order is the
 /* --- 3. every comment line ships --------------------------------------- */
 
 const COMMENTS = [
-  "# Python 3.12 — 3.13 is not supported.",
+  "# Python 3.12 required — 3.13 is not supported.",
   "# Not Linux aarch64: no pgserver wheel and no source distribution,",
   "# so the embedded tier does not run there. Use the container tier.",
-  "# your data",
   "# the bundled sample domains, on embedded SQLite",
+  "# Loads the bundled pet-store and shelter sample domains over embedded",
+  "# SQLite, and marks the session as a demo run. No Docker. The UI opens",
+  "# at the URL it prints.",
+  "# provisa.yaml — a source, a domain, and one table with its columns.",
+  "# The Postgres listener is off until you give it a port.",
+  "# 5439 is what our Helm chart and installer set; any free port works.",
+  "# In another shell — psql speaks to Provisa as if it were Postgres",
   "# Federate on a Trino coordinator you already run",
   "# Or federate in your own PostgreSQL. The extensions it federates",
   "# through have to be installed in that server.",
@@ -127,7 +133,7 @@ for (const line of COMMENTS)
  * dimmed. .pv-code__c is --text-code-faint, so a comment is the faintest text
  * in the block by design, and this is the line whose failure mode is a
  * resolver error on the page's first command. */
-ok(/<mark># Python 3\.12 — 3\.13 is not supported\.<\/mark>/.test(raw),
+ok(/<mark># Python 3\.12 required — 3\.13 is not supported\.<\/mark>/.test(raw),
    "the Python window is marked, not dimmed");
 
 /* --- 4. the release line ----------------------------------------------- */
@@ -180,20 +186,37 @@ ok(/non-production use \(including evaluation\) is free\s+forever/.test(raw),
 
 /* --- 7. psql only after the port is set -------------------------------- */
 
-const psqlAt = main.indexOf("psql");
-if (psqlAt === -1) {
-  pass.push("no psql on the page yet (§3 is gated on PRO-40)");
-} else {
-  const portAt = main.indexOf("PROVISA_PGWIRE_PORT=");
-  ok(portAt !== -1 && portAt < psqlAt,
-     "psql appears only after a command that set PROVISA_PGWIRE_PORT");
-  ok(/PROVISA_PGWIRE_PORT=([1-9]\d{3,4})\b/.test(main),
-     "the port is a literal, not a placeholder");
-}
+/* The page's first-order broken-command rule. The pgwire listener is off
+ * until PROVISA_PGWIRE_PORT is set, so the FIRST psql command on the page
+ * must appear after a command that set the port. §3 tab 3 is a prose tab
+ * panel, so the port-setting command sits in a <pre> inside it before the
+ * psql connect. Revision 2's bug was exactly this ordering, with the port
+ * never set at all. */
+/* `psql` on its own is the tab-button label ("Ask it over pgwire · psql");
+ * what has to appear only after the port-setting command is the connect
+ * invocation `psql -h …`, so the match requires a flag after it. */
+const psqlAt = main.search(/psql\s+-/);
+ok(psqlAt !== -1, "§3 ships a psql connect");
+const portAt = main.indexOf("PROVISA_PGWIRE_PORT=");
+ok(portAt !== -1 && portAt < psqlAt,
+   "the psql connect appears only after a command that set PROVISA_PGWIRE_PORT");
+ok(/PROVISA_PGWIRE_PORT=([1-9]\d{3,4})\b/.test(main),
+   "the port is a literal, not a placeholder");
+/* The three corrections from PRO-40's run (brief C-11, revision 4). The
+ * connect command binds `127.0.0.1`, not `localhost`; the role is
+ * `analyst`, not `admin`; and the server command carries `--demo`. */
+ok(/PROVISA_PGWIRE_PORT=5439 provisa run --demo/.test(allPre),
+   "the server command carries --demo (otherwise the query's tables don't exist)");
+ok(/psql -h 127\.0\.0\.1 -p 5439 -U analyst/.test(allPre),
+   "the connect uses 127.0.0.1 and -U analyst, not localhost / admin");
 
 /* --- 8. the cleared copy, verbatim ------------------------------------- */
 
 const COPY = [
+  ["the hero release line, with the 2026-10-14 run",
+   "Current release 0.1.0a479. This is a first release and we say so. Run on 2026-10-14 on CPython 3.12.15 in a fresh virtualenv; the API and the UI both answered 200 and the server printed ✓ Provisa is ready."],
+  ["the hero bridge to §3 tab 2",
+   "That is the demo data. Pointing it at your own sources is the next step and it is a config file, not another install — §3, tab 2."],
   ["the hero body",
    "The desktop installer is a single download driven by start, stop, status and open. By default it runs everything natively: DuckDB as the federation engine, an embedded PostgreSQL control plane, an in-memory cache. Trino on Docker or an external engine are opt-in choices in the setup wizard, and Docker or a VM is provisioned only if you pick one of them. The run command waits for the API to report ready before it prints success, so a green line means a green line."],
   ["the hero caption",
@@ -204,17 +227,33 @@ const COPY = [
    "An embedded store holding the model, the operating state and the platform state — pluggable, chosen by a SQLAlchemy URI, and PostgreSQL everywhere that is not a desktop. One consequence worth knowing before you build a control narrative on it: audit-log immutability is enforced by PostgreSQL rules, so on the desktop tier append-only is an application convention rather than a database guarantee."],
   ["§2 the callout",
    "Nothing phoned home. The whole distribution installs with no network calls at install time or first launch, and the add-ons are found locally, then on mounted volumes, before anything is downloaded."],
-  ["§4 the TLS callout, scoped in its first clause",
+  ["§3 the lead, on registration-exposes-nothing",
+   "Registering a source exposes nothing. A table is queryable only after someone registers it; an unregistered table is invisible, absent from the schema browser and unnameable in a query. That is the default, not a setting."],
+  ["§3 tab 2 the mechanism paragraph",
+   "There is no publish-the-whole-table shorthand. A column you do not list is not published, and margin above is listed for org_admin only, so an analyst session cannot name it. That is the mechanism behind the sentence above this section: registering a source exposes nothing, and a table is queryable only after someone says which columns of it are."],
+  ["§3 tab 3 the trust-mode callout, inside the tab",
+   "That psql command has no password in it, and it does not need one. The bundled demo starts with auth: provider: none, which puts pgwire in trust mode: the username is taken directly as the role and the secret is ignored. The listener also binds every interface. On a laptop that is the right default and it is why the command above is two words long. It is not a configuration to put on a network — our own documentation says not to use trust mode over an unencrypted connection, and we would rather you read that here than discover it."],
+  ["§3 tab 3 the SCRAM remedy, beside the disclosure",
+   "Set auth.provider: basic with auth.scram: true and pgwire advertises SASL with SCRAM-SHA-256, so the password is proved rather than sent. Client certificates are verified in the handshake before any credential is examined."],
+  ["§4 the lead",
+   "The same psql session, one join away from the one that worked — two tables in different domains with no approved relationship between them:"],
+  ["§4 what the refusal is",
+   "That is the governance pipeline refusing an unauthorised join at the Postgres wire, to a stock psql client, with a diagnostic naming the two columns so a data engineer can act on it rather than guess. Nothing about the refusal is specific to our own tooling: the client is the one already installed on the reader's machine."],
+  ["§4 the policy-not-a-wall callout",
+   "A joinable-looking pair of columns in two systems is the ordinary way a wrong number reaches a dashboard, and most engines in this category would return the cartesian product without comment. The approved-join guard is governance policy rather than a hard boundary — two bypasses exist and they are named on /why/governance — but in high-security mode it is not bypassable by anyone."],
+  ["§4 the no-password paragraph, which is the page's argument",
+   "There was no password on that session. Tab 3 connects in trust mode, so the role was asserted by the client and taken at face value — and the join was refused anyway. Authentication decides who you say you are; the compiled plan decides what that role may do, and the second does not depend on the first being strong. Most readers conflate the two, and this is the one place on the site where they come apart with evidence in front of them."],
+  ["§5 the TLS callout, scoped in its first clause",
    "In a cluster deployment, every endpoint is served over TLS — UI and API as well as pgwire, Bolt and Flight — and Provisa generates self-signed certificates when none are supplied. The Helm chart takes an existing certificate secret or a cert-manager issuer."],
-  ["§5 the pg-ext limit, as a mechanism and not a vendor blocklist",
+  ["§6 the pg-ext limit, as a mechanism and not a vendor blocklist",
    "The pg-ext bundles are built for PostgreSQL 16 only, on linux-x64 and darwin-arm64. A managed service without filesystem access — RDS, Cloud SQL — cannot take them; use the extensions the service offers."],
-  ["§6 the production grant",
+  ["§7 the production grant",
    "Provisa is source-available under Business Source License 1.1. Production use is free for an organization that, with its affiliates, has fewer than 100 employees and contractors and under USD 1,000,000 in annual revenue, budget or expenditure, with 90 days' grace if you cross either threshold. Any other production use needs a commercial licence. Each released version becomes GNU General Public License, Version 2.0 or later on the fourth anniversary of that version's first public availability."],
-  ["§6 the trial, affirmatively",
+  ["§7 the trial, affirmatively",
    "Nothing stops working: no feature gate, no row limit, no read-only mode, no expiry."],
-  ["§6 the per-protocol notice",
+  ["§7 the per-protocol notice",
    "That notice travels on each protocol's own non-fatal channel — pgwire NoticeResponse, Bolt success metadata, Flight app_metadata, gRPC trailing metadata, a REST header — and it never modifies the result body, the row stream, or any schema-typed field. A licence reminder that cannot corrupt a result set is a design decision, and it cannot even fail the request it rides on."],
-  ["§6 the callout that separates the two licences",
+  ["§7 the callout that separates the two licences",
    "The free licence file is a registration artifact. It is not the BSL production grant. If your organization is over either threshold, you need a commercial licence to run Provisa in production — and the free file does not change that."],
 ];
 
@@ -229,6 +268,46 @@ for (const [what, block] of COPY) {
   }
   fail.push(`NOT VERBATIM (${what}) after ${lo} chars: …${block.slice(Math.max(0, lo - 60), lo + 60)}…`);
 }
+
+/* --- 8a. §3 ships three tabs; the trust-mode callout sits inside tab 3 - */
+
+/* The brief's §3 is CodeTabs with three tabs, and the acceptance criterion
+ * from revision 5 is that the trust-mode callout sits inside tab 3 at the
+ * same weight as the command — not a footnote, not below the tabs. So the
+ * callout must appear inside the <div id="p-ask"> panel. */
+const tablist = (main.match(/<div class="pv-codetabs__tabs"[\s\S]*?<\/div>/) || [""])[0];
+const tabCount = (tablist.match(/role="tab"/g) || []).length;
+ok(tabCount === 3, `§3 ships three tabs (found ${tabCount})`);
+
+const panelAsk =
+  (main.match(/<div[^>]*id="p-ask"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/) ||
+   [""])[0];
+ok(panelAsk.includes("pv-callout"),
+   "the trust-mode callout is inside tab 3 (p-ask), not below the tabs");
+ok(/trust mode/.test(panelAsk),
+   "the trust-mode disclosure is inside the pgwire tab");
+
+/* The brief's string ban "the launcher opens the tour" is already enforced
+ * above. The pgwire tab must also mention that the role is `analyst`, not
+ * `admin`, which is the correction PRO-40 published as copy. The copy's
+ * explanation of why admin fails quotes the broken command ("there is no
+ * `admin`", "-U admin returns 'No schema for role admin'") — that content is
+ * what we want on the page, not what we want absent, so we scrub <code> spans
+ * and quoted strings before testing for a bare `admin` elsewhere. */
+const panelAskProse = panelAsk
+  .replace(/<code>[\s\S]*?<\/code>/g, "")
+  .replace(/'admin'/g, "")
+  .replace(/\borg_admin\b/g, "");
+ok(/\banalyst\b/.test(panelAsk) && !/\badmin\b/.test(panelAskProse),
+   "the pgwire tab names the demo's one role (analyst), not admin");
+
+/* --- 8b. §4 ships the refusal, with the no-password paragraph ---------- */
+
+const refusal = (main.match(/id="refusal"[\s\S]*?<\/section>/) || [""])[0];
+ok(/V002\] Invalid JOIN: employees\.id = pets\.id/.test(refusal),
+   "§4 ships the exact V002 refusal line");
+ok(/approved-join guard/.test(refusal),
+   "§4 carries the governance qualifier (two bypasses, high-security mode)");
 
 /* --- 9. the inbound links this page answers ---------------------------- */
 

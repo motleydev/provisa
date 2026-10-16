@@ -146,18 +146,28 @@
         <div class="pv-stack">
           <div class="pv-eyebrow">Install</div>
           <h1 class="pv-h pv-h--hero">One wheel. Everything inside.</h1>
+          <!-- One command, not two. Revision 3 had `provisa run  # your data`
+               next to the demo line and the SME's run (PRO-40) caught it:
+               that command exits on `RuntimeError: PROVISA_CONFIG is not set`
+               on a fresh install, because the CLI sets the variable only on
+               the demo path (PRO-48). The bare form is off the page; §3 tab 2
+               is where "your data" lives, as a config file. -->
           <div class="pv-code">
-<pre><mark># Python 3.12 — 3.13 is not supported.</mark>
+<pre><mark># Python 3.12 required — 3.13 is not supported.</mark>
 <span class="pv-code__c"># Not Linux aarch64: no pgserver wheel and no source distribution,</span>
 <span class="pv-code__c"># so the embedded tier does not run there. Use the container tier.</span>
 python3 -m venv .venv &amp;&amp; source .venv/bin/activate
 pip install "provisa[embedded]"
 
-provisa run          <span class="pv-code__c"># your data</span>
 provisa run --demo   <span class="pv-code__c"># the bundled sample domains, on embedded SQLite</span></pre>
           </div>
           <p class="pv-note">Current release <code>0.1.0a479</code>. This is a
-            first release and we say so.</p>
+            first release and we say so. Run on 2026-10-14 on CPython 3.12.15
+            in a fresh virtualenv; the API and the UI both answered 200 and the
+            server printed <code>✓ Provisa is ready</code>.</p>
+          <p class="pv-p">That is the demo data. Pointing it at your own sources
+            is the next step and it is a config file, not another install —
+            §3, tab 2.</p>
           <!-- The brief asks for this caption at the code's own type size.
                pv-note is the kit's mono footnote and is set at the body
                colour and the code's size, which is what that asks for. -->
@@ -237,41 +247,293 @@ provisa run --demo   <span class="pv-code__c"># the bundled sample domains, on e
       </div>
     </section>
 
-    <!-- §3 First five minutes — NOT BUILT, AND NOT A PLACEHOLDER ======
-         The brief's §3 is a CodeTabs of three tabs and it is the one section
-         of this page that is gated rather than merely unbuilt:
+    <!-- §3 First five minutes ========================================
+         Three tabs, from brief-install revision 6. The decisions behind
+         them are on PRO-50 and the runs are on PRO-40 and PRO-53 — tab 2's
+         long form is the shape the shipped `config/provisa-install-base.yaml`
+         has, because there is no publish-the-whole-table shorthand (that is
+         the claim the tab exists to make), and tab 3's trust-mode callout
+         sits inside the tab at the same weight as the command, because
+         publishing `psql -U analyst` with no password without saying so is
+         the thing the page's rule forbids.
 
-           tab 1  `provisa run --demo`. Cleared, and executed on PRO-9
-                  (Python 3.12.14, boots to a ready line).
-           tab 2  the `cat > provisa.yaml <<'YAML'` block. Its `tables:` half
-                  has to come from the shipped seed config, and PRO-9 found
-                  that config/provisa-install-base.yaml:17-51 enumerates every
-                  column with a data_type and a visible_to role list — there is
-                  no publish-the-whole-table shorthand, so the honest block is
-                  about 25 lines rather than the brief's compact snippet. The
-                  brief's sentence below the tab ("the source is live without a
-                  restart — as is the config: it reloads without one") also
-                  cannot ship as written, because `PROVISA_CONFIG=... provisa
-                  run` *is* the start.
-           tab 3  the pgwire pair. Never run. PRO-9 read the code path instead
-                  and recommended cutting the tab; this issue's AC-4 requires
-                  it as two blocks. That is a copy and claims decision, not a
-                  build one.
+         Revision 6 adds a three-line `roles:` block to the tab 2 YAML. The
+         PRO-53 run exited at startup on `roles — Field required` against
+         revision 5's block: only `org_admin` and `platform_admin` are
+         seeded (REQ-1297/REQ-1349), so any custom role — `analyst` here —
+         is declared in the config file itself. ======================== -->
+    <section class="pv-section" id="first-five">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">02</span>
+            <span class="pv-seclabel__text">First queries</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Register a source. Register a table.
+            Ask three ways.</h2>
+          <p class="pv-p">Registering a source exposes nothing. A table is
+            queryable only after someone registers it; an unregistered table is
+            invisible, absent from the schema browser and unnameable in a
+            query. That is the default, not a setting.</p>
+        </div>
 
-         Two of the three tabs therefore need brief-install revision 4, and
-         the gate is PRO-40 (the second attempt at running both blocks). The
-         issue says: do not fill either in yourself, and do not ship
-         placeholders for them. So §3 is absent, the section numbering keeps
-         the brief's — §4 below is 03, not 02 — and the hole in the sequence is
-         deliberate. It is why this page is not proposed for merge yet.
-         ============================================================== -->
+        <div class="pv-codetabs">
+          <div class="pv-codetabs__tabs" role="tablist" aria-label="First five minutes">
+            <button class="pv-codetabs__tab" type="button" role="tab"
+                    id="t-demo" aria-controls="p-demo" aria-selected="true">
+              <span class="pv-codetabs__lang">The bundled demo</span>
+              <span class="pv-codetabs__wire">pip tier</span>
+            </button>
+            <button class="pv-codetabs__tab" type="button" role="tab"
+                    id="t-config" aria-controls="p-config"
+                    aria-selected="false" tabindex="-1">
+              <span class="pv-codetabs__lang">Your own Postgres, as config</span>
+              <span class="pv-codetabs__wire">yaml</span>
+            </button>
+            <button class="pv-codetabs__tab" type="button" role="tab"
+                    id="t-ask" aria-controls="p-ask"
+                    aria-selected="false" tabindex="-1">
+              <span class="pv-codetabs__lang">Ask it over pgwire</span>
+              <span class="pv-codetabs__wire">psql</span>
+            </button>
+          </div>
 
-    <!-- §4 Pick your shape =========================================== -->
-    <section class="pv-section" id="deploy">
+          <!-- Tab 1 — the bundled demo. The pip tier, not the desktop
+               installer; the two demos were being described as one in
+               revision 2. -->
+          <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-demo"
+               aria-labelledby="t-demo">
+<pre>provisa run --demo
+<span class="pv-code__c"># Loads the bundled pet-store and shelter sample domains over embedded</span>
+<span class="pv-code__c"># SQLite, and marks the session as a demo run. No Docker. The UI opens</span>
+<span class="pv-code__c"># at the URL it prints.</span></pre>
+          </div>
+
+          <!-- Tab 2 — the config file. A prose panel so the YAML block,
+               the invocation block and the copy below them share one tab
+               surface; a reader following the page copies the YAML into
+               provisa.yaml and then the bash command next to it, and both
+               are the point of the tab. The length is the argument:
+               config/provisa-install-base.yaml:17-51 enumerates every
+               column with a data_type and a visible_to list, so one honest
+               table is ~25 lines and a compact snippet with an ellipsis
+               would illustrate a shorthand that does not exist. -->
+          <div class="pv-codetabs__panel pv-codetabs__panel--prose"
+               role="tabpanel" id="p-config" aria-labelledby="t-config" hidden>
+            <div class="pv-code">
+<pre><span class="pv-code__c"># provisa.yaml — a source, a domain, and one table with its columns.</span>
+sources:
+  - id: sales-pg
+    type: postgresql
+    host: localhost
+    port: 5432
+    database: sales
+    username: provisa
+    password: ${env:PG_PASSWORD}
+
+domains:
+  - id: sales
+
+tables:
+  - source_id: sales-pg
+    domain_id: sales
+    schema: public
+    table: orders
+    columns:
+      - name: id
+        data_type: integer
+        visible_to: [analyst, org_admin]
+      - name: customer_id
+        data_type: integer
+        visible_to: [analyst, org_admin]
+      - name: total
+        data_type: decimal(10,2)
+        visible_to: [analyst, org_admin]
+      - name: margin
+        data_type: decimal(10,2)
+        visible_to: [org_admin]
+
+roles:
+  - id: analyst
+    capabilities:
+      - query_development
+    domain_access:
+      - sales</pre>
+            </div>
+            <div class="pv-code">
+<pre>PROVISA_CONFIG=provisa.yaml provisa run</pre>
+            </div>
+            <p class="pv-p">There is no publish-the-whole-table shorthand. A
+              column you do not list is not published, and <code>margin</code>
+              above is listed for <code>org_admin</code> only, so an
+              <code>analyst</code> session cannot name it. That is the
+              mechanism behind the sentence above this section: registering a
+              source exposes nothing, and a table is queryable only after
+              someone says which columns of it are.</p>
+            <p class="pv-p pv-p--sm">This is one table. The configuration we
+              ship with the installer has the same shape —
+              <code>config/provisa-install-base.yaml</code> enumerates every
+              column of every published table with its type and its role list,
+              and <code>price</code> on the demo's <code>pets</code> table is
+              visible to <code>org_admin</code> alone, exactly as
+              <code>margin</code> is here. The two platform roles —
+              <code>org_admin</code> and <code>platform_admin</code> — are
+              seeded; any other role, including the <code>analyst</code> above,
+              is declared in this file. On a <code>provisa run</code> against
+              revision 5's block (no <code>roles:</code>) the server exited at
+              startup on <code>roles — Field required</code>; with the block
+              above <code>/ready</code> answers in under ten seconds, and over
+              pgwire <code>-U analyst</code> is refused <code>margin</code>
+              with <code>[V003]</code> while <code>-U org_admin</code> sees
+              all four columns ([PRO-53], 16 Oct 2026).</p>
+            <a class="pv-link" href="https://provisa.dev/docs/configuration">The
+              full configuration reference<span class="pv-link__arrow"> →</span></a>
+          </div>
+
+          <!-- Tab 3 — the pgwire pair, plus the trust-mode callout inside
+               the tab at the same weight as the command. A prose panel so
+               the two code blocks (bash → sql) and the callout (same
+               weight, inside the tab, not a footnote) share one surface.
+               AC-4 wants it as two blocks; the brief's house-rule for the
+               callout is in revision 5 and it is why the tab is kept
+               rather than cut. -->
+          <div class="pv-codetabs__panel pv-codetabs__panel--prose"
+               role="tabpanel" id="p-ask" aria-labelledby="t-ask" hidden>
+            <div class="pv-code">
+<pre><span class="pv-code__c"># The Postgres listener is off until you give it a port.</span>
+<span class="pv-code__c"># 5439 is what our Helm chart and installer set; any free port works.</span>
+PROVISA_PGWIRE_PORT=5439 provisa run --demo
+
+<span class="pv-code__c"># In another shell — psql speaks to Provisa as if it were Postgres</span>
+psql -h 127.0.0.1 -p 5439 -U analyst</pre>
+            </div>
+            <div class="pv-code">
+<pre>SELECT p.name, p.species, v.visit_date, v.reason
+FROM pet_store.pets p
+JOIN pet_store.pet_visits v ON v.pet_id = p.id
+LIMIT 5;</pre>
+            </div>
+            <p class="pv-p pv-p--sm">Run on 2026-10-14. What comes back:</p>
+            <div class="pv-code">
+<pre>  name  | species | visit_date |         reason
+--------+---------+------------+-------------------------
+ Cat 1  | cat     | 2025-02-14 | Annual vaccination
+ Cat 2  | cat     | 2025-03-02 | Dental scaling referral
+ Dog 1  | dog     | 2025-04-08 | Limp in left forepaw
+ Lion 1 | lion    | 2025-01-27 | Weight check
+(5 rows)</pre>
+            </div>
+            <p class="pv-p pv-p--sm">Three corrections in that block, each of
+              which would have cost a reader their first five minutes. Revision
+              3 had <code>psql -h localhost -p 5439 -U admin</code> and no
+              <code>--demo</code>. <code>-h localhost</code> resolves
+              <code>::1</code> first against an IPv4-only listener, so the
+              reader sees a red <strong>connection refused</strong> before it
+              falls through and works — <code>127.0.0.1</code> is not a style
+              preference on this page. The demo has exactly one role,
+              <code>analyst</code>; <strong>there is no
+              <code>admin</code></strong>, and <code>-U admin</code> returns
+              <code>ERROR: No schema for role 'admin'</code>. And the tables
+              the query names exist only under <code>--demo</code>.</p>
+
+            <!-- The trust-mode callout, inside the tab, at the same weight
+                 as the command. Brief revision 5's one new acceptance
+                 criterion: it is not a footnote, not a lighter type colour,
+                 not an aside below the tabs. -->
+            <div class="pv-callout">
+              <span class="pv-callout__label">NO PASSWORD</span>
+              <span class="pv-callout__body">That <code>psql</code> command has
+                no password in it, and it does not need one. The bundled demo
+                starts with <code>auth: provider: none</code>, which puts
+                pgwire in <strong>trust mode</strong>: the username is taken
+                directly as the role and the secret is ignored. The listener
+                also binds every interface. On a laptop that is the right
+                default and it is why the command above is two words long.
+                <strong>It is not a configuration to put on a network</strong>
+                — our own documentation says not to use trust mode over an
+                unencrypted connection, and we would rather you read that here
+                than discover it.</span>
+            </div>
+            <p class="pv-p pv-p--sm">Set <code>auth.provider: basic</code> with
+              <code>auth.scram: true</code> and pgwire advertises SASL with
+              <code>SCRAM-SHA-256</code>, so the password is proved rather
+              than sent. Client certificates are verified in the handshake
+              before any credential is examined.</p>
+            <a class="pv-link" href="https://provisa.dev/docs/pgwire">Authentication,
+              per protocol<span class="pv-link__arrow"> →</span></a>
+          </div>
+        </div>
+
+        <!-- "The same question in GraphQL and Cypher → /why/one-model" ships
+             now that the target page is live (site/why/one-model.html). -->
+        <a class="pv-link" href="/why/one-model">The same question in GraphQL
+          and Cypher<span class="pv-link__arrow"> →</span></a>
+      </div>
+    </section>
+
+    <!-- §4 A refusal, at the wire ====================================
+         New in revision 4, from PRO-40's run. The guard that `/why/one-model`
+         and `/why/governance` describe, shown happening at the Postgres wire,
+         through a client every data engineer already has installed. The §4
+         paragraph that joins C-24 and C-26 is the page's own argument:
+         authentication decides who you say you are, the compiled plan decides
+         what that role may do. ============================================ -->
+    <section class="pv-section pv-section--band" id="refusal">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
             <span class="pv-seclabel__num">03</span>
+            <span class="pv-seclabel__text">The proof</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Now ask for something you have not
+            approved.</h2>
+          <p class="pv-p">The same <code>psql</code> session, one join away
+            from the one that worked — two tables in different domains with no
+            approved relationship between them:</p>
+        </div>
+        <div class="pv-code pv-code--run">
+<pre>ERROR:  [V002] Invalid JOIN: employees.id = pets.id
+        — no approved relationship exists between these tables on these columns</pre>
+        </div>
+        <p class="pv-p">That is the governance pipeline refusing an unauthorised
+          join <strong>at the Postgres wire, to a stock <code>psql</code>
+          client</strong>, with a diagnostic naming the two columns so a data
+          engineer can act on it rather than guess. Nothing about the refusal
+          is specific to our own tooling: the client is the one already
+          installed on the reader's machine.</p>
+        <!-- The approved-join guard is governance policy, not a hard
+             boundary — the two bypasses are named on /why/governance. The
+             qualifier travels with every page that mentions the guard, at
+             the same weight, from the PRO-4 audit's 1.6 rewrite. -->
+        <div class="pv-callout pv-callout--get pv-measure">
+          <span class="pv-callout__label">NOT A WALL</span>
+          <span class="pv-callout__body">A joinable-looking pair of columns in
+            two systems is the ordinary way a wrong number reaches a dashboard,
+            and most engines in this category would return the cartesian
+            product without comment. The approved-join guard is governance
+            policy rather than a hard boundary — two bypasses exist and they
+            are named on <a href="/why/governance">/why/governance</a> — but
+            in high-security mode it is not bypassable by anyone.</span>
+        </div>
+        <p class="pv-p"><strong>There was no password on that session.</strong>
+          Tab 3 connects in trust mode, so the role was asserted by the client
+          and taken at face value — and <strong>the join was refused
+          anyway.</strong> Authentication decides who you say you are; the
+          compiled plan decides what that role may do, and the second does not
+          depend on the first being strong. Most readers conflate the two, and
+          this is the one place on the site where they come apart with
+          evidence in front of them.</p>
+        <a class="pv-link" href="/why/governance">How the guard works, and both
+          bypasses<span class="pv-link__arrow"> →</span></a>
+      </div>
+    </section>
+
+    <!-- §5 Pick your shape =========================================== -->
+    <section class="pv-section" id="deploy">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">04</span>
             <span class="pv-seclabel__text">Shapes</span>
           </div>
           <h2 class="pv-h pv-h--section">The same product, from a laptop to an
@@ -370,12 +632,12 @@ provisa run --demo   <span class="pv-code__c"># the bundled sample domains, on e
       </div>
     </section>
 
-    <!-- §5 Bring your own engine ===================================== -->
+    <!-- §6 Bring your own engine ===================================== -->
     <section class="pv-section pv-section--band" id="engine">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
-            <span class="pv-seclabel__num">04</span>
+            <span class="pv-seclabel__num">05</span>
             <span class="pv-seclabel__text">Your engine</span>
           </div>
           <h2 class="pv-h pv-h--section">You already have the engine. Point at
@@ -410,7 +672,7 @@ provisa pg-ext install --docker my-postgres --create</pre>
       </div>
     </section>
 
-    <!-- §6 Licence ===================================================
+    <!-- §7 Licence ===================================================
          The two uses of the word do not share a sentence, let alone a
          paragraph: the production grant is the first, the registration file
          is the second, and the callout at the end says which is which. The
@@ -420,7 +682,7 @@ provisa pg-ext install --docker my-postgres --create</pre>
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
-            <span class="pv-seclabel__num">05</span>
+            <span class="pv-seclabel__num">06</span>
             <span class="pv-seclabel__text">Licence</span>
           </div>
           <h2 class="pv-h pv-h--section">Two different things are called a
@@ -475,7 +737,7 @@ provisa pg-ext install --docker my-postgres --create</pre>
       </div>
     </section>
 
-    <!-- §7 Conversion ================================================
+    <!-- §8 Conversion ================================================
          The brief asks for one platform-detected Download button falling
          back to the three /dl/* links. The three ship explicitly instead:
          detection needs a default href for the no-script case, and a wrong
