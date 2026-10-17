@@ -31,6 +31,13 @@ from provisa.api.mcp import polly_usage
 from provisa.api.mcp.polly_usage import Price, PriceTableError, Usage
 from tests.unit.test_mcp_chat import _block, _install_fake_aisuite, _install_fake_anthropic, _state
 
+# The chat runs only once its vendor's key is set (the readiness check, REQ-1794). That key is
+# stated by test_mcp_chat's autouse fixture, which an import of its helpers does NOT bring along:
+# this module's Anthropic turn therefore passed only where ANTHROPIC_API_KEY happened to be in the
+# environment (a maintainer's machine) and failed in CI, where it is not. Importing the fixture
+# itself makes it autouse here too, against the one definition test_mcp_chat already owns.
+from tests.unit.test_mcp_chat import _a_configured_vendor_key  # noqa: F401
+
 
 def test_the_price_table_reads_each_entry_and_refuses_one_that_does_not():
     table = polly_usage.parse_prices(["claude-haiku-5-5 0.1 0.5 0.01 0.125"])
