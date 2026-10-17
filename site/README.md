@@ -43,6 +43,32 @@ python3 -m http.server 8080 --directory site
 # open http://localhost:8080
 ```
 
+## Struck claims
+
+```bash
+node site/verify-claims.mjs   # 44/44, no browser, no server
+```
+
+Every claim the SME struck lives in `site/claim-bans.mjs`, with the reason it
+was struck. `verify-claims.mjs` sweeps that list across every page under
+`site/`, and also checks three things a string ban cannot see: that a count of
+source types on any page is one of 72, 63 or 37 (`docs/claim-audit.md` §1.1 and
+§1.2), that a page using both "six governed surfaces" and "sixteen surfaces"
+says they are different counts of different things (REQ-2018), and that the
+spine sentence keeps its "up to six" qualifier (REQ-2016).
+
+`verify-home.mjs` reads the same list, so adding a ban in one place adds it
+everywhere. Before the sweep existed, the list was checked against `/` alone,
+which is how `/why/one-model` shipped "85+", "six layers" and "No invalid join
+ever runs on your data" (PRO-27).
+
+Comments are excluded before matching: a struck string inside an HTML comment
+is not copy a reader is served, and these pages quote the struck strings to
+name the rule. One ban carries a page-scoped exception, named in the script with
+the requirement that mandates it — the demos page links a `cloud.provisa.dev`
+sandbox per REQ-2006, and the script asserts the page links the sandbox without
+selling the host.
+
 ## Downloads
 
 The three installer cards resolve to the latest GitHub Release assets at runtime

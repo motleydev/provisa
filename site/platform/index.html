@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- partials/head.html, with this page's title, description and canonical.
+     Order matters: fonts before tokens before provisa.css, and the theme
+     bootstrap before anything paints. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platform — one model, one compiler, an engine you can replace — Provisa</title>
+<meta name="description" content="Provisa compiles one model into one statement, governs that statement, and runs it where the data already is. The four routes a query takes, the two-stage compile, what is read live and what gets copied, and the four shapes you can run it in.">
+<link rel="icon" href="/favicon.svg">
+<link rel="canonical" href="https://provisa.dev/platform">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+
+<!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
+     external script runs after first paint, which is exactly the flash of the
+     wrong theme this prevents. Same code as partials/head.html. -->
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
+</head>
+<body>
+
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform" aria-current="page">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform" aria-current="page">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- ==================================================================
+       §1 Hero. Heading + Emph + FigPanel (IMG-03).
+
+       IMG-03 is 16/9 and is the page's own drawing, so it takes the container
+       below the copy rather than the hero's narrow rail — the rail column is
+       300px and a 16/9 panel in it is a strip. Home's IMG-01 is 4/5 and does
+       sit in the rail; the aspect is what differs, not the rhythm.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <nav class="pv-crumb" aria-label="Breadcrumb">
+          <a href="/">Provisa</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Platform</span>
+        </nav>
+
+        <div class="pv-stack">
+          <div class="pv-eyebrow">Architecture</div>
+          <h1 class="pv-h pv-h--hero">One model, one compiler,
+            <em class="pv-emph">an engine you can replace</em>.</h1>
+          <p class="pv-p">Provisa sits between the sources you already run and
+            the people and programs that query them. It holds one model —
+            sources, tables, columns, relationships, domains, roles, rules and
+            views — and compiles every incoming request against it. What comes
+            out is a single canonical PostgreSQL-style statement, translated
+            into the dialect of whatever will run it, so the protocol you
+            connected with does not change the SQL.</p>
+          <!-- Spine position (PRO-26; claim-audit §5.1b/§5.1c). Qualifier 1,
+               "up to six", is in the sentence and is not optional. -->
+          <p class="pv-p">That is also why one question can be asked once, in
+            English, and answered on up to six governed surfaces — SQL,
+            GraphQL, Cypher, gRPC, JSON:API and OpenAPI — each one generated
+            for the asking role and run through the same compiled governance.
+            <a class="pv-link pv-link--inline" href="/why/interfaces">Where the
+            six come from</a>. The gRPC, JSON:API and OpenAPI three are the
+            request and the response envelope a client of those protocols
+            would exchange, computed through the pipeline rather than over a
+            socket, and they express row, aggregate and group-by questions; an
+            arbitrary question is carried by SQL, GraphQL and Cypher.</p>
+          <p class="pv-p pv-p--sm">Provisa is at <code>0.1.0a479</code>,
+            pre-1.0. Of 1,872 tracked requirements, 1,599 are complete. Every
+            capability on this page names the requirements behind it, and their
+            status is in the repository.</p>
+        </div>
+
+        <!-- IMG-03. Shape positions are this figure's own, tuned for 16/9:
+             --l and --w are percentages of the panel's width and --t and --h
+             of its height, and a --sq shape takes its height from its width,
+             so the kit's 4/5 `platform` set resolves to overlapping squares at
+             this aspect. Same vocabulary, repositioned. A FigPanel cannot
+             label a node (PRO-3, "the kit has no labelled schematic"), so the
+             four zones read by position and the accessible name carries the
+             reading order — see the image-register document on PRO-2 for what
+             replaces it. -->
+        <div class="pv-fig pv-fig--wide" role="img"
+             aria-label="Figure 1: registered sources at the bottom, the Provisa layer above them holding the model and the compiler, a swappable engine slot to one side, and the query interfaces at the top.">
+          <span class="pv-fig__label">FIG. 01</span>
+          <!-- the query interfaces, at the top -->
+          <i class="pv-fig__s" style="--l:8;--t:11;--w:13;--h:8"></i>
+          <i class="pv-fig__s" style="--l:24;--t:11;--w:13;--h:8"></i>
+          <i class="pv-fig__s" style="--l:40;--t:11;--w:13;--h:8"></i>
+          <i class="pv-fig__s pv-fig__s--run" style="--l:56;--t:11;--w:13;--h:8"></i>
+          <!-- entering one layer -->
+          <i class="pv-fig__s" style="--l:14;--t:19;--w:1.2;--h:9"></i>
+          <i class="pv-fig__s" style="--l:62;--t:19;--w:1.2;--h:9"></i>
+          <!-- the Provisa layer, holding the model and the compiler -->
+          <i class="pv-fig__s" style="--l:6;--t:28;--w:66;--h:26"></i>
+          <i class="pv-fig__s pv-fig__s--ink" style="--l:11;--t:34;--w:24;--h:14"></i>
+          <i class="pv-fig__s pv-fig__s--ink" style="--l:40;--t:34;--w:27;--h:14"></i>
+          <!-- the engine slot, to one side -->
+          <i class="pv-fig__s" style="--l:72;--t:40;--w:6;--h:2"></i>
+          <i class="pv-fig__s pv-fig__s--run" style="--l:78;--t:28;--w:16;--h:26"></i>
+          <!-- down to the registered sources, at the bottom -->
+          <i class="pv-fig__s" style="--l:14;--t:54;--w:1.2;--h:18"></i>
+          <i class="pv-fig__s" style="--l:62;--t:54;--w:1.2;--h:18"></i>
+          <i class="pv-fig__s pv-fig__s--sq" style="--l:8;--t:72;--w:6.5"></i>
+          <i class="pv-fig__s pv-fig__s--sq" style="--l:17;--t:72;--w:6.5"></i>
+          <i class="pv-fig__s pv-fig__s--sq" style="--l:26;--t:72;--w:6.5"></i>
+          <i class="pv-fig__s pv-fig__s--sq" style="--l:35;--t:72;--w:6.5"></i>
+          <i class="pv-fig__s pv-fig__s--sq" style="--l:44;--t:72;--w:6.5"></i>
+          <i class="pv-fig__s pv-fig__s--sq pv-fig__s--ink" style="--l:53;--t:72;--w:6.5"></i>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §2 Where a query goes. LayerRow ×4 + Callout.
+
+       The forest band is the LayerRow list variant's own band: the variant is
+       white-on-forest and is invisible anywhere else — the same reason Home's
+       §3 is a forest band. The four rows are not links; the list variant
+       carries the index, the title and the description, which is what each
+       route needs.
+       ================================================================== -->
+  <section class="pv-section pv-section--brand-alt">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">01</span>
+            <span class="pv-seclabel__text">Routing</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Four routes. Provisa picks, you can
+            override.</h2>
+        </div>
+
+        <div>
+          <div class="pv-layer pv-layer--list">
+            <span class="pv-layer__idx">01</span>
+            <div class="pv-layer__main">
+              <span class="pv-layer__title">Straight to the source</span>
+              <span class="pv-layer__desc">A statement touching one relational
+                source bypasses the federation engine entirely and goes to that
+                database over its own driver, transactionally.</span>
+            </div>
+          </div>
+          <div class="pv-layer pv-layer--list">
+            <span class="pv-layer__idx">02</span>
+            <div class="pv-layer__main">
+              <span class="pv-layer__title">Through the engine</span>
+              <span class="pv-layer__desc">A statement that joins across
+                sources fans out through the federation engine. Governed
+                identically to the direct route — same compiled statement, same
+                role.</span>
+            </div>
+          </div>
+          <div class="pv-layer pv-layer--list">
+            <span class="pv-layer__idx">03</span>
+            <div class="pv-layer__main">
+              <span class="pv-layer__title">Through a replica</span>
+              <span class="pv-layer__desc">A source the engine cannot reach in
+                place is read from a copy Provisa maintains in a store the
+                engine reads quickly.</span>
+            </div>
+          </div>
+          <div class="pv-layer pv-layer--list">
+            <span class="pv-layer__idx">04</span>
+            <div class="pv-layer__main">
+              <span class="pv-layer__title">Overridden</span>
+              <span class="pv-layer__desc">When the default is wrong for a
+                particular table or view, a steward sets the route.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pv-callout">
+          <span class="pv-callout__label">MUTATIONS</span>
+          <span class="pv-callout__body">Mutations to a database always go
+            straight to that database, never through the engine.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §3 Two-stage compile. CodeTabs ×3.
+
+       Tab 2's route is POST /data/compile and it takes a GraphQL document —
+       /api/sql/compile does not exist (brief C-6). The SQL-in companion is
+       POST /data/sql/explain, which returns a plan and belongs to §9; the two
+       are deliberately not merged.
+
+       Tab 3 carries the `enforcement` field names from
+       _build_enforcement_metadata (provisa/api/admin/dev_queries.py), which
+       are defined in code. No values: the page ships the field names, and an
+       invented value here is the thing revision 2 had struck.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">02</span>
+            <span class="pv-seclabel__text">Compilation</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Your request becomes SQL. Then your
+            role rewrites it.</h2>
+          <p class="pv-p">The first stage turns the request — GraphQL, Cypher,
+            REST, a protocol buffer, or SQL — into plain SQL against the
+            semantic model. The second rewrites that SQL under the caller's
+            role, applying row filters, masking and column visibility, whatever
+            shape the SQL takes: subqueries, CTEs, joins, star expansion.
+            Because the second stage needs only SQL and a role, every client
+            path gets the same enforcement.</p>
+        </div>
+
+        <div class="pv-codetabs">
+          <div class="pv-codetabs__tabs" role="tablist" aria-label="The two stages, and what comes back">
+            <button class="pv-codetabs__tab" type="button" role="tab" id="t-ask"
+                    aria-controls="p-ask" aria-selected="true">
+              <span class="pv-codetabs__lang">Ask</span>
+              <span class="pv-codetabs__wire">sql</span>
+            </button>
+            <button class="pv-codetabs__tab" type="button" role="tab" id="t-compile"
+                    aria-controls="p-compile" aria-selected="false" tabindex="-1">
+              <span class="pv-codetabs__lang">Compile only</span>
+              <span class="pv-codetabs__wire">POST /data/compile</span>
+            </button>
+            <button class="pv-codetabs__tab" type="button" role="tab" id="t-back"
+                    aria-controls="p-back" aria-selected="false" tabindex="-1">
+              <span class="pv-codetabs__lang">What comes back</span>
+              <span class="pv-codetabs__wire">enforcement</span>
+            </button>
+          </div>
+
+          <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-ask" aria-labelledby="t-ask">
+<pre>SELECT c.name, c.email, o.total
+FROM customers c
+JOIN orders o ON o.customer_id = c.id
+WHERE o.total &gt; 1000;</pre>
+          </div>
+
+          <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-compile" aria-labelledby="t-compile" hidden>
+<pre><span class="pv-code__c"># Returns the governed SQL for a question, with row filters and masks</span>
+<span class="pv-code__c"># inlined, plus the route, the parameters and the enforcement metadata.</span>
+<span class="pv-code__c"># Executes nothing. The question goes in as GraphQL.</span>
+curl -X POST https://provisa.internal/data/compile \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"query": "{ customers { name email orders(where: {total: {gt: 1000}}) { total } } }"}'</pre>
+          </div>
+
+          <!-- Tab 3 is a field-name table, not a code block, so the panel
+               takes the page surface and the kit's own ComparisonTable, .pv-p
+               and inline <code> work inside it unchanged in both themes. The
+               tablist stays ink. `--prose` is the one class this page needed
+               that the kit did not have; it is in provisa.css with the rest of
+               CodeTabs and raised on PRO-3. -->
+          <div class="pv-codetabs__panel pv-codetabs__panel--prose" role="tabpanel"
+               id="p-back" aria-labelledby="t-back" hidden>
+            <p class="pv-p pv-p--sm">Not the result. A description of what the
+              compiler did, by field name, per role — which is the thing you
+              cannot get from a database:</p>
+            <div class="pv-table">
+              <table>
+                <caption class="pv-sr">The enforcement object the compile-only route returns, by field name</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Field</th>
+                    <th scope="col">What it holds</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row"><code>rls_filters_applied</code></th>
+                    <td>The predicate text injected, per table</td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><code>columns_excluded</code></th>
+                    <td><code>table.column</code> for every column stripped for
+                      this role</td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><code>masking_applied</code></th>
+                    <td><code>table.column -&gt; &lt;mask_type&gt;</code> per
+                      masked column</td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><code>schema_scope</code></th>
+                    <td><code>role:&lt;role_id&gt;</code></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><code>ceiling_applied</code></th>
+                    <td>The row or time ceiling, when one fired</td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><code>route</code></th>
+                    <td>The routing decision from Routing, above</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="pv-p pv-p--sm">Alongside it: the compiled semantic SQL,
+              the engine SQL or direct SQL, the parameters, the sources touched,
+              and which optimizations fired — MV rewrite, hot-table inlining,
+              the cache service. <strong>The enforcement is enumerable before
+              the query runs.</strong></p>
+          </div>
+        </div>
+
+        <p class="pv-p">Semantic SQL is the one dialect throughout. It has no
+          array, struct or map type — nested data comes back as JSON — and
+          because objects are defined in the model rather than by SQL,
+          <code>CREATE</code>, <code>DROP</code>, <code>ALTER</code> and
+          <code>TRUNCATE</code> are refused on every surface.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §4 What you register. RuledCard ×4 + Callout.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">03</span>
+            <span class="pv-seclabel__text">The model</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Four things, and nothing is exposed
+            until you say so.</h2>
+        </div>
+
+        <div class="pv-grid pv-grid--4">
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Sources</h3>
+            <div class="pv-ruled__body">Name a type, give connection details.
+              Provisa checks the connection before it saves anything, and the
+              source is live without a restart. Connecting a source exposes
+              nothing.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Tables</h3>
+            <div class="pv-ruled__body">A table is queryable only after someone
+              registers it. An unregistered table is invisible: absent from the
+              schema browser, unnameable in a query. The published schema is
+              what the business chose to publish, not the raw layout of the
+              database.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Relationships</h3>
+            <div class="pv-ruled__body">How tables join. Provisa proposes
+              candidates from foreign keys and ranks them by how much evidence
+              backs each one; a steward confirms or rejects. Cross-source
+              relationships are declared by hand with a cardinality.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Domains</h3>
+            <div class="pv-ruled__body">Business areas with a steward each. A
+              domain decides which other domains may read its tables, and
+              anything crossing the boundary is approved by the domain that
+              owns the data.</div>
+          </div>
+        </div>
+
+        <div class="pv-callout">
+          <span class="pv-callout__label">TWO AT ONCE</span>
+          <span class="pv-callout__body">A relationship is two artifacts at
+            once. It is the governance rule deciding whether a join is legal,
+            and it is the join shape the materialized-view optimizer needs.
+            Approving relationships buys query acceleration as a
+            byproduct.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §5 Metrics and the concept graph. RuledCard ×2 + Callout.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">04</span>
+            <span class="pv-seclabel__text">Semantics</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Defined once, and deliberately kept
+            apart.</h2>
+        </div>
+
+        <div class="pv-grid pv-grid--2">
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Metrics</h3>
+            <div class="pv-ruled__body">A metric is a named, governed aggregate
+              with one definition. Write it once and every query surface uses it
+              in that surface's native syntax. Facts and dimensions compose in
+              Explore, within the domains the caller can reach.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">The concept graph</h3>
+            <div class="pv-ruled__body">Every column resolves to a term by a
+              deterministic rule, so <code>cust_id</code>,
+              <code>customerId</code> and <code>CUSTOMER_KEY</code> land on one
+              <code>customer</code> with one definition. Terms relate to each
+              other through a fixed vocabulary of ten SKOS-style relation
+              types.</div>
+          </div>
+        </div>
+
+        <div class="pv-callout">
+          <span class="pv-callout__label">HELD APART</span>
+          <span class="pv-callout__body">The two are held apart on purpose. A
+            metric does not become a concept because someone tagged it, and a
+            concept does not acquire a number because someone wrote a
+            definition.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §6 Live, replicated, or hot. ComparisonTable + Callout + RuledCard.
+       The centrepiece.
+
+       The brief sets the three groups out as three tables. They ship as three
+       rows of one table, because the acceptance criterion is that they read as
+       one comparison at 360 as well as at 2560, and three stacked tables are
+       three unrelated lists on a phone — which turns one honest architecture
+       into three pieces of bad news. No copy is cut and none is invented: each
+       group's own title supplies two cells, the placement and what the engine
+       pushes down, and its named list is the third. ComparisonTable holds a
+       640px minimum and scrolls horizontally under it by design, so the three
+       rows stay one comparison at every width instead of reflowing into
+       separate lists. Reported on PRO-15.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">05</span>
+            <span class="pv-seclabel__text">Placement</span>
+          </div>
+          <h2 class="pv-h pv-h--section">What is read in place, what gets
+            copied, and who decided.</h2>
+          <p class="pv-p">This is a property of the running system, not a
+            policy we wrote down, and the system will answer it per engine. On a
+            Trino engine, 63 of the 72 source types are reachable and 37 of
+            those are read live with no copy. The three rows below are that
+            split.</p>
+        </div>
+
+        <div class="pv-stack">
+          <div class="pv-table">
+            <table>
+              <caption class="pv-sr">What a Trino engine reads live with aggregates pushed down, what it reads live with predicates only, and what Provisa replicates</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Placement</th>
+                  <th scope="col">What is pushed down</th>
+                  <th scope="col">Source types</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Live, in place</th>
+                  <td>Predicates and aggregates</td>
+                  <td>PostgreSQL · MySQL · MariaDB · TiDB · CockroachDB ·
+                    YugabyteDB · Greenplum · SingleStore · SQL Server · Oracle ·
+                    Exasol · Snowflake · Databricks · BigQuery · Redshift ·
+                    ClickHouse · Iceberg · Delta Lake · Hive · Hive on S3</td>
+                </tr>
+                <tr>
+                  <th scope="row">Live, in place</th>
+                  <td>Predicates only. Aggregates run above the source</td>
+                  <td>MongoDB · Cassandra · Redis · Elasticsearch · Kafka ·
+                    Prometheus · Salesforce · ServiceNow · SharePoint ·
+                    Splunk · cloud inventory</td>
+                </tr>
+                <tr>
+                  <th scope="row">Read and replicated</th>
+                  <td>Provisa lands a copy the engine can query</td>
+                  <td>OpenAPI and remote GraphQL services · gRPC services ·
+                    Neo4j · SPARQL · WebSocket · RSS · SQLite · SAP HANA ·
+                    HiveServer2 · Cosmos DB · Qdrant · Firebird · Airport ·
+                    Google Workspace · Microsoft 365 · GovData · log files ·
+                    Node and Python sources · remote Trino · Fabric · Synapse ·
+                    the two data-quality checkers · the profiler</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="pv-note">Druid and Pinot push predicates and aggregates,
+            but not joins.</p>
+        </div>
+
+        <div class="pv-callout">
+          <span class="pv-callout__label">WHO DECIDED</span>
+          <span class="pv-callout__body">The split follows from what the engine
+            can reach, not from a setting you tune — change the engine and the
+            table changes with it. If a replica cannot be built, the read is
+            refused with a message naming the table and the cause. It is not
+            answered from nothing.</span>
+        </div>
+
+        <!-- The brief's smaller third table. It has no tabular content — one
+             rule and one mechanism — so it ships as the section's one ruled
+             card rather than a one-row table. -->
+        <div class="pv-ruled pv-ruled--run pv-ruled--accent">
+          <h3 class="pv-ruled__title">Hot tables</h3>
+          <div class="pv-ruled__body">A small lookup table that many queries
+            join against is held in Redis and injected into the statement as an
+            inline set of rows, so the join never leaves memory. A table becomes
+            hot automatically when it is the target of a many-to-one
+            relationship or its row count is under a threshold.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §7 The engine slot. ComparisonTable + Callout ×2 + CodeBlock.
+
+       21 rows on the SQLAlchemy runtime — 20 pre-named keys plus `sqlalchemy`
+       taking any URL — and 6 + 5 + 21 = 32 = len(_ENGINE_BUILDERS). The 21 is
+       deliberately not a figure in a StatStrip (brief C-24); the structural
+       sentence carries it.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">06</span>
+            <span class="pv-seclabel__text">Engines</span>
+          </div>
+          <h2 class="pv-h pv-h--section">32 engine keys, and a capability
+            gradient between them.</h2>
+          <p class="pv-p">A source type says where data lives. An engine is the
+            runtime Provisa compiles that data's queries into — the thing
+            holding the connectors, executing the plan and owning the
+            materialization store. They are separate registries, which is why
+            Provisa can read a Trino cluster as a source, run on one as an
+            engine, or do both at once against different clusters.</p>
+        </div>
+
+        <div class="pv-stack">
+          <div class="pv-table">
+            <table>
+              <caption class="pv-sr">The three engine classes and what changes between them</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Class</th>
+                  <th scope="col">Keys</th>
+                  <th scope="col">What changes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Federating</th>
+                  <td><code>trino</code> <code>trino-byo</code> <code>pg</code>
+                    <code>duckdb</code> <code>clickhouse</code>
+                    <code>clickhouse-server</code></td>
+                  <td>Read sources in place through connectors. A cross-source
+                    join runs without landing its inputs first</td>
+                </tr>
+                <tr>
+                  <th scope="row">Warehouse</th>
+                  <td><code>snowflake</code> <code>databricks</code>
+                    <code>bigquery</code> <code>fabric</code>
+                    <code>synapse</code></td>
+                  <td>Partial federators. The warehouse executes what it reaches
+                    natively and lands everything else into itself first</td>
+                </tr>
+                <tr>
+                  <th scope="row">SQLAlchemy</th>
+                  <td>One generic runtime, pre-named for twenty databases from
+                    <code>mysql</code> to <code>teradata</code>, and a
+                    <code>sqlalchemy</code> key that takes any URL</td>
+                  <td>No federation connectors at all. Everything lands in the
+                    target store and is federated with plain SQL</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pv-callout">
+            <span class="pv-callout__label">THE GRADIENT</span>
+            <span class="pv-callout__body">Pick a warehouse engine and the
+              claim changes shape. "Swap in Snowflake and nothing copies" is
+              not true — what Snowflake cannot reach natively lands in Snowflake
+              first. The gradient is the honest version and it is the one you
+              can plan against.</span>
+          </div>
+        </div>
+
+        <p class="pv-p">Each engine declares what it can do, and the planner
+          reads those declarations when it decides what to push down and what to
+          pull back. 32 engine keys in total: six federating, five warehouse,
+          and one generic SQLAlchemy runtime pre-named for twenty databases.</p>
+
+        <div class="pv-stack">
+          <div class="pv-callout">
+            <span class="pv-callout__label">PG ENGINE</span>
+            <span class="pv-callout__body">Running the <code>pg</code> engine
+              against your own PostgreSQL means installing the extensions it
+              federates through. The bundles are copied into the server's own
+              library directory, so they need filesystem access to the Postgres
+              host — a managed service that does not give you that, such as
+              Amazon RDS or Cloud SQL, cannot take them; use the extensions the
+              service offers instead. The bundles are built for PostgreSQL 16
+              only, on linux-x64 and darwin-arm64, and anything else is refused
+              by name rather than falling back to a source build.</span>
+          </div>
+          <div class="pv-code">
+<pre>pip install provisa-pg-ext
+provisa pg-ext install --docker my-postgres
+docker restart my-postgres      <span class="pv-code__c"># pg_duckdb loads only at server start</span>
+provisa pg-ext install --docker my-postgres --create</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §8 Column-level lineage. RuledCard ×2.
+
+       The brief's "Lineage in full → /why/lineage" TextLink is omitted: the
+       Lineage page is Phase 2 and does not exist, and shipping the link before
+       its target is an acceptance failure on this issue (page register row
+       11). Add it here when /why/lineage lands.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">07</span>
+            <span class="pv-seclabel__text">Provenance</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Traced from the statement, without
+            running it.</h2>
+          <p class="pv-p">From a single SQL statement — through CTEs,
+            subqueries, joins and inline command calls — Provisa builds the
+            column-level lineage, and merges every statement it has seen into
+            one provenance graph across every view and materialized view in the
+            estate. No execution is required to produce it.</p>
+        </div>
+
+        <div class="pv-grid pv-grid--2">
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">The graph</h3>
+            <div class="pv-ruled__body">One box per relation with its columns as
+              rows, arriving collapsed when it is large, and read through a role
+              you pick on the form — so you can ask what a
+              <em class="pv-emph">particular</em> role's view of provenance
+              looks like, not just the administrator's.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Point in time</h3>
+            <div class="pv-ruled__body">A table can record row-level changes
+              into an append-only delta ledger. From the ledger a materialized
+              view is rebuilt as it stood at an earlier moment, so a report
+              reproduces exactly.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §9 Inspectable plans. CodeBlock.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">08</span>
+            <span class="pv-seclabel__text">Explain</span>
+          </div>
+          <h2 class="pv-h pv-h--section"><code>EXPLAIN</code> on the SQL that
+            actually ran.</h2>
+          <p class="pv-p">A raw SQL statement explains itself the way a GraphQL
+            query does. The plan shows the semantic sources it scanned and how
+            it was routed, and carries the row and cost estimates the target
+            engine already computed — whichever engine that is.
+            <code>EXPLAIN</code> and <code>EXPLAIN ANALYZE</code> run against
+            the governed statement, after row filters and masking, so what you
+            are reading is what your role actually caused.</p>
+        </div>
+
+        <div class="pv-code">
+<pre>EXPLAIN ANALYZE
+SELECT c.name, o.total
+FROM customers c JOIN orders o ON o.customer_id = c.id
+WHERE o.total &gt; 1000;</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §10 Freshness. Accordion, six panels.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">09</span>
+            <span class="pv-seclabel__text">Freshness</span>
+          </div>
+          <h2 class="pv-h pv-h--section">One place decides whether a copy is
+            stale.</h2>
+        </div>
+
+        <div class="pv-stack">
+          <div class="pv-acc">
+            <div class="pv-acc__item">
+              <button class="pv-acc__btn" type="button" aria-expanded="true" aria-controls="fr-1">
+                <span class="pv-acc__title">Time to live</span>
+                <span class="pv-acc__sign" aria-hidden="true"></span>
+              </button>
+              <div class="pv-acc__panel" id="fr-1">
+                <p>Staleness bounded by an interval, set per table.</p>
+              </div>
+            </div>
+            <div class="pv-acc__item">
+              <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="fr-2">
+                <span class="pv-acc__title">Change probe</span>
+                <span class="pv-acc__sign" aria-hidden="true"></span>
+              </button>
+              <div class="pv-acc__panel" id="fr-2" hidden>
+                <p>A query, a version token, or a marker file a producer writes
+                  when new data is ready.</p>
+              </div>
+            </div>
+            <div class="pv-acc__item">
+              <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="fr-3">
+                <span class="pv-acc__title">Change data capture</span>
+                <span class="pv-acc__sign" aria-hidden="true"></span>
+              </button>
+              <div class="pv-acc__panel" id="fr-3" hidden>
+                <p>Row by row, through one path: Debezium topics including
+                  Avro, MongoDB change streams, Kafka, and WebSocket.</p>
+              </div>
+            </div>
+            <div class="pv-acc__item">
+              <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="fr-4">
+                <span class="pv-acc__title">Push signal</span>
+                <span class="pv-acc__sign" aria-hidden="true"></span>
+              </button>
+              <div class="pv-acc__panel" id="fr-4" hidden>
+                <p>Tables fed by a signal refresh when the signal arrives.</p>
+              </div>
+            </div>
+            <div class="pv-acc__item">
+              <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="fr-5">
+                <span class="pv-acc__title">Load-sensitive sources</span>
+                <span class="pv-acc__sign" aria-hidden="true"></span>
+              </button>
+              <div class="pv-acc__panel" id="fr-5" hidden>
+                <p>A steward marks a source load-sensitive and restricts
+                  refresh to an off-peak window, a cadence or a change probe —
+                  for the operational database that cannot absorb heavy
+                  reads.</p>
+              </div>
+            </div>
+            <div class="pv-acc__item">
+              <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="fr-6">
+                <span class="pv-acc__title">Materialized views</span>
+                <span class="pv-acc__sign" aria-hidden="true"></span>
+              </button>
+              <div class="pv-acc__panel" id="fr-6" hidden>
+                <p>A write to a source table marks affected views stale, and a
+                  stale view is not used. Row security applies after the
+                  rewrite, so a stored result never widens what a role can
+                  see.</p>
+              </div>
+            </div>
+          </div>
+          <p class="pv-p pv-p--sm">The table's detail page states the resulting
+            policy in plain words.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §11 Results at size. RuledCard ×3.
+
+       "Starts returning rows before the scan completes, holding one batch in
+       memory" is the mechanism. No latency figure: the brief's "almost at
+       once" was struck as an unmeasured claim (C-33).
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">10</span>
+            <span class="pv-seclabel__text">Results</span>
+          </div>
+          <h2 class="pv-h pv-h--section">A million rows should not need a
+            different API.</h2>
+        </div>
+
+        <div class="pv-grid pv-grid--3">
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Streaming</h3>
+            <div class="pv-ruled__body">pgwire, Flight SQL and gRPC receive rows
+              as the engine produces them. Direct reads use a server-side cursor
+              or an Arrow reader. A million-row scan starts returning rows
+              before the scan completes, holding one batch in memory.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Redirect</h3>
+            <div class="pv-ruled__body">Past a size threshold Provisa writes the
+              result to object storage and returns a presigned link that
+              expires. Parquet and ORC are written by the engine straight to the
+              store, so the data never passes through Provisa. Files are
+              readable only by the user who asked, and are cleaned up when the
+              link expires.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Formats</h3>
+            <div class="pv-ruled__body">JSON keeps the nested shape of the
+              query. NDJSON streams one object per line. Tabular exports come as
+              one flattened table or as normalized tables with their foreign
+              keys, in Parquet or CSV — normalized on the query itself, not by
+              reshaping a serialized response.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §12 Running it. RuledCard ×4 + FigPanel (IMG-04) + Callout.
+
+       The Helm card claims the two things that are complete and not the two
+       that are in progress; the Terraform card claims the AWS cluster and not
+       the per-protocol load-balanced address. The control plane is embedded
+       PostgreSQL from the desktop install up — revision 2 had this backwards
+       (brief C-35, C-36, C-37, C-40).
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+        <div class="pv-rail">
+          <div class="pv-rail__rail">
+            <div class="pv-seclabel">
+              <span class="pv-seclabel__num">11</span>
+              <span class="pv-seclabel__text">Deployment</span>
+            </div>
+            <!-- IMG-04, the kit's `deploy` figure at its own 4/5, in the rail
+                 column the aspect was drawn for. -->
+            <div class="pv-fig pv-fig--get" role="img"
+                 aria-label="Figure 2: four deployment shapes in one figure — a laptop, a single server, a cluster behind a load balancer, and a rack with no network edge.">
+              <span class="pv-fig__label">FIG. 02</span>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:10;--t:78;--w:8"></i>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:22;--t:66;--w:14"></i>
+              <i class="pv-fig__s pv-fig__s--sq pv-fig__s--see" style="--l:40;--t:48;--w:24"></i>
+              <i class="pv-fig__s pv-fig__s--sq pv-fig__s--run" style="--l:58;--t:18;--w:32"></i>
+            </div>
+          </div>
+          <div class="pv-rail__body">
+            <h2 class="pv-h pv-h--section">Same product, same config, same
+              governance, laptop to cluster.</h2>
+            <p class="pv-p">Provisa is stateless in front of its control-plane
+              database, so any number of instances run behind a load balancer.
+              Secondaries read their configuration from the shared database and
+              only the primary writes it. One instance can also run several
+              worker processes sharing the same ports, so every protocol uses
+              all the cores on a machine.</p>
+          </div>
+        </div>
+
+        <div class="pv-grid pv-grid--4">
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Embedded</h3>
+            <div class="pv-ruled__body">A single download driven by
+              <code>start</code>, <code>stop</code>, <code>status</code> and
+              <code>open</code>. Natively, with no Docker: DuckDB as the engine,
+              an embedded <strong>PostgreSQL</strong> control plane, an
+              in-memory cache. No JVM means no Trino — Trino on Docker or an
+              external engine are opt-in choices in the wizard.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Self-hosted</h3>
+            <div class="pv-ruled__body">Docker Compose for a team; a Helm chart
+              for Kubernetes that scales engine workers and validates its own
+              values.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Private cloud</h3>
+            <div class="pv-ruled__body">Terraform modules for GCP, AWS and Azure
+              provision the stack, stage the artifacts and run it under systemd.
+              The AWS path builds a multi-node cluster behind load
+              balancers.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Air-gapped</h3>
+            <div class="pv-ruled__body">No network calls at install time or
+              first launch, and nothing phones home at any point. Local
+              embedding models via Ollama or HuggingFace keep the vector
+              features offline.</div>
+          </div>
+        </div>
+
+        <div class="pv-stack">
+          <div class="pv-callout">
+            <span class="pv-callout__label">WHERE IT RUNS</span>
+            <span class="pv-callout__body">The embedded DuckDB engine is for
+              desktop, edge and development — not for multi-user production. The
+              control plane is a different question and the answer is better:
+              the embedded tier runs <strong>embedded PostgreSQL</strong>, which
+              is the default from the desktop install up, so database-enforced
+              audit-log immutability holds there too. SQLite is a selectable
+              control-plane store and it does not enforce it.</span>
+          </div>
+          <p class="pv-p pv-p--sm">Provisa is self-hosted. You run it on your
+            hardware, in your cloud account, or air-gapped. There is no managed
+            service to buy today.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §13 Conversion. Button + TextLink ×2.
+
+       The band also carries id="contact", which the header, the drawer, the
+       utility bar and the footer all link to for Support and Book a demo —
+       the same arrangement as Home's §11. The demo form beside the copy is
+       that chrome, not this page's conversion: the brief's conversion is the
+       install button, and the page's buyer paths are evaluate and team.
+       ================================================================== -->
+  <section class="pv-contact" id="contact">
+    <div class="pv-contact__inner pv-container">
+      <div class="pv-contact__copy">
+        <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h2 class="pv-h pv-h--cta">Put it on something real.</h2>
+        <div class="pv-row">
+          <a class="pv-btn pv-btn--on-color" href="/install">Install and deploy</a>
+        </div>
+        <div class="pv-contact__links">
+          <a class="pv-link pv-link--inverse" href="/why/governance">How governance
+            compiles<span class="pv-link__arrow"> →</span></a>
+          <a class="pv-link pv-link--inverse" href="/why/interfaces">The interfaces
+            it answers on<span class="pv-link__arrow"> →</span></a>
+        </div>
+      </div>
+      <form class="pv-form" method="post" action="/api/demo">
+        <h3 class="pv-form__title">Book a demo</h3>
+        <div class="pv-form__grid">
+          <label class="pv-sr" for="p-name">Full name</label>
+          <input class="pv-input" id="p-name" name="name" autocomplete="name" placeholder="Full name" required>
+          <label class="pv-sr" for="p-email">Work email</label>
+          <input class="pv-input" id="p-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+        </div>
+        <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+          Licence 1.1 — non-production use (including evaluation) is free
+          forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Active Semantic Layer</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/platform/views">Materialized views</a>
+        <a href="/platform/catalog">Catalog</a>
+        <a href="/why/no-lock-in">No lock-in</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
+        <a href="/vs/starburst">vs Starburst</a>
+        <a href="/vs/denodo">vs Denodo</a>
+        <a href="/vs/hasura">Coming from Hasura</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
+    </div>
+    <div class="pv-footer__bottom">
+      <span>© Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

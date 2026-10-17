@@ -1,0 +1,78 @@
+<!-- LayerRow. Three variants. The tinted row is a link with a mono index and
+     a title; the detail row adds where the layer is enforced and what it
+     does; the list row is a ruled three-column row for a forest band.
+     Tones: default see · pv-layer--get · pv-layer--run · pv-layer--outside. -->
+<a class="pv-layer" href="#">
+  <span class="pv-layer__idx">00</span>
+  <span class="pv-layer__title">Introspection filtering</span>
+</a>
+<a class="pv-layer pv-layer--get" href="#">
+  <span class="pv-layer__idx">03</span>
+  <span class="pv-layer__title">Column masking</span>
+</a>
+<a class="pv-layer pv-layer--run" href="#">
+  <span class="pv-layer__idx">04</span>
+  <span class="pv-layer__title">Predicate guard</span>
+</a>
+
+<!-- The detail variant. A div rather than a link, because the row is the
+     content and there is nowhere to go. Carries the tone and the prose at
+     once, which the list variant below cannot: it has the description but no
+     per-row colour, and only works on a forest band.
+
+     pv-layer--outside is the fourth tone, slate, for a row that belongs in
+     the list but is not one of the three — see --group-outside in tokens.css.
+     Such a row is usually unnumbered: omit .pv-layer__idx entirely and the
+     empty index track still holds, so its title lines up with the numbered
+     rows above it. Do not put a number there to fill the gap. -->
+<div class="pv-stack pv-stack--sm">
+  <div class="pv-layer pv-layer--detail">
+    <span class="pv-layer__idx">00</span>
+    <div class="pv-layer__main">
+      <span class="pv-layer__title">Introspection filtering</span>
+      <span class="pv-layer__where">Schema and catalog generation, per role</span>
+      <span class="pv-layer__desc">Objects outside a role are absent from the
+        schema, the catalog and the browser.</span>
+    </div>
+  </div>
+  <div class="pv-layer pv-layer--detail pv-layer--run">
+    <span class="pv-layer__idx">04</span>
+    <div class="pv-layer__main">
+      <span class="pv-layer__title">Predicate guard</span>
+      <span class="pv-layer__where">validate_sql, pre-execution</span>
+      <span class="pv-layer__desc">A masked column is refused in WHERE and
+        HAVING, at parse time.</span>
+    </div>
+  </div>
+  <div class="pv-layer pv-layer--detail pv-layer--outside">
+    <div class="pv-layer__main">
+      <span class="pv-layer__title">Before execution — the approval hook</span>
+      <span class="pv-layer__where">An ABAC callout, outside the plan</span>
+      <span class="pv-layer__desc">Not one of the numbered layers, and
+        unnumbered on purpose: it is not compiled into anything.</span>
+    </div>
+  </div>
+</div>
+
+<!-- The list variant is white on a forest band, so it ships inside one. Used
+     anywhere else it would be invisible. -->
+<section class="pv-section pv-section--brand-alt pv-section--tight">
+  <div class="pv-container">
+    <div class="pv-layer pv-layer--list">
+      <span class="pv-layer__idx">00</span>
+      <div class="pv-layer__main">
+        <span class="pv-layer__title">Introspection filtering</span>
+        <span class="pv-layer__desc">Schema browsers only ever see what the role
+          is allowed to see.</span>
+      </div>
+    </div>
+    <div class="pv-layer pv-layer--list">
+      <span class="pv-layer__idx">04</span>
+      <div class="pv-layer__main">
+        <span class="pv-layer__title">Predicate guard</span>
+        <span class="pv-layer__desc">A masked column cannot constrain a
+          result.</span>
+      </div>
+    </div>
+  </div>
+</section>

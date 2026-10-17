@@ -1,0 +1,51 @@
+<!-- Schematic. The labelled diagram FigPanel cannot draw: positioned nodes
+     that are real text, and ruled connectors between them that can be named.
+     Added under PRO-19 for /why/data-residency, which needs a region diagram;
+     the component is page-agnostic and this specimen asserts nothing about the
+     product, because the diagram it is drawing is itself.
+
+     Positions are FigPanel's grammar — --l and --w are percentages of the
+     canvas's width, --t of its height, --h of its height for a vertical wire.
+     Aspect: 16/9 by default, pv-schem--tall is 4/3.
+
+     Tones: default is slate, pv-schem__node--see is cobalt, --get forest,
+     --run vermilion. A wire takes pv-schem__wire--v to run vertically and
+     pv-schem__wire--refused to be a refusal rather than a path.
+
+     Two rules for whoever authors a figure with it:
+
+     1. Document order is the reading order. Nothing is aria-hidden and
+        nothing carries an aria-label, so the order the nodes and wires are
+        written in is the order a screen reader gets, and it is the order the
+        stacked form under 640px lays them out in. Write them in the order the
+        figure should be read.
+     2. A node's name belongs in pv-schem__label, not in the prose. The label
+        is the mono name at the group's text cut; pv-schem__desc is one line
+        under it. -->
+<figure class="pv-schem-fig">
+  <div class="pv-schem pv-schem--tall">
+    <div class="pv-schem__node pv-schem__node--see" style="--l:4;--t:4;--w:42">
+      <span class="pv-schem__label">NODE</span>
+      <p class="pv-schem__desc">Positioned in the kit's percentages. Its name is
+        text, not an aria-label.</p>
+    </div>
+
+    <div class="pv-schem__node pv-schem__node--get" style="--l:54;--t:4;--w:42">
+      <span class="pv-schem__label">NODE, SECOND TONE</span>
+      <p class="pv-schem__desc">Four tones: the see, get and run groups, plus
+        the slate default.</p>
+    </div>
+
+    <div class="pv-schem__wire pv-schem__wire--v" style="--l:12;--t:19;--h:48">reads</div>
+
+    <div class="pv-schem__wire pv-schem__wire--v pv-schem__wire--refused" style="--l:62;--t:19;--h:48">refuses by name</div>
+
+    <div class="pv-schem__node" style="--l:4;--t:70;--w:92">
+      <span class="pv-schem__label">CONNECTED NODE</span>
+      <p class="pv-schem__desc">A wire is one element: the rule is its border
+        and the label sits off it. A refusal is a vermilion wire carrying the
+        refusal's own name.</p>
+    </div>
+  </div>
+  <figcaption class="pv-note">FIG. 01 — the component, drawing itself.</figcaption>
+</figure>
