@@ -122,13 +122,22 @@ curl -X PATCH "$PAPERCLIP_API_BASE/api/issues/$ISSUE_ID" \
   -d '{"projectWorkspaceId":"<new workspace id>"}'
 ```
 
-The create returns `201` and the bind reads back the new id. What is not yet
-measured is whether the runner then opens the next run's execution workspace at
-that `cwd`: all 144 execution workspaces in this company to date read `mode:
-shared_workspace`, `strategyType: project_primary`, and the same primary `cwd`,
-and none of them was created after a rebind. Treat the routing as unconfirmed
-until a run reports a `cwd` inside its worktree. The worktree itself isolates
-the git work regardless, which is the half that bites.
+The create returns `201` and the bind reads back the new id, and the runner
+honours the bind. Measured on PRO-67, which was bound to a workspace whose `cwd`
+was a worktree: the run started with `$PAPERCLIP_WORKSPACE_CWD` and `pwd` both
+at the worktree path, `$PAPERCLIP_WORKSPACE_ID` set to the bound workspace id,
+and the company's execution-workspace list carried one row at the worktree
+`cwd`, `sourceIssueId` the bound issue, `providerType: local_fs`, and
+`metadata.workspaceRealization.local.projectWorkspaceId` the bound id. So a
+per-issue checkout needs no instance flag.
+
+Two things to expect while reading it back. The row still reports `mode:
+shared_workspace` and `strategyType: project_primary`, same as the 145 primary
+rows — the labels describe the strategy that resolved the path, not whether the
+path is shared, so read `cwd` to tell the workspaces apart. And
+`currentExecutionWorkspace` on `GET /api/issues/{id}` was `null` during the run
+that owned the row, so confirm routing from
+`GET /api/companies/{companyId}/execution-workspaces` instead.
 
 ### What the branch already covers
 
