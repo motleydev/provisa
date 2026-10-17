@@ -65,76 +65,85 @@ request.
 ## One workspace per issue
 
 Five agents sharing one checkout is how one page build lands on top of another
-page's uncommitted work. Each site issue wants its own, and a child issue
-inherits its parent's, which is how the five came to share one.
+page's uncommitted work. Since 2026-10-17 an issue gets its own two ways: a new
+issue is created isolated, and an issue that predates that can be bound to its
+own checkout by hand.
 
-### Do not reach for `executionWorkspacePreference`
+### Isolation is on, and the issue preference persists
 
-Four fields on `PATCH /api/issues/{issueId}` look like the lever and are not.
-`executionWorkspacePreference` and `executionWorkspaceSettings` are both in the
-documented request body for an endpoint the spec marks `board_or_agent`, both
-pass schema validation, and both are discarded on write. A valid enum value
-returns `200` and reads back `null`; all six of `inherit`, `shared_workspace`,
-`isolated_workspace`, `operator_branch`, `reuse_existing` and `agent_default`
-behave the same way, so the drop is not the isolated-workspace flag gating one
-value. `executionWorkspaceId` and `inheritExecutionWorkspaceFromIssueId` are
-discarded too, and accept an id that matches no row. Garbage in
-`executionWorkspacePreference` does return `400`, which places the loss after
-schema validation and inside persistence.
+`enableIsolatedWorkspaces` and `enableIsolatedWorkspacesByDefault` were both set
+to `true` on 2026-10-17 by a board operator, who read them back to confirm. No
+agent can read them — see the next section — so the behaviour in this section is
+the agent-side evidence that they are on.
+
+With the flags on, `PATCH /api/issues/{issueId}` stores the issue fields that
+used to be discarded. Every row measured 2026-10-17, after the change, against
+this instance:
 
 | Field on `PATCH /api/issues/{issueId}` | Sent | Answer | Fresh `GET` reads |
 | --- | --- | --- | --- |
-| `executionWorkspacePreference` | any of the six enum values | `200` | `null` |
+| `executionWorkspacePreference` | `isolated_workspace` | `200` | `isolated_workspace` |
 | `executionWorkspacePreference` | a value outside the enum | `400 Validation error` | unchanged |
-| `executionWorkspaceSettings` | `workspaceStrategy.type: git_worktree` | `200` | `null` |
-| `executionWorkspaceId` | an id matching no row | `200` | `null` |
+| `executionWorkspaceSettings` | `workspaceStrategy.type: git_worktree` | `200` | the object as sent |
+| `executionWorkspaceId` | an id matching no row | `404 Execution workspace not found` | unchanged |
 | `inheritExecutionWorkspaceFromIssueId` | an id matching no row | `200` | `null` |
 | `projectWorkspaceId` | an id matching no row | `404 Project workspace not found` | unchanged |
 | `projectWorkspaceId` | an id matching a row | `200` | the new id |
 
-The last two rows are the contrast that tells the two groups apart: a field that
-reaches the foreign key answers `404` on a bad id, and a field that is dropped
-answers `200` on one. So the response status of a `PATCH` is not evidence that
-anything was stored — read the field back.
+Before the flags, rows one, three, four and five all answered `200` and read
+back `null`, for every one of the six enum values `inherit`,
+`shared_workspace`, `isolated_workspace`, `operator_branch`, `reuse_existing`
+and `agent_default`. The accept-and-drop was therefore the flag gating
+persistence, not a second defect beside it, and an earlier revision of this
+section that called it a separate defect and said not to reach for the field was
+wrong on both counts. `inheritExecutionWorkspaceFromIssueId` is the one field
+still measured losing a write, and only with an id matching no row — the two
+foreign-key fields beside it answer `404` on one.
 
-This table is the record for the four discarded fields, and the only one. They
-are a defect in the Paperclip control plane rather than in this repository, so
-the `github-issue` skill would file them against `provisa` and the wrong tracker
-would own them. Asked where they should go, the board answered on 2026-10-17 to
-record them here and leave it there. Measured on that date against the live
-instance; re-measure before trusting it across an upgrade.
+That contrast is worth keeping either way: a field that reaches the foreign key
+answers `404` on a bad id, and a field that is dropped answers `200`. The status
+of a `PATCH` is not evidence that anything was stored, so read the field back.
 
-### The instance flags are a default, not a prerequisite
+Three limits on the default:
 
-The flags that would turn on isolated execution —
-`enableIsolatedWorkspaces` and `enableIsolatedWorkspacesByDefault` — sit behind
-`/api/instance/settings/experimental`, which the spec marks
-`x-paperclip-authorization: { actor: "board" }` and which answered `403 Board
-access required` again on 2026-10-17. Every agent in this company holds
-membership role `member`, so no agent escalation path reaches it.
+- It applies when an issue is created. Issues already on the board keep the
+  preference they had — PRO-77 reads `reuse_existing`, and PRO-44 read `null`
+  until it was written.
+- It does not reach a run already in flight. A run that started before the
+  change keeps the workspace it opened with for its whole life.
+- The enum value is a preference recorded on the issue, not a report of where a
+  run landed. Confirm the workspace a run actually got from
+  `GET /api/companies/{companyId}/execution-workspaces`, as below.
 
-Nothing in this document waits on them. The procedure below is measured and
-needs neither flag, so the flags decide only whether isolation is the instance
-default or a per-issue step. The board chose on 2026-10-17 to leave the default
-alone and give an agent board access instead. That is one call, and only a board
-operator can make it:
+### The flags are board-only, and a role grant does not reach them
 
-```sh
-# memberId is access.membership.id on GET /api/agents/me for the agent.
-curl -X PATCH "$PAPERCLIP_API_BASE/api/companies/$COMPANY_ID/members/$MEMBER_ID/role-and-grants" \
-  -H 'Content-Type: application/json' -d '{"membershipRole":"operator"}'
-```
+`/api/instance/settings/experimental` carries both flags, and the spec marks it
+`x-paperclip-authorization: { actor: "board" }`. It answered `403 Board access
+required` to an agent key again on 2026-10-17, after the flags had been set, so
+an agent can neither read the flag state nor change it. The record of their
+state is the board's own read-back and the table above.
 
-`membershipRole` on that endpoint takes `owner`, `admin`, `operator` or
-`viewer`. `member`, the role every agent here holds, is not in that enum, which
-is the second reason an agent cannot raise its own: the endpoint is `board` and
-the current role is not a value it will write back.
+Raising an agent's membership role does not reach them either.
+`PATCH /api/companies/{companyId}/members/{memberId}/role-and-grants` was
+proposed for exactly that and withdrawn on PRO-77, which established two things:
+the authorization check on the experimental endpoint tests for a board session
+rather than for a membership role, and that endpoint's `membershipRole` enum
+(`owner`, `admin`, `operator`, `viewer`) has no entry for `member`, the role
+every agent in this company holds. The grant was never made and should not be. A
+flag change is a board operator in a board session, and nothing else.
 
-### Isolate with a worktree and a project workspace
+### Isolate an existing issue with a worktree and a project workspace
 
-`projectWorkspaceId` is the one workspace field on the issue that is live for an
-agent. Paired with `POST /api/projects/{projectId}/workspaces`, also
-`board_or_agent`, it gives a per-issue checkout with no instance flag involved.
+An issue created before 2026-10-17 does not get the new default, and neither
+does one whose preference reads `shared_workspace` or `reuse_existing`. For
+those, `projectWorkspaceId` is the workspace field on the issue that was live
+for an agent before the flags and is unchanged by them. Paired with
+`POST /api/projects/{projectId}/workspaces`, also `board_or_agent`, it gives a
+per-issue checkout with no instance flag involved.
+
+`scripts/paperclip-issue-workspace.sh` runs the whole of what follows as
+`create`, `status` and `teardown`, including the read-back. The steps are spelled
+out here because the script arrives in its own proposal.
 
 ```sh
 # A worktree, so the shared checkout's HEAD never moves under another run.
