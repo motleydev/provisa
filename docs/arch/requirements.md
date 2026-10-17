@@ -23578,3 +23578,17 @@ page was reviewed before the board called it done.
 **Code:** `docs/ops/site-task-pipeline.md`, `.github/workflows/site-review.yml`
 
 **Tests:** n/a — a constraint on how a site task is delivered.
+
+### REQ-2044 · Issue Binding Routes Execution to Project Workspace {#REQ-2044}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+Binding an issue to a non-primary project workspace via PATCH /api/issues/{id} with projectWorkspaceId routes the next run's execution workspace to that workspace's cwd. The run's $PAPERCLIP_WORKSPACE_CWD and pwd are both the bound worktree path, $PAPERCLIP_WORKSPACE_ID is the bound workspace id, and GET /api/companies/{companyId}/execution-workspaces carries a row at that cwd with sourceIssueId set to the issue and metadata.workspaceRealization.local.projectWorkspaceId set to the bound id. A per-issue checkout does not require the board-only enableIsolatedWorkspaces instance flag.
+
+**Caveat:** The execution-workspace row still reports mode shared_workspace and strategyType project_primary, and currentExecutionWorkspace on GET /api/issues/{id} reads null, so cwd is the field to read.
+
+**Measured:** 2026-10-17
+
+**Code:** `acp-engine/routes.py`, `acp-engine/execution/router.py`
+
+**Tests:** n/a — measured in test instance.
