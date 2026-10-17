@@ -1,0 +1,10 @@
+<!-- Theme toggle. Two states, not three: light is the unconditional default for
+     every first-time visitor regardless of their OS setting (PRO-2 plan
+     revision 2), so there is no "auto" state to hand back. A choice here is
+     written to localStorage under provisa-theme and persists from then on;
+     choosing light again returns the visitor to the default. provisa.js sets
+     aria-pressed. -->
+<div class="pv-theme" role="group" aria-label="Theme">
+  <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+  <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+</div>
