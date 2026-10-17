@@ -41,58 +41,56 @@ jobs:
         with:
           node-version: "22"
 
-      # Each checker prints one PASS/ok line per assertion and exits non-zero on the
-      # first failure, so a red step names the check and its numbers. They are listed
-      # one per step rather than looped so that the failing step name says which
-      # checker failed without opening the log.
-      - name: Struck claims across every page
-        run: node site/verify-claims.mjs
-
-      - name: Design system kit
-        run: node site/design-system/check-kit.mjs
-
-      - name: Token contrast, light and dark
-        run: node site/design-system/check-contrast.mjs
-
-      - name: Page structure — /install
-        run: node site/design-system/check-page-install.mjs
-
-      - name: Page structure — /why/governance
-        run: node site/design-system/check-page-governance.mjs
-
-      - name: Page structure — /why/one-model
-        run: node site/design-system/check-page-one-model.mjs
-
-      - name: Page structure — /vs/starburst
-        run: node site/design-system/check-page-vs-starburst.mjs
-
-      # Two page checkers are Python rather than node. They use the standard library
-      # only — re and html.parser — so they need no more setup than the runner's
-      # python3, and the drift step below globs on the check-/verify- name rather
-      # than on an extension so a checker in a third language cannot hide either.
-      - name: Page structure — /why/interfaces
-        run: python3 site/design-system/check-page-interfaces.py
-
-      - name: Page structure — /platform
-        run: python3 site/design-system/check-page-platform.py
-
-      # A checker that exists and is not wired into this job is the PRO-27 failure
-      # again one level up: green CI that never ran the check. This step discovers
-      # every browserless checker under site/ and fails if one is not named above,
-      # so adding a checker without gating it cannot pass silently. A checker that
-      # imports playwright is the browser half and is excluded by that import.
-      - name: Every browserless checker is gated
+      # The checkers are discovered rather than listed. A hand-written list has to
+      # name a fixed set of files, and the site pages arrive over a stack of PRs that
+      # each add their own checker — so any one list is wrong for every tree but the
+      # one it was written against: it names a checker a branch does not have yet, or
+      # misses one a branch already has. Discovery is also the stronger form of the
+      # PRO-27 guard this job exists for. The old shape ran a fixed list and then
+      # checked separately that no checker had been left off it; finding them means a
+      # new checker is gated the moment it lands, with nothing to keep in step.
+      #
+      # Each checker prints one PASS/ok line per assertion and exits non-zero on its
+      # first failure, so the log names the check and its numbers. Every checker runs
+      # even after one fails, so a red run reports all of them, not just the first.
+      #
+      # A checker that imports playwright is the browser half — it needs Chromium and
+      # a served site/ — and is skipped here by that import. Page checkers come in
+      # both node and Python; the glob is on the check-/verify- name rather than an
+      # extension so a checker in a third language cannot hide, and the interpreter
+      # is chosen per file.
+      - name: Every browserless checker under site/
         run: |
-          missing=0
+          failed=""
+          found=0
           while IFS= read -r f; do
-            if grep -q "playwright" "$f"; then continue; fi
-            if ! grep -q " $f\$" .github/workflows/site-review.yml; then
-              echo "FAIL  $f is a browserless checker that no step in this workflow runs"
-              missing=1
+            if grep -q "playwright" "$f"; then
+              echo "skip  $f (browser half — needs Playwright and a served site/)"
+              continue
+            fi
+            found=$((found + 1))
+            case "$f" in
+              *.py) runner=python3 ;;
+              *)    runner=node ;;
+            esac
+            # The condition of an `if` is exempt from the `-e` this shell runs under,
+            # so a failing checker records itself here instead of ending the step and
+            # hiding every checker after it.
+            echo "::group::$f"
+            if "$runner" "$f"; then
+              echo "::endgroup::"
+              echo "ok    $f"
+            else
+              echo "::endgroup::"
+              echo "FAIL  $f"
+              failed="$failed $f"
             fi
           done < <(find site \( -name 'check-*' -o -name 'verify-*' \) -type f | sort)
-          if [ "$missing" -ne 0 ]; then
-            echo "Add a step for each checker listed above, or give it a playwright import if it is a browser check."
+          if [ -n "$failed" ]; then
+            echo "Failing checkers:$failed"
             exit 1
           fi
-          echo "ok    every browserless checker under site/ has a step"
+          # Zero is reported rather than assumed green: before the design-system kit
+          # lands there is genuinely nothing browserless under site/ to run, and a
+          # silent pass would read the same as a pass that checked something.
+          echo "ok    $found browserless checker(s) under site/ passed"
