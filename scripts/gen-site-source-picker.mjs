@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Generates the marketing site's rendering of the product's source-type picker and writes it into
-// site/index.html and site/why/sources.html between the `source-picker` marker comments, and writes
+// site/why/sources.html between the `source-picker` marker comments, and writes
 // the counts it makes ("65 connectors", "80+ kinds of source") wherever a page or document states
 // them (COUNTED).
 //
@@ -147,7 +147,11 @@ export async function renderPicker() {
   };
 }
 
-const PAGES = ["site/index.html", "site/why/sources.html"];
+// The picker's only home. It was also on site/index.html, whose markers the rebrand's new Home does
+// not carry: the home page's reach section is now three ruled cards and a figure strip, and the full
+// source list lives on /why/sources (PRO-10). splice() throws on a page with no markers, so a page
+// that stops hosting the picker has to leave this list rather than silently keep a stale fragment.
+const PAGES = ["site/why/sources.html"];
 const START = "<!-- source-picker:start -->";
 const END = "<!-- source-picker:end -->";
 
