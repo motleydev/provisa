@@ -70,7 +70,7 @@ inherits its parent's, which is how the five came to share one.
 
 ### Do not reach for `executionWorkspacePreference`
 
-Two fields on `PATCH /api/issues/{issueId}` look like the lever and are not.
+Four fields on `PATCH /api/issues/{issueId}` look like the lever and are not.
 `executionWorkspacePreference` and `executionWorkspaceSettings` are both in the
 documented request body for an endpoint the spec marks `board_or_agent`, both
 pass schema validation, and both are discarded on write. A valid enum value
@@ -82,22 +82,59 @@ discarded too, and accept an id that matches no row. Garbage in
 `executionWorkspacePreference` does return `400`, which places the loss after
 schema validation and inside persistence.
 
-The instance flags that would turn on isolated execution —
+| Field on `PATCH /api/issues/{issueId}` | Sent | Answer | Fresh `GET` reads |
+| --- | --- | --- | --- |
+| `executionWorkspacePreference` | any of the six enum values | `200` | `null` |
+| `executionWorkspacePreference` | a value outside the enum | `400 Validation error` | unchanged |
+| `executionWorkspaceSettings` | `workspaceStrategy.type: git_worktree` | `200` | `null` |
+| `executionWorkspaceId` | an id matching no row | `200` | `null` |
+| `inheritExecutionWorkspaceFromIssueId` | an id matching no row | `200` | `null` |
+| `projectWorkspaceId` | an id matching no row | `404 Project workspace not found` | unchanged |
+| `projectWorkspaceId` | an id matching a row | `200` | the new id |
+
+The last two rows are the contrast that tells the two groups apart: a field that
+reaches the foreign key answers `404` on a bad id, and a field that is dropped
+answers `200` on one. So the response status of a `PATCH` is not evidence that
+anything was stored — read the field back.
+
+This table is the record for the four discarded fields, and the only one. They
+are a defect in the Paperclip control plane rather than in this repository, so
+the `github-issue` skill would file them against `provisa` and the wrong tracker
+would own them. Asked where they should go, the board answered on 2026-10-17 to
+record them here and leave it there. Measured on that date against the live
+instance; re-measure before trusting it across an upgrade.
+
+### The instance flags are a default, not a prerequisite
+
+The flags that would turn on isolated execution —
 `enableIsolatedWorkspaces` and `enableIsolatedWorkspacesByDefault` — sit behind
 `/api/instance/settings/experimental`, which the spec marks
-`x-paperclip-authorization: { actor: "board" }` and which answers `403 Board
-access required`. Every agent in this company is role `general` with an empty
-chain of command, so no agent escalation path reaches it. Turning the flags on
-is a board action, tracked on PRO-44. Note that the flags alone will not make
-the two issue fields persist; those are a separate defect on the same issue.
+`x-paperclip-authorization: { actor: "board" }` and which answered `403 Board
+access required` again on 2026-10-17. Every agent in this company holds
+membership role `member`, so no agent escalation path reaches it.
+
+Nothing in this document waits on them. The procedure below is measured and
+needs neither flag, so the flags decide only whether isolation is the instance
+default or a per-issue step. The board chose on 2026-10-17 to leave the default
+alone and give an agent board access instead. That is one call, and only a board
+operator can make it:
+
+```sh
+# memberId is access.membership.id on GET /api/agents/me for the agent.
+curl -X PATCH "$PAPERCLIP_API_BASE/api/companies/$COMPANY_ID/members/$MEMBER_ID/role-and-grants" \
+  -H 'Content-Type: application/json' -d '{"membershipRole":"operator"}'
+```
+
+`membershipRole` on that endpoint takes `owner`, `admin`, `operator` or
+`viewer`. `member`, the role every agent here holds, is not in that enum, which
+is the second reason an agent cannot raise its own: the endpoint is `board` and
+the current role is not a value it will write back.
 
 ### Isolate with a worktree and a project workspace
 
 `projectWorkspaceId` is the one workspace field on the issue that is live for an
-agent: a non-existent id answers `404 Project workspace not found`, so the write
-reaches the foreign key instead of the floor. Paired with
-`POST /api/projects/{projectId}/workspaces`, also `board_or_agent`, it gives a
-per-issue checkout without the flag.
+agent. Paired with `POST /api/projects/{projectId}/workspaces`, also
+`board_or_agent`, it gives a per-issue checkout with no instance flag involved.
 
 ```sh
 # A worktree, so the shared checkout's HEAD never moves under another run.
