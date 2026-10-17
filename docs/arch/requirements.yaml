@@ -81730,3 +81730,18 @@
     Then after the anchor wait the step is shown stuck, with Retry, Skip and Exit'
   related_reqs: [REQ-1945, REQ-2010]
   notes: 'Maintainer through the lead, 2026-10-13: the Data Quality deep dive hung on --demo weblogs; a step whose target never appears fails visibly, never hangs; each tour declares its prerequisites, checked when the menu opens against what the current org has; refined to: when a tour''s prerequisites are unmet, remove that option from the menu, no disabled entry and no explanation; nobody restores prerequisites, so the check is evaluated when the menu opens and nothing watches for them. Found while fixing the alpha.481 core UI lane: the e2e tour-profiler-step failures were not changed titles but a step that opened the editor and clicked the read view''s Quality tab as it went away (the editor then opened on Identity and the profiler panel never came), and the stuck notice sat under the earlier step''s card; the tour-deep-dives failures were the menu''s test id on Mantine''s box-less Modal root; the uncaught browser error was FormField handing withAsterisk to a Switch.'
+- id: REQ-2014
+  status: proposed
+  since: 2026-10
+  group: 0. Architecture & Design Principles
+  category: Marketing & Design System
+  priority: MUST
+  type: constraint
+  feature: marketing-cta-ladder-standardization
+  description: 'The marketing site has a single CTA ladder with three fixed rungs, written in site/design-system/README.md under "The CTA ladder" so pages source labels from the kit rather than copy: (1) Primary—download-and-register: "Download Provisa" to /install and "Get a free licence" to /register as one rung (the licence is free, a registration artifact, does not gate functionality per REQ-1137); (2) Secondary—contact path: "Book a demo" to page-closing band''s demo form at #contact (alternative to installing, never the only action); (3) No page links cloud.provisa.dev as a way to run Provisa, in any tense; "coming soon" and "in development" are not available; no managed-hosting SKU (go-to-market is licence sales per docs/marketing.md). Label specimens are propagation sources; the rule lives in the kit and per-page checkers, not only in plan revisions.'
+  use_case: 'A new page reads CTA labels from site/design-system/README.md; no label escapes into specimen code that later spreads to other pages.'
+  code:
+  - site/design-system/README.md
+  - site/design-system/check-page-platform.py
+  related_reqs: [REQ-1137]
+  notes: 'PRO-24 design decision (commit 4d0a151c3): after PRO-2 revision 3 withdrew the hosted trial from the shared header, the kit''s ContactBand and Button specimens still held "Start a free trial" → cloud.provisa.dev, and /platform copied the label from the specimen weeks later. The rule must live in the specimens and the per-page checkers, not only in a plan revision. Proposed, not complete, for two reasons: the Content Manager''s replacement copy is awaiting sign-off against docs/claim-audit.md, and rung 1''s primary route /install does not exist yet (PRO-17; seven links on three pages already wait on it, the highest count in check-kit.mjs''s owed list, with /dl/<platform> the download that resolves today). Rung 3 is already enforced and is not in question.'
