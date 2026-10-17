@@ -128,7 +128,7 @@ A metric is a named, governed aggregate with its own definition. You write it on
 The business glossary maps plain-language terms to the physical fields behind them. Terms can be derived from column names or written by hand, scoped to one or more domains, related to other terms, and owned by a curator. A term with relationships cannot be deleted. Reading the glossary and administering it are separate rights.
 { #glossary-tags-ontology-terms }
 
-Tags come from one org-wide registry. A tag can apply to sources, tables, columns or relationships, can take a parameter such as the entity a column holds, and is assigned by people rather than automatically. A few system tags have fixed meaning, and the deprecated tag works on any model object. Tags travel with metadata exports and show up in catalog comments.
+Tags come from one org-wide registry. A tag can apply to sources, tables, columns or relationships, can take a parameter such as the entity a column holds, and is assigned by people rather than automatically. A few system tags have fixed meaning. The deprecated tag works on sources, tables and views, columns and relationships; extending it to metrics, commands, roles and row-level rules is in progress (REQ-1979). Tags travel with metadata exports and show up in catalog comments.
 { #glossary-tags-ontology-tags }
 
 The glossary and the tag graph are data. Terms, their physical references and relationships, and every tag assignment can be queried like any other table in the meta domain, so a report or an agent can ask what a column means or what is tagged sensitive.
@@ -615,7 +615,7 @@ A graph visible in Provisa can be exported to a real Neo4j instance. Nodes and r
 
 **Available**
 
-Provisa exposes a Model Context Protocol server, so agents such as Claude Desktop can discover the catalog and run governed queries. An agent can also propose a new source or table for a human to approve, but never creates one itself. An optional tool exposes an external decision-evaluation service when its key is configured, and agents can run Cypher under the caller's role.
+Provisa exposes a Model Context Protocol server, so agents such as Claude Desktop can discover the catalog and run governed queries. An agent can also propose a new source or table, and the proposal lands in the creation-request queue for a human to approve. When the caller's own role already holds the registration capability, the agent may register it directly instead, after the user confirms in the same conversation; it never exceeds that role. An optional tool exposes an external decision-evaluation service when its key is configured, and agents can run Cypher under the caller's role.
 { #mcp-server-tools }
 
 The desktop build turns on a local MCP server, bound to loopback. The Explore page gives a copy-ready Claude Desktop configuration with a connect URL that is aware of proxies, and the bundled bridge needs no Node install. The local connector speaks plain HTTP, with optional TLS for public deployments.
@@ -713,7 +713,7 @@ Some sources, such as files, SharePoint and Splunk, are reached through a bundle
 
 **Available**
 
-Provisa can serve a repeated request from a stored result, but only when the request asks for it. A GraphQL query opts in with a directive, a Cypher query with a comment line, and a gRPC call with request metadata. Without it, the request neither reads nor writes the cache. Every response says whether it was a hit or a miss. A hit is a real route in the planner, not a side check, so a cached answer skips execution entirely. The store is Redis when configured and an embedded fallback otherwise.
+Provisa can serve a repeated request from a stored result, but only when the request asks for it. A GraphQL query opts in with a directive, a Cypher query with a comment line, a SQL statement with a comment line on pgwire, Flight SQL and SQL over HTTP, a REST or JSON:API call with a request header, and a gRPC call with request metadata. Without it, the request neither reads nor writes the cache. Every response says whether it was a hit or a miss. A hit is a real route in the planner, not a side check, so a cached answer skips execution entirely. The store is Redis when configured and an embedded fallback otherwise.
 { #response-caching-store-and-opt-in }
 
 How long a result lives is set at the most specific level that has an opinion: the table, then the source, then the deployment. A table can also set a different tolerance per role, so a trader sees live data while an analyst accepts a few minutes of staleness. Any mutation to a table drops the cached results that read it.
