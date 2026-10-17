@@ -1,9 +1,15 @@
 name: Deploy Site
 
-# Builds the MkDocs docs into site/docs and deploys the provisa.dev Cloudflare
-# Pages project (marketing landing + /docs). exclude_docs in mkdocs.yml keeps
+# Builds the MkDocs docs into site/docs and deploys them, with the marketing
+# landing page, to Cloudflare Pages. exclude_docs in mkdocs.yml keeps
 # internal-only pages (requirements traceability, GTM/competitor, private
 # multi-tenant/SaaS) out of the published site.
+#
+# Which Pages project it deploys to is per-repository: the repository variable
+# CLOUDFLARE_PAGES_PROJECT, passed as --project-name. wrangler resolves the
+# project as `--project-name ?? config.name`, so passing it overrides
+# site/wrangler.jsonc's `name` (provisa-dev, bound to provisa.dev) and a fork
+# publishes to its own project rather than over the upstream production site.
 on:
   push:
     branches: [main]
@@ -51,4 +57,12 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx --yes wrangler pages deploy --branch=main --commit-dirty=true
+          PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+        run: |
+          # Required, with no default on purpose: falling back to wrangler.jsonc's
+          # `name` would publish this repository's main over provisa.dev.
+          if [[ -z "$PAGES_PROJECT" ]]; then
+            echo "::error::Repository variable CLOUDFLARE_PAGES_PROJECT is unset. Set it to the Cloudflare Pages project this repository publishes to (upstream: provisa-dev, bound to provisa.dev). A fork must name its own project, created with 'wrangler pages project create <name> --production-branch main'."
+            exit 1
+          fi
+          npx --yes wrangler pages deploy --project-name "$PAGES_PROJECT" --branch=main --commit-dirty=true
