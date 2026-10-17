@@ -13,8 +13,10 @@
 //
 // Source of truth: demo/named/<name>/demo.yaml -- title, description, screenshot (a file beside
 // it), published (true or false). A demo with published: false has no card; a published one
-// needs all four. Its "Open live demo" button opens LIVE_DEMO_URL + <name>: the no-signup sandbox
-// of that demo on cloud.provisa.dev, which the cloud deployment serves.
+// needs all four. Its "Open the hosted demo" button opens LIVE_DEMO_URL + <name>: the no-signup
+// sandbox of that demo on cloud.provisa.dev, which the cloud deployment serves. Each card says so
+// in a demo-note, because cloud.provisa.dev hosts the demo and not the product -- Provisa itself
+// is self-hosted software, and a CTA that reads "live demo" on a managed domain implies otherwise.
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -77,7 +79,8 @@ export function render() {
       `  <div class="demo-body">`,
       `    <h2>${esc(d.title)}</h2>`,
       `    <p>${esc(d.description)}</p>`,
-      `    <a class="btn btn-primary" href="${LIVE_DEMO_URL}${encodeURIComponent(d.name)}" target="_blank" rel="noopener">Open live demo</a>`,
+      `    <p class="demo-note">This demo runs on our infrastructure. Provisa itself is self-hosted software.</p>`,
+      `    <a class="btn btn-primary" href="${LIVE_DEMO_URL}${encodeURIComponent(d.name)}" target="_blank" rel="noopener">Open the hosted demo</a>`,
       `  </div>`,
       `</article>`,
     ].join("\n"),
