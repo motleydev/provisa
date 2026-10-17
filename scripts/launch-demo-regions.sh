@@ -8,17 +8,13 @@
 # The new local platform makes this light and Docker-free:
 #   - ONE embedded Postgres (pgserver) is the shared model store AND both regions' stores (per the
 #     REQ-1922 amendment, the two regions share one instance; region-qualified schema/cache names
-#     keep them from colliding -- that naming is replica-layout-2's work on regions-3c);
+#     keep them from colliding);
 #   - each node runs its own DuckDB engine;
 #   - ONE shared fakeredis TCP server is the cache for both.
 #
 # Instances & isolation (CLAUDE.md): this is its OWN instance, "demo-regions". It NEVER touches
 # local-dev -- not its ports (API 8001, MCP 8009, pgwire 5439, vite 5173), not ~/.provisa/demo, not
 # its processes -- nor demo-snowflake-live (8200/3200). Its ports and data dir are its own.
-#
-# PROOF IS BLOCKED until replica-layout-2's region-qualified naming lands on regions-3c: until then
-# two regions on one Postgres collide. This script is scaffolded and reviewed; do not run the proof
-# (or the --test spec harness) before that message. `--check` validates the layout without launching.
 #
 # Usage:
 #   scripts/launch-demo-regions.sh            # start the demo-regions instance (foreground logs tail)
