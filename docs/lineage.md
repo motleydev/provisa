@@ -27,21 +27,27 @@ JOIN   enrich_grpc_set('main.public.orders') e ON o.id = e.id
 This statement produces three output columns. The graph for `geo_u` looks like:
 
 ```text
-orders.geo  ──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
-orders.id   ─╮                                              (taint closure)
-orders.region ─╯
+main.public.orders.id     ─╮
+main.public.orders.region ─╯──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
+                              (taint closure over the declared input contract)
 ```
 
-- `orders.id`, `orders.region`, and `orders.geo` are **source** nodes (the narrow input contract
-  of `enrich_grpc_set` declares `id` and `region`; the full taint-closure connects all declared
-  inputs to all outputs). [tool-verified: `_splice_commands` in graph.py:223-242]
+- `main.public.orders.id` and `main.public.orders.region` are **source** nodes — the narrow input
+  contract of `enrich_grpc_set`, qualified from the relation named in the call. `geo` is a declared
+  *output* of the command, so `orders.geo` is not a node: nothing upstream of `e.geo` exists except
+  the declared inputs. The closure connects every declared input to every declared output, so
+  `e.embedding` carries the same two edges. [tool-verified: `_splice_commands` in graph.py:266-285;
+  `POST /admin/lineage/graph` called on this statement, 16 October 2026 — eight nodes and seven
+  edges, with `main.public.orders.{id,region}` the only nodes upstream of `e.geo` and `e.embedding`]
 - `e.embedding` and `e.geo` are **command** nodes — the `enrich_grpc_set` boundary.
 - `geo_u` is a **derived** node produced by the `UPPER` SQL function.
+- `orders.id` is also a source node, from `o.id` in the select list — the alias-qualified form,
+  distinct from the command's `main.public.orders.id`.
 
 The command boundary is **not opaque**. Because `enrich_grpc_set` declares its input columns
 (`id`, `region`) and output columns (`id`, `embedding`, `geo`), the lineage engine splices the
 taint closure continuously from the source relation's declared columns to each output.
-[tool-verified: `_splice_commands` and `_input_relation` in graph.py:245-271]
+[tool-verified: `_splice_commands` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 ### Node kinds and visual cues
 
@@ -74,14 +80,54 @@ An edge from a command call is rendered as a dashed purple line in the UI.
 
 ## Federation-wide graph (REQ-1161)
 
-The federation graph merges every registered MV's per-statement lineage into one provenance graph.
-Node identity is `relation.column` — a view's output column and another view's input reference
-to the same column collapse to one node. The result is a single DAG from base source columns to
-every derived dataset in the platform. [tool-verified: `build_federation_graph` in merge.py:205-229
-and `qualify_outputs` in graph.py:275-299]
+The federation graph merges the per-statement lineage of every registered view and materialized
+view into one provenance graph. Node identity is `relation.column` — a view's output column and
+another view's input reference to the same column collapse to one node. The result is a single DAG
+from base source columns to every derived dataset in the platform. The MV registry contributes no
+nodes of its own; it marks which of those relations are materialization boundaries, so cycle
+characterization sees the version cuts. [tool-verified: `_registry_views` in lineage_router.py,
+`build_federation_graph` in merge.py:205-229, `qualify_outputs` in graph.py:275-299]
 
 Use `focus`, `direction`, and `depth` to scope the view at federation scale without recomputing
 the graph. [tool-verified: `slice_graph` in merge.py:160-189]
+
+A registered relation that nothing derives from, and that derives from nothing, still appears — as
+one isolated `source` node per column (REQ-1626). Absence from this graph therefore reads as *not
+reachable*, never as *not derived*. Registered relations are also handed to the parser as known
+relations, so a bare table reference in a view's SQL stitches to the registered relation instead of
+standing as a second node for the same data; a bare name matching more than one registered relation
+is left unstitched rather than guessed. [tool-verified: `_with_registry_columns` in
+lineage_router.py, `_bare_to_full` in merge.py]
+
+### How it is rendered (REQ-1627)
+
+A federation-wide graph carries more nodes than a column-per-node render can show, so it arrives
+**collapsed**: one node per relation, labelled with its column count, expanded per relation on
+click, with expand-all and collapse-all for the whole graph. An edge between two collapsed
+relations rolls up into one edge carrying the count of columns it stands for. The same graph opens
+in a near-fullscreen modal that shares collapse state with the inline panel, so opening it
+continues the trace rather than restarting it. [tool-verified: `LineageDag.tsx`, `LineagePage.tsx`]
+
+### Reading the graph through a role (REQ-1625, REQ-1628)
+
+The federation graph is read through a role, picked on the lineage form itself rather than taken
+from the NavBar role picker: the NavBar picks which of the user's own roles they act as, this picks
+whose data is being analysed. The `roles` parameter names **any** role in the organisation,
+including roles the caller does not hold, because the analytic use is exactly to read the federation
+from another role's vantage point. No selection means every role.
+
+**It is a lens, not a redaction.** The columns the named roles can query *seed* the graph, and the
+walk from those seeds runs **upstream and unrestricted** — every ancestor of a seed is returned in
+full, whether or not that role could query it. What is reachable only *downstream* of the seeds
+belongs to another role's perspective and is cut. The `domains` filter likewise restricts which
+relations may **seed**, never which may be an ancestor, so a chain that crosses an unchecked domain
+is not severed. A cycle survives the cut only when the whole loop is inside the perspective.
+
+Because reading the federation through an arbitrary role discloses which columns that role can
+query — the same disclosure `visible_to` is — the perspective carries the right that governance
+metadata carries: `view_governance`. Without it, the role picker and the Complete Lineage control
+are absent. [tool-verified: `ancestor_closure` and `_role_seeds` in merge.py:215-234 and
+lineage_router.py:191-214, `require_capability_request` at lineage_router.py:287]
 
 ## Cycles (REQ-1161)
 
@@ -102,7 +148,10 @@ means two views reference each other with no snapshot in between.
 
 ## API
 
-Both endpoints are **static** — they read definitions and contracts, not data.
+Both endpoints are **static** — they read definitions and contracts, not data. Both require the
+`view_governance` capability: a provenance graph names columns, and column names are themselves
+disclosure. [tool-verified: `require_capability_request(request, "view_governance")` at
+lineage_router.py:117 and :287]
 
 ### POST /admin/lineage/graph
 
@@ -121,46 +170,70 @@ Content-Type: application/json
 [tool-verified: `lineage_graph` endpoint at lineage_router.py:45-54, LineageGraphRequest model at
 lineage_router.py:29-31]
 
-Response shape [tool-verified: `LineageGraph.to_dict` in graph.py:82-105]:
+The whole response for that statement — six nodes and four edges, printed as the endpoint returned
+it [tool-verified: `POST /admin/lineage/graph` called over HTTP on a running instance with the
+shipped `enrich_grpc_set` command registered (`config/provisa.yaml`: inputs `id` and `region`,
+outputs `id`, `embedding`, `geo`), sqlglot 30.9.0, 16 October 2026; shape is
+`LineageGraph.to_dict` in graph.py:82-105]:
 
 ```json
 {
   "nodes": [
-    {"id": "orders.id", "column": "id", "relation": "orders", "kind": "source", "materialized": false}
+    {"id": "id", "column": "id", "relation": null, "kind": "derived", "materialized": false},
+    {"id": "orders.id", "column": "id", "relation": "orders", "kind": "source", "materialized": false},
+    {"id": "embedding", "column": "embedding", "relation": null, "kind": "derived", "materialized": false},
+    {"id": "e.embedding", "column": "embedding", "relation": "e", "kind": "command", "materialized": false},
+    {"id": "main.public.orders.id", "column": "id", "relation": "main.public.orders",
+     "kind": "source", "materialized": false},
+    {"id": "main.public.orders.region", "column": "region", "relation": "main.public.orders",
+     "kind": "source", "materialized": false}
   ],
   "edges": [
-    {
-      "source": "orders.id",
-      "target": "e.id",
-      "transform": "enrich_grpc_set(...)",
-      "ops": [{"name": "enrich_grpc_set", "kind": "command"}]
-    }
+    {"source": "orders.id", "target": "id", "transform": "o.id",
+     "ops": [{"name": "id", "kind": "identity", "args": []}]},
+    {"source": "e.embedding", "target": "embedding", "transform": "e.embedding",
+     "ops": [{"name": "embedding", "kind": "identity", "args": []}]},
+    {"source": "main.public.orders.id", "target": "e.embedding", "transform": "enrich_grpc_set(...)",
+     "ops": [{"name": "enrich_grpc_set", "kind": "command", "args": []}]},
+    {"source": "main.public.orders.region", "target": "e.embedding", "transform": "enrich_grpc_set(...)",
+     "ops": [{"name": "enrich_grpc_set", "kind": "command", "args": []}]}
   ],
   "outputs": ["id", "embedding"]
 }
 ```
+
+Two forms of source id appear, and they are different nodes. `orders.id` is the select list's
+`o.id`, read through the alias. A command's declared inputs are qualified from the literal relation
+argument of the call instead, so they arrive as `main.public.orders.id` and
+`main.public.orders.region`. The two `enrich_grpc_set` edges are the taint closure: every declared
+input of the call, onto the one command output this statement selects. `e.id` is in the join
+condition and never traversed, so it is not a node here.
 
 Returns HTTP 422 when the SQL cannot be parsed.
 [tool-verified: lineage_router.py:51-54]
 
 ### GET /admin/lineage/federation
 
-Returns the merged provenance graph over all MVs in the registry.
+Returns the merged provenance graph over every registered view and materialized view. Requires
+`view_governance`.
 
 ```http
 GET /admin/lineage/federation
 GET /admin/lineage/federation?focus=orders.id&direction=downstream&depth=3
+GET /admin/lineage/federation?roles=analyst_eu&domains=sales,finance
 ```
 
-[tool-verified: `federation_graph` endpoint at lineage_router.py:73-98]
+[tool-verified: `federation_graph` endpoint at lineage_router.py:275-339]
 
-Query parameters [tool-verified: function signature at lineage_router.py:73-76]:
+Query parameters [tool-verified: function signature at lineage_router.py:275-283]:
 
 | Parameter | Values | Default | Effect |
 | --- | --- | --- | --- |
 | `focus` | A node id | — | Scope the response to the sub-graph around this node |
 | `direction` | `upstream` \| `downstream` \| `both` | `both` | Which direction to traverse from `focus` |
 | `depth` | integer | unbounded | Maximum hop distance from `focus` |
+| `domains` | Comma-separated domain ids | every domain | Restrict which relations may **seed** the graph. Never restricts which may be an ancestor |
+| `roles` | Comma-separated role names | every role | The perspective the graph is read from: the columns those roles can query seed it, and the walk runs upstream from there. Any role in the org, not only one the caller holds |
 
 Response is the same shape as the statement graph, with a `cycles` field added
 [tool-verified: `MergedGraph.to_dict` in merge.py:60-64]:
