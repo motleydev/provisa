@@ -28,21 +28,16 @@ JOIN   enrich_grpc_set('main.public.orders') e ON o.id = e.id
 Esta declaração produz três colunas de saída. O grafo para `geo_u` se parece com:
 
 ```text
-orders.geo  ──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
-orders.id   ─╮                                              (taint closure)
-orders.region ─╯
+main.public.orders.id     ─╮
+main.public.orders.region ─╯──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
+                              (taint closure over the declared input contract)
 ```
 
-- `orders.id`, `orders.region` e `orders.geo` são nós de **fonte** (o contrato de entrada estreito
-  de `enrich_grpc_set` declara `id` e `region`; o fechamento de contaminação completo conecta todas
-  as entradas declaradas a todas as saídas). [tool-verified: `_splice_commands` in graph.py:223-242]
-- `e.embedding` e `e.geo` são nós de **command** — a fronteira `enrich_grpc_set`.
-- `geo_u` é um nó **derivado** produzido pela função SQL `UPPER`.
+- `main.public.orders.id` e `main.public.orders.region` são **source** nodes — o input contract estreito de `enrich_grpc_set`, qualificado a partir da relação nomeada na chamada. `geo` é um *output* declarado do comando, portanto `orders.geo` não é um node: nada upstream de `e.geo` existe exceto os inputs declarados. O closure conecta cada input declarado a cada output declarado, portanto `e.embedding` carrega os mesmos dois edges. [tool-verified: `_splice_commands` in graph.py:266-285; `POST /admin/lineage/graph` called on this statement, 16 October 2026 — eight nodes and seven edges, with `main.public.orders.{id,region}` the only nodes upstream of `e.geo` and `e.embedding`]
+- `e.embedding` e `e.geo` são **command** nodes — o boundary de `enrich_grpc_set`.
+- `geo_u` é um **derived** node produzido pela função SQL `UPPER`.
+- `orders.id` também é um source node, de `o.id` na lista de seleção — a forma qualificada por alias, distinta do `main.public.orders.id` do comando.
 
-A fronteira do command **não é opaca**. Como `enrich_grpc_set` declara suas colunas de entrada
-(`id`, `region`) e colunas de saída (`id`, `embedding`, `geo`), o motor de lineage emenda o
-fechamento de contaminação continuamente das colunas declaradas da relação de fonte até cada saída.
-[tool-verified: `_splice_commands` and `_input_relation` in graph.py:245-271]
 
 ### Tipos de nó e pistas visuais
 
@@ -68,7 +63,7 @@ Anéis adicionais em um nó:
 Toda aresta carrega a expressão SQL bruta que produz a coluna de destino, mais uma lista de
 operações nomeadas: funções SQL (`sql_function`), operadores aritméticos/lógicos (`operator`),
 commands registrados (`command`), referências simples de coluna (`identity`) e literais (`constant`).
-[tool-verified: TransformOp and name_transform in graph.py:36-145]
+[tool-verified: TransformOp and name_transform in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 Uma aresta vinda de uma chamada de command é renderizada como uma linha roxa tracejada na UI.
 [tool-verified: LineageDag.tsx:122-124]
@@ -79,7 +74,7 @@ O grafo de federação funde o lineage por declaração de cada MV registrada em
 A identidade do nó é `relation.column` — a coluna de saída de uma exibição e a referência de entrada de outra
 exibição à mesma coluna colapsam em um só nó. O resultado é um único DAG das colunas de fonte base até
 cada conjunto de dados derivado na plataforma. [tool-verified: `build_federation_graph` in merge.py:205-229
-and `qualify_outputs` in graph.py:275-299]
+and `qualify_outputs` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 Use `focus`, `direction` e `depth` para delimitar a exibição em escala de federação sem recomputar
 o grafo. [tool-verified: `slice_graph` in merge.py:160-189]
@@ -122,7 +117,7 @@ Content-Type: application/json
 [tool-verified: `lineage_graph` endpoint at lineage_router.py:45-54, LineageGraphRequest model at
 lineage_router.py:29-31]
 
-Formato da resposta [tool-verified: `LineageGraph.to_dict` in graph.py:82-105]:
+Formato da resposta [tool-verified: `LineageGraph.to_dict` in graph.py:266-285 and `_input_relation` in graph.py:307-317]:
 
 ```json
 {

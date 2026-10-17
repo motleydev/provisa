@@ -126,7 +126,7 @@ Argumente: `sourceId`, `domainId`, `schemaName`, `tableName`, `cacheTtl`, `prefe
 
 #### `columnDependents(tableId: String!, renamed: [String!], removed: [String!]) → [ColumnDependentsType!]!`
 
-Artefakte, die eine anstehende Alias-Umbenennung oder ein Spalten-Drop brechen würde. Beratend — die Admin-UI zeigt dies vor dem Speichern an, und der Administrator entscheidet. Muss *vor* dem Speichern aufgerufen werden, da die Abhängigen gegen den aktuell von der Spalte getragenen exponierten Namen verfasst wurden. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1301-1331`]
+Artefakte, die eine anstehende Alias-Umbenennung oder ein Spalten-Drop brechen würde. Beratend — die Admin-UI zeigt dies vor dem Speichern an, und der Administrator entscheidet. Muss *vor* dem Speichern aufgerufen werden, da die Abhängigen gegen den aktuell von der Spalte getragenen exponierten Namen verfasst wurden. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1939-1972`]
 
 ---
 
