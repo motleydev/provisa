@@ -23,6 +23,12 @@
 /styles.css
   Cache-Control: public, max-age=0, must-revalidate
 
+# The design system's stylesheets, script and partials have stable filenames
+# for the same reason, so they revalidate too. Its webfonts do not: they live
+# under /assets/ with a content hash in the name and cache forever.
+/design-system/*
+  Cache-Control: public, max-age=0, must-revalidate
+
 /
   Cache-Control: public, max-age=0, must-revalidate
 

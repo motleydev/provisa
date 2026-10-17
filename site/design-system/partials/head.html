@@ -1,0 +1,39 @@
+<!-- The head every page shares. Copy it verbatim and change the title,
+     the description and the canonical link.
+
+     Order matters: fonts before tokens before provisa.css, and the theme
+     bootstrap before anything paints. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PAGE TITLE — Provisa</title>
+<meta name="description" content="PAGE DESCRIPTION">
+<link rel="icon" href="/favicon.svg">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+
+<!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
+     external script runs after first paint, which is exactly the flash of the
+     wrong theme this prevents.
+
+     Only a stored dark choice needs the attribute. Light is the unconditional
+     default in tokens.css, so a first-time visitor, a visitor who has chosen
+     light, and a visitor with no storage at all all paint light with no
+     attribute set and no work done here. -->
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. Not
+         swallowed silently — there is nothing else to do, and the page is
+         already in the correct state. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>

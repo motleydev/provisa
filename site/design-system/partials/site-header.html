@@ -1,0 +1,109 @@
+<!-- SiteHeader. Sticky, 76px, translucent over the page colour.
+
+     Six nav items: Platform · Governance · Industries · Interfaces · Sources ·
+     Compare (PRO-2 plan revision 2). Insights is out of v1 and has no route,
+     so it is not here as a dead link. Adding a seventh item later is a one-line
+     change here, but the row is sized for six and the toggle with 71px to
+     spare, so a seventh needs --bp-nav re-measured — see the note on that token
+     in tokens.css for how.
+
+     The theme toggle sits right of the nav on desktop (first in the actions
+     cluster) and in the drawer on mobile.
+
+     The secondary action is the free licence at /register, not a hosted
+     trial. PRO-2 plan revision 3 withdraws the trial, so the *run it for my
+     team* path converts to the licence and a conversation, and no page links
+     cloud.provisa.dev — the utility bar lost its hosted-service notice for the
+     same reason. Re-adding either needs the plan changed first.
+
+     Under --bp-nav (1280px) the nav and the actions are replaced by a menu
+     button and the drawer below — the kit had neither, and clipped its items
+     with overflow:hidden instead.
+
+     Mark the current page with aria-current="page" in both the nav and the
+     drawer. The drawer must be a sibling of the header, not inside it, so the
+     sticky header's stacking context does not trap it. -->
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <!-- Each href is the canonical route of a page that exists today, not the
+         route the IA eventually wants. This nav is inlined into every page the
+         moment the chrome is copied, so one dead href becomes one per page —
+         /vs/, /governance/ and /interfaces/ shipped on four pages apiece
+         before check-kit.mjs existed to catch them.
+
+         Canonical means extensionless, which is what every page in site/
+         declares in its <link rel="canonical">: /why/governance, not
+         /why/governance.html and not /governance/. Governance and Interfaces
+         sit under /why/ until their hubs ship and Compare points at the one
+         comparison that is built; move each when its hub lands, here and in
+         every page that inlined this.
+
+         Industries is the exception: it has no page anywhere, so it is the one
+         item pointing at a route that 404s. Changing that is the Content
+         Manager's call — the six items are theirs — and check-kit.mjs carries
+         /industries as a known-owed route until they make it. -->
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <!-- The toggle and the utility items, which the desktop header carries in
+         the actions cluster and the utility bar. A toggle click is handled
+         before the close-on-link rule, so it does not dismiss the drawer. -->
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
+      </nav>
+    </div>
+  </div>
+</div>
