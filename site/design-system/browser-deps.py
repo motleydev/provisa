@@ -49,8 +49,17 @@ libcurl4 libnghttp2-14 libjpeg62-turbo libpng16-16 libwebp7 libgtk-3-0
 
 # The host's, via nix-ld. A Debian copy of any of these would be older than the
 # glibc the loader is going to use and is the one way this arrangement breaks.
-DENY = {"libc6", "libc-bin", "libgcc-s1", "gcc-12-base", "libstdc++6",
-        "debconf", "dpkg", "base-files", "ucf"}
+DENY = {
+    "libc6",
+    "libc-bin",
+    "libgcc-s1",
+    "gcc-12-base",
+    "libstdc++6",
+    "debconf",
+    "dpkg",
+    "base-files",
+    "ucf",
+}
 
 
 def read_index():
@@ -101,10 +110,10 @@ def ar_members(buf):
         raise ValueError("not an ar archive")
     off = 8
     while off + 60 <= len(buf):
-        header = buf[off:off + 60]
+        header = buf[off : off + 60]
         name = header[0:16].decode().strip().rstrip("/")
         size = int(header[48:58].decode().strip())
-        yield name, buf[off + 60:off + 60 + size]
+        yield name, buf[off + 60 : off + 60 + size]
         off += 60 + size + (size % 2)
 
 
@@ -150,8 +159,10 @@ def main():
     else:
         print(f"reusing {prefix}", file=sys.stderr)
 
-    libs = [os.path.join(prefix, "usr/lib/x86_64-linux-gnu"),
-            os.path.join(prefix, "lib/x86_64-linux-gnu")]
+    libs = [
+        os.path.join(prefix, "usr/lib/x86_64-linux-gnu"),
+        os.path.join(prefix, "lib/x86_64-linux-gnu"),
+    ]
     inherited = os.environ.get("NIX_LD_LIBRARY_PATH")
     if inherited:
         libs.append(inherited)
