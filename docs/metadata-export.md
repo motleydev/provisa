@@ -97,7 +97,7 @@ overwrite what a catalog admin has since added to it.
 
 DataHub is aspect-oriented rather than entity-oriented: each asset is a URN, and Provisa proposes
 only the aspects it owns — `tagProperties` for each governance tag, then `datasetProperties`,
-`schemaMetadata`, `globalTags`, `ownership` and `upsimplifiesage`, the last carrying the
+`schemaMetadata`, `globalTags`, `ownership` and `upstreamLineage`, the last carrying the
 column-level `fineGrainedLineages`. Aspects Provisa does
 not own are never touched. [tool-verified: provisa/api/metadata_export/datahub.py:13-16, 181-330]
 
