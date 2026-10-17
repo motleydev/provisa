@@ -44203,22 +44203,30 @@
     remain the sole source of truth for keys.
   code:
   - provisa-ui/src/i18n/
-  - .claude/skills/i18n-translate/
+  - skills/i18n-translate/
   scenario: 'Given a Provisa i18n locale catalog (e.g., src/i18n/locales/fr.json)
 
     When a locale catalog is missing or keys are stale
 
     Then the Claude i18n-translate agent translates via in-session invocation
 
-    And stores (English key → translated value) in src/i18n/locales/fr/.tm.json
+    And stores (English key → the English source text it translated from) in src/i18n/locales/fr/.tm.json
 
-    And subsequent updates only retranslate keys absent from .tm.json
-
-    And validation enforces key-set and {{placeholder}} parity per locale
+    And subsequent updates only retranslate keys absent from .tm.json or whose recorded English
+    has since changed
 
     '
   related_reqs:
   - REQ-1012
+  - REQ-2015
+  notes: 'PRO-62, 2026-10-17: the skill this requirement names had no file. code: cited
+    .claude/skills/i18n-translate/, a path .gitignore excludes, so it reached no clone and could
+    not. Authored as skills/i18n-translate/SKILL.md, a sibling of the nineteen skills PR #9 adds,
+    and code: repointed. Two scenario lines were false and are corrected rather than kept: the
+    sidecar records the English source text, not the translated value (verified across all 12
+    sidecars), and nothing in the repository validated key-set or {{placeholder}} parity — that
+    line moves to REQ-2015, which proposes the vitest case. The practice itself is live, not
+    aspirational: .tm.json files have been touched by 384 commits, 341 of them in October 2026.'
 - id: REQ-1342
   status: complete
   group: 10. UI & Admin Surfaces
@@ -81730,3 +81738,54 @@
     Then after the anchor wait the step is shown stuck, with Retry, Skip and Exit'
   related_reqs: [REQ-1945, REQ-2010]
   notes: 'Maintainer through the lead, 2026-10-13: the Data Quality deep dive hung on --demo weblogs; a step whose target never appears fails visibly, never hangs; each tour declares its prerequisites, checked when the menu opens against what the current org has; refined to: when a tour''s prerequisites are unmet, remove that option from the menu, no disabled entry and no explanation; nobody restores prerequisites, so the check is evaluated when the menu opens and nothing watches for them. Found while fixing the alpha.481 core UI lane: the e2e tour-profiler-step failures were not changed titles but a step that opened the editor and clicked the read view''s Quality tab as it went away (the editor then opened on Identity and the profiler panel never came), and the stuck notice sat under the earlier step''s card; the tour-deep-dives failures were the menu''s test id on Mantine''s box-less Modal root; the uncaught browser error was FormField handing withAsterisk to a Switch.'
+- id: REQ-2015
+  status: proposed
+  target: 2026-Q4
+  group: 10. UI & Admin Surfaces
+  category: Internationalization
+  feature: i18n-and-accessibility-locales
+  priority: SHOULD
+  type: constraint
+  description: 'Locale catalog parity is enforced by a vitest case, not by practice. Every locale in
+    supportedLngs carries exactly the English key set — no missing keys, no extras — and every
+    {{placeholder}} in an English string appears in the translation with the same names and no
+    additions. The check reads the merged resources from provisa-ui/src/i18n (the shape the app
+    serves, after every locales/<lng>/*.json is spread over the root catalog) and names the
+    offending keys rather than counting them.'
+  use_case: A missing key renders as a raw dotted key and a dropped or renamed placeholder renders
+    as literal {{name}} — each in one locale only, which no English-reading reviewer sees. The
+    invariants are what makes an incremental translation run safe to land unreviewed, so they are
+    checked where they can fail the build.
+  code:
+  - provisa-ui/src/i18n/
+  tests:
+  - provisa-ui/src/__tests__/i18nCatalogParity.test.ts
+  unit_test: true
+  integration_test: not_required
+  integration_test_reason: The catalogs are static JSON bundled at build time; there is no service
+    boundary to cross.
+  e2e: false
+  e2e_reason: A browser would show one locale's rendering of one string. The invariant is a table
+    over 12 locales and 6090 keys, which is a unit-test shape.
+  scenario: 'Given the English catalogs at provisa-ui/src/i18n/locales/en.json and en/<ns>.json
+
+    When the merged catalog for any locale in supportedLngs is compared against English
+
+    Then its key set is identical, with the differing keys named on failure
+
+    And every {{placeholder}} name in an English string is present in the translation, unrenamed
+    and unduplicated
+
+    '
+  related_reqs:
+  - REQ-1341
+  - REQ-1342
+  notes: 'PRO-62, 2026-10-17: carved out of REQ-1341, whose scenario had asserted "validation
+    enforces key-set and {{placeholder}} parity per locale" since 2026-07 while nothing enforced
+    either — no script, no vitest case, no workflow, no precommit hook. Both invariants measured at
+    zero violations on main: 12 non-English locales, 6090 keys each, 0 missing, 0 extra, 0
+    placeholder mismatches. Proposed rather than complete because the test is a separate app
+    proposal; it flips to complete when that lands. Written against the merged resources rather
+    than the files on disk because src/i18n/index.ts spreads all 167 per-component catalogs into a
+    single translation namespace, so a dotted key is global and a collision is already resolved by
+    the time any check sees it.'
