@@ -37,6 +37,10 @@ STATUS_LABEL = {
 # section on the same page.
 _REQ_REF = re.compile(r"REQ-\d+")
 
+# The section heading this script writes for each requirement, used to read the ids back out
+# of a committed copy.
+_MD_HEADING = re.compile(r"^### (REQ-\d+) ", re.MULTILINE)
+
 
 def _linkify(text: str, self_id: str, known: set[str]) -> str:
     """Turn inline REQ-NNN mentions into anchor links.
@@ -104,6 +108,21 @@ def generate(rf: RequirementsFile) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _id_drift(committed: str, rf: RequirementsFile) -> tuple[list[str], list[str]]:
+    """Ids the committed `.md` carries but the source does not, and the reverse.
+
+    A requirement hand-appended to the generated file is deleted the next time this script
+    writes, and a whole-file "out of sync" verdict does not say which ones. Naming them is
+    the difference between a reviewer regenerating the file and a reviewer losing work.
+    """
+    in_md = set(_MD_HEADING.findall(committed))
+    in_yaml = {req.id for req in rf.requirements}
+    return (
+        sorted(in_md - in_yaml, key=lambda i: int(i[4:])),
+        sorted(in_yaml - in_md, key=lambda i: int(i[4:])),
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -126,6 +145,23 @@ def main() -> int:
         committed = MD_PATH.read_text()
         if output != committed:
             print(f"FAIL: {MD_PATH} is out of sync with {YAML_PATH}", file=sys.stderr)
+            only_md, only_yaml = _id_drift(committed, rf)
+            if only_md:
+                print(
+                    f"  {len(only_md)} requirement(s) exist only in {MD_PATH} and regenerating "
+                    f"deletes them: {', '.join(only_md)}",
+                    file=sys.stderr,
+                )
+                print(
+                    f"  Add them to {YAML_PATH} — it is the source — before regenerating.",
+                    file=sys.stderr,
+                )
+            if only_yaml:
+                print(
+                    f"  {len(only_yaml)} requirement(s) are in {YAML_PATH} but not in "
+                    f"{MD_PATH}: {', '.join(only_yaml)}",
+                    file=sys.stderr,
+                )
             print("Run: python scripts/gen_requirements_md.py", file=sys.stderr)
             return 1
         print(f"OK: {MD_PATH} is up to date")
