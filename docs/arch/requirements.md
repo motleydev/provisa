@@ -23518,6 +23518,20 @@ In Hasura v2 import, when a computed field and a tracked function in the same or
 
 **Tests:** `tests/unit/test_hasura_v2.py`
 
+## 0. Architecture & Design Principles
+
+### REQ-2042 · Marketing & Design System {#REQ-2042}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A marketing page does not go live describing converter or product behaviour that is true in the repository but not yet in a published release. The site and the product ship on separate trains — the site deploys from this repository while a reader obtains the converter from a GitHub release or `pip install provisa` — so merging a fix to `main` publishes the page while the reader still holds the old artifact. Where a page's copy depends on such a fix, the page is held on a release gate rather than carrying a version-conditional caveat, and the gate is recorded in three places: the page brief's header, the page register's state cell, and a numbered acceptance criterion on the build issue naming the command that proves it. The gate is executable rather than remembered: the page's checker runs the acceptance criterion's commands against the converter an interpreter resolves and fails by default, `--pre-release` downgrades it to a report for the build-and-commit phase only, and a converter resolved out of this repository's source tree fails the gate rather than satisfying it.
+
+**Use case:** A reader runs the exact command the page prints, against the release the page's own download link gives them, and the output matches what the page said it would be. `/vs/hasura` carries gates on [REQ-2034](#REQ-2034) (both Hasura export layouts report the five unconverted sections) and [REQ-2041](#REQ-2041) (a computed field and a tracked function claiming one command name warns instead of crashing); both are true in the repository and neither is in a published release.
+
+**Code:** `site/vs/hasura.html`, `site/design-system/check-page-vs-hasura.mjs`
+
+**Tests:** —
+
 ## 11. Platform, Infrastructure & Delivery
 
 ### REQ-2043 · CI & Verification {#REQ-2043}
@@ -23529,5 +23543,17 @@ A site task ships on its own branch, cut from the integration branch, and its ow
 **Use case:** Ten issues read `done` with commits only on `pro8-source-corrections-claim-sets`, and thirteen further commits for `done` issues existed only in one agent checkout, unpushed to any remote. Five agents shared one branch feeding one pull request of 93 files and +15,904 lines, so no page was reviewed before the board called it done.
 
 **Code:** `docs/ops/site-task-pipeline.md`, `.github/workflows/site-review.yml`
+
+**Tests:** —
+
+### REQ-2044 · CI & Verification {#REQ-2044}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+Binding an issue to a non-primary project workspace — `PATCH /api/issues/{id}` with `projectWorkspaceId` — routes the next run's execution workspace to that workspace's `cwd`, so a site task gets its own checkout without the board-only `enableIsolatedWorkspaces` instance flag. The row that reports the binding still carries `mode: shared_workspace` and `strategyType: project_primary`, the same labels the primary rows carry, and `currentExecutionWorkspace` on `GET /api/issues/{id}` reads `null` during the run that owns the row — `cwd` is the field that tells two workspaces apart.
+
+**Use case:** Measured 2026-10-17 on two runs: both read `$PAPERCLIP_WORKSPACE_CWD` and `pwd` at the bound worktree path, `$PAPERCLIP_WORKSPACE_ID` as the bound workspace id, and `GET /api/companies/{companyId}/execution-workspaces` carried a row at that `cwd` whose `sourceIssueId` was the bound issue. Without this route, parallel site tasks share one checkout and overwrite each other.
+
+**Code:** `docs/ops/site-task-pipeline.md`
 
 **Tests:** —
