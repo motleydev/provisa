@@ -73,9 +73,10 @@ const QUALIFIED = [
 /* Claims that must be present. A page that drops one of these fails in the way
  * the whole brief is written to prevent. */
 const REQUIRED = [
-  ["Starburst Enterprise 482-e.3 LTS", "§9. An undated competitor claim is this page's failure mode"],
+  ["Starburst Enterprise 482-e.4 LTS", "§9. An undated competitor claim is this page's failure mode. SME verdict on PRO-6e5d05c1: 482-e.4 is the current LTS patch (Helm 482.4.0 shipped 13 Oct 2026); the brief's 482-e.3 was out of date"],
   ["as documented in October 2026",    "§9. The dateline is not optional and not a placeholder"],
-  ["481-e is the current STS",         "§9, the SME's wording verbatim"],
+  ["483-e is the current STS",         "§9. SME verdict on PRO-6e5d05c1: 483-e is the current STS; the brief's 481-e was out of date"],
+  ["Their documentation describes data products", "§4 Semantic model. SME verdict on PRO-6e5d05c1: the sneery \"catalog of tables\" cell gets replaced with the brief's own grammar"],
   ["Their documentation describes no", "§5 and §6. The form every competitor negative must take"],
   ["Its documentation describes no partitioning", "§4 result caching, new in revision 3"],
   ["Provisa has no CBO at all",        "§2 card 01. The concession the SME found too small"],

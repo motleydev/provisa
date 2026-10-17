@@ -758,11 +758,11 @@ SELECT count(*) FROM customers WHERE email LIKE 'a%';
               behalf either.</p>
             <p class="pv-p">And the number, because you will ask for it and
               because publishing it is the point: Provisa is at
-              <code>0.1.0a479</code>, pre-1.0. Of 1,872 tracked requirements,
-              <strong>1,599 are complete</strong>, 84 are in progress and 37 are
-              proposed. Every capability on this page names the requirements
-              behind it and their status is in the repository you can read
-              before you talk to us.</p>
+              <code>0.1.0a479</code>, pre-1.0. <strong>1,599 requirements
+              complete</strong> and 84 in progress, counted on 14 October 2026.
+              Every capability on this page names the requirements behind it
+              and their status is in the repository you can read before you
+              talk to us.</p>
           </div>
 
         </div>
@@ -773,7 +773,9 @@ SELECT count(*) FROM customers WHERE email LIKE 'a%';
   <!-- ==================================================================
        §11 Conversion. ContactBand, ink. It carries id="contact", which is
        what the header's own Book a demo resolves to on this page, and the
-       demo form the primary button submits.
+       demo form the primary button submits. The download-and-register pair
+       was added in PRO-24 — the page shipped contact-only, which is the
+       inverse of the trial-only error that issue corrected.
        ================================================================== -->
   <section class="pv-contact pv-contact--inverse" id="contact">
     <div class="pv-contact__inner pv-container">
@@ -781,8 +783,8 @@ SELECT count(*) FROM customers WHERE email LIKE 'a%';
         <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
         <h2 class="pv-h pv-h--cta">Bring your reviewer.</h2>
         <div class="pv-contact__links">
-          <a class="pv-link pv-link--inverse" href="/platform">How the compiler
-            works<span class="pv-link__arrow"> →</span></a>
+          <a class="pv-link pv-link--inverse" href="/install">Download Provisa</a>
+          <a class="pv-link pv-link--inverse" href="/register">Get a free licence</a>
         </div>
       </div>
       <form class="pv-form" method="post" action="/api/demo">
