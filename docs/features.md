@@ -713,7 +713,7 @@ Some sources, such as files, SharePoint and Splunk, are reached through a bundle
 
 **Available**
 
-Provisa can serve a repeated request from a stored result, but only when the request asks for it. A GraphQL query opts in with a directive, a Cypher query with a comment line, and a gRPC call with request metadata. Without it, the request neither reads nor writes the cache. Every response says whether it was a hit or a miss. A hit is a real route in the planner, not a side check, so a cached answer skips execution entirely. The store is Redis when configured and an embedded fallback otherwise.
+Provisa can serve a repeated request from a stored result, but only when the request asks for it. A GraphQL query opts in with a directive, a Cypher query with a comment line, a SQL statement with a comment line on pgwire, Flight SQL and SQL over HTTP, a REST or JSON:API call with a request header, and a gRPC call with request metadata. Without it, the request neither reads nor writes the cache. Every response says whether it was a hit or a miss. A hit is a real route in the planner, not a side check, so a cached answer skips execution entirely. The store is Redis when configured and an embedded fallback otherwise.
 { #response-caching-store-and-opt-in }
 
 How long a result lives is set at the most specific level that has an opinion: the table, then the source, then the deployment. A table can also set a different tolerance per role, so a trader sees live data while an analyst accepts a few minutes of staleness. Any mutation to a table drops the cached results that read it.
