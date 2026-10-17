@@ -12,5 +12,9 @@
     "allowImportingTsExtensions": false,
     "typeRoots": ["./node_modules/@types", "../node_modules/@types"]
   },
-  "include": ["src", "../src/types/cytoscape*.d.ts"]
+  // This program is Node's, but draw.ts and look.ts import the UI's own graph sources, so the
+  // program contains provisa-ui/src files and needs the ambient declarations those files are
+  // written against: cytoscape's, and the app's vite-env.d.ts for `import.meta.env`
+  // (graph-stylesheet -> graph-model -> api/admin.ts, which reads import.meta.env.VITE_API_BASE).
+  "include": ["src", "../src/types/cytoscape*.d.ts", "../src/vite-env.d.ts"]
 }
