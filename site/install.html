@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Install and deploy — Provisa</title>
+  <meta name="description" content="One wheel with the control plane and the UI inside it. Python 3.12, no Docker, no cluster — and the same product on Compose, Helm, Terraform or an air-gapped rack.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="canonical" href="https://provisa.dev/install">
+
+  <link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/design-system/fonts.css">
+  <link rel="stylesheet" href="/design-system/tokens.css">
+  <link rel="stylesheet" href="/design-system/provisa.css">
+
+  <!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
+       external script runs after first paint, which is exactly the flash of the
+       wrong theme this prevents. -->
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("provisa-theme") === "dark")
+          document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {
+        /* Storage disabled: light stands, which is the default anyway. */
+      }
+    })();
+  </script>
+
+  <script src="/design-system/provisa.js" defer></script>
+</head>
+<body>
+  <a class="pv-skip" href="#main">Skip to content</a>
+
+  <div class="pv-utility">
+    <div class="pv-utility__inner pv-container">
+      <nav class="pv-utility__links" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- The chrome is the Home chrome, unchanged: six nav items, the two-state
+       theme toggle, the free licence as the secondary action and `Book a demo`
+       as the button. Install is not a nav item, so nothing here carries
+       aria-current; the breadcrumb is what says where you are. -->
+  <header class="pv-header">
+    <div class="pv-header__inner pv-container">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <nav class="pv-header__nav" aria-label="Main">
+        <a href="/platform">Platform</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/industries">Industries</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/vs/starburst">Compare</a>
+      </nav>
+      <div class="pv-header__actions">
+        <div class="pv-theme" role="group" aria-label="Theme">
+          <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+          <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+        </div>
+        <a class="pv-header__secondary" href="/register">Get a free licence</a>
+        <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+      </div>
+      <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+              aria-expanded="false" aria-controls="pv-drawer">
+        <i aria-hidden="true"></i>Menu
+      </button>
+    </div>
+  </header>
+
+  <div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+       aria-label="Menu" aria-hidden="true">
+    <div class="pv-drawer__inner pv-container">
+      <div class="pv-drawer__top">
+        <a class="pv-wordmark" href="/">
+          <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          Provisa
+        </a>
+        <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+      </div>
+      <nav class="pv-drawer__nav" aria-label="Main">
+        <a href="/platform">Platform</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/industries">Industries</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/vs/starburst">Compare</a>
+      </nav>
+      <div class="pv-drawer__actions">
+        <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+        <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+      </div>
+      <div class="pv-drawer__foot">
+        <div class="pv-theme" role="group" aria-label="Theme">
+          <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+          <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+        </div>
+        <nav class="pv-drawer__utility" aria-label="Utility">
+          <a href="https://provisa.dev/docs">Docs</a>
+          <a href="#contact">Support</a>
+          <a href="/register">Register (free licence)</a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+
+    <!-- §1 Hero ======================================================
+         The layout rule for this page, from the brief's reader section:
+         everything above the fold is a command. The order below the H1 is
+         code block, release line, caption, installers, prose — in one
+         column, with no rail. A rail would put the figure or the prose
+         beside the code at 1280 and above, and the acceptance criterion is
+         that the code block is the first thing below the H1 at all five
+         widths, which single-column source order satisfies without a
+         breakpoint.
+
+         The Python window is <mark>ed rather than left as a comment line.
+         The kit dims comments by design (.pv-code__c is --text-code-faint),
+         so the line carrying the page's most expensive qualifier would
+         otherwise be the faintest text in the block; a reader on 3.13 hits a
+         resolver error on the page's first command. The mark pair is in
+         check-contrast.mjs, so this ships verified rather than asserted. It
+         stays inside the <pre>, so it is still in the clipboard.
+
+         The requirement strip above line 1 is held back: pv-code__title is
+         11.5px in --on-ink-label, which would set the requirement smaller
+         and fainter than the comment it is meant to outrank. The kit change
+         is on PRO-3. =================================================== -->
+    <section class="pv-section" id="install">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <nav class="pv-crumb" aria-label="Breadcrumb">
+          <a href="/">Provisa</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Install</span>
+        </nav>
+        <div class="pv-stack">
+          <div class="pv-eyebrow">Install</div>
+          <h1 class="pv-h pv-h--hero">One wheel. Everything inside.</h1>
+          <!-- One command, not two. Revision 3 had `provisa run  # your data`
+               next to the demo line and the SME's run (PRO-40) caught it:
+               that command exits on `RuntimeError: PROVISA_CONFIG is not set`
+               on a fresh install, because the CLI sets the variable only on
+               the demo path (PRO-48). The bare form is off the page; §3 tab 2
+               is where "your data" lives, as a config file. -->
+          <div class="pv-code">
+<pre><mark># Python 3.12 required — 3.13 is not supported.</mark>
+<span class="pv-code__c"># Not Linux aarch64: no pgserver wheel and no source distribution,</span>
+<span class="pv-code__c"># so the embedded tier does not run there. Use the container tier.</span>
+python3 -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install "provisa[embedded]"
+
+provisa run --demo   <span class="pv-code__c"># the bundled sample domains, on embedded SQLite</span></pre>
+          </div>
+          <p class="pv-note">Current release <code>0.1.0a479</code>. This is a
+            first release and we say so. Run on 2026-10-14 on CPython 3.12.15
+            in a fresh virtualenv; the API and the UI both answered 200 and the
+            server printed <code>✓ Provisa is ready</code>.</p>
+          <p class="pv-p">That is the demo data. Pointing it at your own sources
+            is the next step and it is a config file, not another install —
+            §3, tab 2.</p>
+          <!-- The brief asks for this caption at the code's own type size.
+               pv-note is the kit's mono footnote and is set at the body
+               colour and the code's size, which is what that asks for. -->
+          <p class="pv-note">The embedded tier runs on DuckDB. No JVM means no
+            Trino — this is the whole control plane and UI on one engine, not
+            multi-engine federation in a wheel. For that, point it at an engine
+            you run.</p>
+          <div class="pv-row">
+            <a class="pv-btn" href="/dl/macos">Download for macOS</a>
+            <a class="pv-btn pv-btn--secondary" href="/dl/windows">Download for Windows</a>
+            <a class="pv-btn pv-btn--secondary" href="/dl/linux">Download for Linux</a>
+          </div>
+          <p class="pv-p">The desktop installer is a single download driven by
+            <code>start</code>, <code>stop</code>, <code>status</code> and
+            <code>open</code>. By default it runs everything natively: DuckDB as
+            the federation engine, an embedded PostgreSQL control plane, an
+            in-memory cache. Trino on Docker or an external engine are opt-in
+            choices in the setup wizard, and Docker or a VM is provisioned only
+            if you pick one of them. The <code>run</code> command waits for the
+            API to report ready before it prints success, so a green line means
+            a green line.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- §2 What just started ========================================= -->
+    <section class="pv-section pv-section--band" id="running">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">01</span>
+            <span class="pv-seclabel__text">What is running</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Three processes and no cluster.</h2>
+        </div>
+        <div class="pv-grid pv-grid--3">
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">The engine</h3>
+            <div class="pv-ruled__body">DuckDB, in process. It is the only
+              engine in the wheel — omitting the JVM omits Trino. Good for a
+              desktop, an edge box and development; not for multi-user
+              production, and we would rather tell you that here than have you
+              find out in staging.</div>
+          </div>
+          <!-- The control-plane card states the store as pluggable and chosen
+               by a SQLAlchemy URI, which is what the page can say either way:
+               pyproject.toml:183 calls the `embedded` extra a SQLite control
+               plane while docs/cli.md describes embedded PostgreSQL, and the
+               two have not been reconciled at source (brief C-5a). The
+               consequence sentence is scoped to the desktop tier for the same
+               reason — immutability is a PostgreSQL-dialect rule. -->
+          <div class="pv-ruled pv-ruled--get">
+            <h3 class="pv-ruled__title">The control plane</h3>
+            <div class="pv-ruled__body">An embedded store holding the model, the
+              operating state and the platform state — pluggable, chosen by a
+              SQLAlchemy URI, and PostgreSQL everywhere that is not a desktop.
+              One consequence worth knowing before you build a control
+              narrative on it: audit-log immutability is enforced by PostgreSQL
+              rules, so on the desktop tier append-only is an application
+              convention rather than a database guarantee.</div>
+          </div>
+          <div class="pv-ruled pv-ruled--run">
+            <h3 class="pv-ruled__title">The cache</h3>
+            <div class="pv-ruled__body">In memory on the desktop. Redis where
+              one is configured.</div>
+          </div>
+        </div>
+        <!-- pv-measure, because a Callout does not cap itself and this one
+             carries running prose. -->
+        <div class="pv-callout pv-callout--get pv-measure">
+          <span class="pv-callout__label">NO CALLS</span>
+          <span class="pv-callout__body">Nothing phoned home. The whole
+            distribution installs with no network calls at install time or
+            first launch, and the add-ons are found locally, then on mounted
+            volumes, before anything is downloaded.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- §3 First five minutes ========================================
+         Three tabs, from brief-install revision 6. The decisions behind
+         them are on PRO-50 and the runs are on PRO-40 and PRO-53 — tab 2's
+         long form is the shape the shipped `config/provisa-install-base.yaml`
+         has, because there is no publish-the-whole-table shorthand (that is
+         the claim the tab exists to make), and tab 3's trust-mode callout
+         sits inside the tab at the same weight as the command, because
+         publishing `psql -U analyst` with no password without saying so is
+         the thing the page's rule forbids.
+
+         Revision 6 adds a three-line `roles:` block to the tab 2 YAML. The
+         PRO-53 run exited at startup on `roles — Field required` against
+         revision 5's block: only `org_admin` and `platform_admin` are
+         seeded (REQ-1297/REQ-1349), so any custom role — `analyst` here —
+         is declared in the config file itself. ======================== -->
+    <section class="pv-section" id="first-five">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">02</span>
+            <span class="pv-seclabel__text">First queries</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Register a source. Register a table.
+            Ask three ways.</h2>
+          <p class="pv-p">Registering a source exposes nothing. A table is
+            queryable only after someone registers it; an unregistered table is
+            invisible, absent from the schema browser and unnameable in a
+            query. That is the default, not a setting.</p>
+        </div>
+
+        <div class="pv-codetabs">
+          <div class="pv-codetabs__tabs" role="tablist" aria-label="First five minutes">
+            <button class="pv-codetabs__tab" type="button" role="tab"
+                    id="t-demo" aria-controls="p-demo" aria-selected="true">
+              <span class="pv-codetabs__lang">The bundled demo</span>
+              <span class="pv-codetabs__wire">pip tier</span>
+            </button>
+            <button class="pv-codetabs__tab" type="button" role="tab"
+                    id="t-config" aria-controls="p-config"
+                    aria-selected="false" tabindex="-1">
+              <span class="pv-codetabs__lang">Your own Postgres, as config</span>
+              <span class="pv-codetabs__wire">yaml</span>
+            </button>
+            <button class="pv-codetabs__tab" type="button" role="tab"
+                    id="t-ask" aria-controls="p-ask"
+                    aria-selected="false" tabindex="-1">
+              <span class="pv-codetabs__lang">Ask it over pgwire</span>
+              <span class="pv-codetabs__wire">psql</span>
+            </button>
+          </div>
+
+          <!-- Tab 1 — the bundled demo. The pip tier, not the desktop
+               installer; the two demos were being described as one in
+               revision 2. -->
+          <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-demo"
+               aria-labelledby="t-demo">
+<pre>provisa run --demo
+<span class="pv-code__c"># Loads the bundled pet-store and shelter sample domains over embedded</span>
+<span class="pv-code__c"># SQLite, and marks the session as a demo run. No Docker. The UI opens</span>
+<span class="pv-code__c"># at the URL it prints.</span></pre>
+          </div>
+
+          <!-- Tab 2 — the config file. A prose panel so the YAML block,
+               the invocation block and the copy below them share one tab
+               surface; a reader following the page copies the YAML into
+               provisa.yaml and then the bash command next to it, and both
+               are the point of the tab. The length is the argument:
+               config/provisa-install-base.yaml:17-51 enumerates every
+               column with a data_type and a visible_to list, so one honest
+               table is ~25 lines and a compact snippet with an ellipsis
+               would illustrate a shorthand that does not exist. -->
+          <div class="pv-codetabs__panel pv-codetabs__panel--prose"
+               role="tabpanel" id="p-config" aria-labelledby="t-config" hidden>
+            <div class="pv-code">
+<pre><span class="pv-code__c"># provisa.yaml — a source, a domain, and one table with its columns.</span>
+sources:
+  - id: sales-pg
+    type: postgresql
+    host: localhost
+    port: 5432
+    database: sales
+    username: provisa
+    password: ${env:PG_PASSWORD}
+
+domains:
+  - id: sales
+
+tables:
+  - source_id: sales-pg
+    domain_id: sales
+    schema: public
+    table: orders
+    columns:
+      - name: id
+        data_type: integer
+        visible_to: [analyst, org_admin]
+      - name: customer_id
+        data_type: integer
+        visible_to: [analyst, org_admin]
+      - name: total
+        data_type: decimal(10,2)
+        visible_to: [analyst, org_admin]
+      - name: margin
+        data_type: decimal(10,2)
+        visible_to: [org_admin]
+
+roles:
+  - id: analyst
+    capabilities:
+      - query_development
+    domain_access:
+      - sales</pre>
+            </div>
+            <div class="pv-code">
+<pre>PROVISA_CONFIG=provisa.yaml provisa run</pre>
+            </div>
+            <p class="pv-p">There is no publish-the-whole-table shorthand. A
+              column you do not list is not published, and <code>margin</code>
+              above is listed for <code>org_admin</code> only, so an
+              <code>analyst</code> session cannot name it. That is the
+              mechanism behind the sentence above this section: registering a
+              source exposes nothing, and a table is queryable only after
+              someone says which columns of it are.</p>
+            <p class="pv-p pv-p--sm">This is one table. The configuration we
+              ship with the installer has the same shape —
+              <code>config/provisa-install-base.yaml</code> enumerates every
+              column of the table it publishes with its type and its role list,
+              and <code>price</code> on the demo's <code>pets</code> table is
+              visible to <code>org_admin</code> alone, exactly as
+              <code>margin</code> is here. <code>roles:</code> is a required
+              key, so the file carries one. The <code>analyst</code> entry
+              above is what scopes that role to <code>sales</code>; the product
+              seeds <code>analyst</code> and <code>org_admin</code> itself, and
+              a config that tries to redefine <code>org_admin</code> is refused
+              by name. On a <code>provisa run</code> against revision 5's block
+              (no <code>roles:</code>) the server exited at startup on
+              <code>roles — Field required</code>; with the block above
+              <code>/ready</code> answers in under ten seconds, and over pgwire
+              <code>-U analyst</code> is refused <code>margin</code> with
+              <code>[V003]</code> while <code>-U org_admin</code> sees all four
+              columns ([PRO-53], 16 Oct 2026).</p>
+            <a class="pv-link" href="https://provisa.dev/docs/configuration">The
+              full configuration reference<span class="pv-link__arrow"> →</span></a>
+          </div>
+
+          <!-- Tab 3 — the pgwire pair, plus the trust-mode callout inside
+               the tab at the same weight as the command. A prose panel so
+               the two code blocks (bash → sql) and the callout (same
+               weight, inside the tab, not a footnote) share one surface.
+               AC-4 wants it as two blocks; the brief's house-rule for the
+               callout is in revision 5 and it is why the tab is kept
+               rather than cut. -->
+          <div class="pv-codetabs__panel pv-codetabs__panel--prose"
+               role="tabpanel" id="p-ask" aria-labelledby="t-ask" hidden>
+            <div class="pv-code">
+<pre><span class="pv-code__c"># The Postgres listener is off until you give it a port.</span>
+<span class="pv-code__c"># 5439 is what our Helm chart and installer set; any free port works.</span>
+PROVISA_PGWIRE_PORT=5439 provisa run --demo
+
+<span class="pv-code__c"># In another shell — psql speaks to Provisa as if it were Postgres</span>
+psql -h 127.0.0.1 -p 5439 -U analyst</pre>
+            </div>
+            <div class="pv-code">
+<pre>SELECT p.name, p.species, v.visit_date, v.reason
+FROM pet_store.pets p
+JOIN pet_store.pet_visits v ON v.pet_id = p.id
+LIMIT 5;</pre>
+            </div>
+            <p class="pv-p pv-p--sm">Run on 2026-10-14. What comes back:</p>
+            <div class="pv-code">
+<pre>  name  | species | visit_date |         reason
+--------+---------+------------+-------------------------
+ Cat 1  | cat     | 2025-02-14 | Annual vaccination
+ Cat 2  | cat     | 2025-03-02 | Dental scaling referral
+ Dog 1  | dog     | 2025-04-08 | Limp in left forepaw
+ Lion 1 | lion    | 2025-01-27 | Weight check
+(5 rows)</pre>
+            </div>
+            <p class="pv-p pv-p--sm">Three corrections in that block, each of
+              which would have cost a reader their first five minutes. Revision
+              3 had <code>psql -h localhost -p 5439 -U admin</code> and no
+              <code>--demo</code>. <code>-h localhost</code> resolves
+              <code>::1</code> first against an IPv4-only listener, so the
+              reader sees a red <strong>connection refused</strong> before it
+              falls through and works — <code>127.0.0.1</code> is not a style
+              preference on this page. The demo has exactly one role,
+              <code>analyst</code>; <strong>there is no
+              <code>admin</code></strong>, and <code>-U admin</code> returns
+              <code>ERROR: No schema for role 'admin'</code>. And the tables
+              the query names exist only under <code>--demo</code>.</p>
+
+            <!-- The trust-mode callout, inside the tab, at the same weight
+                 as the command. Brief revision 5's one new acceptance
+                 criterion: it is not a footnote, not a lighter type colour,
+                 not an aside below the tabs. -->
+            <div class="pv-callout">
+              <span class="pv-callout__label">NO PASSWORD</span>
+              <span class="pv-callout__body">That <code>psql</code> command has
+                no password in it, and it does not need one. The bundled demo
+                starts with <code>auth: provider: none</code>, which puts
+                pgwire in <strong>trust mode</strong>: the username is taken
+                directly as the role and the secret is ignored. The listener
+                also binds every interface. On a laptop that is the right
+                default and it is why the command above is two words long.
+                <strong>It is not a configuration to put on a network</strong>
+                — our own documentation says not to use trust mode over an
+                unencrypted connection, and we would rather you read that here
+                than discover it.</span>
+            </div>
+            <p class="pv-p pv-p--sm">Set <code>auth.provider: basic</code> with
+              <code>auth.scram: true</code> and pgwire advertises SASL with
+              <code>SCRAM-SHA-256</code>, so the password is proved rather
+              than sent. With TLS on the listener and a client CA configured,
+              the client certificate is verified in the handshake before any
+              credential is examined.</p>
+            <a class="pv-link" href="https://provisa.dev/docs/pgwire">Authentication,
+              per protocol<span class="pv-link__arrow"> →</span></a>
+          </div>
+        </div>
+
+        <!-- "The same question in GraphQL and Cypher → /why/one-model" ships
+             now that the target page is live (site/why/one-model.html). -->
+        <a class="pv-link" href="/why/one-model">The same question in GraphQL
+          and Cypher<span class="pv-link__arrow"> →</span></a>
+      </div>
+    </section>
+
+    <!-- §4 A refusal, at the wire ====================================
+         New in revision 4, from PRO-40's run. The guard that `/why/one-model`
+         and `/why/governance` describe, shown happening at the Postgres wire,
+         through a client every data engineer already has installed. The §4
+         paragraph that joins C-24 and C-26 is the page's own argument:
+         authentication decides who you say you are, the compiled plan decides
+         what that role may do. ============================================ -->
+    <section class="pv-section pv-section--band" id="refusal">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">03</span>
+            <span class="pv-seclabel__text">The proof</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Now ask for something you have not
+            approved.</h2>
+          <p class="pv-p">The same <code>psql</code> session, one join away
+            from the one that worked — two tables in different domains with no
+            approved relationship between them:</p>
+        </div>
+        <div class="pv-code pv-code--run">
+<pre>ERROR:  [V002] Invalid JOIN: employees.id = pets.id
+        — no approved relationship exists between these tables on these columns</pre>
+        </div>
+        <p class="pv-p">That is the governance pipeline refusing an unauthorised
+          join <strong>at the Postgres wire, to a stock <code>psql</code>
+          client</strong>, with a diagnostic naming the two columns so a data
+          engineer can act on it rather than guess. Nothing about the refusal
+          is specific to our own tooling: the client is the one already
+          installed on the reader's machine.</p>
+        <!-- The approved-join guard is governance policy, not a hard
+             boundary — the two bypasses are named on /why/governance. The
+             qualifier travels with every page that mentions the guard, at
+             the same weight, from the PRO-4 audit's 1.6 rewrite. -->
+        <div class="pv-callout pv-callout--get pv-measure">
+          <span class="pv-callout__label">NOT A WALL</span>
+          <span class="pv-callout__body">A joinable-looking pair of columns in
+            two systems is the ordinary way a wrong number reaches a dashboard,
+            and most engines in this category would return the cartesian
+            product without comment. The approved-join guard is governance
+            policy rather than a hard boundary — two bypasses exist and they
+            are named on <a href="/why/governance">/why/governance</a> — but
+            in high-security mode it is not bypassable by anyone.</span>
+        </div>
+        <p class="pv-p"><strong>There was no password on that session.</strong>
+          Tab 3 connects in trust mode, so the role was asserted by the client
+          and taken at face value — and <strong>the join was refused
+          anyway.</strong> Authentication decides who you say you are; the
+          compiled plan decides what that role may do, and the second does not
+          depend on the first being strong. That is not a licence to leave the
+          first weak — in trust mode anyone can assert any role, which is why
+          the callout in tab 3 says what it says. It is proof that the wire is
+          not a bypass. Most readers conflate the two, and this is the one
+          place on the site where they come apart with evidence in front of
+          them.</p>
+        <a class="pv-link" href="/why/governance">How the guard works, and both
+          bypasses<span class="pv-link__arrow"> →</span></a>
+      </div>
+    </section>
+
+    <!-- §5 Pick your shape =========================================== -->
+    <section class="pv-section" id="deploy">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">04</span>
+            <span class="pv-seclabel__text">Shapes</span>
+          </div>
+          <h2 class="pv-h pv-h--section">The same product, from a laptop to an
+            air-gapped rack.</h2>
+        </div>
+        <div class="pv-rail">
+          <div class="pv-rail__body">
+            <div class="pv-table">
+              <table>
+                <caption class="pv-sr">Each deployment shape, how it is
+                  installed, and what runs in it</caption>
+                <thead>
+                  <tr>
+                    <td></td>
+                    <th scope="col">How</th>
+                    <th scope="col">What you run</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Laptop</th>
+                    <td>The installer, or <code>pip install "provisa[embedded]"</code>
+                      on Python 3.12, and not on Linux aarch64</td>
+                    <td>Everything natively. No Docker.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Linux box</th>
+                    <td>AppImage</td>
+                    <td>Bundles the core and observability <strong>container
+                      images</strong> and stages compose files out to a writable
+                      location — so unlike the row above, this path uses Docker.
+                      A non-interactive first launch installs a systemd unit so
+                      Provisa starts on boot.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">One VM, one team</th>
+                    <td>Docker Compose</td>
+                    <td>One command brings up the server, the engine and the
+                      connectors. The demo upstreams and the telemetry stack are
+                      separate compose projects, so they start and stop on their
+                      own.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Kubernetes</th>
+                    <td>Helm</td>
+                    <td>Scales engine workers and validates its own values.
+                      Authentication is chosen at install time and does not
+                      require Firebase.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Cloud VM</th>
+                    <td>Terraform, GCP / AWS / Azure</td>
+                    <td>Provisions the stack, stages the release artifacts, runs
+                      it under systemd. AWS builds a multi-node cluster behind
+                      load balancers, and the interview lets you switch pgwire,
+                      Bolt, MCP and gRPC on or off.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Air-gapped</th>
+                    <td>Any of the above</td>
+                    <td>No network calls at install time or first launch. The
+                      Python version is pinned, so a mirror knows which wheels
+                      to hold. Local embedding models via Ollama or
+                      HuggingFace.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="pv-rail__rail">
+            <!-- IMG-14. FigPanel `deploy`, 16/9, until the asset lands; see
+                 the image-register document on PRO-2. -->
+            <div class="pv-fig pv-fig--get pv-fig--wide" role="img"
+                 aria-label="Four install paths in one figure — a pip install line, a container, a Helm release, and a rack with no network edge.">
+              <span class="pv-fig__label">FIG. 01</span>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:10;--t:78;--w:8"></i>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:22;--t:66;--w:14"></i>
+              <i class="pv-fig__s pv-fig__s--sq pv-fig__s--see" style="--l:40;--t:48;--w:24"></i>
+              <i class="pv-fig__s pv-fig__s--sq pv-fig__s--run" style="--l:58;--t:18;--w:32"></i>
+            </div>
+          </div>
+        </div>
+        <!-- The scope is the callout's first clause on purpose: this is a
+             cluster-deployment property, on a page whose hero is a laptop
+             install, and "TLS works out of the box" as an opening clause was
+             struck for exactly that reason. -->
+        <div class="pv-callout pv-measure">
+          <span class="pv-callout__label">CLUSTER</span>
+          <span class="pv-callout__body"><strong>In a cluster
+            deployment</strong>, every endpoint is served over TLS — UI and API
+            as well as pgwire, Bolt and Flight — and Provisa generates
+            self-signed certificates when none are supplied. The Helm chart
+            takes an existing certificate secret or a cert-manager
+            issuer.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- §6 Bring your own engine ===================================== -->
+    <section class="pv-section pv-section--band" id="engine">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">05</span>
+            <span class="pv-seclabel__text">Your engine</span>
+          </div>
+          <h2 class="pv-h pv-h--section">You already have the engine. Point at
+            it.</h2>
+        </div>
+        <div class="pv-stack">
+          <!-- The documented one-liner from docs/cli.md:125, not an export
+               block: that is the form that has been run. -->
+          <div class="pv-code pv-code--get">
+<pre><span class="pv-code__c"># Federate on a Trino coordinator you already run</span>
+TRINO_HOST=trino.internal TRINO_PORT=8080 provisa run</pre>
+          </div>
+          <p class="pv-note">If your coordinator is behind a URL rather than a
+            host and port, <code>PROVISA_ENGINE_URL</code> is the documented
+            alternative.</p>
+        </div>
+        <div class="pv-stack">
+          <div class="pv-code pv-code--get">
+<pre><span class="pv-code__c"># Or federate in your own PostgreSQL. The extensions it federates</span>
+<span class="pv-code__c"># through have to be installed in that server.</span>
+pip install provisa-pg-ext
+provisa pg-ext install --docker my-postgres
+docker restart my-postgres          <span class="pv-code__c"># pg_duckdb loads only at server start</span>
+provisa pg-ext install --docker my-postgres --create</pre>
+          </div>
+          <p class="pv-p">The <code>pg-ext</code> bundles are built for
+            PostgreSQL 16 only, on linux-x64 and darwin-arm64. A managed service
+            without filesystem access — RDS, Cloud SQL — cannot take them; use
+            the extensions the service offers.</p>
+        </div>
+        <a class="pv-link" href="/platform">All 32 engines<span class="pv-link__arrow"> →</span></a>
+      </div>
+    </section>
+
+    <!-- §7 Licence ===================================================
+         The two uses of the word do not share a sentence, let alone a
+         paragraph: the production grant is the first, the registration file
+         is the second, and the callout at the end says which is which. The
+         grant is cited from LICENSE:12-30 and not from docs/marketing.md:24,
+         which is wrong on all three substantive points. =============== -->
+    <section class="pv-section" id="licence">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">06</span>
+            <span class="pv-seclabel__text">Licence</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Two different things are called a
+            licence. Here are both.</h2>
+        </div>
+        <div class="pv-stack">
+          <p class="pv-p">Provisa is source-available under Business Source
+            License 1.1. Production use is free for an organization that, with
+            its affiliates, has fewer than 100 employees and contractors and
+            under USD 1,000,000 in annual revenue, budget or expenditure, with
+            90 days' grace if you cross either threshold. Any other production
+            use needs a commercial licence. Each released version becomes
+            <strong>GNU General Public License, Version 2.0 or later</strong> on
+            the fourth anniversary of that version's first public availability.
+            Non-production use, evaluation included, is free at any size,
+            forever.</p>
+          <p class="pv-p">Separately, and confusingly similarly named, there is
+            a file. An <em>Unregistered</em> marker appears in the footer from
+            first launch, whenever the deployment is not licensed — it is not an
+            expiry event. Provisa runs for a 30-day trial without a licence;
+            past 30 days an unlicensed deployment also shows a banner in the UI
+            and a notice on each protocol's own channel.
+            <em class="pv-emph">Nothing stops working: no feature gate, no row
+            limit, no read-only mode, no expiry.</em></p>
+          <p class="pv-p">That notice travels on each protocol's own non-fatal
+            channel — pgwire <code>NoticeResponse</code>, Bolt success metadata,
+            Flight <code>app_metadata</code>, gRPC trailing metadata, a REST
+            header — and it never modifies the result body, the row stream, or
+            any schema-typed field. A licence reminder that cannot corrupt a
+            result set is a design decision, and it cannot even fail the request
+            it rides on.</p>
+          <p class="pv-p">That file is free. You get it by registering on a web
+            form and clicking the confirmation link; the signed file arrives
+            after that. It proves its own validity offline, with Ed25519, and is
+            tied to the machine it was issued for, so an air-gapped install is
+            licensed like any other. The licence is requested by you, from a
+            browser — not by the install, which makes no network calls at all —
+            and applying it starts no telemetry either.</p>
+        </div>
+        <div class="pv-callout pv-measure">
+          <span class="pv-callout__label">NOT THE SAME</span>
+          <span class="pv-callout__body">The free licence file is a registration
+            artifact. It is not the BSL production grant. If your organization
+            is over either threshold, you need a commercial licence to run
+            Provisa in production — and the free file does not change
+            that.</span>
+        </div>
+        <div class="pv-row">
+          <a class="pv-link" href="/register">Register for a free licence<span class="pv-link__arrow"> →</span></a>
+          <a class="pv-link" href="/pricing/">Editions and licensing<span class="pv-link__arrow"> →</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- §8 Conversion ================================================
+         The brief asks for one platform-detected Download button falling
+         back to the three /dl/* links. The three ship explicitly instead:
+         detection needs a default href for the no-script case, and a wrong
+         default on this page's primary conversion is the failure mode the
+         page exists to avoid. Raised on PRO-17 for the brief owner's call.
+
+         The demo form is the chrome's, not the brief's: `Book a demo` in the
+         header and `Support` in the utility bar both point at #contact on
+         every page, so a band here with no form would break two chrome links
+         that this page cannot change on its own. ====================== -->
+    <section class="pv-contact" id="contact">
+      <div class="pv-contact__inner pv-container">
+        <div class="pv-contact__copy">
+          <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+          <h2 class="pv-h pv-h--cta">Twenty minutes.</h2>
+          <div class="pv-row">
+            <a class="pv-btn pv-btn--on-color" href="/dl/macos">Download for macOS</a>
+            <a class="pv-btn pv-btn--inverse" href="/dl/windows">Windows</a>
+            <a class="pv-btn pv-btn--inverse" href="/dl/linux">Linux</a>
+          </div>
+          <div class="pv-row">
+            <a class="pv-btn pv-btn--inverse" href="/register">Register for a free licence</a>
+          </div>
+          <div class="pv-contact__links">
+            <a class="pv-link pv-link--inverse" href="https://provisa.dev/docs">Read the docs<span class="pv-link__arrow"> →</span></a>
+          </div>
+          <p class="pv-contact__sub">Provisa is self-hosted. You run it on your
+            hardware, in your cloud account, or air-gapped. There is no managed
+            service to buy today.</p>
+        </div>
+        <form class="pv-form" id="contact-demo" method="post" action="/api/demo">
+          <h3 class="pv-form__title">Book a demo</h3>
+          <div class="pv-form__grid">
+            <label class="pv-sr" for="c-name">Full name</label>
+            <input class="pv-input" id="c-name" name="name" autocomplete="name" placeholder="Full name" required>
+            <label class="pv-sr" for="c-email">Work email</label>
+            <input class="pv-input" id="c-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          </div>
+          <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pv-footer">
+    <div class="pv-footer__inner pv-container">
+      <div class="pv-footer__top">
+        <div class="pv-footer__brand">
+          <span class="pv-wordmark">Provisa</span>
+          <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+            Licence 1.1 — non-production use (including evaluation) is free
+            forever, for any size organization.</p>
+        </div>
+        <nav class="pv-footer__col" aria-labelledby="f-platform">
+          <h2 id="f-platform">Platform</h2>
+          <a href="/platform">Active Semantic Layer</a>
+          <a href="/why/interfaces">Interfaces</a>
+          <a href="/why/governance">Governance</a>
+          <a href="/why/sources">Sources</a>
+          <a href="/platform/views">Materialized views</a>
+          <a href="/platform/catalog">Catalog</a>
+          <a href="/why/no-lock-in">No lock-in</a>
+        </nav>
+        <nav class="pv-footer__col" aria-labelledby="f-compare">
+          <h2 id="f-compare">Compare</h2>
+          <a href="/vs/starburst">vs Starburst</a>
+          <a href="/vs/denodo">vs Denodo</a>
+          <a href="/vs/hasura">Coming from Hasura</a>
+        </nav>
+        <nav class="pv-footer__col" aria-labelledby="f-start">
+          <h2 id="f-start">Get started</h2>
+          <a href="/pricing/">Editions</a>
+          <a href="https://provisa.dev/docs">Docs</a>
+          <a href="/register">Register (free licence)</a>
+          <a href="#contact">Support</a>
+          <a href="#contact">Book a demo</a>
+        </nav>
+        <div class="pv-footer__keep">
+          <h2>Keep me posted</h2>
+          <p>Want the release notes? Get new features and platform updates by
+            email.</p>
+          <form class="pv-subscribe" method="post" action="/api/subscribe">
+            <label class="pv-sr" for="f-sub">Work email</label>
+            <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+            <button type="submit">Subscribe</button>
+          </form>
+          <span class="pv-footer__fine">Product updates only. No spam,
+            unsubscribe anytime.</span>
+        </div>
+      </div>
+      <div class="pv-footer__bottom">
+        <span>© Provisa</span>
+        <div class="pv-footer__legal">
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
