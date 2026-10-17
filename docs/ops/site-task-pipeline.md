@@ -65,9 +65,9 @@ request.
 ## One workspace per issue
 
 Five agents sharing one checkout is how one page build lands on top of another
-page's uncommitted work. Since 2026-10-17 an issue gets its own two ways: a new
-issue is created isolated, and an issue that predates that can be bound to its
-own checkout by hand.
+page's uncommitted work. Since 2026-10-17 an issue gets its own two ways: the
+instance's isolation default, and a binding set by hand on an issue the default
+does not cover.
 
 ### Isolation is on, and the issue preference persists
 
@@ -104,9 +104,18 @@ That contrast is worth keeping either way: a field that reaches the foreign key
 answers `404` on a bad id, and a field that is dropped answers `200`. The status
 of a `PATCH` is not evidence that anything was stored, so read the field back.
 
-Three limits on the default:
+Two issues carry the preference as of 2026-10-17: PRO-44, where it was measured,
+and PRO-52 (`Build /compare`), the open site build, which now reads
+`isolated_workspace` so its next run opens its own checkout.
 
-- It applies when an issue is created. Issues already on the board keep the
+Three limits on the default, and one thing about it still unmeasured. What a
+newly created issue comes up as has not been seen yet: every issue on the board
+was created before the flags were set, PRO-78 at 18:29 against a flag change
+around 18:40, and all of them read `executionWorkspacePreference: null` except
+the two that were written to by hand. The next issue created answers it; until
+then, read the field rather than assuming the default reached it.
+
+- The default applies at creation. Issues already on the board keep the
   preference they had — PRO-77 reads `reuse_existing`, and PRO-44 read `null`
   until it was written.
 - It does not reach a run already in flight. A run that started before the
