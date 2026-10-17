@@ -835,6 +835,14 @@ img,svg{max-width:100%}
   font-size:11.5px;
   color:var(--text-code-label);
 }
+/* --req is the gate cut: code size, text-code, run accent edge. The default
+ * stays caption-weight; this one outranks the comment line below it so a
+ * precondition like "Python 3.12 only" reads as a gate, not a label. */
+.pv-code__title--req{
+  font-size:var(--type-mono);
+  color:var(--text-code);
+  border-left:var(--rule-accent) solid var(--group-run);
+}
 .pv-code pre{
   margin:0;
   padding:20px 22px;
