@@ -74,9 +74,6 @@ if (fs.existsSync(redirectsFile)) {
  *   /industries/          in the primary nav on five pages, and the one nav
  *                         item with no page anywhere. Content Manager's call —
  *                         the six items are theirs (PRO-2 plan revision 2).
- *   /install              the Download / Install CTA on Home, Platform and
- *                         Interfaces. The primary conversion link on three
- *                         pages, so it is the costliest one owed.
  *   /pricing/             Editions, PRO-2 plan revision 2, phase 3. Footer.
  *   /platform/views.html  footer, Platform column.
  *   /platform/catalog.html
@@ -87,7 +84,6 @@ if (fs.existsSync(redirectsFile)) {
  *                         those pages are rebuilt. */
 const PENDING = new Set([
   "/industries",
-  "/install",
   "/pricing/",
   "/platform/views",
   "/platform/catalog",
