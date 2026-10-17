@@ -165,8 +165,10 @@ ok("thirteen section headings — eleven h2 plus the hero h1 and the conversion 
 head("§1 hero")
 ok("the eyebrow is Architecture", ">Architecture<" in src)
 ok("Emph is used in the h1", p.cls.get("pv-emph", 0) >= 1)
-ok("the dated standfirst names the version and the requirement ratio",
-   "<code>0.1.0a479</code>" in src and "1,872 tracked requirements, 1,599 are complete" in src)
+ok("the dated standfirst names the version and the two reconciled figures",
+   "0.1.0a479" in norm
+   and "1,599 requirements complete and 84 in progress" in norm
+   and "counted on 14 October 2026" in norm)
 ok("IMG-03 is the 16/9 FigPanel", p.cls.get("pv-fig--wide", 0) == 1)
 ok("IMG-03's accessible name is the brief's alt",
    "registered sources at the bottom, the Provisa layer above them holding the model and the compiler"
@@ -390,8 +392,8 @@ nums = sorted({t.rstrip(".,") for t in re.findall(r"\b\d[\w.,]*", text)})
 ALLOWED = {
     # enumerable by command
     "32", "37", "63", "72", "16",
-    # the requirement ratio and the version, both dated in the standfirst
-    "1,599", "1,872", "1", "0.1.0a479", "1.0",
+    # the two reconciled figures, the counted-on date and the version
+    "1,599", "84", "14", "2026", "1", "0.1.0a479", "1.0",
     # structural indices: the eleven section labels and the four route rows
     "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
     # part of a product name, not a measurement
