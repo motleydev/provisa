@@ -373,19 +373,21 @@ roles:
             <p class="pv-p pv-p--sm">This is one table. The configuration we
               ship with the installer has the same shape —
               <code>config/provisa-install-base.yaml</code> enumerates every
-              column of every published table with its type and its role list,
+              column of the table it publishes with its type and its role list,
               and <code>price</code> on the demo's <code>pets</code> table is
               visible to <code>org_admin</code> alone, exactly as
-              <code>margin</code> is here. The two platform roles —
-              <code>org_admin</code> and <code>platform_admin</code> — are
-              seeded; any other role, including the <code>analyst</code> above,
-              is declared in this file. On a <code>provisa run</code> against
-              revision 5's block (no <code>roles:</code>) the server exited at
-              startup on <code>roles — Field required</code>; with the block
-              above <code>/ready</code> answers in under ten seconds, and over
-              pgwire <code>-U analyst</code> is refused <code>margin</code>
-              with <code>[V003]</code> while <code>-U org_admin</code> sees
-              all four columns ([PRO-53], 16 Oct 2026).</p>
+              <code>margin</code> is here. <code>roles:</code> is a required
+              key, so the file carries one. The <code>analyst</code> entry
+              above is what scopes that role to <code>sales</code>; the product
+              seeds <code>analyst</code> and <code>org_admin</code> itself, and
+              a config that tries to redefine <code>org_admin</code> is refused
+              by name. On a <code>provisa run</code> against revision 5's block
+              (no <code>roles:</code>) the server exited at startup on
+              <code>roles — Field required</code>; with the block above
+              <code>/ready</code> answers in under ten seconds, and over pgwire
+              <code>-U analyst</code> is refused <code>margin</code> with
+              <code>[V003]</code> while <code>-U org_admin</code> sees all four
+              columns ([PRO-53], 16 Oct 2026).</p>
             <a class="pv-link" href="https://provisa.dev/docs/configuration">The
               full configuration reference<span class="pv-link__arrow"> →</span></a>
           </div>
@@ -457,8 +459,9 @@ LIMIT 5;</pre>
             <p class="pv-p pv-p--sm">Set <code>auth.provider: basic</code> with
               <code>auth.scram: true</code> and pgwire advertises SASL with
               <code>SCRAM-SHA-256</code>, so the password is proved rather
-              than sent. Client certificates are verified in the handshake
-              before any credential is examined.</p>
+              than sent. With TLS on the listener and a client CA configured,
+              the client certificate is verified in the handshake before any
+              credential is examined.</p>
             <a class="pv-link" href="https://provisa.dev/docs/pgwire">Authentication,
               per protocol<span class="pv-link__arrow"> →</span></a>
           </div>
@@ -520,9 +523,12 @@ LIMIT 5;</pre>
           and taken at face value — and <strong>the join was refused
           anyway.</strong> Authentication decides who you say you are; the
           compiled plan decides what that role may do, and the second does not
-          depend on the first being strong. Most readers conflate the two, and
-          this is the one place on the site where they come apart with
-          evidence in front of them.</p>
+          depend on the first being strong. That is not a licence to leave the
+          first weak — in trust mode anyone can assert any role, which is why
+          the callout in tab 3 says what it says. It is proof that the wire is
+          not a bypass. Most readers conflate the two, and this is the one
+          place on the site where they come apart with evidence in front of
+          them.</p>
         <a class="pv-link" href="/why/governance">How the guard works, and both
           bypasses<span class="pv-link__arrow"> →</span></a>
       </div>
