@@ -23583,12 +23583,20 @@ page was reviewed before the board called it done.
 
 **Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
 
-Binding an issue to a non-primary project workspace via PATCH /api/issues/{id} with projectWorkspaceId routes the next run's execution workspace to that workspace's cwd. The run's $PAPERCLIP_WORKSPACE_CWD and pwd are both the bound worktree path, $PAPERCLIP_WORKSPACE_ID is the bound workspace id, and GET /api/companies/{companyId}/execution-workspaces carries a row at that cwd with sourceIssueId set to the issue and metadata.workspaceRealization.local.projectWorkspaceId set to the bound id. A per-issue checkout does not require the board-only enableIsolatedWorkspaces instance flag.
+Binding an issue to a non-primary project workspace — `PATCH /api/issues/{id}`
+with `projectWorkspaceId` — routes the next run's execution workspace to that
+workspace's `cwd`, so a site task gets its own checkout without the board-only
+`enableIsolatedWorkspaces` instance flag. Measured 2026-10-17 on two runs: both
+read `$PAPERCLIP_WORKSPACE_CWD` and `pwd` at the bound worktree path,
+`$PAPERCLIP_WORKSPACE_ID` as the bound workspace id, and
+`GET /api/companies/{companyId}/execution-workspaces` carried a row at that
+`cwd` whose `sourceIssueId` was the bound issue. That row still reports `mode:
+shared_workspace` and `strategyType: project_primary`, the same labels the
+primary rows carry, and `currentExecutionWorkspace` on `GET /api/issues/{id}`
+reads `null` during the run that owns the row — `cwd` is the field that tells
+workspaces apart.
 
-**Caveat:** The execution-workspace row still reports mode shared_workspace and strategyType project_primary, and currentExecutionWorkspace on GET /api/issues/{id} reads null, so cwd is the field to read.
+**Code:** `docs/ops/site-task-pipeline.md`
 
-**Measured:** 2026-10-17
-
-**Code:** `acp-engine/routes.py`, `acp-engine/execution/router.py`
-
-**Tests:** n/a — measured in test instance.
+**Tests:** n/a — a property of the Paperclip control plane, measured against the
+test instance rather than asserted from this repository.

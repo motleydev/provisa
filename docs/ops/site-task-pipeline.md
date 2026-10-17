@@ -139,6 +139,13 @@ path is shared, so read `cwd` to tell the workspaces apart. And
 that owned the row, so confirm routing from
 `GET /api/companies/{companyId}/execution-workspaces` instead.
 
+When the task's pull request has merged, tear the binding down: clear the
+issue's `projectWorkspaceId`, `DELETE
+/api/projects/{projectId}/workspaces/{workspaceId}` (also `board_or_agent`), and
+`git worktree remove "$WT"`. PRO-67 reads `projectWorkspaceId: null` after its
+teardown. A binding left behind keeps sending later runs on that issue into a
+checkout nobody is maintaining.
+
 ### What the branch already covers
 
 The branch carries the isolation that review needs even with no workspace work
