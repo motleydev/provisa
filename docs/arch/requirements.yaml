@@ -82153,6 +82153,22 @@
 
     '
   related_reqs: [REQ-1385]
+- id: REQ-2042
+  status: accepted
+  group: 0. Architecture & Design Principles
+  category: 'Marketing & Design System'
+  feature: marketing-site-claim-governance
+  priority: MUST
+  type: constraint
+  since: 2026-10
+  description: 'A marketing page does not go live describing converter or product behaviour that is true in the repository but not yet in a published release. The site and the product ship on separate trains — the site deploys from this repository while a reader obtains the converter from a GitHub release or `pip install provisa` — so merging a fix to `main` publishes the page while the reader still holds the old artifact. Where a page''s copy depends on such a fix, the page is held on a release gate rather than carrying a version-conditional caveat, and the gate is recorded in three places: the page brief''s header, the page register''s state cell, and a numbered acceptance criterion on the build issue naming the command that proves it. The gate is executable rather than remembered: the page''s checker runs the acceptance criterion''s commands against the converter an interpreter resolves and fails by default, `--pre-release` downgrades it to a report for the build-and-commit phase only, and a converter resolved out of this repository''s source tree fails the gate rather than satisfying it.'
+  use_case: 'A reader runs the exact command the page prints, against the release the page''s own download link gives them, and the output matches what the page said it would be. `/vs/hasura` carries gates on REQ-2034 (both Hasura export layouts report the five unconverted sections) and REQ-2041 (a computed field and a tracked function claiming one command name warns instead of crashing); both are true in the repository and neither is in a published release.'
+  code:
+  - site/vs/hasura.html
+  - site/design-system/check-page-vs-hasura.mjs
+  related_reqs: [REQ-2034, REQ-2041]
+  unit_test: false
+  unit_test_reason: 'A constraint on when a page may be published, enforced by the page''s own checker (`site/design-system/check-page-vs-hasura.mjs`, the release-gate section) rather than by a test under tests/.'
 - id: REQ-2043
   status: accepted
   group: 11. Platform, Infrastructure & Delivery
@@ -82168,3 +82184,29 @@
   - .github/workflows/site-review.yml
   unit_test: false
   unit_test_reason: 'A constraint on how a site task is delivered, enforced by branch protection and the two gate workflows rather than by a test.'
+- id: REQ-2044
+  status: accepted
+  group: 11. Platform, Infrastructure & Delivery
+  category: 'CI & Verification'
+  feature: engineering-standards-agent-runtime
+  priority: MUST
+  type: behavioral
+  since: 2026-10
+  description: 'Binding an issue to a non-primary project workspace — `PATCH /api/issues/{id}` with `projectWorkspaceId` — routes the next run''s execution workspace to that workspace''s `cwd`, so a site task gets its own checkout without the board-only `enableIsolatedWorkspaces` instance flag. The row that reports the binding still carries `mode: shared_workspace` and `strategyType: project_primary`, the same labels the primary rows carry, and `currentExecutionWorkspace` on `GET /api/issues/{id}` reads `null` during the run that owns the row — `cwd` is the field that tells two workspaces apart.'
+  use_case: 'Measured 2026-10-17 on two runs: both read `$PAPERCLIP_WORKSPACE_CWD` and `pwd` at the bound worktree path, `$PAPERCLIP_WORKSPACE_ID` as the bound workspace id, and `GET /api/companies/{companyId}/execution-workspaces` carried a row at that `cwd` whose `sourceIssueId` was the bound issue. Without this route, parallel site tasks share one checkout and overwrite each other.'
+  code:
+  - docs/ops/site-task-pipeline.md
+  related_reqs: [REQ-2043]
+  scenario: 'Given an issue bound to a non-primary project workspace by PATCH /api/issues/{id}
+
+    with projectWorkspaceId
+
+    When the next run for that issue starts
+
+    Then $PAPERCLIP_WORKSPACE_CWD and pwd are the bound workspace''s cwd, $PAPERCLIP_WORKSPACE_ID
+
+    is the bound workspace id, and GET /api/companies/{companyId}/execution-workspaces carries a
+
+    row at that cwd whose sourceIssueId is the bound issue'
+  unit_test: false
+  unit_test_reason: 'A property of the Paperclip control plane, measured against the test instance rather than asserted from this repository.'
