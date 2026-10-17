@@ -74,7 +74,9 @@ const REQUIRED = [
   ["We hold no certifications",           "C-22. §10's heading, verbatim"],
   ["There is no managed service to buy today", "C-29. Self-hosted only, stated rather than implied"],
   ["0.1.0a479",                           "C-28. The version, published because publishing it is the point"],
-  ["1,599 are complete",                  "C-28. The ratio, in place of the Available / In development split"],
+  ["1,599 requirements complete",         "C-28. Dated, denominator dropped — the two figures that reconcile across both ledgers"],
+  ["84 in progress",                      "C-28. In-progress count, which agrees across both ledgers"],
+  ["counted on 14 October 2026",          "C-28. The counted-on date — a statement about a day, not a promise about a state"],
 ];
 
 /* AC 5. The Lineage page is Phase 2 and does not exist; a dead evidence link
