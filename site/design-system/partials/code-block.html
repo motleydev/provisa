@@ -1,7 +1,9 @@
 <!-- CodeBlock. Ink in both themes — a terminal does not invert. Optional
      title bar, optional thick top rule (pv-code--see/--get/--run), and
      pv-code--deep for the inset variant. Wrap a comment line in
-     <span class="pv-code__c"> and a highlighted line in <mark>. -->
+     <span class="pv-code__c"> and a highlighted line in <mark>. The title
+     also has --req, which puts the bar at code size with an accent edge so
+     a precondition reads as a gate rather than a caption. -->
 <div class="pv-code">
   <div class="pv-code__title">psql → Provisa, port 5439</div>
   <pre><span class="pv-code__c"># psql speaks to Provisa as if it were Postgres</span>
@@ -13,6 +15,13 @@ FROM customers c
 JOIN orders o   ON o.customer_id = c.id
 <mark>JOIN queries t  ON t.actor = c.email</mark>
 WHERE o.total &gt; 1000;</pre>
+</div>
+
+<div class="pv-code">
+  <div class="pv-code__title pv-code__title--req">Python 3.12 only · not Linux aarch64</div>
+  <pre><span class="pv-code__c"># The gate above is what the title bar carries; the comment line qualifies.</span>
+pip install "provisa[embedded]"
+provisa run</pre>
 </div>
 
 <div class="pv-code pv-code--deep pv-code--get">
