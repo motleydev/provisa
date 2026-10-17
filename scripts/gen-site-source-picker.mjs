@@ -147,7 +147,11 @@ export async function renderPicker() {
   };
 }
 
-const PAGES = ["site/index.html", "site/why/sources.html"];
+// The pages that embed the picker fragment between the markers. The home page is not one of
+// them: its rebuilt §7 Reach states the source counts as stats and links on to /why/sources
+// rather than carrying the grid, so it has no marked region to splice into. Its counts are
+// still checked -- site/index.html stays in COUNTED, which needs no markers.
+const PAGES = ["site/why/sources.html"];
 const START = "<!-- source-picker:start -->";
 const END = "<!-- source-picker:end -->";
 
