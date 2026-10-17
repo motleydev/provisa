@@ -3,7 +3,7 @@
 # by the pre-commit framework (fast: avoids the ~full-tree lint cost). Blocks the
 # commit on any error. Warnings are treated as errors via --max-warnings 0 so the
 # zero-warning state is enforced — every intentional deviation must carry a
-# justified eslint-disable comment (see .claude/skills/react-graphql).
+# justified eslint-disable comment (see skills/react-graphql/SKILL.md).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"   # provisa-ui/
