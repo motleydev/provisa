@@ -11,10 +11,18 @@ runs an FHS binary against whatever NIX_LD_LIBRARY_PATH points at.
 So: fetch the Debian bookworm packages that carry those objects, unpack them
 into a sysroot, and print the environment that aims nix-ld at it.
 
-    eval "$(python3 site/design-system/browser-deps.py)"
-    npx playwright install chromium
-    python3 -m http.server 8743 --directory site &
+    eval "$(python3 site/design-system/browser-deps.py --prefix /somewhere/durable)"
+    (cd provisa-ui && npx --no-install playwright install chromium)
+    ln -s provisa-ui/node_modules node_modules   # so an import from site/ resolves
+    python3 site/design-system/serve.py 8743 &
     node site/design-system/verify-page-vs-starburst.mjs http://127.0.0.1:8743
+
+--prefix wants a path outside the checkout that survives the run: without it both
+the sysroot and the 900MB browser land in scratch and are deleted, so the next
+pass re-downloads them. serve.py rather than `http.server` because two checkers
+request the extensionless production route. The playwright that installs the
+browser must be provisa-ui's -- it is the one this repo pins, and a browser build
+only drives the playwright it shipped with.
 
 glibc is deliberately not taken from Debian — nix-ld supplies the host's, which
 is newer than bookworm's and serves the Debian libraries' symbols. Everything
@@ -172,7 +180,12 @@ def main():
     print(f'export FONTCONFIG_FILE="{prefix}/etc/fonts/fonts.conf"')
     print(f'export FONTCONFIG_PATH="{prefix}/etc/fonts"')
     print(f'export XDG_DATA_DIRS="{prefix}/usr/share"')
-    print(f'export PLAYWRIGHT_BROWSERS_PATH="{os.path.join(scratch, "browsers")}"')
+    # Under the prefix, not under scratch: the browser build and the sysroot it
+    # is linked against have to live or die together. Pinning this to scratch
+    # made --prefix durable for the Debian libraries and nowhere for Chromium,
+    # so every run re-downloaded the browser into a directory the runner then
+    # deleted (PRO-38).
+    print(f'export PLAYWRIGHT_BROWSERS_PATH="{os.path.join(prefix, "browsers")}"')
 
 
 if __name__ == "__main__":
