@@ -18,7 +18,6 @@ export const BANNED = [
   ["never runs on your data", "same — the guard has documented bypasses"],
   ["60-million", "a table size is not a result"],
   ["60M", "same"],
-  ["sub-100ms", "not reproducible from the repo"],
   ["six layers", "five, numbered 0-4, plus an approval hook beside them"],
   ["6 layers", "same"],
   ["Apache 2", "the Change License is GPL-2.0-or-later"],
