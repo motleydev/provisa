@@ -162,6 +162,7 @@ const PAIRS = [
   ["code", "text-code", "surface-code", "body"],
   ["code comment", "text-code-faint", "surface-code", "body"],
   ["code block title", "text-code-label", "surface-code", "body"],
+  ["code block title — req edge", "group-run", "surface-code", "ui"],
   ["code on a deep block", "text-code", "surface-code-deep", "body"],
   ["code tab, inactive", "text-tab", "surface-code", "body"],
   ["code tab wire, inactive", "text-tab-faint", "surface-code", "body"],
