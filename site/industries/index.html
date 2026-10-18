@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- partials/head.html, verbatim but for the title, the description and the
+     canonical link. Order matters: fonts before tokens before provisa.css, and
+     the theme bootstrap before anything paints.
+
+     This is PRO-94 — the Industries hub at /industries, built on the design
+     system from PRO-3. The hub is a routing page, not an argument page: four
+     verticals, four cards, four links. The horizontal mechanisms sit above
+     the cards so a reader sees once what every vertical page then shows in
+     context — column visibility (REQ-1131, REQ-1614, REQ-1778), row filters,
+     column masking (REQ-971, REQ-1494), the audit record (REQ-596, REQ-613)
+     and the regional-cluster model (REQ-1921, REQ-1922). The verticals do
+     the industry-specific work.
+
+     SME verdict handling (PRO-94 verdict-hub, C-1 to C-10):
+     C-1: "region-locked deployment" is not the published model. The hero and
+     §3 Regions card say "regional clusters on one shared model" and "each
+     region runs its own engine, storage and cache on one shared model",
+     because REQ-1922 is separate clusters on one shared model and a table
+     names its home region (REQ-1921).
+     C-2 to C-5: PRO-86 cleared the four briefs, so the cards are buildable.
+     Healthcare's card says "audit trails for HIPAA reporting", never "HIPAA
+     audit trails" (C-4) — no certification claim. Government's card maps
+     "multi-agency data isolation" to domains (C-5).
+     C-7: cited REQ-1131, REQ-1614 and REQ-1778, not REQ-1616.
+     C-8: "each region runs its own engine, storage and cache on one shared
+     model", not "full regional isolation available"; and "reads from other
+     regions are served in place under the reader's rules", not
+     "cross-border aggregates".
+     C-9: "every governed query", not "every query"; "tables touched", not
+     "data accessed".
+     C-10: cited REQ-971 and REQ-1494, not REQ-1619.
+     Page-level note 2: compliance names appear as "compliance hooks" and
+     nothing on the page says "compliant" or "certified". -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Industries — Provisa</title>
+<meta name="description" content="Four regulated verticals, one governed model. Column visibility, row filters, column masking and an audit record of every governed query — plus regional clusters on one shared model. Cards into cybersecurity, financial services, healthcare and government.">
+<link rel="icon" href="/favicon.svg">
+<link rel="canonical" href="https://provisa.dev/industries">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+
+<!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
+     external script runs after first paint, which is exactly the flash of the
+     wrong theme this prevents. -->
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
+</head>
+<body>
+
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<!-- UtilityBar — partials/utility-bar.html. -->
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<!-- SiteHeader — partials/site-header.html. aria-current="page" is on the
+     /industries link, because this is the Industries hub. The sibling pages
+     still ship the shared chrome unchanged; PRO-3 owns the one-file fix. -->
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries" aria-current="page">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/compare">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries" aria-current="page">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/compare">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- ==================================================================
+       §1 Hero. Breadcrumb + Eyebrow + Heading + Emph + lede. The hero
+       states what is cross-vertical before §3 names the four verticals,
+       so a reader meeting the mechanisms once is enough. Verdict C-1
+       governs the framing — "regional clusters on one shared model" is
+       the published model, not "region-locked deployment".
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <nav class="pv-crumb" aria-label="Breadcrumb">
+          <a href="/">Provisa</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Industries</span>
+        </nav>
+
+        <div class="pv-stack pv-stack--sm">
+          <div class="pv-eyebrow">Industries</div>
+          <h1 class="pv-h pv-h--page">Four regulated verticals,
+            <em class="pv-emph">one governed model</em>.</h1>
+        </div>
+
+        <div class="pv-stack">
+          <!-- C-1. Positioning in the published form. REQ-1922 is regional
+               clusters on one shared model; REQ-1921 is a table naming its
+               home region. "Region-locked deployment" is not the model and
+               is not written here. -->
+          <p class="pv-p pv-p--lede">The same four mechanisms do the regulated
+            work in every one of them: column visibility, row filters, column
+            masking and an audit record of every governed query — compiled
+            into the plan at one place every surface goes through, and running
+            as regional clusters on one shared model where the data lives
+            where it is required to live.</p>
+          <p class="pv-p">The hub names those mechanisms once. The vertical
+            pages show them doing the scenario a buyer in that industry
+            brings — a procurement step, a reporting obligation, a cross-team
+            isolation, a cross-border read.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §2 The horizontal mechanisms. Four RuledCards in a pv-grid--2.
+
+       The four capabilities every vertical page shows a scenario for.
+       Each card names its REQs in the body so the citation is visible
+       to a procurement reader without a visit to the repository.
+
+       - Card 1 (see): column visibility — REQ-1131, REQ-1614, REQ-1778,
+         SME verdict C-7. "Dropped from a role's schema when it has no
+         visible column" is REQ-1614 in plain prose.
+       - Card 2 (get): column masking — REQ-971 (masking expressed in
+         the governed IR, pushed down), REQ-1494 (column-level masking).
+         SME verdict C-10 corrects the citation.
+       - Card 3 (see): row filters — the predicate is injected into the
+         SELECT under the caller's role.
+       - Card 4 (get): the audit record — REQ-596, REQ-613. SME verdict
+         C-9: "every governed query", not "every query"; "tables
+         touched", not "data accessed".
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">01</span>
+            <span class="pv-seclabel__text">The horizontal</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">What is the same across every
+            vertical.</h2>
+
+          <p class="pv-p">Each mechanism is one place in the model, written
+            once, and the vertical page uses it against the data its reader
+            cares about. Nothing on this list is per-industry.</p>
+
+          <div class="pv-grid pv-grid--2 pv-grid--tight">
+
+            <!-- Column visibility (C-7). Citation is REQ-1131, REQ-1614,
+                 REQ-1778. -->
+            <div class="pv-ruled pv-ruled--see pv-ruled--accent">
+              <span class="pv-ruled__num">01</span>
+              <h3 class="pv-ruled__title">Column visibility</h3>
+              <div class="pv-ruled__body">A column names the roles that may
+                see it, in <code>visible_to</code>. A role without the column
+                does not get it withheld — the column is not in the schema
+                its session resolves. If a table has no column the role may
+                see, the table is dropped from the role's schema entirely.
+                <span class="pv-note">REQ-1131, REQ-1614, REQ-1778.</span></div>
+            </div>
+
+            <!-- Column masking (C-10). Citation is REQ-971 and REQ-1494. -->
+            <div class="pv-ruled pv-ruled--get pv-ruled--accent">
+              <span class="pv-ruled__num">02</span>
+              <h3 class="pv-ruled__title">Column masking</h3>
+              <div class="pv-ruled__body">A visible column may be masked for a
+                role: the value comes back redacted, truncated or substituted
+                rather than withheld. The mask is expressed in the governed
+                IR and pushed down into the statement that reaches the
+                source.
+                <span class="pv-note">REQ-971, REQ-1494.</span></div>
+            </div>
+
+            <!-- Row filters. The published form is the per-table, per-role
+                 WHERE predicate injected after compilation and before
+                 execution. -->
+            <div class="pv-ruled pv-ruled--see pv-ruled--accent">
+              <span class="pv-ruled__num">03</span>
+              <h3 class="pv-ruled__title">Row filters</h3>
+              <div class="pv-ruled__body">A table names a <code>rls_rules</code>
+                entry per role: a predicate that is injected into every
+                <code>SELECT</code> for that role after compilation and before
+                execution, through subqueries, CTEs, joins and star expansion
+                alike.</div>
+            </div>
+
+            <!-- Audit (C-9). "Every governed query"; the record stores table
+                 ids and a query hash, not the data. Fields from REQ-596. -->
+            <div class="pv-ruled pv-ruled--get pv-ruled--accent">
+              <span class="pv-ruled__num">04</span>
+              <h3 class="pv-ruled__title">Audit of every governed query</h3>
+              <div class="pv-ruled__body">Every governed query lands in the
+                append-only audit log: the user, the role, the query hash,
+                the tables touched, the surface it came over, the status, the
+                duration and what was enforced on the statement. The log
+                stores table ids and a query hash — not the data.
+                <span class="pv-note">REQ-596, REQ-613.</span></div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §3 Regions. One Callout, in the forest tone, that states the
+       deployment shape in the published form (C-8).
+
+       REQ-1921 (HOME REGION amendment): a resident table names the region
+       that is its home. REQ-1922: readers in other regions are served from
+       that region's replica, read in place under the reader's rules — not
+       "cross-border aggregates" (which is plan jargon), and not "full
+       regional isolation" (which overstates REQ-1922).
+
+       The right form: each region runs its own engine, storage and cache on
+       one shared model. The data is region-homed; the model is one.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">02</span>
+            <span class="pv-seclabel__text">Where the data lives</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">Region-homed data, one shared
+            model.</h2>
+
+          <p class="pv-p">A table names its home region. That is the only
+            place its whole-table copies are built. A reader in another
+            region is served from that replica, in place, under the reader's
+            own row and column rules — the model is one, the clusters are
+            not.</p>
+
+          <!-- C-8. Published form, verbatim framing from the SME verdict:
+               "each region runs its own engine, storage and cache on one
+               shared model" and "reads from other regions are served in
+               place under the reader's rules". -->
+          <div class="pv-callout pv-callout--get">
+            <span class="pv-callout__label">THE SHAPE</span>
+            <span class="pv-callout__body">Each region runs its own engine,
+              storage and cache on one shared model. Reads from other regions
+              are served in place under the reader's rules. The model is
+              shared and any node can reach any source; what is isolated is
+              the engine, the replica storage, the cache and the per-region
+              record.
+              <span class="pv-note">REQ-1921, REQ-1922.</span></span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §4 The four verticals. TileCard ×4, one per industry.
+
+       PRO-86 has cleared the four briefs, so each card is buildable. Each
+       tile names the industry, the scenario the vertical page leads with,
+       and the mechanisms from §2 the scenario rests on. The link is to
+       /industries/<slug>, which is the file PRO-89 to PRO-92 ship.
+
+       Tone rotation: see / get / run / see on the four, so the strip reads
+       as a rhythm rather than four of the same card.
+
+       Compliance names appear here only in the form the SME authorised in
+       the verdicts — "audit trails for HIPAA reporting" on Healthcare
+       (C-4), and nothing on this page or the vertical pages says
+       "compliant" or "certified" (page-level note 2). "Multi-agency data
+       isolation" on Government maps to the published model of domains
+       (C-5), not to accreditation on a classified network.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">03</span>
+          <span class="pv-seclabel__text">The four</span>
+        </div>
+
+        <h2 class="pv-h pv-h--section">Four verticals, four pages.</h2>
+
+        <p class="pv-p">Each card is a page. The scenario and the mechanism it
+          rests on are named on the card so the reader can tell whether the
+          page below it is the one they came for.</p>
+
+        <div class="pv-grid pv-grid--4 pv-grid--tight">
+
+          <!-- Cybersecurity (C-2). Verdict-cyber: SBOM, scanner outputs,
+               cloud inventory as governed sources; a materialized view
+               computes noncompliant builds / open CVEs by application. The
+               mechanisms used are the horizontal §2 ones; the card names
+               the join and the view, not the certification. -->
+          <a class="pv-tile" href="/industries/cybersecurity">
+            <span class="pv-tile__fig"><span class="pv-tile__num">01</span></span>
+            <h3 class="pv-tile__title">Cybersecurity</h3>
+            <p class="pv-tile__body">Deployment inventory joined to SBOMs,
+              scanner outputs and the cloud inventory on an approved
+              relationship, with a materialized view that lists
+              noncompliant builds and open CVEs by application.</p>
+          </a>
+
+          <!-- Financial services (C-3). Verdict-fin: positions and prices
+               are views with history; the time-travel reads use
+               X-Provisa-As-Of and X-Provisa-As-Recorded. Snowflake and
+               Databricks land replicas; BigQuery federates. No cert claim. -->
+          <a class="pv-tile pv-tile--get" href="/industries/financial-services">
+            <span class="pv-tile__fig"><span class="pv-tile__num">02</span></span>
+            <h3 class="pv-tile__title">Financial services</h3>
+            <p class="pv-tile__body">Positions and prices as views with
+              history, read as of a past time and as recorded then —
+              <code>X-Provisa-As-Of</code> and <code>X-Provisa-As-Recorded</code>
+              — so a later correction does not change what the auditor
+              saw.</p>
+          </a>
+
+          <!-- Healthcare (C-4). Verdict-health: visible_to drops PHI
+               columns from the researcher's schema, an RLS filter on
+               consent_research applies to the raw row. The compliance
+               name appears in the authorised phrase only — "audit trails
+               for HIPAA reporting", not "HIPAA audit trails". -->
+          <a class="pv-tile pv-tile--run" href="/industries/healthcare">
+            <span class="pv-tile__fig"><span class="pv-tile__num">03</span></span>
+            <h3 class="pv-tile__title">Healthcare</h3>
+            <p class="pv-tile__body">PHI columns absent from a researcher's
+              schema, a consent predicate injected into every read, and
+              audit trails for HIPAA reporting of who read a PII-tagged
+              table under which role.</p>
+          </a>
+
+          <!-- Government (C-5). Verdict-gov: cross-domain references are
+               refused by V000 before execution; a table's region pins its
+               copies to one cluster. "Multi-agency data isolation" is
+               domains, not accreditation on a classified network. -->
+          <a class="pv-tile" href="/industries/government">
+            <span class="pv-tile__fig"><span class="pv-tile__num">04</span></span>
+            <h3 class="pv-tile__title">Government</h3>
+            <p class="pv-tile__body">Multi-agency data isolation through
+              domains: a reference from one agency's role into another
+              agency's domain is refused before execution, and a table's
+              region pins its copies to one cluster.</p>
+          </a>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §5 What this page does not claim. One Callout, in the default
+       vermilion tone, that states the restraint on compliance language in
+       plain prose.
+
+       Page-level verdict note 2: compliance names (HIPAA, FedRAMP, SOC 2,
+       PCI-DSS) appear in docs/marketing.md as "compliance hooks", not as
+       certifications or attestations. The hub and the four vertical pages
+       never say "compliant" or "certified", and this Callout publishes
+       that restraint rather than hiding it in a footnote.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack">
+
+        <div class="pv-callout">
+          <span class="pv-callout__label">WHAT THIS PAGE DOES NOT CLAIM</span>
+          <span class="pv-callout__body">Where a compliance programme is
+            named on this page or on the four vertical pages, it is named as
+            a <strong>compliance hook</strong> — the mechanisms Provisa
+            offers that an auditor working to that programme can use. Provisa
+            holds no certification and no attestation, in any of them. The
+            page's claim is about the mechanism it names, not about an
+            accreditation it does not hold.</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §6 Conversion. CTA ladder, task-specified labels.
+
+       The task names the two rungs: [Install and deploy](/install) as the
+       primary and [Register (free licence)](/register) as the secondary.
+       No contact form on this page — the hub is a routing page, and the
+       four vertical pages carry their own conversions. The header's own
+       "Book a demo" still resolves through the chrome; it does not need
+       to be the primary rung here.
+       ================================================================== -->
+  <section class="pv-section pv-section--tight">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <h2 class="pv-h pv-h--section">Pick the vertical. Install the
+          thing.</h2>
+
+        <p class="pv-p">Everything on this page is in the free licence. The
+          vertical pages show the scenario on their own data; the install
+          command is one line.</p>
+
+        <div class="pv-row">
+          <a class="pv-btn" href="/install">Install and deploy</a>
+          <a class="pv-btn pv-btn--secondary" href="/register">Register (free licence)</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- SiteFooter — partials/site-footer.html. The three columns are the kit's
+     Platform / Compare / Get started; Industries lives in the main nav and
+     does not get its own footer column until there is more than a hub to
+     put in it. -->
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">The Active Semantic Layer. Business
+          Source Licence 1.1 — non-production use (including evaluation) is
+          free forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Active Semantic Layer</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/platform/views">Materialized views</a>
+        <a href="/platform/catalog">Catalog</a>
+        <a href="/why/no-lock-in">No lock-in</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
+        <a href="/compare">Compare</a>
+        <a href="/vs/starburst">vs Starburst</a>
+        <a href="/vs/denodo">vs Denodo</a>
+        <a href="/vs/hasura">Coming from Hasura</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
+    </div>
+    <div class="pv-footer__bottom">
+      <span>&copy; Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -71,9 +71,12 @@ if (fs.existsSync(redirectsFile)) {
  * Delete an entry when its page lands. Do not add one to silence a check: a
  * route only belongs here if a page for it is actually owed.
  *
- *   /industries/          in the primary nav on five pages, and the one nav
- *                         item with no page anywhere. Content Manager's call —
- *                         the six items are theirs (PRO-2 plan revision 2).
+ *   /industries/<slug>    the four vertical pages the hub cards point at.
+ *                         PRO-89 to PRO-92 land them; the hub ships first
+ *                         (PRO-94) because the brief froze card copy until
+ *                         PRO-86 cleared the briefs, and that is done. The
+ *                         hub itself (/industries) is no longer owed — it
+ *                         is this file's /industries/index.html.
  *   /pricing/             Editions, PRO-2 plan revision 2, phase 3. Footer.
  *   /platform/views.html  footer, Platform column.
  *   /platform/catalog.html
@@ -83,7 +86,10 @@ if (fs.existsSync(redirectsFile)) {
  *                         https://provisa.dev/docs instead, so these go when
  *                         those pages are rebuilt. */
 const PENDING = new Set([
-  "/industries",
+  "/industries/cybersecurity",
+  "/industries/financial-services",
+  "/industries/healthcare",
+  "/industries/government",
   "/pricing/",
   "/platform/views",
   "/platform/catalog",
