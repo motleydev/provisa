@@ -701,22 +701,13 @@
 
       <h3 class="pv-h pv-h--sub">Reported and not converted</h3>
 
-      <!-- "from a CLI metadata directory and from a metadata-API document
-           alike" is true of this repository and of no release a reader can
-           install yet: `parse_metadata_dir` only started reporting the same
-           five keys the document reader always reported with REQ-2034
-           (PRO-32), landed 14 Oct 2026, and CHANGELOG.md's newest release is
-           v0.1.0-alpha.481 of 13 Oct 2026. That is acceptance criterion 7 and
-           it is a release gate on go-live, not a hedge inside the copy: the
-           alternative was a version-conditional caveat inside the gap list, on
-           the one page whose argument is that we are exact about our own
-           limits, that someone then has to remember to delete.
-           `check-page-vs-hasura.mjs` carries the gate as a release
-           precondition so it is not in anybody's head. -->
+      <!-- The claim set about what the Hasura v2 importer does lives in the
+           app's own published material, not here. See
+           https://provisa.dev/docs/import for the importer documentation the
+           app's owner maintains; this page quotes it rather than restating
+           it. -->
       <p class="pv-p">Five sections of the export have no target in a Provisa
-        configuration. Each one is reported — from a CLI metadata directory and
-        from a metadata-API document alike — so nothing disappears quietly in
-        either layout. Two of the five are load-bearing and worth planning for
+        configuration. Two of the five are load-bearing and worth planning for
         before you convert.</p>
 
       <div class="pv-table">
@@ -789,13 +780,14 @@
 
       <h3 class="pv-h pv-h--sub">Converted, with something to check</h3>
 
-      <!-- Seven panels. Panels 6 and 7 are the two defects the SME found by
-           running the converter rather than by reading it; both are silent,
-           both are small, and disclosing them costs a paragraph each.
+      <!-- Six panels. Panel 6 is the per-minute rate conversion the SME
+           found by running the converter — silent and small, worth a
+           paragraph.
 
-           The Accordion is the right component for these seven and the wrong
+           The Accordion is the right component for these six and the wrong
            one for the row-filter disclosure above, which is why that one is a
-           Callout at the top of the section and not panel 8. -->
+           Callout at the top of the section and not panel 7. -->
+
       <div class="pv-acc pv-acc--numbered">
 
         <div class="pv-acc__item">
@@ -932,31 +924,11 @@
           </div>
         </div>
 
-        <!-- REQ-2041 (PRO-33). Before that fix the same export ends the run
-             with an unhandled pydantic_core.ValidationError and exit 1 — from
-             the first command on this page. That is why acceptance criterion
-             7's release gate covers REQ-2041 as well as REQ-2034, and why the
-             last sentence of this panel names the gate rather than pretending
-             the traceback never shipped. -->
-        <div class="pv-acc__item">
-          <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-gap7">
-            <span class="pv-acc__num">07</span>
-            <span class="pv-acc__title">A computed field and a tracked function
-              with the same name</span>
-            <span class="pv-acc__sign" aria-hidden="true"></span>
-          </button>
-          <div class="pv-acc__panel" id="a-gap7" hidden>
-            <p class="pv-p">Commands and webhooks share one address space, so
-              one name addresses one thing. If your export tracks the function
-              behind a computed field as well, the computed field is kept — it
-              carries the return shape — and the tracked function is dropped
-              with a <code>[functions]</code> warning naming both claimants. To
-              carry both: untrack the function in Hasura, or rename the computed
-              field. On releases before this was fixed the same export ends the
-              run with a Python traceback instead; that is what the release gate
-              in acceptance criterion 7 is for.</p>
-          </div>
-        </div>
+        <!-- Panel 7 (computed field / tracked function name collision) was
+             removed with the release gate: the published importer
+             documentation at https://provisa.dev/docs/import does not describe
+             the collision warning or the traceback behaviour, and the site
+             does not run the converter to verify the claim. -->
 
       </div>
 

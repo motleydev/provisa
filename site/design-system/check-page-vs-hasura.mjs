@@ -1,11 +1,10 @@
 /**
- * The static assertions and the release gate for /vs/hasura (PRO-39).
+ * The static assertions for /vs/hasura (PRO-39).
  *
  *   node site/design-system/check-page-vs-hasura.mjs
- *   node site/design-system/check-page-vs-hasura.mjs --pre-release
- *   node site/design-system/check-page-vs-hasura.mjs <brief.md> [--converter=python3]
+ *   node site/design-system/check-page-vs-hasura.mjs <brief.md>
  *
- * Four things live here, each an acceptance criterion on PRO-39 rather than a
+ * Three things live here, each an acceptance criterion on PRO-39 rather than a
  * claim in a comment:
  *
  *   1. The strings the page may not contain. This page is read by former
@@ -32,34 +31,24 @@
  *      section key beside it reintroduces the defect and looks like a typo fix
  *      on the way past, so the literal is asserted and the tidy form forbidden.
  *
- *   4. The release gate, criterion 7. §5 says both export layouts report the
- *      five unconverted sections (REQ-2034) and Panel 7 describes a
- *      command-name collision as a warning (REQ-2041). Both are true of this
- *      repository and of no release a reader can install. The gate is two
- *      commands against the version the reader gets, not a judgement about
- *      branches, and it is here rather than in anybody's head. It fails by
- *      default; `--pre-release` downgrades it to a report, which is the build
- *      and commit phase the brief authorises and is not what deploy runs.
- *
  * The page's rendered prose is what is tested, not its source: the HTML
  * comments explain the build and have to be able to name a forbidden string in
  * order to forbid it. Tags are stripped, entities resolved and whitespace
  * collapsed first, so a phrase broken across a line wrap or split by a <code>
  * or <strong> tag is still caught — which is the only way this check is worth
  * running.
+ *
+ * Claims about the Hasura v2 importer belong to the published material the
+ * app's owner maintains (docs, README, CHANGELOG, release notes). The site
+ * does not install, import or run the converter, and this checker does not
+ * either; a release gate on the artifact belongs with its owner, not here.
  */
 
-import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
-import { execFileSync, spawnSync } from "node:child_process";
-import { tmpdir } from "node:os";
-import path from "node:path";
+import { readFileSync, existsSync } from "node:fs";
 
 const FILE = "site/vs/hasura.html";
-const CHANGELOG = "CHANGELOG.md";
 
 const args = process.argv.slice(2);
-const PRE_RELEASE = args.includes("--pre-release");
-const CONVERTER = (args.find((a) => a.startsWith("--converter=")) || "--converter=python3").slice(12);
 const briefPath = args.find((a) => !a.startsWith("--"));
 
 /* ======================================================================
@@ -143,8 +132,6 @@ const REQUIRED = [
    "Build note 8. The file in a CLI export, with the underscore"],
   ["[allowlist] [allow_list.yaml] allowlist is present in the export and is not converted",
    "§5's CodeBlock. The verbatim warning line, so there is nothing left to grep for"],
-  ["from a CLI metadata directory and from a metadata-API document alike",
-   "§5. REQ-2034, and the sentence the release gate of criterion 7 holds"],
 
   ["from the command line it is not warned about at all",
    "Panel 1. The SME ran the CLI against a columns: \"*\" export: two warnings, neither about the wildcard, exit 0"],
@@ -162,10 +149,6 @@ const REQUIRED = [
    "§4 card 3. The instruction, not the reassurance"],
   ["lands declared as returning void and visible to org_admin alone",
    "Panel 5. mapper.py:637-663. The old copy implied a classifier the code does not have"],
-  ["a [functions] warning naming both claimants",
-   "Panel 7. REQ-2041"],
-  ["ends the run with a Python traceback instead",
-   "Panel 7. The pre-fix behaviour, disclosed rather than hidden behind the gate"],
 
   ["Currently, there is no in-place upgrade path from Hasura v2 to Hasura DDN.",
    "§8. Verbatim from hasura.io/docs/3.0/upgrade/guide/, read 2026-10-14"],
@@ -428,8 +411,8 @@ ok(t2.length === 1 && bodyRows(t2[0]) === 5,
    `found ${t2.length} table(s), ${t2.length ? bodyRows(t2[0]) : 0} rows. C-5 matched --help cell for cell`);
 
 const accItems = (s5.match(/pv-acc__item/g) || []).length;
-ok(accItems === 7, `§5's Accordion has 7 panels (${accItems})`,
-   "five, plus the per-minute rate conversion and the command-name collision the SME found by running the converter");
+ok(accItems === 6, `§5's Accordion has 6 panels (${accItems})`,
+   "five, plus the per-minute rate conversion");
 
 const tabs = (s2.match(/pv-codetabs__tab\b/g) || []).length;
 ok(tabs === 2, `§2 has 2 CodeTabs (${tabs})`,
@@ -465,159 +448,7 @@ for (const [label, list] of [["§3", t3], ["§5", t5], ["§2", t2]]) {
 if (!fail.some((f) => f.includes("is a dash"))) pass.push("every table cell carries prose");
 
 /* ======================================================================
- * 4. The release gate, criterion 7.
- *
- * §5's cross-layout sentence and Panel 7 are true of this repository and of no
- * release a reader can install. The site deploys from this repository; the
- * converter reaches a reader through the GitHub release `/dl/<platform>`
- * resolves and through `pip install provisa`. Those are two release trains,
- * and merging the fix to main puts the page live on the first one while the
- * reader still has the second.
- *
- * So the gate is run against the artifact, and the two commands below are the
- * brief's criterion 7 verbatim:
- *
- *   - convert a metadata directory containing a populated `allow_list.yaml`
- *     and assert the `[allowlist]` warning appears;
- *   - convert an export whose computed field's backing function is also
- *     tracked and assert a `[functions]` warning and exit 0, not a traceback.
- *
- * A converter resolved out of this repository's source tree fails the gate
- * rather than satisfying it: the gate is on the artifact the reader installs,
- * and a source-tree pass is the exact confusion it exists to prevent. The
- * commands still run in that case, as a self-test of the fixtures, so the
- * fixtures cannot rot while the gate is closed.
- *
- * A build that cannot show both has to take §5's cross-layout sentence down to
- * the document layout alone and turn Panel 7 into a traceback warning, which
- * is the worse page. Hold the release instead.
- * ====================================================================== */
-
-const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..");
-
-const newestRelease = () => {
-  if (!existsSync(CHANGELOG)) return null;
-  const src = readFileSync(CHANGELOG, "utf8");
-  const m = /^## (v[^\s]+)\s*\n+Released ([^.\n]+)\./m.exec(src);
-  return m ? { version: m[1], released: m[2] } : null;
-};
-
-const FIXTURES = [
-  {
-    name: "[allowlist] from a metadata directory (REQ-2034)",
-    files: {
-      "tables.yaml": "[]\n",
-      "allow_list.yaml": "- collection: allowed-queries\n",
-    },
-    expect: (out, code) =>
-      code === 0 && /\[allowlist\]/.test(out) && /allow_list\.yaml/.test(out)
-        ? null
-        : `expected exit 0 and an [allowlist] warning naming allow_list.yaml; got exit ${code} and:\n${out.trim()}`,
-  },
-  {
-    name: "[functions] for a command-name collision, not a traceback (REQ-2041)",
-    files: {
-      "tables.yaml":
-        "- table:\n    name: task\n    schema: public\n  computed_fields:\n" +
-        "    - name: task_label\n      definition:\n        function:\n" +
-        "          name: task_label\n          schema: public\n",
-      "functions.yaml": "- function:\n    name: task_label\n    schema: public\n",
-    },
-    expect: (out, code) =>
-      code === 0 && /\[functions\]/.test(out) && !/Traceback/.test(out)
-        ? null
-        : `expected exit 0 and a [functions] warning, not a traceback; got exit ${code} and:\n${out.trim()}`,
-  },
-];
-
-const runGate = () => {
-  const release = newestRelease();
-  const notes = [];
-  notes.push(release
-    ? `CHANGELOG.md's newest release is ${release.version}, released ${release.released}`
-    : `CHANGELOG.md has no parseable release heading`);
-
-  /* Where did the converter come from? */
-  let origin = null;
-  try {
-    origin = execFileSync(CONVERTER,
-      ["-c", "import provisa.hasura_v2 as m; print(m.__file__)"],
-      { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
-  } catch (e) {
-    return {
-      satisfied: false,
-      notes,
-      why: `\`${CONVERTER}\` cannot import provisa.hasura_v2, so there is no artifact to test. ` +
-           `The gate is two commands against the version the reader gets. Point --converter= at an ` +
-           `interpreter with the published package installed (\`pip install provisa\`).`,
-    };
-  }
-  notes.push(`${CONVERTER} resolves provisa.hasura_v2 at ${origin}`);
-
-  const fromSource = path.resolve(origin).startsWith(REPO + path.sep);
-
-  /* Run the two commands either way — closed gate or open, the fixtures stay
-   * exercised, so they cannot rot in the window before the release lands. */
-  const tmp = mkdtempSync(path.join(tmpdir(), "vs-hasura-gate-"));
-  const results = [];
-  try {
-    for (const f of FIXTURES) {
-      const md = path.join(tmp, f.name.replace(/\W+/g, "-"), "metadata");
-      mkdirSync(md, { recursive: true });
-      for (const [name, body] of Object.entries(f.files)) writeFileSync(path.join(md, name), body);
-
-      /* spawnSync rather than execFileSync, because both streams matter: the
-       * configuration goes to stdout and the warning summary goes to stderr
-       * (cli.py:148-154,165-166), and a traceback goes to stderr too. */
-      const r = spawnSync(CONVERTER, ["-m", "provisa.hasura_v2", md, "--dry-run"],
-        { encoding: "utf8" });
-      const out = String(r.stdout || "") + String(r.stderr || "");
-      results.push({ name: f.name, problem: f.expect(out, r.status ?? 1) });
-    }
-  } finally {
-    rmSync(tmp, { recursive: true, force: true });
-  }
-
-  for (const r of results) {
-    notes.push(r.problem ? `command FAILED — ${r.name}: ${r.problem}` : `command passed — ${r.name}`);
-  }
-
-  if (fromSource) {
-    return {
-      satisfied: false,
-      notes,
-      why: `the converter resolved to this repository's source tree, not to an installed package. ` +
-           `The gate is on the artifact the reader installs, and a source-tree pass is the exact ` +
-           `confusion it exists to prevent: REQ-2034 and REQ-2041 landed 14 Oct 2026 and ` +
-           `${release ? `${release.version} was cut ${release.released}` : "no release is recorded"}. ` +
-           `Re-run with --converter= pointed at an interpreter carrying a published release.`,
-    };
-  }
-
-  const broken = results.filter((r) => r.problem);
-  return broken.length
-    ? { satisfied: false, notes, why: `the installed converter does not carry both fixes.` }
-    : { satisfied: true, notes, why: "" };
-};
-
-const gate = runGate();
-
-console.log("\nRelease gate — criterion 7 (REQ-2034, REQ-2041):");
-for (const n of gate.notes) console.log("  " + n);
-
-if (gate.satisfied) {
-  pass.push("release gate: a published release carries REQ-2034 and REQ-2041");
-  console.log("  GATE OPEN — /vs/hasura may go live");
-} else if (PRE_RELEASE) {
-  pass.push("release gate: reported, not asserted (--pre-release)");
-  console.log(`  GATE CLOSED — ${gate.why}`);
-  console.log("  --pre-release: the page may be built, committed and checked. It may not go live.");
-} else {
-  fail.push(`RELEASE GATE CLOSED — ${gate.why}`);
-}
-
-/* ======================================================================
- * 5. The brief's own words, if the brief was handed to us.
+ * 4. The brief's own words, if the brief was handed to us.
  * ====================================================================== */
 
 if (briefPath && existsSync(briefPath)) {

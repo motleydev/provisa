@@ -438,10 +438,10 @@ node site/design-system/verify-page-one-model.mjs http://127.0.0.1:8731   # 261/
 One model asks for `/why/one-model` too, so it wants `serve.py` for the same
 reason Interfaces does.
 
-`/vs/hasura` carries one thing none of the others do: a release gate.
+`/vs/hasura` runs the same two halves as the other pages.
 
 ```sh
-node site/design-system/check-page-vs-hasura.mjs --pre-release   # 104, no browser
+node site/design-system/check-page-vs-hasura.mjs                # no browser
 node site/design-system/verify-page-vs-hasura.mjs http://127.0.0.1:8744   # 348
 ```
 
@@ -449,22 +449,10 @@ Pass the brief as an argument and the first half also compares every copy block
 in its §5 against the rendered prose word for word — 58 blocks, which is what
 holds a page whose every sentence is final copy.
 
-The gate is PRO-39 acceptance criterion 7. §5 of that page says both Hasura
-export layouts report the five unconverted sections (REQ-2034) and its seventh
-accordion panel describes a command-name collision as a warning (REQ-2041).
-Both are true of this repository and of no release a reader can install: the
-site deploys from here, while the converter reaches a reader through a GitHub
-release or `pip install provisa`. Two release trains, so merging the fix puts
-the page live on one of them while the reader still has the other.
-
-So the gate runs criterion 7's two commands against the artifact rather than
-reading the branch — convert a directory holding a populated `allow_list.yaml`
-and assert the `[allowlist]` warning, convert an export whose computed field's
-backing function is also tracked and assert a `[functions]` warning and exit 0.
-It fails by default. `--pre-release` downgrades it to a report, which is the
-build-and-commit phase and not what a deploy runs. A converter resolved out of
-this repository's source tree fails the gate rather than satisfying it; point
-`--converter=` at an interpreter carrying a published release to open it.
+Claims about the Hasura v2 importer come from the app's published material
+(docs, README, CHANGELOG, release notes), not from the site. The site does not
+install, import or run the converter, and the checker does not either; a
+release gate on the artifact belongs with the app's owner.
 
 What a page checker no longer owns is the struck-claim list.
 `site/verify-claims.mjs` sweeps it across every page in `site/` (REQ-2021), so a
