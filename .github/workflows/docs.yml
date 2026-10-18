@@ -10,6 +10,11 @@ name: Deploy Site
 # project as `--project-name ?? config.name`, so passing it overrides
 # site/wrangler.jsonc's `name` (provisa-dev, bound to provisa.dev) and a fork
 # publishes to its own project rather than over the upstream production site.
+#
+# The D1 binding is account-scoped too: wrangler.jsonc names upstream's
+# provisa-subscribers database, which a fork's Cloudflare account can't bind.
+# A fork sets the repository variable CLOUDFLARE_D1_DATABASE_ID to its own
+# database (same schema, site/schema.sql); unset, the file's id is used as is.
 on:
   push:
     branches: [main]
@@ -58,11 +63,17 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+          D1_DATABASE_ID: ${{ vars.CLOUDFLARE_D1_DATABASE_ID }}
         run: |
           # Required, with no default on purpose: falling back to wrangler.jsonc's
           # `name` would publish this repository's main over provisa.dev.
           if [[ -z "$PAGES_PROJECT" ]]; then
             echo "::error::Repository variable CLOUDFLARE_PAGES_PROJECT is unset. Set it to the Cloudflare Pages project this repository publishes to (upstream: provisa-dev, bound to provisa.dev). A fork must name its own project, created with 'wrangler pages project create <name> --production-branch main'."
             exit 1
+          fi
+          if [[ -n "$D1_DATABASE_ID" ]]; then
+            sed -i -E "s/(\"database_id\": *\")[^\"]*/\1$D1_DATABASE_ID/" wrangler.jsonc
+            grep -q "\"database_id\": *\"$D1_DATABASE_ID\"" wrangler.jsonc \
+              || { echo "::error::Could not point wrangler.jsonc's D1 binding at CLOUDFLARE_D1_DATABASE_ID."; exit 1; }
           fi
           npx --yes wrangler pages deploy --project-name "$PAGES_PROJECT" --branch=main --commit-dirty=true
