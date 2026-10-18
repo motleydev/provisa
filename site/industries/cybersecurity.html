@@ -1,0 +1,1027 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- partials/head.html, verbatim but for the title, the description and the
+     canonical link. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cybersecurity — Provisa</title>
+<meta name="description" content="Provisa does not scan infrastructure, patch systems or raise alerts. It is the governed join across the tools that do — noncompliant builds, cloud inventory against policy, and CVEs by application and deployment, each a query over tables you already have.">
+<link rel="icon" href="/favicon.svg">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+<link rel="canonical" href="https://provisa.dev/industries/cybersecurity">
+
+<!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
+     external script runs after first paint, which is exactly the flash of the
+     wrong theme this prevents. -->
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
+</head>
+<body>
+
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries" aria-current="page">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries" aria-current="page">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- ==================================================================
+       §Hero
+       The pitch: governance for security data, not scanning. Three
+       scenarios the page then walks through: noncompliant builds, cloud
+       inventory joined to policy, and CVE × deployment.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <nav class="pv-crumb" aria-label="Breadcrumb">
+          <a href="/">Provisa</a>
+          <span aria-hidden="true">/</span>
+          <a href="/industries">Industries</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Cybersecurity</span>
+        </nav>
+
+        <div class="pv-stack pv-stack--sm">
+          <div class="pv-eyebrow">Industries · Cybersecurity</div>
+          <h1 class="pv-h pv-h--page">Security work is a join problem.
+            <em class="pv-emph">Provisa is the governed join</em>.</h1>
+        </div>
+
+        <div class="pv-rail">
+          <div class="pv-rail__body">
+            <div class="pv-stack">
+              <!-- [C-1] The pitch. Governance for security data, not a
+                   scanner or a patch system. The three scenarios Ken set
+                   out — noncompliant builds, cloud inventory against
+                   policy, CVE across deployments — are the shape of the
+                   page. -->
+              <p class="pv-p pv-p--lede">A security team already has the
+                data: a build registry, a cloud inventory, a vulnerability
+                feed, an SBOM, a repository, a quality checker, a log
+                stream. The question is who got to see what, under which
+                rule, when a reviewer asks a month later. Provisa is the
+                governed semantic layer that joins those tables under one
+                set of roles, rules and relationships, and records every
+                query against it.</p>
+
+              <!-- [C-2] Any source — RDBMS or HTTP endpoint — registers
+                   as queryable tables. The three source families on the
+                   docs are RDBMS, API (openapi, graphql_remote,
+                   grpc_remote) and file. -->
+              <p class="pv-p">Every tool a security team runs publishes
+                somewhere: a database, an HTTP endpoint, a file on object
+                storage. Provisa registers each as a source, so a build
+                registry's rows, a scanner's OpenAPI response and an
+                SBOM on S3 are all tables in the same catalog, read with
+                the same SQL, GraphQL or Cypher under the same role.</p>
+
+              <!-- [C-3] Every join is an approved relationship (V002).
+                   The join guard is the sentence that lets a reviewer
+                   accept the page's premise: a security investigation is
+                   joins, and every one of them is a declared edge
+                   someone said yes to. -->
+              <p class="pv-p">And every join between those tables — a
+                build to its scan result, a deployment to its image hash,
+                an application to its SBOM — matches a relationship
+                someone registered and a steward approved. A join nobody
+                approved does not run.</p>
+            </div>
+          </div>
+          <div class="pv-rail__rail">
+            <!-- IMG — FigPanel, 4/5. Three rings: the three scenarios the
+                 page walks. Rings carry no caption; the SectionLabel
+                 above each §scenario is the caption. -->
+            <div class="pv-fig pv-fig--rings" role="img"
+                 aria-label="Three stacked scenarios — noncompliant builds, cloud inventory joined to policy, and CVEs by application and deployment — converging into one governed semantic layer.">
+              <span class="pv-fig__label">FIG. 01</span>
+              <i class="pv-fig__s"></i>
+              <i class="pv-fig__s"></i>
+              <i class="pv-fig__s"></i>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §1 Scenario 1 — Noncompliant builds
+       A published view in the security domain. The role granted the
+       domain reads the view; row filters narrow each team to its own
+       deployments.
+       ================================================================== -->
+  <section class="pv-section pv-section--band" id="noncompliant-builds">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">01</span>
+            <span class="pv-seclabel__text">Scenario one — noncompliant builds</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">A governed view, in the security
+            domain, that every allowed role may ask.</h2>
+
+          <!-- [C-4] Publish a governed noncompliant-builds view in the
+               security domain; any role granted that domain may query
+               it. REQ-133 views, REQ-134 same governance pipeline as
+               tables. -->
+          <p class="pv-p">Publish a governed "noncompliant builds" view in
+            the security domain; any role granted that domain may query
+            it. The view is defined once, flows through the same
+            governance pipeline as a table — row filters, column masks,
+            domain reach, join guard — and is served the same way on every
+            surface.</p>
+
+          <div class="pv-code">
+            <div class="pv-code__title">provisa.yaml — the view, in the security domain</div>
+<pre><span class="pv-code__c"># A governed view. Column visibility and row-level security apply</span>
+<span class="pv-code__c"># exactly as they do on a table (REQ-134).</span>
+views:
+  - id: noncompliant_builds
+    domain_id: security
+    sql: |
+      SELECT b.build_id,
+             b.application,
+             b.deployment,
+             b.image_hash,
+             s.severity,
+             s.rule_id
+      FROM builds b
+      JOIN scanner_results s ON s.image_hash = b.image_hash
+      WHERE s.severity IN ('high', 'critical')
+    materialize: true
+    refresh_interval: 300
+    columns:
+      - name: build_id
+        visible_to: [security_admin, security_analyst, app_team]
+      - name: application
+        visible_to: [security_admin, security_analyst, app_team]
+      - name: deployment
+        visible_to: [security_admin, security_analyst, app_team]
+      - name: image_hash
+        visible_to: [security_admin, security_analyst]
+      - name: severity
+        visible_to: [security_admin, security_analyst, app_team]
+      - name: rule_id
+        visible_to: [security_admin, security_analyst, app_team]</pre>
+          </div>
+
+          <!-- [C-5] Reworded: row filters limit each team's role to its
+               own deployments; a role with no filter on the table sees
+               every row. Drop "org_admin sees all" — nothing published
+               says the admin role bypasses row rules. -->
+          <p class="pv-p">Row filters limit each team's role to its own
+            deployments; a role with no filter on the table sees every
+            row. The filter is a predicate written on user attributes and
+            is injected into the <code>SELECT</code> before the engine
+            runs it.</p>
+
+          <div class="pv-code pv-code--get">
+            <div class="pv-code__title">provisa.yaml — row-level filter on the underlying table</div>
+<pre><span class="pv-code__c"># rls_rules, as published. The role app_team sees only rows where</span>
+<span class="pv-code__c"># the deployment belongs to the team the signed-in user is on;</span>
+<span class="pv-code__c"># security_analyst has no filter on this table and sees them all.</span>
+rls_rules:
+  - table_id: builds
+    role_id: app_team
+    filter: "deployment = current_setting('provisa.user_team')"</pre>
+          </div>
+
+          <!-- [C-6] Ken's scenario 1 is the frame for the whole section.
+               The closing callout names what the published view buys an
+               auditor: one place to point, with the policy and the
+               predicates on it. -->
+          <div class="pv-callout">
+            <span class="pv-callout__label">ONE PLACE TO POINT</span>
+            <span class="pv-callout__body">A reviewer asks "who could see
+              which noncompliant builds, under which role, last Thursday"
+              — the view is one entry, the row filters live beside it, and
+              the audit record names the role and the surface each query
+              came in on.</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §2 Scenario 2 — Cloud inventory joined to policy
+       REQ-1947 cloud inventory source, policy tables, approved
+       relationships, data-quality checker as a source reading the view
+       through pgwire.
+       ================================================================== -->
+  <section class="pv-section" id="cloud-inventory">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">02</span>
+            <span class="pv-seclabel__text">Scenario two — cloud inventory against policy</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">One set of tables for every cloud,
+            joined to policy by a relationship a steward approved.</h2>
+
+          <!-- [C-7] Reworded: Azure, AWS and GCP inventories register
+               through the cloud inventory source — one set of tables...
+               with a cloud_provider column. REQ-1947. -->
+          <p class="pv-p">Azure, AWS and GCP inventories register through
+            the cloud inventory source — one set of tables for compute,
+            storage, Kubernetes clusters, databases, networks, IAM,
+            container registries and security groups, with a
+            <code>cloud_provider</code> column that names the cloud a row
+            came from.</p>
+
+          <div class="pv-table">
+            <table>
+              <caption class="pv-sr">The cloud inventory source — tables and the cloud_provider column</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Table</th>
+                  <th scope="col">What it holds</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row"><code>compute_resources</code></th>
+                  <td>VMs and instances across every connected cloud</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>storage_resources</code></th>
+                  <td>Object stores, disks and file services</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>kubernetes_clusters</code></th>
+                  <td>Managed clusters by name, region and version</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>database_resources</code></th>
+                  <td>Managed databases, with engine and version</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>network_resources</code></th>
+                  <td>VPCs, subnets and routing entries</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>iam_resources</code></th>
+                  <td>Roles, policies and bindings</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>container_registries</code></th>
+                  <td>Registries, their regions and their access</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>compute_security_groups</code></th>
+                  <td>Firewall rules bound to compute resources</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- [C-8] Reworded: policy tables declaring what each resource
+               type must comply with, joined to the inventory through an
+               approved relationship. Carries over the C-3 join-guard
+               thread. -->
+          <p class="pv-p">Alongside the inventory, policy tables declare
+            what each resource type must comply with: an encryption rule
+            for storage, a public-exposure rule for compute, a tagging
+            rule for every resource type. The policy tables are joined to
+            the inventory through an approved relationship — a steward on
+            the security domain and a steward on the inventory domain each
+            said yes.</p>
+
+          <!-- [C-9] Reworded: a data-quality checker is a source — Soda
+               Core or Great Expectations — scanning the governed view
+               through pgwire; results land as rows on the source's
+               cadence. Cut "in real time" and "Soda first". -->
+          <p class="pv-p">A data-quality checker — Soda Core or Great
+            Expectations — registers as a source. It scans the governed
+            view through pgwire, and each check result lands as a row on
+            the source's cadence, governed like any other table. The
+            checker is not a subsystem bolted on the side — it is a source
+            that inherits lineage, freshness, row-level security and the
+            audit record from the layer it reads.</p>
+
+          <!-- [C-10] Materialized view with refresh_interval. REQ-135. -->
+          <div class="pv-code pv-code--get">
+            <div class="pv-code__title">provisa.yaml — the compliance view, refreshed on a schedule</div>
+<pre><span class="pv-code__c"># A materialized view (REQ-135). target_catalog and target_schema</span>
+<span class="pv-code__c"># name where the engine lands the CTAS result; refresh_interval is</span>
+<span class="pv-code__c"># the schedule in seconds.</span>
+materialized_views:
+  - id: mv-policy-compliance
+    source_tables: [compute_resources, encryption_policies]
+    join_pattern:
+      left_table: compute_resources
+      left_column: resource_id
+      right_table: encryption_policies
+      right_column: resource_id
+      join_type: left
+    target_catalog: postgresql
+    target_schema: mv_cache
+    refresh_interval: 300
+    enabled: true</pre>
+          </div>
+
+          <!-- [C-11] Reworded: audit log records who queried, under which
+               role and over which surface. The log does not record which
+               violations came back. -->
+          <p class="pv-p">The audit log records who queried the violation
+            tables, under which role and over which surface. It does not
+            record which violations came back — the query text itself is
+            not stored in the clear and the record is of access, not of
+            answers.</p>
+
+          <!-- [C-12] Ken's scenario 2 — the frame. Closing callout: the
+               value is in the join across tools that otherwise disagree
+               on what a resource is. -->
+          <div class="pv-callout pv-callout--get">
+            <span class="pv-callout__label">THE JOIN IS THE PRODUCT</span>
+            <span class="pv-callout__body">The scanner, the inventory, the
+              policy register and the checker are all four someone else's
+              software. The sentence "which compute resources violate
+              which policy, on which cloud, right now" is a join across
+              them — and that join is what the semantic layer makes
+              answerable in one query.</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §3 Scenario 3 — CVE × deployment, in three languages
+       SBOM as file source, GitHub as a source with a PAT, MV refreshed
+       on a schedule or when a freshness probe finds the upstream
+       changed, three languages generated — SQL, GraphQL, Cypher.
+       ================================================================== -->
+  <section class="pv-section pv-section--band" id="cve-deployment">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">03</span>
+            <span class="pv-seclabel__text">Scenario three — CVE × deployment</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">The SBOM is a file. GitHub is a
+            source. The CVE view is three questions, one per
+            language.</h2>
+
+          <!-- [C-13] Reworded: SBOM exports and scanner outputs register
+               as file sources — JSON, CSV, Parquet, local or S3 — and
+               scanner publishing OpenAPI registers as API source. No
+               SBOM/CVE connector is published; these are the customer's
+               files. -->
+          <p class="pv-p">SBOM exports and scanner outputs register as
+            file sources — JSON, CSV or Parquet, local or on
+            <code>s3://</code> — and a scanner that publishes an OpenAPI
+            description registers as an API source. There is no SBOM or
+            CVE connector shipped: these are the customer's files, and
+            registering them is the configuration step.</p>
+
+          <!-- [C-14] Reworded: joined to the deployment inventory through
+               an approved relationship on application name or image
+               hash. -->
+          <p class="pv-p">The SBOM is joined to the deployment inventory
+            through an approved relationship on application name or image
+            hash. Which key is right is the organisation's choice; the
+            relationship catalog declares it and the steward on each
+            domain approves it, and SQL and Cypher check every join
+            against that record at compile time.</p>
+
+          <!-- [C-15] Reworded: GitHub registers as a source with a PAT;
+               steward registers the repository and commit tables wanted;
+               commit SHAs link builds to repositories. REQ-1923. -->
+          <p class="pv-p">GitHub registers as a source with a personal
+            access token; the steward registers the repository and commit
+            tables wanted, so commit SHAs link builds to their
+            repositories. The source form asks for the token and nothing
+            else; adding the source registers no tables on its own, and a
+            steward picks the ones the organisation needs.</p>
+
+          <div class="pv-code">
+            <div class="pv-code__title">provisa.yaml — the GitHub source and a steward-registered table</div>
+<pre><span class="pv-code__c"># The source form takes the token and nothing else (REQ-1923).</span>
+<span class="pv-code__c"># The steward registers the tables wanted — nothing arrives by</span>
+<span class="pv-code__c"># default.</span>
+sources:
+  - id: gh-prod
+    type: github
+    access_token: ${env:GITHUB_PAT}
+
+tables:
+  - source_id: gh-prod
+    table: commits
+    domain_id: security</pre>
+          </div>
+
+          <!-- [C-16] Reworded: an MV lists CVEs by application, severity
+               and deployment, refreshed on a schedule or when a freshness
+               probe finds the upstream changed. REQ: freshness probe is
+               published; change streams carry an In-development marker.
+               The sentence stops at the probe. -->
+          <p class="pv-p">A materialized view lists CVEs by application,
+            severity and deployment, refreshed on a schedule or when a
+            freshness probe finds the vulnerability feed or the deployment
+            registry has changed. The probe is the published mechanism;
+            the schedule is the fallback when the probe is not configured
+            or the upstream exposes no change signal.</p>
+
+          <!-- [C-17] Reworded in verdict as OK: the same question, in
+               three languages, is enforced the same way under the role.
+               Not six — three: SQL, GraphQL, Cypher. -->
+          <p class="pv-p">The same question is asked in whichever of three
+            query languages suits the caller — SQL on pgwire, GraphQL on
+            HTTP, Cypher on Bolt — and the row filters, column masks and
+            join guard apply the same way on each, under the role that
+            arrived.</p>
+
+          <!-- The three languages generated, in a tablist. SQL first,
+               because the published pgwire interface is where most
+               consumers will arrive; GraphQL and Cypher follow. The
+               question is the same across tabs. -->
+          <div class="pv-codetabs">
+            <div class="pv-codetabs__tabs" role="tablist" aria-label="Which language the question arrives in">
+              <button class="pv-codetabs__tab" type="button" role="tab" id="t-cve-sql"
+                      aria-controls="p-cve-sql" aria-selected="true">
+                <span class="pv-codetabs__lang">SQL</span>
+                <span class="pv-codetabs__wire">pgwire</span>
+              </button>
+              <button class="pv-codetabs__tab" type="button" role="tab" id="t-cve-gql"
+                      aria-controls="p-cve-gql" aria-selected="false" tabindex="-1">
+                <span class="pv-codetabs__lang">GraphQL</span>
+                <span class="pv-codetabs__wire">http</span>
+              </button>
+              <button class="pv-codetabs__tab" type="button" role="tab" id="t-cve-cypher"
+                      aria-controls="p-cve-cypher" aria-selected="false" tabindex="-1">
+                <span class="pv-codetabs__lang">Cypher</span>
+                <span class="pv-codetabs__wire">bolt</span>
+              </button>
+            </div>
+            <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-cve-sql" aria-labelledby="t-cve-sql">
+<pre><span class="pv-code__c">-- Critical CVEs for every active deployment of my applications</span>
+SELECT a.application,
+       d.deployment,
+       c.cve_id,
+       c.severity
+FROM applications a
+JOIN deployments d ON d.application = a.application
+JOIN sbom_components s ON s.application = a.application
+JOIN cves c ON c.component = s.component
+WHERE c.severity = 'critical'
+  AND d.status = 'active';</pre>
+            </div>
+            <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-cve-gql" aria-labelledby="t-cve-gql" hidden>
+<pre>{
+  applications {
+    application
+    deployments(where: { status: { _eq: "active" } }) {
+      deployment
+    }
+    sbom_components {
+      component
+      cves(where: { severity: { _eq: "critical" } }) {
+        cve_id
+        severity
+      }
+    }
+  }
+}</pre>
+            </div>
+            <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-cve-cypher" aria-labelledby="t-cve-cypher" hidden>
+<pre>MATCH (a:Application)-[:HAS_DEPLOYMENT]-&gt;(d:Deployment),
+      (a)-[:LISTS]-&gt;(s:Component)-[:HAS_VULNERABILITY]-&gt;(c:CVE)
+WHERE c.severity = 'critical' AND d.status = 'active'
+RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §4 What Provisa does, and what it does not
+       Positioning. The verdict is explicit: do not say "does not ingest
+       logs" — Splunk and Logs are source types, and reading them is
+       exactly what Provisa does.
+       ================================================================== -->
+  <section class="pv-section" id="does-and-doesnt">
+    <div class="pv-container">
+     <div class="pv-stack pv-stack--lg">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">04</span>
+            <span class="pv-seclabel__text">The lane</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">The scanners, the patchers and the
+            alerters already exist. We are the join across them.</h2>
+
+          <!-- [C-18] Reworded: does not scan, patch or alert — reads
+               Splunk and log files as tables. "Does not ingest logs"
+               was wrong. -->
+          <p class="pv-p">Provisa does not scan infrastructure, patch
+            systems or raise alerts. It is the governed join across the
+            tools that do — and it reads what they write, Splunk and log
+            files included, as tables. The source list already names Logs
+            and Splunk; a log stream becomes rows on a cadence, under the
+            same roles, rules and record as every other table.</p>
+
+        </div>
+      </div>
+
+      <div class="pv-grid pv-grid--2">
+        <!-- [C-19] Positioning: what Provisa is in this stack. -->
+        <div class="pv-ruled pv-ruled--see pv-ruled--thick">
+          <h3 class="pv-ruled__title">What Provisa is</h3>
+          <div class="pv-ruled__body">A semantic and governance layer:
+            one model over your security tools, three query languages
+            generated from it — SQL, GraphQL, Cypher — and one append-only
+            record of who asked what, under which role, on which surface.
+            The engine stays yours.</div>
+        </div>
+        <!-- [C-20] Positioning: stays in its lane because of how it is
+             built, not as spin. -->
+        <div class="pv-ruled pv-ruled--run pv-ruled--thick">
+          <h3 class="pv-ruled__title">Why it stays in its lane</h3>
+          <div class="pv-ruled__body">Not positioning — construction. There
+            is no scanning subsystem to drift out of lane, no patching
+            service to grow, no alert pipeline that would need its own
+            policy engine. The product is one compiler and one governance
+            pipeline; the scanners and alerters stay the tools you already
+            run.</div>
+        </div>
+      </div>
+     </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §5 How the governance applies to security work
+       The cross-cutting mechanics: approved joins, row-level security,
+       the audit log as a table, materialized views for compliance
+       summaries, bitemporal history, and the three languages generated
+       from a plain-language question.
+       ================================================================== -->
+  <section class="pv-section pv-section--band" id="governance-applied">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">05</span>
+            <span class="pv-seclabel__text">How the governance reaches here</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">The six mechanics the three
+            scenarios all rely on.</h2>
+
+          <div class="pv-stack pv-stack--sm">
+
+            <!-- [C-21] Reworded: every join is a relationship declared
+                 and approved by a steward holding the relationship right
+                 in each domain. Capability name omitted — the two docs
+                 disagree on it. -->
+            <div class="pv-ruled pv-ruled--see pv-ruled--accent">
+              <h3 class="pv-ruled__title">Every join is an approved
+                relationship</h3>
+              <div class="pv-ruled__body">Every join between security
+                sources is a relationship declared and approved by a
+                steward holding the relationship right in each domain it
+                touches. A join nobody declared does not compile; a join
+                one side approved and the other did not is refused with
+                <code>V002</code>, naming which domain is missing the yes.</div>
+            </div>
+
+            <!-- [C-22] Row-level security with user attributes. OK as
+                 published. -->
+            <div class="pv-ruled pv-ruled--get pv-ruled--accent">
+              <h3 class="pv-ruled__title">Row-level security on user
+                attributes</h3>
+              <div class="pv-ruled__body">A row filter is a predicate
+                injected into every <code>SELECT</code> on the table, and
+                it may read attributes of the signed-in user — the team
+                they belong to, the deployments they own, the region
+                they are in. The same predicate applies on SQL, GraphQL
+                and Cypher without being written three times.</div>
+            </div>
+
+            <!-- [C-23] Audit log is a queryable table through SQL
+                 (pgwire), GraphQL and Cypher — same domain access and
+                 masking as any business table. -->
+            <div class="pv-ruled pv-ruled--run pv-ruled--accent">
+              <h3 class="pv-ruled__title">The audit log is a table</h3>
+              <div class="pv-ruled__body">Access records are queryable
+                through SQL on pgwire, GraphQL and Cypher under the same
+                domain access, row-level security and masking rules as
+                any business table. The reviewer asks "who touched
+                <code>noncompliant_builds</code> last week, with what
+                row count, and what the enforcement object said" — in the
+                same language, under their own role.</div>
+            </div>
+
+            <!-- [C-24] Reworded: materialized views compute compliance
+                 summaries on a schedule, or when a freshness probe
+                 finds the upstream changed. -->
+            <div class="pv-ruled pv-ruled--get pv-ruled--accent">
+              <h3 class="pv-ruled__title">Compliance summaries, in
+                materialized views</h3>
+              <div class="pv-ruled__body">Materialized views compute
+                compliance summaries — noncompliant builds, failing
+                policies, open CVEs per application — on a schedule, or
+                when a freshness probe finds the upstream changed. The
+                view is a governed object; the schedule and the probe
+                are what keeps it current.</div>
+            </div>
+
+            <!-- [C-25] Reworded: a view with history keeps every
+                 version; two headers re-read it as of a time and as
+                 recorded then. Cut "even if the policy was corrected
+                 later" — policy replay is not published. -->
+            <div class="pv-ruled pv-ruled--see pv-ruled--accent">
+              <h3 class="pv-ruled__title">History, for the past audit</h3>
+              <div class="pv-ruled__body">A compliance view that declares
+                history keeps every version of its rows. A past audit is
+                re-run as of its date, and as recorded then, with two
+                request headers — <code>X-Provisa-As-Of</code> and
+                <code>X-Provisa-As-Recorded</code> — so a later
+                correction to the data does not change what the auditor
+                saw.</div>
+            </div>
+
+            <!-- [C-26] Reworded: a question in plain language is turned
+                 into SQL, GraphQL and Cypher. The model sees only the
+                 role's schema; every generated query runs under that
+                 role. Three languages — not six. -->
+            <div class="pv-ruled pv-ruled--run pv-ruled--accent">
+              <h3 class="pv-ruled__title">Plain language, three languages
+                generated</h3>
+              <div class="pv-ruled__body">A question in plain language is
+                turned into SQL, GraphQL and Cypher. The model sees only
+                the schema the asking role may see, and every generated
+                query runs under that role's rights — the same row
+                filters, column masks and join guard the role carries
+                everywhere else.</div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §6 The six-surface spine
+       Published statuses. No status badge on the strip per C-28's
+       verdict note: GraphQL is headlined on README but the local
+       docs/features.md still carries "In development", so the strip
+       stays unbadged and the sentence underneath carries the nuance.
+       ================================================================== -->
+  <section class="pv-section" id="surfaces">
+    <div class="pv-container">
+     <div class="pv-stack pv-stack--lg">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">06</span>
+            <span class="pv-seclabel__text">The six surfaces</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">Six surfaces answer the same
+            question, under the same role.</h2>
+
+          <p class="pv-p">One semantic model, six wire surfaces generated
+            from it. The row filter on <code>builds</code> and the join
+            guard on <code>sbom_components → cves</code> hold on each,
+            because the enforcement happens at the compile step every
+            surface passes through — not seven times, once.</p>
+
+        </div>
+      </div>
+
+      <!-- The six-surface strip. No status badge on the strip itself,
+           per C-28: GraphQL is headlined on README but the local
+           docs/features.md marker says "In development". The strip is
+           the names; the paragraph underneath carries any nuance. -->
+      <div class="pv-grid pv-grid--3">
+        <!-- [C-27] pgwire + JDBC, Available. -->
+        <div class="pv-ruled pv-ruled--see pv-ruled--thick">
+          <h3 class="pv-ruled__title">PostgreSQL wire protocol</h3>
+          <div class="pv-ruled__body">SQL on pgwire for the tools and
+            drivers that already speak Postgres. The Provisa JDBC driver
+            is the same wire — a Java client connects as if it were a
+            Postgres database.</div>
+        </div>
+        <!-- [C-28] GraphQL — headlined on README; no "In development"
+             badge on the strip, per the verdict note. -->
+        <div class="pv-ruled pv-ruled--see pv-ruled--thick">
+          <h3 class="pv-ruled__title">GraphQL</h3>
+          <div class="pv-ruled__body">The canonical surface the others
+            are derived from: an SDL per role, nested selections, and
+            the row filters and masks compiled into the resolver before
+            the engine runs anything.</div>
+        </div>
+        <!-- [C-29] gRPC, Available. -->
+        <div class="pv-ruled pv-ruled--see pv-ruled--thick">
+          <h3 class="pv-ruled__title">gRPC</h3>
+          <div class="pv-ruled__body">A proto generated per role, so the
+            services and messages an unauthorised client sees are the
+            ones they may call. The enforcement is the same compile
+            step as every other surface.</div>
+        </div>
+        <!-- [C-30] REST, Available upstream. -->
+        <div class="pv-ruled pv-ruled--see pv-ruled--thick">
+          <h3 class="pv-ruled__title">REST, JSON:API and OpenAPI</h3>
+          <div class="pv-ruled__body">A REST surface and a JSON:API
+            surface, with an OpenAPI description generated from the
+            model — endpoints a reviewer can read before any code
+            calls one.</div>
+        </div>
+        <!-- [C-31] Arrow Flight, Available. -->
+        <div class="pv-ruled pv-ruled--see pv-ruled--thick">
+          <h3 class="pv-ruled__title">Arrow Flight</h3>
+          <div class="pv-ruled__body">Columnar reads over Flight for the
+            analytics clients and notebooks that prefer Arrow over a row
+            cursor. The same role, the same filters, the same record.</div>
+        </div>
+        <!-- [C-32] MCP, Available: every tool call scoped to the
+             capabilities of the identity behind it. -->
+        <div class="pv-ruled pv-ruled--see pv-ruled--thick">
+          <h3 class="pv-ruled__title">MCP for AI agents</h3>
+          <div class="pv-ruled__body">An MCP server exposes the model to
+            an AI agent — and every tool call is scoped to the
+            capabilities of the identity behind it. An agent cannot
+            discover a table its caller may not see, because the schema
+            handed to the agent is the caller's.</div>
+        </div>
+      </div>
+     </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §7 How to run it
+       C-33, matched exactly to brief-install r7 C-1: pip install
+       "provisa[embedded]" then provisa run — no Docker, no Node, no
+       external services; Python 3.12. The two phrases the verdict
+       removes from this sentence are the JVM / root clause and the
+       pgwire-listener clause; docs/cli.md names neither.
+       ================================================================== -->
+  <section class="pv-section pv-section--band" id="install">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">07</span>
+            <span class="pv-seclabel__text">How to run it</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">One command, Python 3.12, and the
+            API and the web UI are up.</h2>
+
+          <!-- [C-33] Reworded: pip install "provisa[embedded]" then
+               provisa run — no Docker, no Node, no external services;
+               Python 3.12. One command starts the API and the web UI.
+               Connect your build registry and patch baseline as sources,
+               join them, and query the result. Matches brief-install r7
+               C-1 wording exactly. The JVM / root clause and the
+               pgwire-listener clause are what the verdict removes —
+               docs/cli.md names neither. -->
+          <p class="pv-p"><code>pip install "provisa[embedded]"</code>
+            then <code>provisa run</code> — no Docker, no Node, no
+            external services; Python 3.12. One command starts the API
+            and the web UI. Connect your build registry and patch
+            baseline as sources, join them, and query the result.</p>
+
+          <div class="pv-code">
+            <div class="pv-code__title">The first five minutes</div>
+<pre><span class="pv-code__c"># A fresh virtualenv, then the embedded tier.</span>
+pip install "provisa[embedded]"
+
+<span class="pv-code__c"># Starts the API server and the web UI in one process.</span>
+<span class="pv-code__c"># Everything else — the engine, the control-plane store, the</span>
+<span class="pv-code__c"># cache — is embedded. No external services to run.</span>
+provisa run</pre>
+          </div>
+
+          <!-- A small callout naming the three published docs the three
+               scenarios lean on. These are the links the brief
+               enumerates. -->
+          <div class="pv-callout pv-callout--get">
+            <span class="pv-callout__label">THE THREE DOCS BEHIND THE SCENARIOS</span>
+            <span class="pv-callout__body">The sources catalogue is at
+              <a class="pv-link pv-link--inline" href="https://provisa.dev/docs/sources/">provisa.dev/docs/sources/</a>;
+              the data-quality checker's own section is at
+              <a class="pv-link pv-link--inline" href="https://provisa.dev/docs/sources/#data-quality-checkers-req-1443">docs/sources/#data-quality-checkers-req-1443</a>;
+              and the engine options a deployment picks between are at
+              <a class="pv-link pv-link--inline" href="https://provisa.dev/docs/engines/">provisa.dev/docs/engines/</a>.</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §Conversion. ContactBand, forest. CTA = /install primary +
+       /register secondary, per the brief. Carries id="contact".
+       ================================================================== -->
+  <section class="pv-contact" id="contact">
+    <div class="pv-contact__inner pv-container">
+      <div class="pv-contact__copy">
+        <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h2 class="pv-h pv-h--cta">Bring your reviewer.</h2>
+        <p class="pv-contact__sub">Register the three sources the page
+          walks — a build registry, a cloud inventory, a vulnerability
+          feed — and watch the join guard, the row filter and the audit
+          record do the work.</p>
+        <div class="pv-contact__links">
+          <a class="pv-link pv-link--inverse" href="/install">Install and deploy<span class="pv-link__arrow"> →</span></a>
+          <a class="pv-link pv-link--inverse" href="/register">Register (free licence)<span class="pv-link__arrow"> →</span></a>
+        </div>
+      </div>
+      <form class="pv-form" method="post" action="/api/demo">
+        <h3 class="pv-form__title">Book a demo</h3>
+        <div class="pv-form__grid">
+          <label class="pv-sr" for="c-name">Full name</label>
+          <input class="pv-input" id="c-name" name="name" autocomplete="name" placeholder="Full name" required>
+          <label class="pv-sr" for="c-email">Work email</label>
+          <input class="pv-input" id="c-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+        </div>
+        <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+          Licence 1.1 — non-production use (including evaluation) is free
+          forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Active Semantic Layer</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/why/materialized-views">Materialized views</a>
+        <a href="/why/catalog">Catalog</a>
+        <a href="/why/no-lock-in">No lock-in</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
+        <a href="/vs/starburst">vs Starburst</a>
+        <a href="/vs/denodo">vs Denodo</a>
+        <a href="/vs/hasura">Coming from Hasura</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
+    </div>
+    <div class="pv-footer__bottom">
+      <span>© Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
