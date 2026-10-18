@@ -196,8 +196,10 @@ head("§1 hero")
 ok("the eyebrow is Architecture", ">Architecture<" in src)
 ok("Emph is used in the h1", p.cls.get("pv-emph", 0) >= 1)
 ok(
-    "the dated standfirst names the version and the requirement ratio",
-    "<code>0.1.0a479</code>" in src and "1,872 tracked requirements, 1,599 are complete" in src,
+    "the dated standfirst names the version and the two reconciled figures",
+    "0.1.0a479" in norm
+    and "1,599 requirements complete and 84 in progress" in norm
+    and "counted on 14 October 2026" in norm,
 )
 ok("IMG-03 is the 16/9 FigPanel", p.cls.get("pv-fig--wide", 0) == 1)
 ok(
@@ -582,9 +584,11 @@ ALLOWED = {
     "63",
     "72",
     "16",
-    # the requirement ratio and the version, both dated in the standfirst
+    # the two reconciled figures, the counted-on date and the version
     "1,599",
-    "1,872",
+    "84",
+    "14",
+    "2026",
     "1",
     "0.1.0a479",
     "1.0",

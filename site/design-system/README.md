@@ -438,6 +438,22 @@ node site/design-system/verify-page-one-model.mjs http://127.0.0.1:8731   # 261/
 One model asks for `/why/one-model` too, so it wants `serve.py` for the same
 reason Interfaces does.
 
+`/vs/hasura` runs the same two halves as the other pages.
+
+```sh
+node site/design-system/check-page-vs-hasura.mjs                # no browser
+node site/design-system/verify-page-vs-hasura.mjs http://127.0.0.1:8744   # 348
+```
+
+Pass the brief as an argument and the first half also compares every copy block
+in its §5 against the rendered prose word for word — 58 blocks, which is what
+holds a page whose every sentence is final copy.
+
+Claims about the Hasura v2 importer come from the app's published material
+(docs, README, CHANGELOG, release notes), not from the site. The site does not
+install, import or run the converter, and the checker does not either; a
+release gate on the artifact belongs with the app's owner.
+
 What a page checker no longer owns is the struck-claim list.
 `site/verify-claims.mjs` sweeps it across every page in `site/` (REQ-2021), so a
 per-page copy of it would be the drift that module exists to prevent. One model
