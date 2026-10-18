@@ -1,159 +1,860 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Active, query-time governance — Provisa</title>
-  <meta name="description" content="Six governance layers compiled into every query plan — introspection filtering, public and domain access, row-level security, column masking, and a predicate guard — plus governed relationships." />
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../styles.css" />
-  <link rel="canonical" href="https://provisa.dev/why/governance" />
+<!-- partials/head.html, verbatim but for the title, the description and the
+     canonical link. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Governance — Provisa</title>
+<meta name="description" content="Governance is a rewrite of the statement, not a filter on the result. Five layers compiled into the SQL before your database sees it, the approval hook that runs before them, and what each mechanism's bypasses are.">
+<link rel="icon" href="/favicon.svg">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+<link rel="canonical" href="https://provisa.dev/why/governance">
+
+<!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
+     external script runs after first paint, which is exactly the flash of the
+     wrong theme this prevents. -->
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="nav" id="nav">
-    <div class="container nav-inner">
-      <a class="brand" href="/" aria-label="Provisa home">
-        <svg class="brand-mark" viewBox="0 0 512 512" width="28" height="28" aria-hidden="true">
-          <rect width="512" height="512" rx="112" fill="#1F2933" />
-          <g transform="translate(48,66) scale(4.0)">
-            <rect x="30" y="18" width="15" height="64" rx="7" fill="#ffffff" />
-            <circle cx="52" cy="35" r="22" fill="#ffffff" />
-            <circle cx="52" cy="34" r="10.5" fill="#1F2933" />
-            <circle cx="52" cy="34" r="4.5" fill="#10B981" />
-          </g>
-        </svg>
-        <span class="brand-word">Provisa</span>
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance" aria-current="page">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
       </a>
-      <nav class="nav-links" aria-label="Primary">
-        <a href="/#interfaces">Interfaces</a>
-        <a href="/#governance">Governance</a>
-        <a href="/#sources">Sources</a>
-        <a href="/demos">Live demos</a>
-        <a href="/docs">Docs</a>
-        <a class="nav-cta" href="/#download">Download</a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance" aria-current="page">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
       </nav>
     </div>
-  </header>
+  </div>
+</div>
 
-  <main id="main" class="doc">
-    <div class="container">
-      <div class="doc-head">
-        <p class="crumb"><a href="/">Provisa</a> <span>/</span> <span>Governance</span></p>
-        <h1>Six layers, compiled into the plan.</h1>
-        <p class="lead">
-          Governance is applied at query time, uniformly, on every language and every
-          transport. Add a source, a column, or a relationship and every layer applies
-          automatically — there is nothing to remember and nothing to re-apply per API.
-        </p>
-      </div>
+<main id="main">
 
-      <div class="doc-body">
-        <h2>The layers</h2>
+  <!-- ==================================================================
+       §1 Hero
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
 
-        <h3>0 — Introspection filtering</h3>
-        <p>
-          Schema browsers only ever see what the role is allowed to see. A hidden table is
-          not a table the user can discover and then be denied; it is absent from the
-          catalog they are handed.
-        </p>
+        <nav class="pv-crumb" aria-label="Breadcrumb">
+          <a href="/">Provisa</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Governance</span>
+        </nav>
 
-        <h3>1 — Public access</h3>
-        <p>
-          The anonymous surface is declared explicitly. Nothing becomes publicly readable
-          as a side effect of registering it.
-        </p>
+        <div class="pv-stack pv-stack--sm">
+          <div class="pv-eyebrow">Governance</div>
+          <h1 class="pv-h pv-h--page">Governance is a rewrite of the statement,
+            <em class="pv-emph">not a filter on the result</em>.</h1>
+        </div>
 
-        <h3>2 — Domain access</h3>
-        <p>
-          Roles reach only the domains registered to them. Domains are the coarse boundary
-          the finer layers operate inside.
-        </p>
+        <div class="pv-rail">
+          <div class="pv-rail__body">
+            <div class="pv-stack">
+              <p class="pv-p pv-p--lede">Provisa does not run your query and
+                then remove what you should not have seen. The caller's role
+                rewrites the statement before it reaches your database — row
+                predicates injected, masked columns replaced, invisible columns
+                stripped, joins checked against what someone approved.</p>
+              <p class="pv-p">That rewrite happens at one place every surface
+                goes through, so it covers GraphQL, Cypher, SQL over HTTP,
+                pgwire, Bolt, Arrow Flight and gRPC without being written seven
+                times. There is no query path that skips it.</p>
+            </div>
+          </div>
+          <div class="pv-rail__rail">
+            <!-- IMG-05. FigPanel governance, 4/5. Five rings, because the
+                 figure depicts the five layers compiled into the plan; the
+                 approval hook is not in the plan and is not in the figure. -->
+            <div class="pv-fig pv-fig--rings" role="img"
+                 aria-label="Five stacked governance layers converging into a single query plan, coloured by the see / get / run semantic.">
+              <span class="pv-fig__label">FIG. 01</span>
+              <i class="pv-fig__s"></i>
+              <i class="pv-fig__s"></i>
+              <i class="pv-fig__s"></i>
+              <i class="pv-fig__s"></i>
+              <i class="pv-fig__s"></i>
+            </div>
+          </div>
+        </div>
 
-        <h3>3 — Row-level security</h3>
-        <p>
-          Per-table, per-role <code>WHERE</code> injection, inherited recursively — a view
-          over a governed table carries the predicate of everything beneath it, and so does
-          a materialized view built on that view.
-        </p>
-
-        <h3>4 — Column visibility and masking</h3>
-        <p>
-          Columns are visible, hidden, or masked per role. Masking is regex, constant, or
-          truncation, with an explicit role-based bypass where a privileged role genuinely
-          needs the raw value.
-        </p>
-
-        <h3>5 — Predicate guard and approval</h3>
-        <p>
-          A pre-execution ABAC hook over webhook, gRPC, or unix socket. The plan is offered
-          to your own decision service before it runs, which is where request-time context
-          — a ticket number, a break-glass approval, a time window — enters the decision.
-        </p>
-
-        <h2>Relationships are governed too</h2>
-        <p>
-          A JOIN, or a graph traversal, is legal only if it matches a registered, approved
-          relationship. Unapproved paths are rejected and logged.
-        </p>
-        <p>
-          That is what lets the query and graph explorers be genuinely open: people can
-          roam the model freely, and AI agents can discover what connects to what, while
-          every path stays inside the edges policy sanctioned. Each relationship carries a
-          human- and agent-readable reason for why the traversal exists, so the model
-          explains itself to whoever — or whatever — is reading it.
-        </p>
-
-        <h2>It's a per-role capability</h2>
-        <p>
-          The guardrail is a single flag on the role. Leave it on for analysts and agents
-          who should stay on the rails; take the training wheels off for a trusted role and
-          it writes unconstrained JOINs across the whole federated model. Same governed
-          path, same RLS and masking — just without the relationship guard.
-        </p>
-
-        <h2>Observability as data</h2>
-        <p>
-          Traces, metrics, and logs are collected via OpenTelemetry, compacted into
-          Iceberg, and registered as queryable tables. Join <code>customers</code> to
-          <code>queries</code> to see who ran what and how long it took — the audit trail
-          is a governed table like any other, not a log file you grep.
-        </p>
-      </div>
-
-      <div class="doc-next">
-        <a class="more" href="/why/interfaces">Every interface it applies to</a>
-        <a class="more" href="/why/no-lock-in">Why the model outlives the engine</a>
       </div>
     </div>
-  </main>
+  </section>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div class="brand">
-        <svg class="brand-mark" viewBox="0 0 512 512" width="24" height="24" aria-hidden="true">
-          <rect width="512" height="512" rx="112" fill="#1F2933" />
-          <g transform="translate(48,66) scale(4.0)">
-            <rect x="30" y="18" width="15" height="64" rx="7" fill="#ffffff" />
-            <circle cx="52" cy="35" r="22" fill="#ffffff" />
-            <circle cx="52" cy="34" r="10.5" fill="#1F2933" />
-            <circle cx="52" cy="34" r="4.5" fill="#10B981" />
-          </g>
-        </svg>
-        <span class="brand-word">Provisa</span>
+  <!-- ==================================================================
+       §2 Where enforcement happens
+       ================================================================== -->
+  <section class="pv-section pv-section--band" id="mechanism">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">01</span>
+            <span class="pv-seclabel__text">The mechanism</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">One rewrite, before the database sees
+            anything.</h2>
+
+          <p class="pv-p">Compilation is two stages. The first turns the
+            request — whatever protocol it arrived on — into plain SQL against
+            the semantic model. The second rewrites that SQL under the caller's
+            role, through subqueries, CTEs, joins and star expansion alike.
+            Because the second stage needs only SQL and a role, every client
+            path gets the same enforcement.</p>
+
+          <div class="pv-codetabs">
+            <div class="pv-codetabs__tabs" role="tablist" aria-label="What runs, and how to ask">
+              <button class="pv-codetabs__tab" type="button" role="tab" id="t-asked"
+                      aria-controls="p-asked" aria-selected="true">
+                <span class="pv-codetabs__lang">What the analyst asked</span>
+                <span class="pv-codetabs__wire">SQL</span>
+              </button>
+              <button class="pv-codetabs__tab" type="button" role="tab" id="t-compile"
+                      aria-controls="p-compile" aria-selected="false" tabindex="-1">
+                <span class="pv-codetabs__lang">Ask what would actually run</span>
+                <span class="pv-codetabs__wire">POST /data/compile</span>
+              </button>
+              <button class="pv-codetabs__tab" type="button" role="tab" id="t-explain"
+                      aria-controls="p-explain" aria-selected="false" tabindex="-1">
+                <span class="pv-codetabs__lang">Or ask the engine for its plan</span>
+                <span class="pv-codetabs__wire">POST /data/sql/explain</span>
+              </button>
+            </div>
+            <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-asked" aria-labelledby="t-asked">
+              <pre>SELECT c.name, c.email, o.total
+FROM customers c
+JOIN orders o ON o.customer_id = c.id;</pre>
+            </div>
+            <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-compile" aria-labelledby="t-compile" hidden>
+              <pre><span class="pv-code__c"># Returns the governed SQL for a question, with row filters and masks</span>
+<span class="pv-code__c"># inlined, plus the route, the parameters and the enforcement metadata.</span>
+<span class="pv-code__c"># Executes nothing. The role comes from the session.</span>
+curl -X POST https://provisa.internal/data/compile \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"query": "{ customers { name email orders { total } } }"}'</pre>
+            </div>
+            <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-explain" aria-labelledby="t-explain" hidden>
+              <pre><span class="pv-code__c"># Takes SQL. Returns the engine's own annotated EXPLAIN of the governed</span>
+<span class="pv-code__c"># statement, with the optimizations that fired. A different thing from tab 2.</span>
+curl -X POST https://provisa.internal/data/sql/explain \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"sql": "SELECT c.name, c.email, o.total FROM customers c JOIN orders o ON o.customer_id = c.id"}'</pre>
+            </div>
+          </div>
+
+          <p class="pv-p">The question goes in as GraphQL, because GraphQL is
+            the canonical surface the others are derived from. What comes back
+            is the compiled statement <strong>and</strong> an enforcement object
+            that names, per table and per column, exactly what was applied:</p>
+
+          <div class="pv-table">
+            <table>
+              <caption class="pv-sr">The fields of the enforcement object returned by POST /data/compile</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Field</th>
+                  <th scope="col">What it holds</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row"><code>rls_filters_applied</code></th>
+                  <td>The predicate text injected, per table</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>columns_excluded</code></th>
+                  <td><code>table.column</code> for every column stripped for this role</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>masking_applied</code></th>
+                  <td><code>table.column -&gt; &lt;mask_type&gt;</code> per masked column</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>schema_scope</code></th>
+                  <td><code>role:&lt;role_id&gt;</code></td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>ceiling_applied</code></th>
+                  <td>The row or time ceiling, when one fired</td>
+                </tr>
+                <tr>
+                  <th scope="row"><code>route</code></th>
+                  <td>The routing decision</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- IMG-06. FigPanel governance, 16/9. -->
+          <div class="pv-fig pv-fig--wide" role="img"
+               aria-label="A query entering on the left and a plan leaving on the right with the policy predicates inlined into it.">
+            <span class="pv-fig__label">FIG. 02</span>
+            <i class="pv-fig__s" style="--l:6;--t:30;--w:18;--h:8"></i>
+            <i class="pv-fig__s" style="--l:6;--t:44;--w:12;--h:8"></i>
+            <i class="pv-fig__s pv-fig__s--ink" style="--l:28;--t:18;--w:1.4;--h:64"></i>
+            <i class="pv-fig__s pv-fig__s--run" style="--l:34;--t:30;--w:30;--h:8"></i>
+            <i class="pv-fig__s pv-fig__s--run" style="--l:34;--t:44;--w:22;--h:8"></i>
+            <i class="pv-fig__s" style="--l:34;--t:58;--w:38;--h:8"></i>
+            <i class="pv-fig__s pv-fig__s--ink" style="--l:76;--t:18;--w:1.4;--h:64"></i>
+            <i class="pv-fig__s" style="--l:82;--t:30;--w:12;--h:36"></i>
+          </div>
+
+          <div class="pv-callout">
+            <span class="pv-callout__body">This is how you answer "what would
+              this role actually be able to see" without running anything
+              against production — and how your own reviewer answers it without
+              taking our word for it. The enforcement is <strong>enumerable
+              before the query runs, by field name, per role.</strong> That is
+              an auditable artifact, not a screenshot.</span>
+          </div>
+
+        </div>
       </div>
-      <p class="footer-note">Config-driven data virtualization. Business Source License 1.1 — non-production use (including evaluation) is free forever, for any size organization. Production use is also free for organizations that, together with their affiliates, have under 100 employees and contractors and under $1M in annual revenue, budget, or expenditures; others need a <a href="mailto:license@provisa.dev">commercial license</a> for production use.</p>
-      <nav class="footer-links" aria-label="Footer">
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §3 The five layers
+       ================================================================== -->
+  <section class="pv-section" id="layers">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">02</span>
+            <span class="pv-seclabel__text">The layers</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">Five layers compiled into the
+            statement, in enforcement order. Then one decision taken before it
+            runs.</h2>
+
+          <div class="pv-stack pv-stack--sm">
+            <div class="pv-layer pv-layer--detail">
+              <span class="pv-layer__idx">00</span>
+              <div class="pv-layer__main">
+                <span class="pv-layer__title">Introspection filtering</span>
+                <span class="pv-layer__where">Schema and catalog generation, per role</span>
+                <span class="pv-layer__desc">Objects outside a role are absent
+                  from the schema, the catalog and the browser. A hidden table
+                  is not one the reader discovers and is then denied — it is
+                  not in the catalog they were handed.</span>
+              </div>
+            </div>
+            <div class="pv-layer pv-layer--detail">
+              <span class="pv-layer__idx">01</span>
+              <div class="pv-layer__main">
+                <span class="pv-layer__title">Domain access</span>
+                <span class="pv-layer__where">Compiler validation, before execution</span>
+                <span class="pv-layer__desc">A query touching a table outside
+                  the role's domain access is rejected before anything
+                  runs.</span>
+              </div>
+            </div>
+            <div class="pv-layer pv-layer--detail pv-layer--get">
+              <span class="pv-layer__idx">02</span>
+              <div class="pv-layer__main">
+                <span class="pv-layer__title">Row-level security</span>
+                <span class="pv-layer__where">Governed-SQL rewrite</span>
+                <span class="pv-layer__desc">Per-table, per-role
+                  <code>WHERE</code> injected into every <code>SELECT</code>,
+                  evaluated against the raw data rather than against a masked
+                  projection.</span>
+              </div>
+            </div>
+            <div class="pv-layer pv-layer--detail pv-layer--get">
+              <span class="pv-layer__idx">03</span>
+              <div class="pv-layer__main">
+                <span class="pv-layer__title">Column visibility and masking</span>
+                <span class="pv-layer__where">Governed-SQL rewrite</span>
+                <span class="pv-layer__desc">Invisible columns are stripped and
+                  masked values replaced before results leave the server. Four
+                  mask types: regex, constant, date truncation and
+                  consistent-fake.</span>
+              </div>
+            </div>
+            <div class="pv-layer pv-layer--detail pv-layer--run">
+              <span class="pv-layer__idx">04</span>
+              <div class="pv-layer__main">
+                <span class="pv-layer__title">Predicate guard</span>
+                <span class="pv-layer__where">validate_sql, pre-execution</span>
+                <span class="pv-layer__desc">A masked column is refused in
+                  <code>WHERE</code> and <code>HAVING</code>, at parse
+                  time.</span>
+              </div>
+            </div>
+            <!-- Unnumbered and slate, deliberately: the hook is outside the
+                 trio because it is outside the query plan. Do not give it an
+                 index. -->
+            <div class="pv-layer pv-layer--detail pv-layer--outside">
+              <div class="pv-layer__main">
+                <span class="pv-layer__title">Before execution — the approval hook</span>
+                <span class="pv-layer__where">An ABAC callout, outside the plan</span>
+                <span class="pv-layer__desc">Your own decision service can
+                  refuse the statement before it runs. It is not one of the
+                  five, because it is not compiled into anything — it is a
+                  question we ask on your behalf.
+                  <a class="pv-link pv-link--inline" href="#approval-hook">§7</a>
+                  has it in full.</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="pv-note">Five is the number of layers compiled into the
+            statement. The one thing on this list that is <strong>not</strong>
+            in the product: public-column publishing — serving a published
+            column to an unauthenticated reader — is designed and not built, so
+            it is not a layer and is not counted. We would rather tell you than
+            have you find out.</p>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §4 The predicate guard, in detail
+       ================================================================== -->
+  <section class="pv-section pv-section--band" id="predicate-guard">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">03</span>
+            <span class="pv-seclabel__text">Why layer 4 exists</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">A masked column you can filter on is
+            not masked.</h2>
+
+          <p class="pv-p">Masking a column and then allowing it in a
+            <code>WHERE</code> clause leaves the value recoverable: a caller
+            runs the query repeatedly, narrowing the predicate, and
+            binary-searches the value they were never shown. Provisa refuses a
+            masked column in <code>WHERE</code> and <code>HAVING</code> at parse
+            time, before execution.</p>
+
+          <div class="pv-code pv-code--run">
+            <pre><span class="pv-code__c">-- role: analyst. `customers.email` is masked for this role.</span>
+SELECT count(*) FROM customers WHERE email LIKE 'a%';
+<span class="pv-code__c">-- refused at parse time: a masked column cannot constrain a result</span></pre>
+          </div>
+
+          <div class="pv-callout">
+            <span class="pv-callout__body">Masks leave filters and joins working
+              on the real value where the role is allowed to see it, and refuse
+              the predicate where it is not. The raw value never leaves the
+              database.</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §5 Approved joins, and the bypasses
+       ================================================================== -->
+  <section class="pv-section" id="join-guard">
+    <div class="pv-container">
+     <div class="pv-stack pv-stack--lg">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">04</span>
+            <span class="pv-seclabel__text">The join guard</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">Every join in SQL and Cypher must match
+            a relationship someone approved.</h2>
+
+          <p class="pv-p">A join — or a graph traversal, which is the same thing
+            a layer down — is checked against the approved relationship catalog
+            at compile time. A join that no approved relationship covers does
+            not run.</p>
+
+        </div>
+      </div>
+
+      <!-- The bypasses are cards in the same grid as the claim, at the same
+           weight, and the grid sits at the container's width rather than in
+           the rail's body column — pv-grid--3 cannot resolve to three columns
+           inside two thirds of the container, and the first card dropping to
+           a second row is exactly the demotion the brief forbids. -->
+      <div class="pv-grid pv-grid--3">
+            <div class="pv-ruled pv-ruled--run pv-ruled--accent">
+              <h3 class="pv-ruled__title">It is policy, not a security boundary —
+                and here is why that matters</h3>
+              <div class="pv-ruled__body">The relationship guard is governance
+                policy. It has two bypasses and we would rather you heard them
+                from us: a role holding the <code>ignore-relationships</code>
+                capability joins freely, and a role with the guard disabled
+                <em>and</em> an explicit directive in the statement does too —
+                either one alone does nothing. It is also skipped for GraphQL,
+                where relationship fields are pre-approved by the schema itself
+                and the check would be redundant.</div>
+            </div>
+            <div class="pv-ruled pv-ruled--see pv-ruled--accent">
+              <h3 class="pv-ruled__title">In high-security mode, neither bypass
+                applies</h3>
+              <div class="pv-ruled__body">Turn on high-security mode and the
+                guard is unbypassable, by anyone — including a role that was
+                granted the bypass capability by mistake. That is the property
+                worth having: not that misconfiguration is impossible, but that
+                one setting makes it survivable.</div>
+            </div>
+            <div class="pv-ruled pv-ruled--get pv-ruled--accent">
+              <h3 class="pv-ruled__title">Why open the explorers at all</h3>
+              <div class="pv-ruled__body">Because every path a person or an
+                agent can take is one someone approved. People roam the model
+                freely and an agent discovers what connects to what, and the
+                edges are the control.</div>
+            </div>
+      </div>
+     </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §6 Domains compose
+       ================================================================== -->
+  <section class="pv-section pv-section--band" id="reach">
+    <div class="pv-container">
+     <div class="pv-stack pv-stack--lg">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">05</span>
+            <span class="pv-seclabel__text">Reach</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">Absent, not denied.</h2>
+
+        </div>
+      </div>
+
+      <div class="pv-grid pv-grid--2">
+            <div class="pv-ruled pv-ruled--see pv-ruled--thick">
+              <h3 class="pv-ruled__title">A query runs inside a domain</h3>
+              <div class="pv-ruled__body">Plus whatever is reachable from it by
+                approved traversal. Everything outside that graph is not
+                refused — it is not there. For a reviewer writing a control
+                narrative, "structurally unreachable" and "denied on request"
+                are different controls, and only one of them survives a creative
+                query.</div>
+            </div>
+            <div class="pv-ruled pv-ruled--see pv-ruled--thick">
+              <h3 class="pv-ruled__title">Four schemas, generated per role</h3>
+              <div class="pv-ruled__body">The GraphQL SDL, the SQL information
+                schema, the Cypher label catalog and the gRPC proto are each
+                generated for the role asking. Unauthorized objects are
+                structurally absent from all four.</div>
+            </div>
+      </div>
+
+     </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §7 The approval hook
+       ================================================================== -->
+  <section class="pv-section" id="approval-hook">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">06</span>
+            <span class="pv-seclabel__text">Your decision service</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">When your policy engine owns the
+            decision.</h2>
+
+          <div class="pv-ruled pv-ruled--see pv-ruled--accent">
+            <div class="pv-ruled__body">For rules too situational to write as a
+              predicate, Provisa calls out before the query runs — over a
+              webhook, gRPC, or a Unix socket. It is scoped per table, per
+              source, or deployment-wide, and a circuit breaker protects queries
+              when the hook is unhealthy. This is where request-time context
+              enters: a ticket number, a break-glass approval, a time
+              window.</div>
+          </div>
+
+          <div class="pv-callout">
+            <span class="pv-callout__body">If the answer to "who decides" is
+              "our own system", this is the integration point, and it sits
+              before execution rather than beside it.</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §8 The access record
+       ================================================================== -->
+  <section class="pv-section pv-section--band" id="audit">
+    <div class="pv-container">
+     <div class="pv-stack pv-stack--lg">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">07</span>
+            <span class="pv-seclabel__text">Audit</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">Append-only, and the database refuses
+            the edit.</h2>
+
+        </div>
+      </div>
+
+      <div class="pv-grid pv-grid--3">
+            <div class="pv-ruled pv-ruled--see pv-ruled--accent">
+              <h3 class="pv-ruled__title">What is written</h3>
+              <div class="pv-ruled__body">Every query: tenant, user, role, a
+                hash of the query, the tables touched, the source, status and
+                duration. Written at the single governed pipeline, so no surface
+                can skip it.</div>
+            </div>
+            <div class="pv-ruled pv-ruled--get pv-ruled--accent">
+              <h3 class="pv-ruled__title">What is never written</h3>
+              <div class="pv-ruled__body">Query text in the clear. The hash
+                identifies the shape; the text is not stored.</div>
+            </div>
+            <div class="pv-ruled pv-ruled--run pv-ruled--accent">
+              <h3 class="pv-ruled__title">What the database refuses</h3>
+              <div class="pv-ruled__body"><code>UPDATE</code> and
+                <code>DELETE</code> against the log, by rule, at the database —
+                not by application logic that an administrator could route
+                around.</div>
+            </div>
+      </div>
+
+      <!-- Same prominence as the cards above, not a footnote: this is the
+           sentence that names the one setting which would take the guarantee
+           away. .pv-measure keeps it to the reading measure now that it is at
+           the container's width rather than in the rail's body column. -->
+      <div class="pv-stack pv-measure">
+          <div class="pv-callout">
+            <span class="pv-callout__body">That immutability is enforced by
+              PostgreSQL rules, so it holds on a PostgreSQL control plane —
+              which is the default <strong>from the desktop install up</strong>,
+              not only in production. SQLite is a selectable control-plane store
+              and it does not enforce the rule; there, append-only is a
+              convention of the application rather than a guarantee of the
+              database. If your control narrative depends on database-enforced
+              immutability, you already have it, and this is the sentence that
+              tells you which setting would take it away.</span>
+          </div>
+
+          <p class="pv-p">The access record and the other internal logs are
+            exposed as queryable tables in the built-in ops domain, so the audit
+            trail is a governed table like any other rather than a log file to
+            grep. Curated management reports over those tables are being built;
+            the tables themselves are there today.</p>
+      </div>
+
+     </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §9 Keys you hold
+       ================================================================== -->
+  <section class="pv-section" id="keys">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">08</span>
+            <span class="pv-seclabel__text">Keys</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">The master key is yours, in your own
+            KMS.</h2>
+
+          <div class="pv-table">
+            <table>
+              <caption class="pv-sr">What protects a payload, where the master key lives, and what revoking it does</caption>
+              <tbody>
+                <tr>
+                  <th scope="row">How payloads are protected</th>
+                  <td>Envelope encryption, AES-256-GCM, with a unique data key
+                    per payload wrapped by the organization master key.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Where the master key lives</th>
+                  <td>A customer-managed key in your own AWS KMS, Azure Key
+                    Vault, Google Cloud KMS or HashiCorp Vault Transit. Provisa
+                    never stores raw key material, and a provider you run
+                    yourself registers without core changes.</td>
+                </tr>
+                <tr>
+                  <th scope="row">What revocation does</th>
+                  <td>Revoke the grant and the data is unreadable. Not "access
+                    is denied" — unreadable.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Bulk results</th>
+                  <td>Results written to object storage can be encrypted with a
+                    key only the client holds; the JDBC driver, the Python
+                    client and GraphQL clients decrypt on their side, so the
+                    server never sees the clear text.</td>
+                </tr>
+                <tr>
+                  <th scope="row">High-security mode</th>
+                  <td>The relationship guard becomes unbypassable and the
+                    wire-protocol listener can be turned off entirely.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §10 Controls, not certifications
+       ================================================================== -->
+  <section class="pv-section pv-section--band" id="controls">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">09</span>
+            <span class="pv-seclabel__text">What we do not claim</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">We hold no certifications. Here is what
+            we do hold.</h2>
+
+          <!-- The Callout the outline asks for carries the audit's own
+               suggested wording, which is the first paragraph. It has no mono
+               label: the brief supplies none and the kit says to leave it off
+               rather than invent one. -->
+          <div class="pv-callout">
+            <span class="pv-callout__body">Provisa gives you the controls an
+              auditor asks for: an append-only access record the database itself
+              will not let you edit, envelope encryption under a key held in
+              your own KMS, and an air-gapped deployment that never phones home.
+              The certifications belong to the environment you run it in; the
+              control evidence is per-requirement and exportable.</span>
+          </div>
+
+          <div class="pv-stack">
+            <p class="pv-p">Provisa is self-hosted. You run it on your hardware,
+              in your cloud account, or air-gapped. There is no managed service
+              to buy today — we never touch your data, we run no service on your
+              behalf, and there is nothing for us to be certified about on your
+              behalf either.</p>
+            <p class="pv-p">And the number, because you will ask for it and
+              because publishing it is the point: Provisa is at
+              <code>0.1.0a479</code>, pre-1.0. Of 1,872 tracked requirements,
+              <strong>1,599 are complete</strong>, 84 are in progress and 37 are
+              proposed. Every capability on this page names the requirements
+              behind it and their status is in the repository you can read
+              before you talk to us.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §11 Conversion. ContactBand, ink. It carries id="contact", which is
+       what the header's own Book a demo resolves to on this page, and the
+       demo form the primary button submits.
+       ================================================================== -->
+  <section class="pv-contact pv-contact--inverse" id="contact">
+    <div class="pv-contact__inner pv-container">
+      <div class="pv-contact__copy">
+        <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h2 class="pv-h pv-h--cta">Bring your reviewer.</h2>
+        <div class="pv-contact__links">
+          <a class="pv-link pv-link--inverse" href="/platform">How the compiler
+            works<span class="pv-link__arrow"> →</span></a>
+        </div>
+      </div>
+      <form class="pv-form" method="post" action="/api/demo">
+        <h3 class="pv-form__title">Book a demo</h3>
+        <div class="pv-form__grid">
+          <label class="pv-sr" for="c-name">Full name</label>
+          <input class="pv-input" id="c-name" name="name" autocomplete="name" placeholder="Full name" required>
+          <label class="pv-sr" for="c-email">Work email</label>
+          <input class="pv-input" id="c-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+        </div>
+        <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+          Licence 1.1 — non-production use (including evaluation) is free
+          forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Active Semantic Layer</a>
         <a href="/why/interfaces">Interfaces</a>
         <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/why/materialized-views">Materialized views</a>
+        <a href="/why/catalog">Catalog</a>
         <a href="/why/no-lock-in">No lock-in</a>
-        <a href="/docs">Docs</a>
       </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
+        <a href="/vs/starburst">vs Starburst</a>
+        <a href="/vs/denodo">vs Denodo</a>
+        <a href="/vs/hasura">Coming from Hasura</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
     </div>
-  </footer>
+    <div class="pv-footer__bottom">
+      <span>© Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>

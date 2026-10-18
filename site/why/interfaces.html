@@ -1,191 +1,838 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Query interfaces &amp; wire protocols — Provisa</title>
-  <meta name="description" content="Three query languages and nine wire protocols over one federated model: GraphQL, SQL, Cypher over pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, and MCP." />
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../styles.css" />
-  <link rel="canonical" href="https://provisa.dev/why/interfaces" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interfaces — Provisa</title>
+  <meta name="description" content="Seven listeners, sixteen surfaces, no new client library. pgwire, Bolt, Arrow Flight, GraphQL, SQL, Cypher, gRPC, Airport and MCP compile to the same governed statement — and four of the seven listeners are off until you set a port.">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="canonical" href="https://provisa.dev/why/interfaces">
+
+  <link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/design-system/fonts.css">
+  <link rel="stylesheet" href="/design-system/tokens.css">
+  <link rel="stylesheet" href="/design-system/provisa.css">
+
+  <!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
+       external script runs after first paint, which is exactly the flash of the
+       wrong theme this prevents. -->
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("provisa-theme") === "dark")
+          document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {
+        /* Storage disabled: light stands, which is the default anyway. */
+      }
+    })();
+  </script>
+
+  <script src="/design-system/provisa.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="pv-skip" href="#main">Skip to content</a>
 
-  <header class="nav" id="nav">
-    <div class="container nav-inner">
-      <a class="brand" href="/" aria-label="Provisa home">
-        <svg class="brand-mark" viewBox="0 0 512 512" width="28" height="28" aria-hidden="true">
-          <rect width="512" height="512" rx="112" fill="#1F2933" />
-          <g transform="translate(48,66) scale(4.0)">
-            <rect x="30" y="18" width="15" height="64" rx="7" fill="#ffffff" />
-            <circle cx="52" cy="35" r="22" fill="#ffffff" />
-            <circle cx="52" cy="34" r="10.5" fill="#1F2933" />
-            <circle cx="52" cy="34" r="4.5" fill="#10B981" />
-          </g>
-        </svg>
-        <span class="brand-word">Provisa</span>
-      </a>
-      <nav class="nav-links" aria-label="Primary">
-        <a href="/#interfaces">Interfaces</a>
-        <a href="/#governance">Governance</a>
-        <a href="/#sources">Sources</a>
-        <a href="/demos">Live demos</a>
-        <a href="/docs">Docs</a>
-        <a class="nav-cta" href="/#download">Download</a>
+  <div class="pv-utility">
+    <div class="pv-utility__inner pv-container">
+      <nav class="pv-utility__links" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
       </nav>
+    </div>
+  </div>
+
+  <!-- The header's secondary action is the free licence. Plan revision 3
+       withdraws the evaluation trial as a conversion, and PRO-11 acceptance
+       criterion 7 says no link on this page may point at the trial host. The
+       site-wide header partial still carries that link; removing it there is
+       the Home build issue's change, since it owns the design-system edit. -->
+  <header class="pv-header">
+    <div class="pv-header__inner pv-container">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <nav class="pv-header__nav" aria-label="Main">
+        <a href="/platform">Platform</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/industries">Industries</a>
+        <a href="/why/interfaces" aria-current="page">Interfaces</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/vs/starburst">Compare</a>
+      </nav>
+      <div class="pv-header__actions">
+        <div class="pv-theme" role="group" aria-label="Theme">
+          <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+          <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+        </div>
+        <a class="pv-header__secondary" href="/register">Get a free licence</a>
+        <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+      </div>
+      <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+              aria-expanded="false" aria-controls="pv-drawer">
+        <i aria-hidden="true"></i>Menu
+      </button>
     </div>
   </header>
 
-  <main id="main" class="doc">
-    <div class="container">
-      <div class="doc-head">
-        <p class="crumb"><a href="/">Provisa</a> <span>/</span> <span>Interfaces</span></p>
-        <h1>Three languages. Nine protocols. One model.</h1>
-        <p class="lead">
-          The query language and the wire protocol are independent choices. Every entry
-          point resolves against the same federated model and passes through the same
-          governance — there is no path in that skips it.
-        </p>
-        <p class="lead">
-          One model does not mean one namespace. You divide sources into
-          <strong>domains</strong>, and a domain is what a SQL client sees as a schema —
-          so <code>sales.orders</code> and <code>finance.orders</code> stay distinct
-          while resolving through the same governed model.
-        </p>
+  <div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+       aria-label="Menu" aria-hidden="true">
+    <div class="pv-drawer__inner pv-container">
+      <div class="pv-drawer__top">
+        <a class="pv-wordmark" href="/">
+          <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          Provisa
+        </a>
+        <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
       </div>
-
-      <div class="doc-body">
-        <h2>Query languages</h2>
-
-        <h3>GraphQL</h3>
-        <p>
-          Per-role schemas with field-level visibility, cursor pagination, and aggregates.
-          The schema is constrained to registered relationships, so a query that traverses
-          an unapproved path cannot be expressed — it is <em>valid by construction</em>
-          rather than rejected at runtime. Apollo Automatic Persisted Queries are included.
-        </p>
-
-        <h3>SQL</h3>
-        <p>
-          Full SQL over federated data, correlated subqueries and all. Cross-source joins
-          fan out through the federation engine; single-source queries bypass federation
-          entirely and route direct to the driver, transactional and sub-100ms.
-        </p>
-
-        <h3>Cypher</h3>
-        <p>
-          Graph queries over the same federated model. Traverse relationships as edges,
-          union sources into a single node label, and walk variable-length paths — under
-          identical governance to the SQL and GraphQL paths.
-        </p>
-
-        <h2>Wire protocols</h2>
-
-        <h3>pgwire — port 5439</h3>
-        <p>
-          Any Postgres client connects: psql, DBeaver, DataGrip, pandas
-          <code>read_sql</code>, or anything else speaking the frontend/backend protocol.
-          <code>pg_catalog</code> is answered in-memory, so schema browsers, foreign-key
-          arrows, and autocomplete work without a real Postgres behind them.
-        </p>
-
-        <h3>Bolt (Neo4j)</h3>
-        <p>
-          Neo4j Browser, Bloom, and the official drivers run Cypher over Bolt against the
-          federated graph. Each role surfaces as a <code>provisa_&lt;role&gt;</code>
-          database, so the client's database picker is the governance boundary.
-        </p>
-
-        <h3>Arrow Flight</h3>
-        <p>
-          Arrow record batches streamed over gRPC — columnar all the way out, with no
-          row-by-row serialization between the engine and the client. Accepts GraphQL or
-          SQL. Result sets are unbounded: nothing is materialized server-side while the
-          client reads.
-        </p>
-
-        <h3>gRPC model API</h3>
-        <p>
-          A <code>.proto</code> is generated from the registered schema: typed query and
-          insert RPCs per table, with streamed responses. Regenerating is a consequence of
-          changing the model, not a separate build step.
-        </p>
-
-        <h3>JDBC, REST, and JSON:API</h3>
-        <p>
-          BI tools — Tableau, Power BI, DBeaver — connect over JDBC. Applications get two
-          HTTP shapes over the same model: plain REST at
-          <code>/data/rest/{table}</code>, with filter, ordering, pagination, and field
-          selection as query parameters, and JSON:API 1.1 at
-          <code>/data/jsonapi/{table}</code> with sparse fieldsets and filter
-          expressions. Both are described by a generated OpenAPI 3.1 document, so a
-          client generator produces a typed SDK without anyone hand-writing a spec.
-        </p>
-
-        <h3>Airport (DuckDB)</h3>
-        <p>
-          Any DuckDB client attaches Provisa as a database —
-          <code>ATTACH 'grpc://host' AS p (TYPE AIRPORT)</code> — and queries the governed
-          federated model from local DuckDB. Filters and projections push down; writes
-          update by primary key.
-        </p>
-
-        <h3>WebSocket and SSE</h3>
-        <p>
-          Subscriptions stream near-real-time change events. The backend is your choice:
-          Postgres native notification, MongoDB change streams, CDC, or polling — and
-          events can fan out over Kafka.
-        </p>
-
-        <h2>For AI agents</h2>
-
-        <h3>MCP server</h3>
-        <p>
-          A Model Context Protocol server — stdio and remote Streamable HTTP — exposes your
-          governed, federated data to agents like Claude as tools. The OAuth token maps to
-          a role, so every agent call is governed by the same six layers as a human query.
-          Agents get no bypass, and no separate policy to keep in sync.
-        </p>
-
-        <h3>Natural language</h3>
-        <p>
-          NL→SQL, Cypher, or GraphQL powered by Claude, with an interactive validation loop
-          so a generated query is reviewed before anything executes.
-        </p>
+      <nav class="pv-drawer__nav" aria-label="Main">
+        <a href="/platform">Platform</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/industries">Industries</a>
+        <a href="/why/interfaces" aria-current="page">Interfaces</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/vs/starburst">Compare</a>
+      </nav>
+      <div class="pv-drawer__actions">
+        <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+        <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
       </div>
-
-      <div class="doc-next">
-        <a class="more" href="/why/governance">How governance applies to every one of them</a>
-        <a class="more" href="/#download">Download Provisa</a>
+      <div class="pv-drawer__foot">
+        <div class="pv-theme" role="group" aria-label="Theme">
+          <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+          <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+        </div>
+        <nav class="pv-drawer__utility" aria-label="Utility">
+          <a href="https://provisa.dev/docs">Docs</a>
+          <a href="#contact">Support</a>
+          <a href="/register">Register (free licence)</a>
+        </nav>
       </div>
     </div>
+  </div>
+
+  <main id="main">
+
+    <!-- §1 Hero ====================================================== -->
+    <section class="pv-section">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <nav class="pv-crumb" aria-label="Breadcrumb">
+          <a href="/">Provisa</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Interfaces</span>
+        </nav>
+        <div class="pv-rail">
+          <div class="pv-rail__body">
+            <div class="pv-stack">
+              <div class="pv-eyebrow">Interfaces</div>
+              <h1 class="pv-h pv-h--hero">Seven listeners. Sixteen surfaces.
+                <em class="pv-emph">No new client library.</em></h1>
+              <p class="pv-p pv-p--lede">Every surface compiles to the same
+                statement against the same model, so the answer does not depend
+                on how you asked. Translation belongs to the compiler, not to
+                the protocol you connected with — pgwire, Flight, GraphQL and
+                the rest produce the same SQL for the same question.</p>
+              <!-- Spine position, and the page that proves it (PRO-26;
+                   claim-audit Page 4 item 1, §5.1b). GraphQL is the canonical
+                   schema and REST, JSON:API, OpenAPI and gRPC are derived from
+                   it — that derivation is why one English question comes back
+                   on six surfaces with no extra modelling, so the lead says
+                   both. Qualifier 1, "up to six", stays in the sentence. -->
+              <p class="pv-p">One schema is the reason the count is possible:
+                GraphQL is canonical, and REST, JSON:API, OpenAPI and gRPC are
+                derived from it. So a question asked once in English comes back
+                on up to six governed surfaces — SQL, GraphQL, Cypher, gRPC,
+                JSON:API and OpenAPI — each one generated for the asking role
+                and run through the same compiled governance. Nobody modelled
+                those six separately; there is only the one model. Those six are
+                what one English question comes back on; the sixteen surfaces in
+                the title are the ways in. Different count, different thing.</p>
+              <p class="pv-p pv-p--sm">Three of those six are protocols rather
+                than languages, and they behave accordingly: gRPC, JSON:API and
+                OpenAPI come back as the request a client of that protocol would
+                send and the envelope it would receive, computed through the
+                governed pipeline rather than over a socket, and they express
+                row, aggregate and group-by questions. An arbitrary question is
+                carried by SQL, GraphQL and Cypher; the other three say so
+                rather than guess.</p>
+            </div>
+          </div>
+          <div class="pv-rail__rail">
+            <!-- IMG-07. FigPanel placeholder until the asset lands; see the
+                 image-register document on PRO-2. -->
+            <div class="pv-fig" role="img"
+                 aria-label="A fan of protocol names in mono converging on a single model.">
+              <span class="pv-fig__label">FIG. 01</span>
+              <i class="pv-fig__s pv-fig__s--sq pv-fig__s--run" style="--l:10;--t:8;--w:34"></i>
+              <i class="pv-fig__s" style="--l:27;--t:21;--w:2;--h:48"></i>
+              <i class="pv-fig__s" style="--l:27;--t:67;--w:23;--h:1.6"></i>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:50;--t:58;--w:11"></i>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:64;--t:58;--w:11"></i>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:78;--t:58;--w:11"></i>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:50;--t:69.5;--w:11"></i>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:64;--t:69.5;--w:11"></i>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:78;--t:69.5;--w:11"></i>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:50;--t:81;--w:11"></i>
+              <i class="pv-fig__s pv-fig__s--sq" style="--l:64;--t:81;--w:11"></i>
+              <i class="pv-fig__s pv-fig__s--sq pv-fig__s--ink" style="--l:78;--t:81;--w:11"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §2 The mapping ============================================== -->
+    <section class="pv-section pv-section--band">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">01</span>
+            <span class="pv-seclabel__text">The matrix</span>
+          </div>
+          <h2 class="pv-h pv-h--section">What listens, and what rides on it.</h2>
+          <p class="pv-p">Provisa runs <strong>seven</strong> server listeners,
+            each binding its own port. HTTP, gRPC and Arrow Flight start by
+            default. <strong>pgwire, Bolt, Airport and MCP have no default port
+            — they are off until you set one</strong>, which is a sentence worth
+            reading twice because it is the one that otherwise costs you an
+            afternoon. Fifteen client-facing surfaces ride those seven. We show
+            the mapping rather than a flat count, because a flat count is the
+            kind of number a reader checks, and because seven is structural —
+            you can verify it from <code>app_startup</code> — where any count of
+            surfaces is a taxonomy someone chose.</p>
+        </div>
+
+        <!-- The canonical definition of "sixteen surfaces" for the whole site.
+             Home §6 mirrors it row for row; a row changed here changes there,
+             and goes past the Content Manager first (PRO-11 criterion 2). -->
+        <div class="pv-table">
+          <table>
+            <caption class="pv-sr">Provisa's seven server listeners, whether
+              each one starts by default, and the client-facing surfaces each
+              one carries</caption>
+            <thead>
+              <tr>
+                <th scope="col">Listener</th>
+                <th scope="col">Default</th>
+                <th scope="col">Carries</th>
+                <th scope="col">What connects</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">HTTP</th>
+                <td>on, <code>8000</code></td>
+                <td>GraphQL · REST / JSON:API / OpenAPI · SQL · Cypher ·
+                  WebSocket · SSE · Python client</td>
+                <td>Everything with an HTTP client. GraphQL is the canonical
+                  schema — REST, JSON:API, OpenAPI and gRPC are derived from
+                  it</td>
+              </tr>
+              <tr>
+                <th scope="row">gRPC</th>
+                <td>on, <code>50051</code></td>
+                <td>A per-role generated proto</td>
+                <td>Typed clients, with an HTTP proxy for those that cannot
+                  speak gRPC</td>
+              </tr>
+              <tr>
+                <th scope="row">Arrow Flight</th>
+                <td>on, <code>8815</code></td>
+                <td>Flight SQL · ADBC · JDBC</td>
+                <td>Columnar consumers, and the Provisa JDBC driver, which moves
+                  results as Arrow over Flight</td>
+              </tr>
+              <tr>
+                <th scope="row">pgwire</th>
+                <td><strong>off</strong> until you set a port; <code>5439</code>
+                  by convention</td>
+                <td>SQL only</td>
+                <td>psql, DBeaver, Tableau, Superset, anything with a Postgres
+                  driver</td>
+              </tr>
+              <tr>
+                <th scope="row">Bolt</th>
+                <td><strong>off</strong> until you set a port; <code>7687</code>
+                  by convention</td>
+                <td>Cypher</td>
+                <td>Neo4j Browser, Bloom, cypher-shell, the official Neo4j
+                  drivers</td>
+              </tr>
+              <tr>
+                <th scope="row">Airport</th>
+                <td><strong>off</strong> until you set a port</td>
+                <td>DuckDB attach</td>
+                <td>DuckDB attaches to Provisa as a catalog. Its own listener,
+                  not a rider on Flight</td>
+              </tr>
+              <tr>
+                <th scope="row">MCP</th>
+                <td><strong>off</strong> until you set a port; <code>8009</code>
+                  by convention</td>
+                <td>Governed tools for agents</td>
+                <td>Streamable HTTP at <code>/mcp</code> on its own port — not a
+                  path on the API port</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pv-stack pv-stack--sm">
+          <p class="pv-p pv-p--sm">That is fifteen surfaces inbound. The
+            sixteenth goes the other way: a governed change stream
+            <strong>out</strong> to a Kafka topic, carrying the same row filters
+            and masks as a read. Calling an egress stream a “way in” is how a
+            previous draft of this page got to seventeen.</p>
+          <p class="pv-p pv-p--sm">The default ports above are the values in
+            <code>provisa/core/settings_catalog.py</code> (REQ-1913). The
+            conventional numbers for the four opt-in listeners are what every
+            deployment path Provisa itself ships sets — the Helm chart
+            (REQ-1258) and <code>config/provisa-install.yaml</code> — not
+            product defaults. There is a difference and this page keeps it.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- §3 What is uniform and what is not =========================== -->
+    <section class="pv-section">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">02</span>
+          <span class="pv-seclabel__text">Honesty first</span>
+        </div>
+        <div class="pv-stack">
+          <div class="pv-callout pv-callout--get">
+            <span class="pv-callout__body"><strong>Governance is uniform.</strong>
+              Whatever you connect with, the request becomes the same canonical
+              governed statement under the same role. Row filters, column
+              masking, domain reach and the join guard do not vary by
+              protocol.</span>
+          </div>
+          <div class="pv-callout">
+            <span class="pv-callout__body"><strong>Command invocation is
+              not.</strong> Registered commands reach GraphQL, pgwire SQL and
+              REST. They do not yet reach MCP, Arrow Flight, gRPC or Cypher over
+              Bolt. If your integration depends on calling a registered command,
+              check this list before you pick a transport.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §4 Each surface, with its one caveat ========================= -->
+    <section class="pv-section pv-section--band">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">03</span>
+            <span class="pv-seclabel__text">Per surface</span>
+          </div>
+          <h2 class="pv-h pv-h--section">The thing you would otherwise find out
+            in week three.</h2>
+        </div>
+
+        <div class="pv-acc">
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="true" aria-controls="if-graphql">
+              <span class="pv-acc__title">GraphQL</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-graphql">
+              <p>Per-role generated schema. Filtering, ordering and pagination
+                follow the Hasura convention. Apollo automatic persisted queries
+                are supported. GraphQL is the canonical surface the others are
+                derived from.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-sql-http">
+              <span class="pv-acc__title">SQL over HTTP</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-sql-http" hidden>
+              <p>PostgreSQL-compatible SQL against the model’s names, not the
+                physical tables. <code>POST /data/sql/explain</code> returns the
+                engine’s own annotated plan for the governed statement, with the
+                optimizations that fired. <strong>The route that returns
+                governed SQL takes GraphQL, not SQL, and it is
+                <code>POST /data/compile</code> — see the two-route table
+                below.</strong></p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-pgwire">
+              <span class="pv-acc__title">pgwire</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-pgwire" hidden>
+              <p>Simple and extended query protocols, multiple statements,
+                positional and binary parameters, cursors and <code>COPY</code>.
+                SCRAM-SHA-256. DBeaver browses through the usual catalog
+                queries. <strong>The listener is off until you set a port</strong>
+                — it is not open by default. SQL only, never GraphQL or Cypher,
+                and definitions are not accepted over the wire.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-bolt">
+              <span class="pv-acc__title">Bolt</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-bolt" hidden>
+              <p>Neo4j Browser, Bloom, cypher-shell and the official drivers run
+                Cypher. Each of your roles appears as a database.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-flight">
+              <span class="pv-acc__title">Arrow Flight</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-flight" hidden>
+              <p>Batch-by-batch streaming, so a full result never sits in
+                memory. Flight SQL and ADBC clients connect. <strong>On a Trino
+                engine the route goes through a Flight SQL proxy, and if that
+                proxy is down the request fails rather than silently taking
+                another route.</strong> We would rather you got an error than a
+                different execution path.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-airport">
+              <span class="pv-acc__title">Airport</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-airport" hidden>
+              <p>DuckDB attaches to Provisa as a catalog. Each role sees only
+                its own registered columns, and writes are held in a transaction
+                until commit.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-grpc">
+              <span class="pv-acc__title">gRPC</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-grpc" hidden>
+              <p>A proto generated per role, showing only that role’s tables and
+                columns. The role is selected by a metadata key on the call, and
+                field numbers stay stable across regenerations.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-mcp">
+              <span class="pv-acc__title">MCP</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-mcp" hidden>
+              <p>Governed tools for agents: an agent discovers the catalog and
+                runs queries under the identity behind its token, so it can
+                never do more than that person could. Transport is
+                <strong>streamable HTTP</strong>, at <code>/mcp</code> on the MCP
+                listener’s own port. <strong><code>stdio</code> is not
+                native</strong> — it is the bundled <code>mcp-proxy</code>
+                bridge, and the bridge command is set only by the native
+                launcher, so on the container tier you supply your own.
+                <strong>On by default only in the desktop build, bound to
+                loopback</strong> — a server deployment turns it on
+                deliberately.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-subscriptions">
+              <span class="pv-acc__title">Subscriptions</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-subscriptions" hidden>
+              <p>WebSocket and SSE, with the same row filters and masking
+                applied to events as to a read.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-kafka">
+              <span class="pv-acc__title">The Kafka sink</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-kafka" hidden>
+              <p>A governed change stream out to a Kafka topic, filtered and
+                masked like a read. <strong>This one is still being
+                finished</strong> — the subscription surfaces above are
+                complete; the sink is not.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-large">
+              <span class="pv-acc__title">Large results</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-large" hidden>
+              <p>pgwire, Flight SQL and gRPC receive rows as the engine produces
+                them. Oversized results are written to object storage and
+                returned as an expiring presigned link; Parquet and ORC are
+                written by the engine straight to the store, so the data never
+                passes through Provisa.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-no-ddl">
+              <span class="pv-acc__title">No DDL, anywhere</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-no-ddl" hidden>
+              <p>Objects are defined in the model, not by SQL, so
+                <code>CREATE</code>, <code>DROP</code>, <code>ALTER</code> and
+                <code>TRUNCATE</code> are refused on every surface. Semantic SQL
+                has no array, struct or map type; nested data comes back as
+                JSON.</p>
+            </div>
+          </div>
+
+          <div class="pv-acc__item">
+            <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="if-cypher">
+              <span class="pv-acc__title">Cypher’s boundaries</span>
+              <span class="pv-acc__sign" aria-hidden="true"></span>
+            </button>
+            <div class="pv-acc__panel" id="if-cypher" hidden>
+              <p>Relationships are joins between tables, so they carry no stored
+                properties, cannot be written, and <code>DETACH DELETE</code> is
+                refused. Shortest paths and variable-length patterns compile to
+                recursive queries with a maximum hop count. GDS analytics and
+                the APOC ecosystem are Neo4j’s, not ours.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §5 Connect =================================================== -->
+    <section class="pv-section">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">04</span>
+            <span class="pv-seclabel__text">Connect</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Four transports, four snippets.</h2>
+          <p class="pv-p">Two of these four listeners are off until you give
+            them a port. Each snippet sets it, so none of them is a line you can
+            copy and then wonder why it refused the connection.</p>
+        </div>
+
+        <!-- Every block sets the port it then connects to. The comment lines
+             are the claim on this page: do not shorten them, do not move the
+             environment variable into prose, do not drop them. -->
+        <div class="pv-codetabs">
+          <div class="pv-codetabs__tabs" role="tablist" aria-label="Connection examples">
+            <button class="pv-codetabs__tab" type="button" role="tab" id="t-psql"
+                    aria-controls="p-psql" aria-selected="true">
+              <span class="pv-codetabs__lang">psql</span>
+              <span class="pv-codetabs__wire">pgwire</span>
+            </button>
+            <button class="pv-codetabs__tab" type="button" role="tab" id="t-neo4j"
+                    aria-controls="p-neo4j" aria-selected="false" tabindex="-1">
+              <span class="pv-codetabs__lang">Neo4j driver</span>
+              <span class="pv-codetabs__wire">bolt</span>
+            </button>
+            <button class="pv-codetabs__tab" type="button" role="tab" id="t-adbc"
+                    aria-controls="p-adbc" aria-selected="false" tabindex="-1">
+              <span class="pv-codetabs__lang">ADBC</span>
+              <span class="pv-codetabs__wire">arrow flight</span>
+            </button>
+            <button class="pv-codetabs__tab" type="button" role="tab" id="t-graphql"
+                    aria-controls="p-graphql" aria-selected="false" tabindex="-1">
+              <span class="pv-codetabs__lang">GraphQL</span>
+              <span class="pv-codetabs__wire">http</span>
+            </button>
+          </div>
+
+          <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-psql" aria-labelledby="t-psql">
+<pre><span class="pv-code__c"># The Postgres listener has no default port. 5439 is what our
+# Helm chart and installer set; any free port works.</span>
+PROVISA_PGWIRE_PORT=5439 provisa run
+
+<span class="pv-code__c"># In another shell</span>
+psql "postgresql://analyst@provisa.internal:5439/provisa"</pre>
+          </div>
+
+          <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-neo4j" aria-labelledby="t-neo4j" hidden>
+<pre><span class="pv-code__c"># Bolt has no default port either. 7687 is the convention,
+# set by PROVISA_BOLT_PORT before the server starts.</span>
+from neo4j import GraphDatabase
+
+driver = GraphDatabase.driver("bolt://provisa.internal:7687",
+                              auth=("analyst", PASSWORD))
+with driver.session(database="analyst") as s:   <span class="pv-code__c"># the role is the database</span>
+    for r in s.run("MATCH (c:Customer)-[:PLACED]-&gt;(o:Order) "
+                   "WHERE o.total &gt; 1000 RETURN c.name, o.total"):
+        print(r["c.name"], r["o.total"])</pre>
+          </div>
+
+          <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-adbc" aria-labelledby="t-adbc" hidden>
+<pre><span class="pv-code__c"># Flight is on by default, on 8815.</span>
+import adbc_driver_flightsql.dbapi as flight_sql
+
+conn = flight_sql.connect("grpc+tls://provisa.internal:8815",
+                          db_kwargs={"username": "analyst",
+                                     "password": PASSWORD})
+tbl = conn.cursor().execute(
+    "SELECT * FROM orders WHERE total &gt; 1000").fetch_arrow_table()</pre>
+          </div>
+
+          <div class="pv-code pv-codetabs__panel" role="tabpanel" id="p-graphql" aria-labelledby="t-graphql" hidden>
+<pre>curl https://provisa.internal/graphql \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"query": "{ orders(where: {total: {gt: 1000}}) { total customers { name } } }"}'</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §5a Two routes, and they are not the same route ============== -->
+    <section class="pv-section pv-section--band">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">04b</span>
+            <span class="pv-seclabel__text">Compile and explain</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Show me the SQL you would run.</h2>
+          <p class="pv-p">Both of these exist, both are useful, and merging them
+            is the mistake. One returns the governed statement with filters and
+            masks inlined, and it takes GraphQL. The other returns the engine’s
+            plan for the statement, and it takes SQL.</p>
+        </div>
+
+        <div class="pv-table">
+          <table>
+            <caption class="pv-sr">The compile route and the explain route
+              compared</caption>
+            <thead>
+              <tr>
+                <th scope="col">You want</th>
+                <th scope="col">Route</th>
+                <th scope="col">You send</th>
+                <th scope="col">You get back</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">The governed SQL that would run, with row
+                  filters and masks inlined, plus the route, the parameters and
+                  the enforcement metadata</th>
+                <td><code>POST /data/compile</code></td>
+                <td>A GraphQL document</td>
+                <td>Compiled SQL, and an <code>enforcement</code> object that
+                  names every filter and mask by field</td>
+              </tr>
+              <tr>
+                <th scope="row">The engine’s own plan for the statement that
+                  would run</th>
+                <td><code>POST /data/sql/explain</code></td>
+                <td>SQL</td>
+                <td>An annotated <code>EXPLAIN</code> tree and the optimizations
+                  that fired</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="pv-p pv-p--sm">There is no SQL-in, SQL-out compile route. The
+          role on both comes from the authenticated session.</p>
+      </div>
+    </section>
+
+    <!-- §6 Per-role schema ========================================== -->
+    <section class="pv-section">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">05</span>
+            <span class="pv-seclabel__text">Per role</span>
+          </div>
+          <h2 class="pv-h pv-h--section">Four schemas, generated.
+            <em class="pv-emph">Not one schema, filtered.</em></h2>
+        </div>
+        <div class="pv-grid pv-grid--2">
+          <div class="pv-ruled pv-ruled--get pv-ruled--accent">
+            <h3 class="pv-ruled__title">Generated, not filtered</h3>
+            <div class="pv-ruled__body">The GraphQL SDL, the SQL information
+              schema, the Cypher label catalog and the gRPC proto are each
+              generated for the role asking. A table a role may not see is
+              absent, not hidden — structurally unreachable rather than denied
+              on request.</div>
+          </div>
+          <div class="pv-ruled pv-ruled--see pv-ruled--accent">
+            <h3 class="pv-ruled__title">Which means your tools are honest</h3>
+            <div class="pv-ruled__body">DBeaver draws the schema it was handed.
+              Provisa answers the usual catalog queries from the model and
+              reconstructs primary keys, unique constraints and composite
+              foreign keys, so the tool draws the diagram and suggests joins —
+              within what the role may see, and without knowing anything was
+              left out.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §7 Coming from Hasura v2 ====================================
+         The "Coming from Hasura v2 →" text link is omitted at build:
+         /vs/hasura is a Phase 2 page and the brief's §8 says to omit the link
+         rather than point it at a page that is not the rebuilt one. -->
+    <section class="pv-section pv-section--tight">
+      <div class="pv-container">
+        <div class="pv-callout pv-callout--inverse">
+          <span class="pv-callout__label">ON HASURA V2?</span>
+          <span class="pv-callout__body">Hasura v2 metadata imports directly —
+            sources, relationships and permissions convert to Provisa
+            configuration. Filtering, ordering and pagination follow the v2
+            convention your queries already use, and the naming convention can
+            be set to match v2’s, so your client code does not move.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- §8 Caps and limits ========================================== -->
+    <section class="pv-section pv-section--band">
+      <div class="pv-container pv-stack pv-stack--lg">
+        <div class="pv-stack">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">06</span>
+            <span class="pv-seclabel__text">Ceilings</span>
+          </div>
+          <h2 class="pv-h pv-h--section">What a role is allowed to cost.</h2>
+        </div>
+        <div class="pv-grid pv-grid--3">
+          <div class="pv-ruled">
+            <span class="pv-ruled__num">01</span>
+            <h3 class="pv-ruled__title">Rate</h3>
+            <div class="pv-ruled__body">Each role has its own request-rate
+              limit, plus caps on concurrent subscriptions and Flight streams.
+              Natural-language queries have a separate limit because they cost
+              model calls. State lives in Redis, so any number of stateless
+              containers share one count, and a stream over its limit waits for
+              a free slot rather than failing.</div>
+          </div>
+          <div class="pv-ruled">
+            <span class="pv-ruled__num">02</span>
+            <h3 class="pv-ruled__title">Time and rows</h3>
+            <div class="pv-ruled__body">Roles carry ceilings on how long a query
+              may run and how many rows it may return. A role without the right
+              to full results gets a sample, and when a read is cut short the
+              response says so rather than looking complete.</div>
+          </div>
+          <div class="pv-ruled">
+            <span class="pv-ruled__num">03</span>
+            <h3 class="pv-ruled__title">Concurrency at the source</h3>
+            <div class="pv-ruled__body">Each source can cap its concurrent live
+              reads, so an operational database is not overwhelmed by the
+              analytics team. Asynchronous queries run on their own
+              connections.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §9 Conversion ===============================================
+         Primary /install, secondary /register. Nothing here points at the
+         trial host: plan revision 3 withdraws the evaluation trial as a
+         conversion, so the team path converts to the free licence and a
+         conversation. -->
+    <section class="pv-contact" id="contact">
+      <div class="pv-contact__inner pv-container">
+        <div class="pv-contact__copy">
+          <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+          <h2 class="pv-h pv-h--cta">Point something at it.</h2>
+          <div class="pv-row">
+            <a class="pv-btn pv-btn--on-color" href="/install">Install it yourself</a>
+            <a class="pv-btn pv-btn--inverse" href="/register">Get a free licence</a>
+          </div>
+          <div class="pv-contact__links">
+            <a class="pv-link pv-link--inverse" href="#contact-demo">Book a demo<span class="pv-link__arrow"> →</span></a>
+          </div>
+          <p class="pv-contact__sub">Provisa is self-hosted. You run it on your
+            hardware, in your cloud account, or air-gapped. There is no managed
+            service to buy today.</p>
+        </div>
+        <form class="pv-form" id="contact-demo" method="post" action="/api/demo">
+          <h3 class="pv-form__title">Book a demo</h3>
+          <div class="pv-form__grid">
+            <label class="pv-sr" for="c-name">Full name</label>
+            <input class="pv-input" id="c-name" name="name" autocomplete="name" placeholder="Full name" required>
+            <label class="pv-sr" for="c-email">Work email</label>
+            <input class="pv-input" id="c-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          </div>
+          <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+        </form>
+      </div>
+    </section>
   </main>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div class="brand">
-        <svg class="brand-mark" viewBox="0 0 512 512" width="24" height="24" aria-hidden="true">
-          <rect width="512" height="512" rx="112" fill="#1F2933" />
-          <g transform="translate(48,66) scale(4.0)">
-            <rect x="30" y="18" width="15" height="64" rx="7" fill="#ffffff" />
-            <circle cx="52" cy="35" r="22" fill="#ffffff" />
-            <circle cx="52" cy="34" r="10.5" fill="#1F2933" />
-            <circle cx="52" cy="34" r="4.5" fill="#10B981" />
-          </g>
-        </svg>
-        <span class="brand-word">Provisa</span>
+  <footer class="pv-footer">
+    <div class="pv-footer__inner pv-container">
+      <div class="pv-footer__top">
+        <div class="pv-footer__brand">
+          <span class="pv-wordmark">Provisa</span>
+          <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+            Licence 1.1 — non-production use (including evaluation) is free
+            forever, for any size organization.</p>
+        </div>
+        <nav class="pv-footer__col" aria-labelledby="f-platform">
+          <h2 id="f-platform">Platform</h2>
+          <a href="/platform">Active Semantic Layer</a>
+          <a href="/why/interfaces">Interfaces</a>
+          <a href="/why/governance">Governance</a>
+          <a href="/why/sources">Sources</a>
+          <a href="/platform/views">Materialized views</a>
+          <a href="/platform/catalog">Catalog</a>
+          <a href="/why/no-lock-in">No lock-in</a>
+        </nav>
+        <nav class="pv-footer__col" aria-labelledby="f-compare">
+          <h2 id="f-compare">Compare</h2>
+          <a href="/vs/starburst">vs Starburst</a>
+          <a href="/vs/denodo">vs Denodo</a>
+          <a href="/vs/hasura">Coming from Hasura</a>
+        </nav>
+        <nav class="pv-footer__col" aria-labelledby="f-start">
+          <h2 id="f-start">Get started</h2>
+          <a href="/pricing/">Editions</a>
+          <a href="https://provisa.dev/docs">Docs</a>
+          <a href="/register">Register (free licence)</a>
+          <a href="#contact">Support</a>
+          <a href="#contact">Book a demo</a>
+        </nav>
+        <div class="pv-footer__keep">
+          <h2>Keep me posted</h2>
+          <p>Want the release notes? Get new features and platform updates by
+            email.</p>
+          <form class="pv-subscribe" method="post" action="/api/subscribe">
+            <label class="pv-sr" for="f-sub">Work email</label>
+            <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+            <button type="submit">Subscribe</button>
+          </form>
+          <span class="pv-footer__fine">Product updates only. No spam,
+            unsubscribe anytime.</span>
+        </div>
       </div>
-      <p class="footer-note">Config-driven data virtualization. Business Source License 1.1 — non-production use (including evaluation) is free forever, for any size organization. Production use is also free for organizations that, together with their affiliates, have under 100 employees and contractors and under $1M in annual revenue, budget, or expenditures; others need a <a href="mailto:license@provisa.dev">commercial license</a> for production use.</p>
-      <nav class="footer-links" aria-label="Footer">
-        <a href="/why/interfaces">Interfaces</a>
-        <a href="/why/governance">Governance</a>
-        <a href="/why/no-lock-in">No lock-in</a>
-        <a href="/docs">Docs</a>
-      </nav>
+      <div class="pv-footer__bottom">
+        <span>© Provisa</span>
+        <div class="pv-footer__legal">
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+        </div>
+      </div>
     </div>
   </footer>
 </body>

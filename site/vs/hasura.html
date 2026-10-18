@@ -76,7 +76,16 @@
           <li><strong>Remote schemas</strong> — mapped to GraphQL remote sources.</li>
           <li><strong>Actions</strong> — HTTP-handler actions become webhooks; others land as function placeholders.</li>
           <li><strong>Event triggers and cron triggers</strong> — carried across as event and scheduled triggers.</li>
-          <li><strong>Roles and rate limits</strong> — preserved as Provisa roles.</li>
+          <!-- "preserved as Provisa roles" was false for the rate limit. Hasura's
+               `rate_limit` is per minute and Provisa's `requests_per_second` is per
+               second, so `provisa/hasura_v2/mapper.py:260` rounds and floors at 1:
+               10/min lands at 1 rps = 60/min (6x looser), 150/min lands at 2 rps =
+               120/min (tighter), and the value is exact only at a multiple of 60.
+               `node_limit` and `time_limit` convert exactly; `depth_limit` is dropped
+               by design (mapper.py:253-254). PRO-34. This sentence may not reacquire
+               preservation language while the conversion rounds without a warning —
+               `verify-claims.mjs` holds that. -->
+          <li><strong>Roles and API limits</strong> — roles and their capabilities convert, and per-role query-complexity and query-time limits convert exactly. A Hasura per-minute rate limit becomes a per-second one: exact at a multiple of 60 and rounded otherwise, so re-check the rate on every throttled role.</li>
         </ul>
         <p>
           Anything the converter can't map cleanly is reported as a warning rather than
@@ -113,7 +122,7 @@
               <tr>
                 <th>Sources</th>
                 <td>Relational databases, plus remote schemas</td>
-                <td class="is-us">72 connectors reaching 85+ kinds of source — graph, RDF, files, SharePoint, Salesforce, ServiceNow, Splunk, and API endpoints as governed tables</td>
+                <td class="is-us">72 source types; on a Trino engine 63 are reachable and 37 are read live with no copy — graph, RDF, files, SharePoint, Salesforce, ServiceNow, Splunk, and API endpoints as governed tables</td>
               </tr>
               <tr>
                 <th>Analytics</th>
