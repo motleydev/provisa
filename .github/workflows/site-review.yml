@@ -59,7 +59,14 @@ jobs:
       # both node and Python; the glob is on the check-/verify- name rather than an
       # extension so a checker in a third language cannot hide, and the interpreter
       # is chosen per file.
+      # `shell: bash` rather than the implicit default: GitHub runs a named bash with
+      # `-eo pipefail`, where the default is `-e` alone. The `find ... | sort` that feeds
+      # the loop is a pipeline, so without pipefail a failing `find` would be reported as
+      # `sort`'s success and the job would pass having run no checkers at all — the same
+      # shape as the BDD job that piped pytest into `tail` and was green for as long as it
+      # existed. tests/unit/test_ci_suite_queue.py enforces this repo-wide.
       - name: Every browserless checker under site/
+        shell: bash
         run: |
           failed=""
           found=0
