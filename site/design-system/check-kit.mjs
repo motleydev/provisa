@@ -74,7 +74,6 @@ if (fs.existsSync(redirectsFile)) {
  *   /industries/          in the primary nav on five pages, and the one nav
  *                         item with no page anywhere. Content Manager's call —
  *                         the six items are theirs (PRO-2 plan revision 2).
- *   /pricing/             Editions, PRO-2 plan revision 2, phase 3. Footer.
  *   /platform/views.html  footer, Platform column.
  *   /platform/catalog.html
  *   /docs                 pre-rebrand pages only: demos, privacy, terms,
@@ -84,7 +83,6 @@ if (fs.existsSync(redirectsFile)) {
  *                         goes when those pages are rebuilt. */
 const PENDING = new Set([
   "/industries",
-  "/pricing/",
   "/platform/views",
   "/platform/catalog",
   "/docs",
