@@ -90,7 +90,15 @@ const PENDING = new Set([
   "/docs",
 ]);
 
-const exists = (rel) => fs.existsSync(path.join(SITE, rel));
+/* Only count a regular file — Cloudflare Pages serves files, not bare
+ * directories. Before this guard an href like /industries resolved to the
+ * directory the moment site/industries/ existed, even with no index.html in
+ * it, which hid the owed hub from PENDING as soon as the first child page
+ * landed (PRO-89). */
+const exists = (rel) => {
+  const p = path.join(SITE, rel);
+  try { return fs.statSync(p).isFile(); } catch { return false; }
+};
 
 const resolves = (href, seen = new Set()) => {
   if (seen.has(href)) return false;
