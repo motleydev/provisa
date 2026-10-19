@@ -230,10 +230,11 @@ curl -X POST https://provisa.internal/data/sql/explain \
             </div>
           </div>
 
-          <p class="pv-p">The question goes in as GraphQL, because GraphQL is
-            the canonical surface the others are derived from. What comes back
-            is the compiled statement <strong>and</strong> an enforcement object
-            that names, per table and per column, exactly what was applied:</p>
+          <p class="pv-p">The question, whatever protocol it arrived on,
+            compiles to a PostgreSQL-style statement against the semantic model
+            with the caller's role applied. What comes back is the compiled
+            statement <strong>and</strong> an enforcement object that names, per
+            table and per column, exactly what was applied:</p>
 
           <div class="pv-table">
             <table>
