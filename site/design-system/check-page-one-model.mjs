@@ -136,7 +136,8 @@ for (const [what, n, re] of [
   ["h1", 1, /<h1\b/g],
   ["sections", 6, /<section class="pv-section/g],
   ["section labels", 5, /class="pv-seclabel"/g],
-  ["FigPanels", 2, /class="pv-fig[ "]/g],
+  ["editorial illustrations", 2, /class="pv-editorial[\s"]/g],
+  ["no FigPanel placeholders remain", 0, /class="pv-fig[ "]/g],
   ["Callouts", 1, /class="pv-callout pv/g],
   ["contact bands", 1, /class="pv-contact"/g],
 ]) {
@@ -163,16 +164,18 @@ for (const id of ["federation", "metrics", "ontology", "governance", "contact", 
   ok(noComments.includes(`id="${id}"`), `#${id} survives the rebuild`);
 }
 
-/* Both figures carry real alt text, and the rings figure draws five rings. A
- * sixth would depict the struck count: five layers are compiled into the plan
- * and the approval hook sits outside it, which is why it is not drawn. */
-const figs = [...noComments.matchAll(/<div class="pv-fig[^"]*" role="img"\s+aria-label="([^"]*)"/g)]
+/* Both figures carry real alt text. Each editorial illustration pairs a
+ * light and a dark PNG under /assets/editorial/, so the <img> alt is the
+ * figure's accessible name (the figure wrapper's aria-label is a copy of
+ * the same string so screen readers still receive the brief when reading
+ * the figure as a landmark). */
+const figs = [...noComments.matchAll(/<figure class="pv-editorial[^"]*" role="img"\s+aria-label="([^"]*)"/g)]
   .map((m) => m[1]);
 ok(figs.length === 2 && figs.every((a) => a.length > 40),
    `both figures carry real alt text (${figs.length}: ${figs.map((a) => a.length).join(", ")} chars)`);
-const rings = (noComments.match(/class="pv-fig pv-fig--rings"[\s\S]*?<\/div>/) || [""])[0];
-ok((rings.match(/<i class="pv-fig__s"><\/i>/g) || []).length === 5,
-   `the governance figure draws five rings, one per compiled layer (${(rings.match(/<i class="pv-fig__s"><\/i>/g) || []).length})`);
+const editorialPngs = (noComments.match(/<img\s+[^>]*src="\/assets\/editorial\/img-08[ab]-light\.png"/g) || []).length;
+ok(editorialPngs === 2,
+   `the two /why/one-model editorial PNGs are placed — IMG-08a and IMG-08b, light variants (${editorialPngs})`);
 
 /* Prose is prose. Every paragraph of running copy is a .pv-p, which is the
  * class that caps itself at the measure — the page is all argument and no

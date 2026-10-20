@@ -165,7 +165,9 @@ for (const [what, n, re] of [
   ["LayerRows", 6, /class="pv-layer pv-layer--detail/g],
   ["RuledCards", 9, /class="pv-ruled /g],
   ["ComparisonTables", 2, /<table\b/g],
-  ["FigPanels", 2, /class="pv-fig /g],
+  ["editorial illustrations", 2, /class="pv-editorial[\s"]/g],
+  ["no FigPanel placeholders remain", 0, /class="pv-fig /g],
+  ["editorial PNG references", 2, /<img\s+[^>]*src="\/assets\/editorial\/img-[0-9a-z-]+-light\.png"/g],
   ["h1", 1, /<h1\b/g],
 ]) {
   const got = count(re);

@@ -161,43 +161,14 @@
             requirements behind it, and their status is in the repository.</p>
         </div>
 
-        <!-- IMG-03. Shape positions are this figure's own, tuned for 16/9:
-             --l and --w are percentages of the panel's width and --t and --h
-             of its height, and a --sq shape takes its height from its width,
-             so the kit's 4/5 `platform` set resolves to overlapping squares at
-             this aspect. Same vocabulary, repositioned. A FigPanel cannot
-             label a node (PRO-3, "the kit has no labelled schematic"), so the
-             four zones read by position and the accessible name carries the
-             reading order — see the image-register document on PRO-2 for what
-             replaces it. -->
-        <div class="pv-fig pv-fig--wide" role="img"
+        <!-- IMG-03. Platform architecture, 16:9. -->
+        <figure class="pv-editorial pv-editorial--wide" role="img"
              aria-label="Figure 1: registered sources at the bottom, the Provisa layer above them holding the model and the compiler, a swappable engine slot to one side, and the query interfaces at the top.">
-          <span class="pv-fig__label">FIG. 01</span>
-          <!-- the query interfaces, at the top -->
-          <i class="pv-fig__s" style="--l:8;--t:11;--w:13;--h:8"></i>
-          <i class="pv-fig__s" style="--l:24;--t:11;--w:13;--h:8"></i>
-          <i class="pv-fig__s" style="--l:40;--t:11;--w:13;--h:8"></i>
-          <i class="pv-fig__s pv-fig__s--run" style="--l:56;--t:11;--w:13;--h:8"></i>
-          <!-- entering one layer -->
-          <i class="pv-fig__s" style="--l:14;--t:19;--w:1.2;--h:9"></i>
-          <i class="pv-fig__s" style="--l:62;--t:19;--w:1.2;--h:9"></i>
-          <!-- the Provisa layer, holding the model and the compiler -->
-          <i class="pv-fig__s" style="--l:6;--t:28;--w:66;--h:26"></i>
-          <i class="pv-fig__s pv-fig__s--ink" style="--l:11;--t:34;--w:24;--h:14"></i>
-          <i class="pv-fig__s pv-fig__s--ink" style="--l:40;--t:34;--w:27;--h:14"></i>
-          <!-- the engine slot, to one side -->
-          <i class="pv-fig__s" style="--l:72;--t:40;--w:6;--h:2"></i>
-          <i class="pv-fig__s pv-fig__s--run" style="--l:78;--t:28;--w:16;--h:26"></i>
-          <!-- down to the registered sources, at the bottom -->
-          <i class="pv-fig__s" style="--l:14;--t:54;--w:1.2;--h:18"></i>
-          <i class="pv-fig__s" style="--l:62;--t:54;--w:1.2;--h:18"></i>
-          <i class="pv-fig__s pv-fig__s--sq" style="--l:8;--t:72;--w:6.5"></i>
-          <i class="pv-fig__s pv-fig__s--sq" style="--l:17;--t:72;--w:6.5"></i>
-          <i class="pv-fig__s pv-fig__s--sq" style="--l:26;--t:72;--w:6.5"></i>
-          <i class="pv-fig__s pv-fig__s--sq" style="--l:35;--t:72;--w:6.5"></i>
-          <i class="pv-fig__s pv-fig__s--sq" style="--l:44;--t:72;--w:6.5"></i>
-          <i class="pv-fig__s pv-fig__s--sq pv-fig__s--ink" style="--l:53;--t:72;--w:6.5"></i>
-        </div>
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="/assets/editorial/img-03-dark.png">
+            <img src="/assets/editorial/img-03-light.png" alt="Figure 1: registered sources at the bottom, the Provisa layer above them holding the model and the compiler, a swappable engine slot to one side, and the query interfaces at the top." fetchpriority="high" decoding="async">
+          </picture>
+        </figure>
 
       </div>
     </div>
@@ -947,16 +918,14 @@ WHERE o.total &gt; 1000;</pre>
               <span class="pv-seclabel__num">11</span>
               <span class="pv-seclabel__text">Deployment</span>
             </div>
-            <!-- IMG-04, the kit's `deploy` figure at its own 4/5, in the rail
-                 column the aspect was drawn for. -->
-            <div class="pv-fig pv-fig--get" role="img"
+            <!-- IMG-04. Deployment shapes, 4:5. -->
+            <figure class="pv-editorial" role="img"
                  aria-label="Figure 2: four deployment shapes in one figure — a laptop, a single server, a cluster behind a load balancer, and a rack with no network edge.">
-              <span class="pv-fig__label">FIG. 02</span>
-              <i class="pv-fig__s pv-fig__s--sq" style="--l:10;--t:78;--w:8"></i>
-              <i class="pv-fig__s pv-fig__s--sq" style="--l:22;--t:66;--w:14"></i>
-              <i class="pv-fig__s pv-fig__s--sq pv-fig__s--see" style="--l:40;--t:48;--w:24"></i>
-              <i class="pv-fig__s pv-fig__s--sq pv-fig__s--run" style="--l:58;--t:18;--w:32"></i>
-            </div>
+              <picture>
+                <source media="(prefers-color-scheme: dark)" srcset="/assets/editorial/img-04-dark.png">
+                <img src="/assets/editorial/img-04-light.png" alt="Figure 2: four deployment shapes in one figure — a laptop, a single server, a cluster behind a load balancer, and a rack with no network edge." loading="lazy" decoding="async">
+              </picture>
+            </figure>
           </div>
           <div class="pv-rail__body">
             <h2 class="pv-h pv-h--section">Same product, same config, same

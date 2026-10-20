@@ -78,7 +78,7 @@ for (const theme of THEMES) {
     /* AC 5. Nothing above the first conceded card but the hero. */
     const aboveFold = await page.evaluate(() => {
       const firstCard = document.querySelector(".pv-ruled").getBoundingClientRect().top + scrollY;
-      return [...document.querySelectorAll(".pv-fig, img, svg:not(.pv-wordmark svg)")]
+      return [...document.querySelectorAll(".pv-fig, .pv-editorial, img, svg:not(.pv-wordmark svg)")]
         .filter((el) => el.getBoundingClientRect().top + scrollY < firstCard)
         .map((el) => el.tagName + "." + el.className).slice(0, 4);
     });

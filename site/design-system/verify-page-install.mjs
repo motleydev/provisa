@@ -95,7 +95,7 @@ for (const theme of THEMES) {
       const codeTop = code.getBoundingClientRect().top;
       const above = [];
       for (const el of document.querySelectorAll(
-        "main .pv-p, main .pv-note, main .pv-btn, main .pv-callout, main .pv-ruled, main .pv-table, main .pv-fig"
+        "main .pv-p, main .pv-note, main .pv-btn, main .pv-callout, main .pv-ruled, main .pv-table, main .pv-editorial"
       )) {
         const r = el.getBoundingClientRect();
         if (r.height === 0 && r.width === 0) continue;
@@ -202,17 +202,17 @@ for (const theme of THEMES) {
     ok(codes.filter((c) => !c.inHiddenPanel).every((c) => c.h > 0),
        `${at}: every visible CodeBlock paints with positive height`);
 
-    /* Three RuledCards, three Callouts, one ComparisonTable, one FigPanel. */
+    /* Three RuledCards, three Callouts, one ComparisonTable, one editorial. */
     const components = await page.evaluate(() => ({
       ruled: document.querySelectorAll(".pv-ruled").length,
       callouts: document.querySelectorAll(".pv-callout").length,
       tables: document.querySelectorAll(".pv-table").length,
-      figs: document.querySelectorAll(".pv-fig").length,
+      figs: document.querySelectorAll(".pv-editorial").length,
     }));
     ok(components.ruled >= 3, `${at}: three RuledCards (${components.ruled})`);
     ok(components.callouts >= 3, `${at}: at least three Callouts (${components.callouts})`);
     ok(components.tables >= 1, `${at}: ComparisonTable renders (${components.tables})`);
-    ok(components.figs >= 1, `${at}: FigPanel renders (${components.figs})`);
+    ok(components.figs >= 1, `${at}: editorial illustration renders (${components.figs})`);
 
     /* Every in-page anchor resolves. */
     const dangling = await page.evaluate(() =>
@@ -294,15 +294,15 @@ for (const theme of THEMES) {
                       && !el.textContent.trim() && !el.getAttribute("aria-labelledby")).length);
   ok(named === 0, `a11y: every form control has an accessible name (${named} without)`);
 
-  /* The FigPanel is a labelled role="img" — same contract as the kit's own
-   * pass expects of a figure that is argument, not decoration. */
+  /* The editorial illustration is a labelled role="img" — same contract as
+   * the kit's own pass expects of a figure that is argument, not decoration. */
   const figs = await page.evaluate(() =>
-    [...document.querySelectorAll(".pv-fig")].map((f) => ({
+    [...document.querySelectorAll(".pv-editorial")].map((f) => ({
       label: f.getAttribute("aria-label") || "",
       role: f.getAttribute("role"),
     })));
   ok(figs.length >= 1 && figs.every((f) => f.role === "img" && f.label.length > 20),
-     `a11y: the FigPanel is a labelled role="img" (${figs.map((f) => f.label.length).join(", ")})`);
+     `a11y: the editorial illustration is a labelled role="img" (${figs.map((f) => f.label.length).join(", ")})`);
 
   await ctx.close();
 }

@@ -445,6 +445,23 @@ img,svg{max-width:100%}
 .pv-fig--rings .pv-fig__s:nth-of-type(6){width:14%}
 .pv-fig--rings .pv-fig__s:last-of-type{background:var(--fig-bg-run)}
 
+/* editorial PNG slot. Replaces .pv-fig as the figure container when a
+ * finished editorial illustration is placed. The PNG already carries the
+ * illustration's own ground, so the container is transparent. Aspect
+ * modifiers mirror .pv-fig so section layout is unchanged across the
+ * placeholder/placed boundary. */
+.pv-editorial{
+  position:relative;
+  container-type:inline-size;
+  aspect-ratio:4/5;
+  overflow:hidden;
+  background:transparent;
+}
+.pv-editorial--wide{aspect-ratio:16/9}
+.pv-editorial--square{aspect-ratio:1}
+.pv-editorial > picture{display:block;width:100%;height:100%}
+.pv-editorial img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+
 /* security: twelve ruled lines, at the kit's 6%-of-height pitch, with a
  * vermilion band and a cobalt square over them. The lines are one repeating
  * gradient rather than twelve elements; 0.752% and 9.023% are the kit's 0.5%

@@ -293,7 +293,9 @@ for (const [what, n, re] of [
   ["code tabs (§5, six governed surfaces)",     6, /role="tab"/g],
   ["code panels (§5, six panels)",              6, /class="pv-code pv-codetabs__panel"/g],
   ["StatStrips (§2 figures and §7 reach)",      2, /class="pv-stats"[^>]*aria-label/g],
-  ["FigPanels (§1 hero + §4 three)",            4, /<div class="pv-fig(?:\s|")[^"]*"/g],
+  ["editorial illustrations (§1 hero + §4 three)", 4, /<figure class="pv-editorial(?:\s|")[^"]*"/g],
+  ["no FigPanel placeholders remain",           0, /<div class="pv-fig(?:\s|")[^"]*"/g],
+  ["editorial PNGs referenced (§1 hero + §4 three)", 4, /<img\s+[^>]*src="\/assets\/editorial\/img-[0-9a-z-]+-light\.png"/g],
   ["h1 (one hero heading)",                     1, /<h1\b/g],
 ]) {
   const got = count(re);
@@ -325,7 +327,7 @@ else fail.push(`§6 must have seven listener rows (HTTP gRPC Flight pgwire Bolt 
 
 /* No product screenshot. SHOT-01/02 would be <img> tags with a /assets/shots
  * path or a shot-01-style name; neither should be on the page (acceptance
- * criterion 4). The two image slots are FigPanel placeholders. */
+ * criterion 4). The four image slots are editorial illustrations. */
 const shotImgs = count(/<img[^>]*(?:shot-?0|screenshot)/gi);
 if (shotImgs === 0) pass.push("no product screenshot — AC 4");
 else fail.push(`${shotImgs} <img> looks like a product screenshot — AC 4 forbids them`);
