@@ -189,6 +189,20 @@ for (const [sel, prop, want] of CAPPED) {
      found ? found[1].trim() : block ? `no ${prop}` : "selector not found");
 }
 
+/* ---- 3. editorial image theme swap ---------------------------------- *
+ * Each editorial figure ships a light and a dark <img> that swap on the
+ * site's [data-theme] toggle. The CSS below is what makes the swap happen;
+ * if any of these three rules disappears, dark-theme users see light PNGs
+ * (or vice versa) regardless of the toggle. */
+const EDITORIAL_SWAP_RULES = [
+  /\.pv-editorial__img--dark\s*\{[^}]*display\s*:\s*none/,
+  /:root\[data-theme="dark"\]\s+\.pv-editorial__img--light\s*\{[^}]*display\s*:\s*none/,
+  /:root\[data-theme="dark"\]\s+\.pv-editorial__img--dark\s*\{[^}]*display\s*:\s*block/,
+];
+for (const re of EDITORIAL_SWAP_RULES) {
+  ok(`provisa.css carries ${re.source}`, re.test(css));
+}
+
 /* ---- report ---------------------------------------------------------- */
 
 let failed = 0;
