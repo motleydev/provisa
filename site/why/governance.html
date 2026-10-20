@@ -637,8 +637,10 @@ SELECT count(*) FROM customers WHERE email LIKE 'a%';
       <!-- Same prominence as the cards above, not a footnote: this is the
            sentence that names the one setting which would take the guarantee
            away. .pv-measure keeps it to the reading measure now that it is at
-           the container's width rather than in the rail's body column. -->
-      <div class="pv-stack pv-measure">
+           the container's width rather than in the rail's body column.
+           .pv-stack--conclude adds visual separation from the grid above
+           (PRO-139). -->
+      <div class="pv-stack pv-stack--conclude pv-measure">
           <div class="pv-callout">
             <span class="pv-callout__body">That immutability is enforced by
               PostgreSQL rules, so it holds on a PostgreSQL control plane —

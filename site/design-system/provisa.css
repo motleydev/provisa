@@ -169,6 +169,10 @@ img,svg{max-width:100%}
 .pv-stack{display:flex;flex-direction:column;gap:var(--space-24)}
 .pv-stack--sm{gap:var(--space-14)}
 .pv-stack--lg{gap:var(--space-40)}
+/* Extra top spacing for a stack that concludes a grid or structured content,
+ * creating clearer visual separation and reducing the eye's jump between
+ * horizontal and vertical flow (PRO-139). */
+.pv-stack--conclude{margin-top:var(--space-56)}
 .pv-row{display:flex;flex-wrap:wrap;gap:var(--space-12);align-items:center}
 
 /* The measure, as a utility. .pv-p caps itself, but a Callout does not, and a
