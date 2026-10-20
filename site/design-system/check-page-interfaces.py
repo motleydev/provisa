@@ -201,8 +201,8 @@ ok("exactly one h1", p.h1 == 1)
 ok("Emph in the hero and §6", c.get("pv-emph") == 2, str(c.get("pv-emph")))
 ok("seven section labels", c.get("pv-seclabel") == 7, str(c.get("pv-seclabel")))
 ok(
-    "no product screenshot in main — only the IMG-07 editorial",
-    p.imgs == 1 and "shot-" not in src and "screenshot" not in src.lower(),
+    "no product screenshot in main — only the IMG-07 editorial (light + dark imgs)",
+    p.imgs == 2 and "shot-" not in src and "screenshot" not in src.lower(),
     f"{p.imgs} <img> in main",
 )
 

@@ -459,8 +459,14 @@ img,svg{max-width:100%}
 }
 .pv-editorial--wide{aspect-ratio:16/9}
 .pv-editorial--square{aspect-ratio:1}
-.pv-editorial > picture{display:block;width:100%;height:100%}
-.pv-editorial img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+/* Two <img> siblings, one per theme, swapped by the site's [data-theme] toggle
+ * on <html> (set by provisa.js). The site deliberately avoids
+ * prefers-color-scheme, so the previous <picture>+<source media> shape never
+ * swapped on the toggle; this one does. */
+.pv-editorial__img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.pv-editorial__img--dark{display:none}
+:root[data-theme="dark"] .pv-editorial__img--light{display:none}
+:root[data-theme="dark"] .pv-editorial__img--dark{display:block}
 
 /* security: twelve ruled lines, at the kit's 6%-of-height pitch, with a
  * vermilion band and a cobalt square over them. The lines are one repeating

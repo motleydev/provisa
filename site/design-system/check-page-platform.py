@@ -526,8 +526,8 @@ ok(
     ", ".join(h for h in p.hrefs if "/why/" in h),
 )
 ok(
-    "no product screenshot — only the two IMG-03 / IMG-04 editorials",
-    p.imgs == 2 and "shot-" not in src and "screenshot" not in src.lower(),
+    "no product screenshot — only IMG-03 and IMG-04 editorials (two light + two dark imgs)",
+    p.imgs == 4 and "shot-" not in src and "screenshot" not in src.lower(),
     f"{p.imgs} <img> in main",
 )
 ok(

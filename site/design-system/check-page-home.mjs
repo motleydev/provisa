@@ -296,6 +296,10 @@ for (const [what, n, re] of [
   ["editorial illustrations (§1 hero + §4 three)", 4, /<figure class="pv-editorial(?:\s|")[^"]*"/g],
   ["no FigPanel placeholders remain",           0, /<div class="pv-fig(?:\s|")[^"]*"/g],
   ["editorial PNGs referenced (§1 hero + §4 three)", 4, /<img\s+[^>]*src="\/assets\/editorial\/img-[0-9a-z-]+-light\.png"/g],
+  /* The theme-swap: each editorial figure ships a light img and a dark img so
+   * the pair swaps on the site's [data-theme] toggle instead of trying to
+   * key off prefers-color-scheme (which the kit does not use). */
+  ["editorial dark imgs paired with the lights", 4, /<img class="pv-editorial__img pv-editorial__img--dark"[^>]*aria-hidden="true"/g],
   ["h1 (one hero heading)",                     1, /<h1\b/g],
 ]) {
   const got = count(re);

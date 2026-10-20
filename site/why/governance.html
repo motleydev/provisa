@@ -150,10 +150,8 @@
             <!-- IMG-05. Governance six-layer editorial, 4:5. -->
             <figure class="pv-editorial" role="img"
                  aria-label="Five stacked governance layers converging into a single query plan, coloured by the see / get / run semantic.">
-              <picture>
-                <source media="(prefers-color-scheme: dark)" srcset="/assets/editorial/img-05-dark.png">
-                <img src="/assets/editorial/img-05-light.png" alt="Five stacked governance layers converging into a single query plan, coloured by the see / get / run semantic." fetchpriority="high" decoding="async">
-              </picture>
+                <img class="pv-editorial__img pv-editorial__img--light" src="/assets/editorial/img-05-light.png" alt="Five stacked governance layers converging into a single query plan, coloured by the see / get / run semantic." fetchpriority="high" decoding="async">
+                <img class="pv-editorial__img pv-editorial__img--dark" src="/assets/editorial/img-05-dark.png" alt="" aria-hidden="true" fetchpriority="high" decoding="async">
             </figure>
           </div>
         </div>
@@ -273,10 +271,8 @@ curl -X POST https://provisa.internal/data/sql/explain \
           <!-- IMG-06. Policy-in-plan editorial, 16:9. -->
           <figure class="pv-editorial pv-editorial--wide" role="img"
                aria-label="A query entering on the left and a plan leaving on the right with the policy predicates inlined into it.">
-            <picture>
-              <source media="(prefers-color-scheme: dark)" srcset="/assets/editorial/img-06-dark.png">
-              <img src="/assets/editorial/img-06-light.png" alt="A query entering on the left and a plan leaving on the right with the policy predicates inlined into it." loading="lazy" decoding="async">
-            </picture>
+              <img class="pv-editorial__img pv-editorial__img--light" src="/assets/editorial/img-06-light.png" alt="A query entering on the left and a plan leaving on the right with the policy predicates inlined into it." loading="lazy" decoding="async">
+              <img class="pv-editorial__img pv-editorial__img--dark" src="/assets/editorial/img-06-dark.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
           </figure>
 
           <div class="pv-callout">
