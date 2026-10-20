@@ -49,15 +49,14 @@ head("the kit");
 const drift = await page.evaluate(() => {
   const own = [...document.styleSheets].filter((s) => !s.href).length;
   const inline = [...document.querySelectorAll("[style]")]
-    .filter((el) => !el.classList.contains("pv-fig__s"))
     .map((el) => `${el.tagName}.${el.className}: ${el.getAttribute("style")}`);
   const classes = new Set();
   for (const el of document.querySelectorAll("*")) for (const c of el.classList) classes.add(c);
   return { own, inline, classes: [...classes].filter((c) => !/^(pv-|picker)/.test(c)) };
 });
 ok("no page-local stylesheet", drift.own === 0, `${drift.own} <style> blocks`);
-ok("no inline style outside the FigPanel shape coordinates",
-  drift.inline.length === 0, drift.inline.slice(0, 3).join(" | "));
+ok("no inline style on any element", drift.inline.length === 0,
+  drift.inline.slice(0, 3).join(" | "));
 ok("every class on the page is a kit class", drift.classes.length === 0, drift.classes.join(", "));
 
 /* ---- 2. §3's three tabs, and the third one on the page surface ------ */
@@ -165,7 +164,7 @@ for (const theme of ["light", "dark"]) {
         sameX: new Set(bodyRows.map((tr) => Math.round(tr.querySelector("th").getBoundingClientRect().left))).size,
         splitScrolls: split.scrollWidth > split.clientWidth,
         heroFig: (() => {
-          const f = document.querySelector(".pv-fig--wide").getBoundingClientRect();
+          const f = document.querySelector(".pv-editorial--wide").getBoundingClientRect();
           return Math.abs(f.width / f.height - 16 / 9) < 0.05;
         })(),
         bodyBg: getComputedStyle(document.body).backgroundColor,
@@ -211,41 +210,34 @@ ok("the prose panel resolves a background rather than inheriting the ink", !!rin
 
 /* ---- 6. the figures ------------------------------------------------ */
 head("figures");
-const figs = await page.$$eval(".pv-fig", (fs) => fs.map((f) => {
+const figs = await page.$$eval(".pv-editorial", (fs) => fs.map((f) => {
   const r = f.getBoundingClientRect();
-  const shapes = [...f.querySelectorAll(".pv-fig__s")].map((s) => {
-    const b = s.getBoundingClientRect();
-    return { l: b.left - r.left, t: b.top - r.top, w: b.width, h: b.height };
-  });
-  /* Shapes must stay inside the panel and must not pile up: the kit's 4/5
-   * `platform` set at 16/9 resolves to squares that overlap, which is why
-   * IMG-03 carries its own coordinates. */
-  const inside = shapes.every((s) => s.l >= -1 && s.t >= -1
-    && s.l + s.w <= r.width + 1 && s.t + s.h <= r.height + 1);
-  let overlaps = 0;
-  for (let i = 0; i < shapes.length; i++)
-    for (let j = i + 1; j < shapes.length; j++) {
-      const a = shapes[i], b = shapes[j];
-      const ox = Math.min(a.l + a.w, b.l + b.w) - Math.max(a.l, b.l);
-      const oy = Math.min(a.t + a.h, b.t + b.h) - Math.max(a.t, b.t);
-      if (ox > 2 && oy > 2) overlaps++;
-    }
-  return { label: f.querySelector(".pv-fig__label").textContent.trim(), ratio: r.width / r.height,
-    shapes: shapes.length, inside, overlaps, alt: f.getAttribute("aria-label") };
+  const img = f.querySelector("img");
+  return {
+    ratio: r.width / r.height,
+    wide: f.classList.contains("pv-editorial--wide"),
+    square: f.classList.contains("pv-editorial--square"),
+    src: img?.getAttribute("src") || "",
+    alt: img?.getAttribute("alt") || "",
+    loaded: !!img && img.complete && img.naturalWidth > 0,
+    label: f.getAttribute("aria-label") || "",
+    role: f.getAttribute("role"),
+  };
 }));
-ok("two figures, FIG. 01 and FIG. 02",
-  figs.map((f) => f.label).join(" ") === "FIG. 01 FIG. 02", figs.map((f) => f.label).join(" "));
-ok("IMG-03 is 16/9", Math.abs(figs[0].ratio - 16 / 9) < 0.05, figs[0].ratio.toFixed(3));
-ok("IMG-04 is 4/5", Math.abs(figs[1].ratio - 4 / 5) < 0.05, figs[1].ratio.toFixed(3));
-ok("every shape in IMG-03 is inside the panel", figs[0].inside);
-/* The four zones are drawn as blocks with blocks inside them — the model and
- * the compiler sit on the layer band, which is two intended overlaps, and the
- * drops meet the band and the squares, which is four more. */
-ok("IMG-03's shapes do not pile up", figs[0].overlaps <= 6, `${figs[0].overlaps} overlapping pairs`);
+ok("two editorial figures", figs.length === 2, `${figs.length}`);
+ok("IMG-03 is 16/9", figs[0].wide && Math.abs(figs[0].ratio - 16 / 9) < 0.05, figs[0].ratio.toFixed(3));
+ok("IMG-04 is 4/5", !figs[1].wide && !figs[1].square
+  && Math.abs(figs[1].ratio - 4 / 5) < 0.05, figs[1].ratio.toFixed(3));
+ok("IMG-03's PNG is referenced and loads",
+  figs[0].src === "/assets/editorial/img-03-light.png" && figs[0].loaded, `${figs[0].src}:${figs[0].loaded}`);
+ok("IMG-04's PNG is referenced and loads",
+  figs[1].src === "/assets/editorial/img-04-light.png" && figs[1].loaded, `${figs[1].src}:${figs[1].loaded}`);
 ok("both figures carry the brief's alt text",
   /registered sources at the bottom/.test(figs[0].alt) && /four deployment shapes/.test(figs[1].alt));
-ok("both are role=img with one accessible name each",
-  await page.$$eval(".pv-fig", (fs) => fs.every((f) => f.getAttribute("role") === "img" && f.getAttribute("aria-label"))));
+ok("both are role=img with an accessible name",
+  figs.every((f) => f.role === "img" && f.label.length > 30));
+ok("each <img>'s alt mirrors its figure's aria-label",
+  figs.every((f) => f.alt === f.label));
 
 /* ---- 7. a phone, as a phone ---------------------------------------- */
 head("iPhone 13, portrait");

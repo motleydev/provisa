@@ -600,19 +600,25 @@ ok(!s3.includes('href="/vs/denodo"'),
    "AC 6. /vs/denodo has no card and no link on this page");
 
 /* ======================================================================
- * 13. §3 ChoiceCards: a square FigPanel in each. IMG-15, 1/1, one mark
- * per comparison. The register entry still says three; the VP owns that
- * document. Two marks ship.
+ * 13. §3 ChoiceCards: a square editorial illustration in each. IMG-15,
+ * 1/1, one mark per comparison. The register entry still says three; the
+ * VP owns that document. Two marks ship.
  * ====================================================================== */
 
-const figs = (s3.match(/pv-fig--square/g) || []).length;
-ok(figs === 2, `§3 ships two square FigPanels (${figs})`,
+const figs = (s3.match(/pv-editorial--square/g) || []).length;
+ok(figs === 2, `§3 ships two square editorial illustrations (${figs})`,
    "IMG-15, one per comparison, at 1/1. The brief forbids a figure above §2");
 
-/* No FigPanel in §1. A figure above §2 pushes the category map below
+const figPngs = (s3.match(/<img\s+[^>]*src="\/assets\/editorial\/img-15[ab]-light\.png"/g) || []).length;
+ok(figPngs === 2, `§3 references both IMG-15 light PNGs (${figPngs})`);
+
+ok(!s3.includes("pv-fig"), "no FigPanel placeholders remain in §3",
+   "IMG-15 is placed; the CSS FigPanel was retired on PRO-143");
+
+/* No figure in §1. A figure above §2 pushes the category map below
  * the fold, which is the one thing this page cannot afford. */
 const s1 = sections[0] || "";
-ok(!s1.includes("pv-fig"), "no FigPanel in §1",
+ok(!s1.includes("pv-fig") && !s1.includes("pv-editorial"), "no figure in §1",
    "a figure above §2 pushes the category map below the fold");
 
 /* ======================================================================

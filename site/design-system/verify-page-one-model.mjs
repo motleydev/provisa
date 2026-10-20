@@ -28,12 +28,12 @@
  *   that is measured at every width rather than inferred from the CSS (which
  *   `check-kit.mjs` already reads).
  *
- *   The rings figure. It draws five rings because five layers are compiled
- *   into the plan; the approval hook sits outside the plan and is not drawn.
- *   `pv-fig--rings` sizes its rings with `:nth-of-type`, and the kit's own
- *   history here is a figure that silently rendered one fewer ring than it was
- *   given — so the five are measured as five distinct painted widths closing
- *   on the vermilion core, not counted in the markup.
+ *   The editorial figures. Both IMG-08a (four descriptions → one model) and
+ *   IMG-08b (five rings closing on the compiled plan) are placed as editorial
+ *   PNGs with light and dark variants. The verify step confirms the images
+ *   load, carry the labelled role=img contract, and keep their declared
+ *   aspect ratio under the layout — rather than reasoning about shape
+ *   geometry that now lives inside the PNG.
  */
 import { chromium } from "playwright";
 
@@ -104,38 +104,42 @@ for (const theme of THEMES) {
     ok(measure.widest <= measure.cap + 1,
        `${at}: nothing running follows the container past the measure (${Math.round(measure.widest)}px of ${Math.round(measure.cap)}px)`);
 
-    /* Both figures paint, and neither clips its own geometry. */
+    /* Both editorial figures load, carry a labelled role=img, and keep the
+     * declared aspect ratio. Shape-level geometry is now inside the PNG, so
+     * the browser check verifies the image renders rather than reasoning
+     * about painted shapes. */
     const figs = await page.evaluate(() => {
       const out = [];
-      for (const f of document.querySelectorAll(".pv-fig")) {
+      for (const f of document.querySelectorAll(".pv-editorial")) {
         const fr = f.getBoundingClientRect();
-        const shapes = [...f.querySelectorAll(".pv-fig__s")].map((s) => {
-          const r = s.getBoundingClientRect();
-          return { w: r.width, h: r.height, bg: getComputedStyle(s).backgroundColor,
-                   out: r.right > fr.right + 1 || r.left < fr.left - 1
-                        || r.bottom > fr.bottom + 1 || r.top < fr.top - 1 };
+        const img = f.querySelector("img");
+        const ratio = fr.height > 0 ? fr.width / fr.height : 0;
+        out.push({
+          w: fr.width, h: fr.height, ratio,
+          role: f.getAttribute("role"),
+          label: f.getAttribute("aria-label") || "",
+          src: img?.getAttribute("src") || "",
+          alt: img?.getAttribute("alt") || "",
+          loaded: !!img && img.complete && img.naturalWidth > 0,
+          wide: f.classList.contains("pv-editorial--wide"),
+          square: f.classList.contains("pv-editorial--square"),
         });
-        out.push({ w: fr.width, h: fr.height, rings: f.classList.contains("pv-fig--rings"), shapes });
       }
       return out;
     });
-    ok(figs.length === 2, `${at}: both FigPanels render (${figs.length})`);
+    ok(figs.length === 2, `${at}: both editorial figures render (${figs.length})`);
     ok(figs.every((f) => f.w > 0 && f.h > 0), `${at}: neither figure collapses`);
-    ok(figs.every((f) => f.shapes.every((s) => !s.out)),
-       `${at}: no figure shape escapes its own panel`);
-
-    /* The five rings, measured. Five painted widths, each smaller than the
-     * last, and the core a colour the others are not — the kit's nth-child bug
-     * rendered one fewer ring and lost the vermilion core, so this is the check
-     * that a five-ring figure is five rings. */
-    const rings = figs.find((f) => f.rings);
-    const widths = rings.shapes.map((s) => Math.round(s.w));
-    ok(rings.shapes.length === 5 && widths.every((w) => w > 0),
-       `${at}: five rings paint (${widths.join(" > ")})`);
-    ok(widths.every((w, i) => i === 0 || w < widths[i - 1]),
-       `${at}: each ring is inside the one before it (${widths.join(" > ")})`);
-    ok(!rings.shapes.slice(0, 4).some((s) => s.bg === rings.shapes[4].bg),
-       `${at}: the core is a colour no outer ring is (${rings.shapes[4].bg})`);
+    ok(figs.every((f) => f.role === "img" && f.label.length > 30),
+       `${at}: both figures carry a labelled role="img"`);
+    ok(figs.every((f) => /^\/assets\/editorial\/img-08[ab]-light\.png$/.test(f.src)),
+       `${at}: both figures reference an IMG-08 light PNG (${figs.map((f) => f.src).join(", ")})`);
+    ok(figs.every((f) => f.loaded),
+       `${at}: both editorial PNGs load (${figs.map((f) => `${f.src}:${f.loaded}`).join(", ")})`);
+    ok(figs.every((f) => f.alt === f.label),
+       `${at}: each <img> alt mirrors its figure's aria-label`);
+    /* Both figures ship at 4:5 (no --wide, no --square modifier). */
+    ok(figs.every((f) => !f.wide && !f.square && Math.abs(f.ratio - 4 / 5) < 0.02),
+       `${at}: both figures keep the 4:5 aspect ratio (${figs.map((f) => f.ratio.toFixed(2)).join(", ")})`);
 
     /* The breadcrumb is what says where you are, since One model is not a nav
      * item and so nothing in the header is current. */
@@ -281,7 +285,7 @@ for (const theme of THEMES) {
      `a11y: no heading level is skipped (${h.order.join(" ")})`);
 
   const figs = await page.evaluate(() =>
-    [...document.querySelectorAll(".pv-fig")].map((f) => ({
+    [...document.querySelectorAll(".pv-editorial")].map((f) => ({
       label: f.getAttribute("aria-label") || "",
       role: f.getAttribute("role"),
     })));

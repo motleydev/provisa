@@ -66,6 +66,8 @@ class P(HTMLParser):
             s.cls[c] = s.cls.get(c, 0) + 1
         if "pv-fig" in (d.get("class") or "").split():
             s.figs.append(d)
+        if "pv-editorial" in (d.get("class") or "").split():
+            s.figs.append(d)
         if t == "table":
             s.tables.append({"cols": [], "rows": []})
             s.cur = s.tables[-1]
@@ -201,17 +203,26 @@ ok(
     and "1,599 requirements complete and 84 in progress" in norm
     and "counted on 14 October 2026" in norm,
 )
-ok("IMG-03 is the 16/9 FigPanel", p.cls.get("pv-fig--wide", 0) == 1)
+ok("IMG-03 is the 16/9 editorial illustration", p.cls.get("pv-editorial--wide", 0) == 1)
 ok(
     "IMG-03's accessible name is the brief's alt",
     "registered sources at the bottom, the Provisa layer above them holding the model and the compiler"
     in norm,
 )
-ok("two figures, IMG-03 and IMG-04", p.cls.get("pv-fig", 0) == 2, str(p.cls.get("pv-fig")))
+ok("two editorial illustrations, IMG-03 and IMG-04", p.cls.get("pv-editorial", 0) == 2, str(p.cls.get("pv-editorial")))
 ok(
-    "IMG-04 is the deploy figure at 4/5 (no aspect modifier)",
-    p.cls.get("pv-fig--get", 0) == 1 and p.cls.get("pv-fig--square", 0) == 0,
+    "IMG-04 is the 4/5 editorial illustration (no aspect modifier)",
+    p.cls.get("pv-editorial--wide", 0) == 1 and p.cls.get("pv-editorial--square", 0) == 0,
 )
+ok(
+    "the IMG-03 light PNG is referenced",
+    "/assets/editorial/img-03-light.png" in src,
+)
+ok(
+    "the IMG-04 light PNG is referenced",
+    "/assets/editorial/img-04-light.png" in src,
+)
+ok("no FigPanel placeholders remain", p.cls.get("pv-fig", 0) == 0)
 
 head("§2 routing — LayerRow ×4 on the band the list variant needs")
 ok("four LayerRow list rows", p.cls.get("pv-layer--list", 0) == 4, str(p.cls.get("pv-layer--list")))
@@ -514,7 +525,11 @@ ok(
     ),
     ", ".join(h for h in p.hrefs if "/why/" in h),
 )
-ok("no product screenshot", p.imgs == 0, f"{p.imgs} <img> in main")
+ok(
+    "no product screenshot — only the two IMG-03 / IMG-04 editorials",
+    p.imgs == 2 and "shot-" not in src and "screenshot" not in src.lower(),
+    f"{p.imgs} <img> in main",
+)
 ok(
     "every in-page fragment resolves to an id on the page",
     all(h[1:] in p.ids for h in p.hrefs if h.startswith("#")),

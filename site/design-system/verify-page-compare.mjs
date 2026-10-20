@@ -202,7 +202,7 @@ for (const theme of THEMES) {
         (s.querySelector("h2")?.textContent || "").includes("Two comparisons in detail"));
       if (!sec) return null;
       const cards = [...sec.querySelectorAll(".pv-choice")];
-      const figs = [...sec.querySelectorAll(".pv-fig--square")];
+      const figs = [...sec.querySelectorAll(".pv-editorial--square")];
       const links = [...sec.querySelectorAll("a[href]")].map((a) => a.getAttribute("href"));
       return {
         cards: cards.length,
@@ -215,7 +215,7 @@ for (const theme of THEMES) {
     ok(s3Shape, `${at}: §3 is findable in the DOM`);
     if (s3Shape) {
       ok(s3Shape.cards === 2, `${at}: §3 is 2 ChoiceCards (${s3Shape.cards})`);
-      ok(s3Shape.figs === 2, `${at}: §3 ships 2 square FigPanels (${s3Shape.figs})`);
+      ok(s3Shape.figs === 2, `${at}: §3 ships 2 square editorial illustrations (${s3Shape.figs})`);
       ok(s3Shape.hasStarburst, `${at}: §3 links /vs/starburst`);
       ok(s3Shape.hasHasura, `${at}: §3 links /vs/hasura`);
       ok(!s3Shape.hasDenodo, `${at}: §3 does NOT link /vs/denodo (AC 6)`);

@@ -147,18 +147,14 @@
             </div>
           </div>
           <div class="pv-rail__rail">
-            <!-- IMG-05. FigPanel governance, 4/5. Five rings, because the
-                 figure depicts the five layers compiled into the plan; the
-                 approval hook is not in the plan and is not in the figure. -->
-            <div class="pv-fig pv-fig--rings" role="img"
+            <!-- IMG-05. Governance six-layer editorial, 4:5. -->
+            <figure class="pv-editorial" role="img"
                  aria-label="Five stacked governance layers converging into a single query plan, coloured by the see / get / run semantic.">
-              <span class="pv-fig__label">FIG. 01</span>
-              <i class="pv-fig__s"></i>
-              <i class="pv-fig__s"></i>
-              <i class="pv-fig__s"></i>
-              <i class="pv-fig__s"></i>
-              <i class="pv-fig__s"></i>
-            </div>
+              <picture>
+                <source media="(prefers-color-scheme: dark)" srcset="/assets/editorial/img-05-dark.png">
+                <img src="/assets/editorial/img-05-light.png" alt="Five stacked governance layers converging into a single query plan, coloured by the see / get / run semantic." fetchpriority="high" decoding="async">
+              </picture>
+            </figure>
           </div>
         </div>
 
@@ -274,19 +270,14 @@ curl -X POST https://provisa.internal/data/sql/explain \
             </table>
           </div>
 
-          <!-- IMG-06. FigPanel governance, 16/9. -->
-          <div class="pv-fig pv-fig--wide" role="img"
+          <!-- IMG-06. Policy-in-plan editorial, 16:9. -->
+          <figure class="pv-editorial pv-editorial--wide" role="img"
                aria-label="A query entering on the left and a plan leaving on the right with the policy predicates inlined into it.">
-            <span class="pv-fig__label">FIG. 02</span>
-            <i class="pv-fig__s" style="--l:6;--t:30;--w:18;--h:8"></i>
-            <i class="pv-fig__s" style="--l:6;--t:44;--w:12;--h:8"></i>
-            <i class="pv-fig__s pv-fig__s--ink" style="--l:28;--t:18;--w:1.4;--h:64"></i>
-            <i class="pv-fig__s pv-fig__s--run" style="--l:34;--t:30;--w:30;--h:8"></i>
-            <i class="pv-fig__s pv-fig__s--run" style="--l:34;--t:44;--w:22;--h:8"></i>
-            <i class="pv-fig__s" style="--l:34;--t:58;--w:38;--h:8"></i>
-            <i class="pv-fig__s pv-fig__s--ink" style="--l:76;--t:18;--w:1.4;--h:64"></i>
-            <i class="pv-fig__s" style="--l:82;--t:30;--w:12;--h:36"></i>
-          </div>
+            <picture>
+              <source media="(prefers-color-scheme: dark)" srcset="/assets/editorial/img-06-dark.png">
+              <img src="/assets/editorial/img-06-light.png" alt="A query entering on the left and a plan leaving on the right with the policy predicates inlined into it." loading="lazy" decoding="async">
+            </picture>
+          </figure>
 
           <div class="pv-callout">
             <span class="pv-callout__body">This is how you answer "what would

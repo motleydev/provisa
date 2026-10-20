@@ -279,9 +279,27 @@ const tablist = (main.match(/<div class="pv-codetabs__tabs"[\s\S]*?<\/div>/) || 
 const tabCount = (tablist.match(/role="tab"/g) || []).length;
 ok(tabCount === 3, `§3 ships three tabs (found ${tabCount})`);
 
-const panelAsk =
-  (main.match(/<div[^>]*id="p-ask"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/) ||
-   [""])[0];
+/* Isolate the p-ask panel by balancing div opens and closes from the panel's
+ * opening tag. The previous triple-</div> regex relied on a coincidental
+ * sibling structure (a FigPanel sat exactly three div-closes after p-ask)
+ * and silently stopped working the moment that sibling markup changed. */
+function sliceBalancedDiv(src, startAttr) {
+  const openIdx = src.indexOf(startAttr);
+  if (openIdx < 0) return "";
+  const tagOpen = src.lastIndexOf("<div", openIdx);
+  if (tagOpen < 0) return "";
+  const tagEnd = src.indexOf(">", openIdx) + 1;
+  let depth = 1;
+  const re = /<\/?div\b[^>]*>/g;
+  re.lastIndex = tagEnd;
+  let m;
+  while ((m = re.exec(src))) {
+    depth += m[0].startsWith("</") ? -1 : 1;
+    if (depth === 0) return src.slice(tagOpen, re.lastIndex);
+  }
+  return "";
+}
+const panelAsk = sliceBalancedDiv(main, 'id="p-ask"');
 ok(panelAsk.includes("pv-callout"),
    "the trust-mode callout is inside tab 3 (p-ask), not below the tabs");
 ok(/trust mode/.test(panelAsk),

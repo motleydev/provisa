@@ -98,7 +98,7 @@ const counts = await page.evaluate(() => ({
   tabs: document.querySelectorAll(".pv-codetabs__tab").length,
   panels: document.querySelectorAll(".pv-codetabs__panel").length,
   ruled: document.querySelectorAll(".pv-ruled").length,
-  figs: document.querySelectorAll(".pv-fig").length,
+  figs: document.querySelectorAll(".pv-editorial").length,
   mainBtns: document.querySelectorAll("main .pv-btn").length,
   links: document.querySelectorAll("main .pv-link").length,
   h1: document.querySelectorAll("h1").length,
@@ -112,7 +112,7 @@ ok("Accordion panels, one per surface in the brief", counts.accPanels === 13, `$
 ok("CodeTabs has four tabs and four panels", counts.tabs === 4 && counts.panels === 4,
   `${counts.tabs} tabs / ${counts.panels} panels`);
 ok("RuledCard ×5 — two in §6, three in §8", counts.ruled === 5, `${counts.ruled}`);
-ok("one FigPanel, the IMG-07 placeholder", counts.figs === 1);
+ok("one editorial illustration, IMG-07", counts.figs === 1);
 ok("exactly one h1", counts.h1 === 1);
 ok("Emph is used in the hero", counts.emph >= 1);
 ok("seven section labels", counts.seclabels === 7, `${counts.seclabels}`);

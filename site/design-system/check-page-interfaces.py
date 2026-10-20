@@ -42,7 +42,7 @@ class P(HTMLParser):
 
     def handle_starttag(s, t, a):
         d = dict(a)
-        if t != "br" and t not in ("meta", "link", "input", "img", "i"):
+        if t != "br" and t not in ("meta", "link", "input", "img", "i", "source"):
             s.stack.append(t)
         if "id" in d:
             s.ids.append(d["id"])
@@ -189,7 +189,9 @@ ok(
     all(b["aria-controls"] in p.ids for b in p.accbtn),
 )
 ok("RuledCard ×5", c.get("pv-ruled") == 5, str(c.get("pv-ruled")))
-ok("one FigPanel", c.get("pv-fig") == 1)
+ok("one editorial illustration (IMG-07)", c.get("pv-editorial") == 1)
+ok("no FigPanel placeholders remain", c.get("pv-fig", 0) == 0)
+ok("IMG-07 light PNG is referenced", "/assets/editorial/img-07-light.png" in src)
 ok(
     "Button ×2 in the conversion band",
     src.count('class="pv-btn pv-btn--on-color"') == 1
@@ -198,7 +200,11 @@ ok(
 ok("exactly one h1", p.h1 == 1)
 ok("Emph in the hero and §6", c.get("pv-emph") == 2, str(c.get("pv-emph")))
 ok("seven section labels", c.get("pv-seclabel") == 7, str(c.get("pv-seclabel")))
-ok("no product screenshot in main", p.imgs == 0)
+ok(
+    "no product screenshot in main — only the IMG-07 editorial",
+    p.imgs == 1 and "shot-" not in src and "screenshot" not in src.lower(),
+    f"{p.imgs} <img> in main",
+)
 
 # snippets
 code = p.codepre

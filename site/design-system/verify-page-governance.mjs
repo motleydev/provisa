@@ -262,7 +262,7 @@ for (const theme of THEMES) {
   ok(captions === 0, `a11y: both tables carry a caption (${captions} without)`);
 
   const figs = await page.evaluate(() =>
-    [...document.querySelectorAll(".pv-fig")].map((f) => f.getAttribute("aria-label") || ""));
+    [...document.querySelectorAll(".pv-editorial")].map((f) => f.getAttribute("aria-label") || ""));
   ok(figs.length === 2 && figs.every((a) => a.length > 40),
      `a11y: both figures carry real alt text (${figs.length})`);
 
