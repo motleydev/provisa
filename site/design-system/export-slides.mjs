@@ -160,7 +160,7 @@ await page.addStyleTag({
     .pv-slide__canvas{--u:calc(min(100cqw, 100cqh * 16 / 9) / 100) !important;
       width:calc(var(--u) * 100) !important;max-width:none !important;
       aspect-ratio:16/9 !important;padding:calc(var(--u) * 5) !important}
-    .pv-rail,.pv-deck__bar{display:none !important}
+    .pv-tabs,.pv-deck__bar{display:none !important}
     /* The site's chrome is not part of a slide. The header is sticky, so
      * without this it paints over the top of whichever canvas is being
      * screenshotted; the rest would simply be captured by a full-page export.

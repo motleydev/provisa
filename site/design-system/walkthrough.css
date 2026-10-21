@@ -28,8 +28,11 @@
  *
  * MOTION. The kit ships exactly one transition and no shadows, so the reveals
  * here are editorial rather than SaaS: rules draw from the left, display type
- * is revealed by a clip, figure shapes land in document order. The controller
- * sets data-state="enter" on a slide; everything below keys off that. The
+ * is revealed by a clip, figure shapes land in document order. Two layers of
+ * it. Between slides, the arriving slide is uncovered from the edge it came
+ * from — the controller declares the direction on the deck as data-dir, and
+ * data-show says which slide is on the stage. Inside a slide, the controller
+ * sets data-state="enter"; everything below keys off that. The
  * kit's global prefers-reduced-motion block already collapses every duration
  * to 0.01ms, which lands the final state immediately — that is the whole
  * reduced-motion path, and verify-page-walkthrough.mjs asserts it.
@@ -88,7 +91,13 @@
   color:var(--text-primary);
 }
 
-/* Deck mode: one 16:9 slide per viewport, snapped.
+/* Deck mode: one stage, every slide on it, exactly one of them shown.
+ *
+ * Nothing in deck mode scrolls. The slides are stacked in a single grid area
+ * and the controller shows one at a time, which is what makes a briefing read
+ * as a sequence of statements rather than a page a reader skims. The arriving
+ * slide wipes over the leaving one; see "The wipe" below. ?view=page is the
+ * rendering that scrolls, and the control bar links it from every slide.
  *
  * --u is one percent of the canvas width, and the canvas is the largest 16:9
  * box that fits the frame. Container query units are resolved against the
@@ -96,19 +105,37 @@
  * the container goes on the frame and the canvas reads it. The frame has a
  * definite height in both geometric modes, which is what container-type:size
  * requires. */
-/* --deck-offset is what the chrome above the deck takes: the utility bar and
- * the sticky header. The controller measures it, because the utility bar has
- * no height token and the header's wraps at narrow widths, so neither is a
- * number this file can know. Without it the deck is a full viewport tall
- * *below* a header, the first slide's foot sits under the fold, and the
- * document scrolls behind a deck that is already a scroller. The fallback of
- * 0px is the JavaScript-off case, which never reaches deck mode anyway. */
+/* --deck-offset is what the chrome above the stage takes: the utility bar, the
+ * sticky header and the tab strip. The controller measures it, because the
+ * utility bar has no height token, the header's wraps at narrow widths and the
+ * strip's depends on the font — none of them a number this file can know.
+ * Without it the stage is a full viewport tall *below* that chrome and the
+ * slide's own footer sits under the fold. The fallback of 0px is the
+ * JavaScript-off case, which never reaches deck mode anyway.
+ *
+ * The measurement is only true while the document itself stays put, so deck
+ * mode pins it. The controller sets data-deck-mode on the root; everything
+ * below the deck — the contact section and the site footer — is out of reach
+ * until the visitor leaves deck mode, which is what a deck means. The close
+ * slide carries the demo CTA, and ?view=page is the scrollable article. */
+html[data-deck-mode="on"]{overflow:hidden}
+/* Two rows: the tab strip, then the stage every slide shares. The stage row is
+ * minmax(0,1fr), which is what makes it definite — an implicit or auto track
+ * is sized by its contents, and a slide's canvas is a 16:9 box whose height
+ * comes from its own width, so the row would have taken the canvas's height
+ * and the slide at height:100% would have taken the row's: 1080px of slide
+ * inside a 927px stage, clipped, with the slide's footer under the fold.
+ * minmax(0,...) is the part that stops content growing a track it is supposed
+ * to be measured against. */
 .pv-deck[data-mode="deck"]{
+  display:grid;
+  grid-template-areas:"strip" "stage";
+  grid-template-rows:auto minmax(0,1fr);
+  grid-template-columns:minmax(0,1fr);
   height:calc(100svh - var(--deck-offset, 0px));
-  overflow-y:auto;
-  scroll-snap-type:y mandatory;
-  overscroll-behavior-y:contain;
+  overflow:hidden;
 }
+.pv-deck[data-mode="deck"] > .pv-tabs{grid-area:strip}
 .pv-deck[data-mode="deck"] .pv-slide,
 .pv-plate .pv-slide{
   container-type:size;
@@ -116,12 +143,42 @@
   border-top:0;
   overflow:hidden;
 }
+/* visibility, not display or [hidden]: a slide off the stage has to be out of
+ * the accessibility tree, out of the tab order and out of find-in-page, which
+ * visibility:hidden does, while still being laid out — a display:none slide
+ * would have no size to animate from and would re-run its container query on
+ * every step. The leaving slide keeps its visibility for the length of the
+ * wipe and sits under the arriving one. */
 .pv-deck[data-mode="deck"] .pv-slide{
-  height:calc(100svh - var(--deck-offset, 0px));
-  scroll-snap-align:start;
-  scroll-snap-stop:always;
+  grid-area:stage;
+  height:100%;
+  min-height:0;
+  visibility:hidden;
+}
+.pv-deck[data-mode="deck"] .pv-slide[data-show="out"]{visibility:visible;z-index:1}
+.pv-deck[data-mode="deck"] .pv-slide[data-show="on"]{
+  visibility:visible;
+  z-index:2;
+  animation:pv-slide-in var(--dur-slide) var(--ease-slide) both;
 }
 .pv-plate .pv-slide{aspect-ratio:16/9}
+
+/* The wipe. A system with no shadows and one transition does not get a slide
+ * that flies in: the arriving slide is uncovered from the edge it came from,
+ * the way a press reveals a sheet. The direction is the direction of travel,
+ * which the controller declares on the deck, so stepping back reads as going
+ * back rather than as another step forward. */
+@keyframes pv-slide-in{
+  from{clip-path:inset(0 0 0 100%)}
+  to{clip-path:inset(0 0 0 0)}
+}
+@keyframes pv-slide-in-back{
+  from{clip-path:inset(0 100% 0 0)}
+  to{clip-path:inset(0 0 0 0)}
+}
+.pv-deck[data-mode="deck"][data-dir="back"] .pv-slide[data-show="on"]{
+  animation-name:pv-slide-in-back;
+}
 
 .pv-deck[data-mode="deck"] .pv-slide__canvas,
 .pv-plate .pv-slide__canvas{
@@ -681,37 +738,81 @@
 .pv-deck[data-motion="on"] .pv-slide .pv-sl__table tbody tr:nth-child(n+4){transition-delay:240ms}
 
 /* ======================================================================
- * The progress rail. Mono indices, because the kit numbers things; not a
- * row of dots, because the kit has no dots.
+ * The tab strip. Mono indices, because the kit numbers things; not a row of
+ * dots, because the kit has no dots, and not twenty titles, because twenty
+ * titles do not fit across a slide. The selected slide's title is printed at
+ * the end of the strip, and every tab carries its own as its accessible name.
+ *
+ * The deck's first child, in the grid's first row, so the accent it paints
+ * with is the deck's own inherited custom property and the stage below it is
+ * whatever room the strip leaves. A fixed strip would overlap a slide at the
+ * one size nobody tested.
  * ====================================================================== */
 
-.pv-rail{
-  position:fixed;
-  right:var(--gutter);
-  top:50%;
-  transform:translateY(-50%);
-  z-index:40;
+.pv-tabs{
+  position:relative;
+  z-index:30;
   display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:10px;
+  align-items:center;
+  gap:20px;
+  padding:0 var(--gutter);
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+  background:var(--surface-page);
 }
-.pv-rail[hidden]{display:none}
-.pv-rail__list{display:flex;flex-direction:column;align-items:flex-end;gap:6px;margin:0;padding:0;list-style:none}
-.pv-rail__link{
-  display:block;
-  padding:2px 4px;
+.pv-tabs[hidden]{display:none}
+/* position:relative so a tab's offsetLeft is measured against the scroller the
+ * controller scrolls, and scrollbar-width:none because a one-line strip with a
+ * scrollbar under it would change the stage's height. */
+.pv-tabs__list{
+  position:relative;
+  display:flex;
+  min-width:0;
+  overflow-x:auto;
+  scrollbar-width:none;
+  scroll-behavior:smooth;
+}
+.pv-tabs__list::-webkit-scrollbar{display:none}
+.pv-tabs__tab{
+  flex:none;
+  appearance:none;
+  margin:0;
+  padding:10px 7px;
+  border:0;
+  border-bottom:2px solid transparent;
+  background:none;
   font-family:var(--font-mono);
   font-size:var(--type-mono-xs);
   letter-spacing:0.08em;
   color:var(--text-faint);
-  text-decoration:none;
-  border-right:2px solid transparent;
+  cursor:pointer;
 }
-.pv-rail__link:hover{color:var(--text-primary)}
-.pv-rail__link[aria-current="true"]{color:var(--accent-text);border-right-color:var(--accent)}
-.pv-rail__cta{margin-top:12px}
-.pv-rail__cta[hidden]{display:none}
+.pv-tabs__tab:hover{color:var(--text-primary)}
+.pv-tabs__tab[aria-selected="true"]{color:var(--accent-text);border-bottom-color:var(--accent)}
+.pv-tabs__now{
+  flex:1 1 auto;
+  min-width:0;
+  margin:0;
+  font-family:var(--font-mono);
+  font-size:var(--type-mono-xs);
+  letter-spacing:0.06em;
+  color:var(--text-muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:right;
+}
+/* The kit's small button is sized for a section, and the strip is one line of
+ * mono. Padding is the only thing that moves; the ink, the square corners and
+ * the type are the button's own. */
+.pv-tabs__cta{flex:none;padding:7px 14px;font-size:var(--type-mono-xs)}
+.pv-tabs__cta[hidden]{display:none}
+
+/* Below the kit's own nav breakpoint the strip has room for the tabs and the
+ * ask, and that is the order of importance: the title it would drop is on the
+ * slide underneath it, in display type. */
+@media (max-width:899px){
+  .pv-tabs__now{display:none}
+}
 
 /* The deck's own controls: a page-mode escape and the autoplay switch. Never
  * autoplaying by default is a decision, not an oversight. */
@@ -755,8 +856,36 @@
  * ====================================================================== */
 
 @media print{
-  .pv-rail,.pv-deck__bar,.pv-header,.pv-footer{display:none !important}
-  .pv-deck{height:auto;overflow:visible}
-  .pv-slide{break-after:page;height:auto;padding:0}
+  .pv-tabs,.pv-deck__bar,.pv-header,.pv-footer{display:none !important}
+  /* Deck mode stacks the slides and shows one; paper has no "one at a time",
+   * so printing unstacks them. Without this a printed deck is a single slide
+   * and nineteen blank pages. */
+  .pv-deck,.pv-deck[data-mode="deck"]{display:block;height:auto;overflow:visible}
+  .pv-slide,.pv-deck[data-mode="deck"] .pv-slide{
+    break-after:page;
+    height:auto;
+    padding:0;
+    visibility:visible;
+    animation:none;
+  }
   .pv-slide__canvas{max-height:none}
+  /* And every slide prints in its finished state. A slide the reader never
+   * reached is parked pre-enter — rules collapsed, headings clipped — which is
+   * right on screen and would print nineteen half-drawn pages. */
+  .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__rule,
+  .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__rows,
+  .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__stats,
+  .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__defs,
+  .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__bars i{
+    transform:none !important;
+  }
+  .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__display,
+  .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__h2{
+    clip-path:none !important;
+  }
+  .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-fig__s,
+  .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-schem__node,
+  .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__table tbody tr{
+    opacity:1 !important;
+  }
 }
