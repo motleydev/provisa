@@ -52,6 +52,10 @@
   deck.dataset.motion = "on";
   deck.tabIndex = -1;
 
+  /* walkthrough.css reads this to stop the root scrolling; see pinDocument
+   * below for why the deck has to be the only scroller. */
+  document.documentElement.dataset.deckMode = "on";
+
   /* How much of the viewport the chrome above the deck takes. walkthrough.css
    * subtracts it from the slide height, because a deck sized at a full
    * viewport under a sticky header puts the first slide's footer below the
@@ -59,11 +63,29 @@
    * than declared: the utility bar has no height token, and the header's own
    * height changes when its nav wraps. */
   function fitDeck() {
+    pinDocument();
     const top = deck.getBoundingClientRect().top + window.scrollY;
     deck.style.setProperty("--deck-offset", Math.max(0, Math.round(top)) + "px");
   }
+
+  /* The offset above is measured against a document at its top, and it stays
+   * true only there: the utility bar is part of what it counts and the bar
+   * rolls away as soon as the document moves, leaving the deck that much
+   * short of the viewport and a band of the contact section showing under
+   * every slide. Deck mode owns the viewport, so the document is held at the
+   * top and the deck is the only scroller. The root's overflow in
+   * walkthrough.css stops a reader scrolling it; this stops the things that
+   * scroll it without a reader — a rail link's native hash jump, a load that
+   * arrives with a hash, focus moving into a slide. */
+  function pinDocument() {
+    if (window.scrollY !== 0) window.scrollTo(0, 0);
+  }
+
   fitDeck();
   window.addEventListener("resize", fitDeck);
+  /* The root cannot be scrolled by a reader while deck mode is on, so this
+   * only ever catches a scroll the page gave itself, and never fights one. */
+  window.addEventListener("scroll", pinDocument, { passive: true });
 
   /* ---- the rail ---------------------------------------------------- */
 
@@ -180,7 +202,11 @@
 
   function go(i, focus) {
     const n = Math.max(0, Math.min(slides.length - 1, i));
-    slides[n].scrollIntoView({ block: "start" });
+    /* Scroll the deck, not the document. scrollIntoView takes every ancestor
+     * scroller with it, which rolls the utility bar off the top and leaves the
+     * deck short of the viewport by that bar's height for the rest of the
+     * session. The deck is the one scroller deck mode has. */
+    deck.scrollTop += slides[n].getBoundingClientRect().top - deck.getBoundingClientRect().top;
     setCurrent(n);
     /* Focus moves to the slide's own heading so a screen reader and a keyboard
      * reader land where a sighted reader's eye lands. The slide itself is the
@@ -191,6 +217,7 @@
       if (!h.hasAttribute("tabindex")) h.tabIndex = -1;
       h.focus({ preventScroll: true });
     }
+    pinDocument();
   }
 
   document.addEventListener("keydown", (e) => {

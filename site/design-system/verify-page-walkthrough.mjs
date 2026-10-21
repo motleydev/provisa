@@ -257,6 +257,31 @@ for (const deck of DECKS) {
   ok((await page.locator(".pv-deck__bar [role='switch']").getAttribute("aria-checked")) === "false",
      `${deck}: autoplay is off on load`);
 
+  /* The fit check above measures the deck as it loads. This measures it after
+   * a reader has used it, which is a different thing and was broken: stepping
+   * scrolled the document as well as the deck, the utility bar rolled off the
+   * top, and the deck — sized against chrome that included that bar — came up
+   * its height short, so a band of the contact section sat under every slide
+   * with the deck's own footer row over it. The deck fills the space under the
+   * sticky header, and nothing below the deck is on screen. */
+  const settled = await page.evaluate(() => {
+    const d = document.querySelector(".pv-deck").getBoundingClientRect();
+    const next = document.querySelector(".pv-contact").getBoundingClientRect();
+    const header = document.querySelector(".pv-header").getBoundingClientRect();
+    return {
+      gap: Math.round(window.innerHeight - d.bottom),
+      underHeader: Math.round(d.top - header.bottom),
+      nextTop: Math.round(next.top),
+      viewport: window.innerHeight,
+    };
+  });
+  ok(Math.abs(settled.gap) <= TOLERANCE,
+     `${deck}: after stepping the deck still reaches the foot of the viewport (${settled.gap}px short)`);
+  ok(settled.underHeader >= -TOLERANCE,
+     `${deck}: after stepping the deck still starts below the sticky header (${settled.underHeader}px)`);
+  ok(settled.nextTop >= settled.viewport - TOLERANCE,
+     `${deck}: after stepping nothing below the deck is on screen (contact section at ${settled.nextTop} of ${settled.viewport})`);
+
   await context.close();
 }
 

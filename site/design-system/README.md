@@ -44,8 +44,15 @@ lists where the wording departs from the source decks. Open
 each plate's copy describes the master it sits on and claims nothing about the
 product, for the same reason the `Schematic` specimen draws itself.
 
-Three rules the layer keeps:
+Four rules the layer keeps:
 
+- **Deck mode owns the viewport.** The controller sets `data-deck-mode` on the
+  root and holds the document at its top, so the deck is the only scroller and
+  `--deck-offset` — the utility bar plus the sticky header, measured, because
+  neither is a number the stylesheet can know — stays true for the whole deck
+  rather than only its first slide. The contact section and the footer below
+  the deck are out of reach until the reader leaves deck mode; the close slide
+  carries the demo ask, and `?view=page` is the scrollable article.
 - **`--u` is one percent of the canvas width.** In deck mode and on a plate the
   slide frame is a size container and the canvas reads it, so one slide renders
   identically at any size. The reference canvas is 1920×1080.

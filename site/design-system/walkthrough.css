@@ -102,7 +102,14 @@
  * number this file can know. Without it the deck is a full viewport tall
  * *below* a header, the first slide's foot sits under the fold, and the
  * document scrolls behind a deck that is already a scroller. The fallback of
- * 0px is the JavaScript-off case, which never reaches deck mode anyway. */
+ * 0px is the JavaScript-off case, which never reaches deck mode anyway.
+ *
+ * The measurement is only true while the document itself stays put, so deck
+ * mode pins it. The controller sets data-deck-mode on the root; everything
+ * below the deck — the contact section and the site footer — is out of reach
+ * until the visitor leaves deck mode, which is what a deck means. The close
+ * slide carries the demo CTA, and ?view=page is the scrollable article. */
+html[data-deck-mode="on"]{overflow:hidden}
 .pv-deck[data-mode="deck"]{
   height:calc(100svh - var(--deck-offset, 0px));
   overflow-y:auto;
