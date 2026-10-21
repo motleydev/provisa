@@ -1,0 +1,612 @@
+/* Provisa slide masters — the deck layer of the design system (PRO-150).
+ *
+ * Ten masters for a 16:9 briefing slide, composed from the same aliases
+ * provisa.css reads. Nothing here touches tokens.css, which is the kit
+ * verbatim, and nothing here reads the raw palette.
+ *
+ * One source, three outputs: the website walkthrough at /walkthrough/, the
+ * PNGs the Notion redesign page embeds, and a print stylesheet for the sales
+ * PDF. export-slides.mjs beside this file screenshots each canvas at
+ * 1920x1080 and drives the first two.
+ *
+ * SCALE. Every length inside a slide is a multiple of --u, which is one
+ * percent of the canvas width. In the two geometric modes the slide frame is a
+ * size container and the canvas reads it, so a slide renders identically at
+ * 1920px, as a plate on the contact sheet, and inside the export viewport. No
+ * media queries, no magic pixels. The reference canvas is 1920x1080, so 1u is
+ * 19.2px there: display type at 5u is the kit's 96px hero, and body at 1.15u
+ * is close to its 22px lede.
+ *
+ * ACCENT. A deck carries data-accent="see" | "get" | "run" and inherits the
+ * governance semantic from the kit: cobalt for who can see, forest for what
+ * they get, vermilion for whether it runs. The accent moves the eyebrow, the
+ * section index, the brand bars and one figure shape. Ink, paper, type and
+ * grid never move, so decks for different audiences read as one family.
+ *
+ * MOTION. The kit ships exactly one transition and no shadows, so the reveals
+ * here are editorial rather than SaaS: rules draw from the left, display type
+ * is revealed by a clip, figure shapes land in document order. The controller
+ * sets data-state="enter" on a slide; everything below keys off that. The
+ * kit's global prefers-reduced-motion block already collapses every duration
+ * to 0.01ms, which lands the final state immediately — that is the whole
+ * reduced-motion path, and verify-page-walkthrough.mjs asserts it.
+ */
+
+/* ======================================================================
+ * The deck and the canvas
+ * ====================================================================== */
+
+.pv-deck{
+  --accent:var(--group-see);
+  --accent-text:var(--group-see-text);
+  --accent-tint:var(--group-see-tint);
+  --dur-slide:240ms;
+  --dur-rule:220ms;
+  --dur-type:260ms;
+  --stagger:40ms;
+  --ease-slide:cubic-bezier(.2,0,0,1);
+  background:var(--surface-page);
+}
+.pv-deck[data-accent="get"]{
+  --accent:var(--group-get);
+  --accent-text:var(--group-get-text);
+  --accent-tint:var(--group-get-tint);
+}
+.pv-deck[data-accent="run"]{
+  --accent:var(--group-run);
+  --accent-text:var(--group-run-text);
+  --accent-tint:var(--group-run-tint);
+}
+
+/* A slide is the frame; the canvas is the box inside it. Splitting the two is
+ * what lets deck mode letterbox a 16:9 canvas on a tall viewport while the
+ * master gallery lays the same markup out as plates on a contact sheet.
+ *
+ * The baseline — no data-mode, which is also JavaScript off — is editorial:
+ * the canvas is a full-width section with a fluid --u and no aspect ratio, so
+ * nothing depends on a definite height and nothing depends on the controller.
+ * Geometry is additive, under [data-mode="deck"] and .pv-plate. */
+.pv-slide{
+  display:grid;
+  place-items:center;
+  background:var(--surface-page);
+  padding-block:calc(var(--section-y-sm)/2);
+  border-top:var(--rule-w) solid var(--border-hairline);
+}
+.pv-slide:first-of-type{border-top:0}
+.pv-slide__canvas{
+  --u:clamp(9px,1.15vw,17px);
+  position:relative;
+  box-sizing:border-box;
+  width:100%;
+  max-width:var(--container);
+  padding-inline:var(--gutter);
+  background:var(--surface-page);
+  color:var(--text-primary);
+}
+
+/* Deck mode: one 16:9 slide per viewport, snapped.
+ *
+ * --u is one percent of the canvas width, and the canvas is the largest 16:9
+ * box that fits the frame. Container query units are resolved against the
+ * nearest ancestor container, never against the element that declares one, so
+ * the container goes on the frame and the canvas reads it. The frame has a
+ * definite height in both geometric modes, which is what container-type:size
+ * requires. */
+.pv-deck[data-mode="deck"]{
+  height:100svh;
+  overflow-y:auto;
+  scroll-snap-type:y mandatory;
+  overscroll-behavior-y:contain;
+}
+.pv-deck[data-mode="deck"] .pv-slide,
+.pv-plate .pv-slide{
+  container-type:size;
+  padding:0;
+  border-top:0;
+  overflow:hidden;
+}
+.pv-deck[data-mode="deck"] .pv-slide{
+  height:100svh;
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+}
+.pv-plate .pv-slide{aspect-ratio:16/9}
+
+.pv-deck[data-mode="deck"] .pv-slide__canvas,
+.pv-plate .pv-slide__canvas{
+  --u:calc(min(100cqw, 100cqh * 16 / 9) / 100);
+  width:calc(var(--u) * 100);
+  max-width:none;
+  aspect-ratio:16/9;
+  padding:calc(var(--u) * 5);
+  overflow:hidden;
+}
+
+/* ======================================================================
+ * Slide-local type and rules
+ * ====================================================================== */
+
+.pv-sl__eyebrow{
+  margin:0 0 calc(var(--u)*1.6);
+  font-family:var(--font-mono);
+  font-size:calc(var(--u)*0.72);
+  font-weight:500;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--accent-text);
+}
+.pv-sl__index{
+  font-family:var(--font-mono);
+  font-size:calc(var(--u)*0.72);
+  font-weight:500;
+  letter-spacing:0.08em;
+  color:var(--text-faint);
+}
+.pv-sl__index b{font-weight:500;color:var(--accent-text)}
+
+.pv-sl__display{
+  margin:0;
+  font-family:var(--font-serif);
+  font-weight:600;
+  font-size:calc(var(--u)*5);
+  line-height:0.98;
+  letter-spacing:-0.03em;
+  color:var(--text-primary);
+}
+.pv-sl__h2{
+  margin:0;
+  font-family:var(--font-serif);
+  font-weight:600;
+  font-size:calc(var(--u)*3);
+  line-height:1.05;
+  letter-spacing:-0.025em;
+  color:var(--text-primary);
+}
+.pv-sl__h3{
+  margin:0;
+  font-family:var(--font-serif);
+  font-weight:600;
+  font-size:calc(var(--u)*1.55);
+  line-height:1.15;
+  letter-spacing:-0.015em;
+  color:var(--text-primary);
+}
+.pv-sl__body{
+  margin:calc(var(--u)*1.2) 0 0;
+  max-width:46ch;
+  font-size:calc(var(--u)*1.15);
+  line-height:1.5;
+  color:var(--text-body);
+}
+.pv-sl__caption{
+  margin:calc(var(--u)*0.8) 0 0;
+  font-family:var(--font-mono);
+  font-size:calc(var(--u)*0.66);
+  letter-spacing:0.06em;
+  color:var(--text-faint);
+}
+.pv-sl__em{color:var(--text-emphasis);font-style:normal}
+
+/* The hairline. Its own element rather than a border, because a border cannot
+ * draw itself and this one does. */
+.pv-sl__rule{
+  display:block;
+  height:var(--rule-w);
+  border:0;
+  margin:calc(var(--u)*1.8) 0;
+  background:var(--border-hairline);
+  transform-origin:left center;
+}
+.pv-sl__rule--accent{background:var(--accent)}
+.pv-sl__rule--strong{background:var(--border-strong)}
+
+/* ======================================================================
+ * M1 Cover
+ * ====================================================================== */
+
+/* Every master class sits on the canvas itself, so a master is one class on
+ * one element and the markup below it is the slide's content and nothing
+ * else. */
+.pv-slide__canvas.pv-sl--cover{
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+}
+.pv-sl--cover .pv-sl__brow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:calc(var(--u)*2);
+}
+.pv-sl--cover .pv-sl__display{align-self:center;max-width:22ch}
+.pv-sl--cover .pv-sl__foot{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:calc(var(--u)*2);
+  padding-top:calc(var(--u)*1.4);
+  border-top:var(--rule-w) solid var(--border-hairline);
+}
+
+/* The kit's three bars, at slide scale, reordered so the deck's accent leads. */
+.pv-sl__bars{display:flex;gap:calc(var(--u)*0.4)}
+.pv-sl__bars i{
+  display:block;
+  width:calc(var(--u)*2.6);
+  height:calc(var(--u)*0.5);
+  background:var(--accent);
+}
+.pv-sl__bars i:nth-child(2){background:var(--group-get)}
+.pv-sl__bars i:nth-child(3){background:var(--group-run)}
+.pv-deck[data-accent="get"] .pv-sl__bars i:nth-child(2){background:var(--group-run)}
+.pv-deck[data-accent="get"] .pv-sl__bars i:nth-child(3){background:var(--group-see)}
+.pv-deck[data-accent="run"] .pv-sl__bars i:nth-child(2){background:var(--group-see)}
+.pv-deck[data-accent="run"] .pv-sl__bars i:nth-child(3){background:var(--group-get)}
+
+/* ======================================================================
+ * M2 Section divider — the index does the work, whitespace does the rest
+ * ====================================================================== */
+
+.pv-slide__canvas.pv-sl--divider{
+  display:grid;
+  align-content:end;
+  grid-template-rows:1fr auto;
+}
+.pv-sl--divider .pv-sl__index{
+  font-size:calc(var(--u)*1.1);
+  align-self:start;
+}
+.pv-sl--divider .pv-sl__h2{max-width:20ch;padding-bottom:calc(var(--u)*3)}
+
+/* ======================================================================
+ * M3 Statement — one sentence, nothing else on the slide
+ * ====================================================================== */
+
+.pv-slide__canvas.pv-sl--statement{
+  display:grid;
+  align-content:center;
+  gap:calc(var(--u)*1.6);
+}
+.pv-sl--statement .pv-sl__display{max-width:28ch;font-size:calc(var(--u)*4.2)}
+.pv-sl--statement .pv-sl__attrib{
+  font-family:var(--font-mono);
+  font-size:calc(var(--u)*0.72);
+  letter-spacing:0.06em;
+  color:var(--text-muted);
+}
+
+/* ======================================================================
+ * M4 Two-column argument
+ * ====================================================================== */
+
+.pv-slide__canvas.pv-sl--columns{
+  display:grid;
+  align-content:center;
+  gap:calc(var(--u)*2);
+}
+.pv-sl--columns .pv-sl__cols{
+  display:grid;
+  grid-template-columns:1fr var(--rule-w) 1fr;
+  gap:calc(var(--u)*3);
+  align-items:start;
+}
+.pv-sl--columns .pv-sl__cols > .pv-sl__divide{
+  align-self:stretch;
+  background:var(--border-hairline);
+}
+.pv-sl--columns .pv-sl__body{margin-top:0}
+
+/* ======================================================================
+ * M5 Ruled list — the LayerRow pattern, numbered
+ * ====================================================================== */
+
+.pv-slide__canvas.pv-sl--ruled{
+  display:grid;
+  align-content:center;
+  gap:calc(var(--u)*1.6);
+}
+.pv-sl__rows{margin:0;padding:0;list-style:none;border-top:var(--rule-w) solid var(--border-hairline)}
+.pv-sl__rows li{
+  display:grid;
+  grid-template-columns:calc(var(--u)*4) 1fr;
+  gap:calc(var(--u)*1.6);
+  align-items:baseline;
+  padding:calc(var(--u)*1.1) 0;
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+}
+.pv-sl__rows li > span:first-child{
+  font-family:var(--font-mono);
+  font-size:calc(var(--u)*0.78);
+  letter-spacing:0.08em;
+  color:var(--accent-text);
+}
+.pv-sl__rows li > span:last-child{
+  font-size:calc(var(--u)*1.15);
+  line-height:1.4;
+  color:var(--text-body);
+}
+.pv-sl__rows strong{color:var(--text-primary);font-weight:600}
+
+/* ======================================================================
+ * M6 Figure — the figure fills the right half, the argument the left
+ * ====================================================================== */
+
+.pv-slide__canvas.pv-sl--figure{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);
+  gap:calc(var(--u)*4);
+  align-content:center;
+  align-items:center;
+}
+.pv-sl--figure .pv-fig,
+.pv-sl--figure .pv-schem{width:100%}
+
+/* ======================================================================
+ * M7 Comparison — hairline grid, no zebra
+ * ====================================================================== */
+
+.pv-slide__canvas.pv-sl--compare{
+  display:grid;
+  align-content:center;
+  gap:calc(var(--u)*1.8);
+}
+.pv-sl__table{width:100%;border-collapse:collapse;font-size:calc(var(--u)*1)}
+.pv-sl__table th,
+.pv-sl__table td{
+  padding:calc(var(--u)*0.9) calc(var(--u)*1.2);
+  text-align:left;
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+  color:var(--text-body);
+}
+.pv-sl__table thead th{
+  font-family:var(--font-mono);
+  font-size:calc(var(--u)*0.72);
+  font-weight:500;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  border-bottom-color:var(--border-strong);
+}
+.pv-sl__table tbody th{color:var(--text-primary);font-weight:600}
+.pv-sl__table [data-col="accent"]{color:var(--accent-text)}
+
+/* ======================================================================
+ * M8 Stat strip
+ * ====================================================================== */
+
+.pv-slide__canvas.pv-sl--stats{
+  display:grid;
+  align-content:center;
+  gap:calc(var(--u)*2.4);
+}
+.pv-sl__stats{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:1fr;
+  gap:calc(var(--u)*2.4);
+  border-top:var(--rule-w) solid var(--border-strong);
+  padding-top:calc(var(--u)*1.6);
+}
+.pv-sl__stat dt{
+  font-family:var(--font-mono);
+  font-size:calc(var(--u)*3);
+  font-weight:500;
+  letter-spacing:-0.02em;
+  color:var(--accent-text);
+}
+.pv-sl__stat dd{
+  margin:calc(var(--u)*0.6) 0 0;
+  font-family:var(--font-serif);
+  font-weight:600;
+  font-size:calc(var(--u)*1.1);
+  line-height:1.25;
+  color:var(--text-primary);
+}
+
+/* ======================================================================
+ * M9 Governance triad — the one slide where colour is the argument
+ * ====================================================================== */
+
+.pv-slide__canvas.pv-sl--triad{
+  display:grid;
+  align-content:center;
+  gap:calc(var(--u)*2.2);
+}
+.pv-sl__triad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:calc(var(--u)*1.6);
+}
+.pv-sl__card{
+  padding:calc(var(--u)*1.6);
+  border:var(--rule-w) solid var(--border-hairline);
+  border-top-width:calc(var(--u)*0.4);
+}
+.pv-sl__card--see{border-top-color:var(--group-see);background:var(--group-see-tint)}
+.pv-sl__card--get{border-top-color:var(--group-get);background:var(--group-get-tint)}
+.pv-sl__card--run{border-top-color:var(--group-run);background:var(--group-run-tint)}
+.pv-sl__card .pv-sl__h3{font-size:calc(var(--u)*1.35)}
+.pv-sl__card p{
+  margin:calc(var(--u)*0.8) 0 0;
+  font-size:calc(var(--u)*0.95);
+  line-height:1.45;
+  color:var(--text-body);
+}
+/* The tints are light-theme values in the kit, so the ink they carry has to
+ * be the on-tint ink in both themes rather than the theme's body colour. */
+.pv-sl__card--see,.pv-sl__card--get,.pv-sl__card--run{color:var(--ink)}
+.pv-sl__card--see .pv-sl__h3,.pv-sl__card--get .pv-sl__h3,.pv-sl__card--run .pv-sl__h3,
+.pv-sl__card--see p,.pv-sl__card--get p,.pv-sl__card--run p{color:var(--ink)}
+
+/* ======================================================================
+ * M10 Close — the CTA slide. Inverse band, demo form, URL in mono.
+ * ====================================================================== */
+
+.pv-slide__canvas.pv-sl--close{
+  display:grid;
+  align-content:center;
+  gap:calc(var(--u)*2);
+  background:var(--surface-inverse);
+  color:var(--text-on-inverse);
+}
+.pv-sl--close .pv-sl__display,
+.pv-sl--close .pv-sl__h2{color:var(--text-on-inverse)}
+.pv-sl--close .pv-sl__body{color:var(--text-on-inverse)}
+.pv-sl--close .pv-sl__rule{background:var(--border-code)}
+.pv-sl--close .pv-sl__url{
+  font-family:var(--font-mono);
+  font-size:calc(var(--u)*0.85);
+  letter-spacing:0.06em;
+  color:var(--accent-text);
+}
+.pv-sl__close-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+  gap:calc(var(--u)*4);
+  align-items:end;
+}
+
+/* ======================================================================
+ * Motion. Keyed off data-state, which the controller sets. The pre-enter
+ * state is only applied when the controller has declared itself through
+ * data-motion="on", so a slide with JavaScript off is never left hidden.
+ * ====================================================================== */
+
+.pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__rule,
+.pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__rows,
+.pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__stats,
+.pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__bars i{
+  transform:scaleX(0);
+}
+.pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__display,
+.pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__h2{
+  clip-path:inset(0 100% 0 0);
+}
+.pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-fig__s,
+.pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-schem__node{
+  opacity:0;
+}
+.pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__table tbody tr{
+  opacity:0;
+}
+
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__rule,
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__rows,
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__stats,
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__bars i{
+  transform:scaleX(1);
+  transform-origin:left center;
+  transition:transform var(--dur-rule) var(--ease-slide);
+}
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__display,
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__h2{
+  clip-path:inset(0 0 0 0);
+  transition:clip-path var(--dur-type) var(--ease-slide);
+}
+.pv-deck[data-motion="on"] .pv-slide .pv-fig__s,
+.pv-deck[data-motion="on"] .pv-slide .pv-schem__node,
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__table tbody tr{
+  opacity:1;
+  transition:opacity var(--dur-slide) var(--ease-slide);
+}
+
+/* Document order is the stagger order. The Schematic component already
+ * mandates document order as reading order, so this needs no extra authoring
+ * discipline: number the nodes correctly and the animation follows. */
+.pv-deck[data-motion="on"] .pv-slide .pv-fig__s:nth-child(1),
+.pv-deck[data-motion="on"] .pv-slide .pv-schem__node:nth-child(1){transition-delay:calc(var(--stagger)*1)}
+.pv-deck[data-motion="on"] .pv-slide .pv-fig__s:nth-child(2),
+.pv-deck[data-motion="on"] .pv-slide .pv-schem__node:nth-child(2){transition-delay:calc(var(--stagger)*2)}
+.pv-deck[data-motion="on"] .pv-slide .pv-fig__s:nth-child(3),
+.pv-deck[data-motion="on"] .pv-slide .pv-schem__node:nth-child(3){transition-delay:calc(var(--stagger)*3)}
+.pv-deck[data-motion="on"] .pv-slide .pv-fig__s:nth-child(4),
+.pv-deck[data-motion="on"] .pv-slide .pv-schem__node:nth-child(4){transition-delay:calc(var(--stagger)*4)}
+.pv-deck[data-motion="on"] .pv-slide .pv-fig__s:nth-child(5),
+.pv-deck[data-motion="on"] .pv-slide .pv-schem__node:nth-child(5){transition-delay:calc(var(--stagger)*5)}
+.pv-deck[data-motion="on"] .pv-slide .pv-fig__s:nth-child(n+6),
+.pv-deck[data-motion="on"] .pv-slide .pv-schem__node:nth-child(n+6){transition-delay:calc(var(--stagger)*6)}
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__table tbody tr:nth-child(1){transition-delay:60ms}
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__table tbody tr:nth-child(2){transition-delay:120ms}
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__table tbody tr:nth-child(3){transition-delay:180ms}
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__table tbody tr:nth-child(n+4){transition-delay:240ms}
+
+/* ======================================================================
+ * The progress rail. Mono indices, because the kit numbers things; not a
+ * row of dots, because the kit has no dots.
+ * ====================================================================== */
+
+.pv-rail{
+  position:fixed;
+  right:var(--gutter);
+  top:50%;
+  transform:translateY(-50%);
+  z-index:40;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+.pv-rail[hidden]{display:none}
+.pv-rail__list{display:flex;flex-direction:column;align-items:flex-end;gap:6px;margin:0;padding:0;list-style:none}
+.pv-rail__link{
+  display:block;
+  padding:2px 4px;
+  font-family:var(--font-mono);
+  font-size:var(--type-mono-xs);
+  letter-spacing:0.08em;
+  color:var(--text-faint);
+  text-decoration:none;
+  border-right:2px solid transparent;
+}
+.pv-rail__link:hover{color:var(--text-primary)}
+.pv-rail__link[aria-current="true"]{color:var(--accent-text);border-right-color:var(--accent)}
+.pv-rail__cta{margin-top:12px}
+.pv-rail__cta[hidden]{display:none}
+
+/* The deck's own controls: a page-mode escape and the autoplay switch. Never
+ * autoplaying by default is a decision, not an oversight. */
+.pv-deck__bar{
+  position:fixed;
+  left:var(--gutter);
+  bottom:var(--gutter);
+  z-index:40;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  font-family:var(--font-mono);
+  font-size:var(--type-mono-xs);
+  letter-spacing:0.08em;
+  color:var(--text-faint);
+}
+.pv-deck__bar[hidden]{display:none}
+
+/* ======================================================================
+ * The master gallery. Same markup, laid out as plates on a contact sheet.
+ * ====================================================================== */
+
+.pv-plates{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:var(--gutter)}
+.pv-plate{border:var(--rule-w) solid var(--border-hairline)}
+.pv-plate__head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:16px;
+  padding:12px 16px;
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+  font-family:var(--font-mono);
+  font-size:var(--type-mono-sm);
+  letter-spacing:0.08em;
+  color:var(--text-faint);
+}
+.pv-plate__head b{font-weight:500;color:var(--text-primary)}
+
+/* ======================================================================
+ * Print: the sales PDF. One slide per landscape page, no rail, no controls.
+ * ====================================================================== */
+
+@media print{
+  .pv-rail,.pv-deck__bar,.pv-header,.pv-footer{display:none !important}
+  .pv-deck{height:auto;overflow:visible}
+  .pv-slide{break-after:page;height:auto;padding:0}
+  .pv-slide__canvas{max-height:none}
+}

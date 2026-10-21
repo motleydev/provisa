@@ -21,9 +21,40 @@ Open `/design-system/` on a running site to see every component rendered.
 | `check-contrast.mjs` | Parses `tokens.css` and asserts WCAG AA on 72 colour pairs in both themes. |
 | `check-kit.mjs` | Resolves every internal `href` in `site/` and asserts every prose class is capped at the measure. No browser. |
 | `verify-ui.mjs` | 103 browser assertions: header composition, both themes, the verified widths, the nav breakpoint, a keyboard pass. Needs Playwright. |
+| `walkthrough.css` | The slide layer: ten 16:9 masters, the deck accents and the motion. Reads the alias layer and nothing else. |
+| `walkthrough.js` | Deck mode over markup that is already an article: stepping, hash sync, the progress rail, autoplay off by default. |
+| `export-slides.mjs` | Screenshots each slide canvas at 1920×1080, and optionally a PDF. Needs Playwright. |
 
 A page includes `partials/head.html` and then composes partials. There is no
 build step; `site/` stays static HTML and CSS, as it was.
+
+## The slide layer
+
+The briefing decks and the walkthrough are the same HTML and the same CSS. A
+slide is a composition of the partials above, so it cannot drift from the site,
+and `export-slides.mjs` renders the same canvases for anywhere a picture is
+needed — which is what stops a deck being re-authored in PowerPoint.
+
+Open `/walkthrough/masters` for the ten masters as plates on a contact sheet.
+Each plate's copy describes the master it sits on and claims nothing about the
+product, for the same reason the `Schematic` specimen draws itself.
+
+Three rules the layer keeps:
+
+- **`--u` is one percent of the canvas width.** In deck mode and on a plate the
+  slide frame is a size container and the canvas reads it, so one slide renders
+  identically at any size. The reference canvas is 1920×1080.
+- **An accent per audience, from the governance triad.** Cobalt for who can
+  see, forest for what they get, vermilion for whether it runs. Ink, paper,
+  type and grid never move, so decks for different audiences read as one
+  family.
+- **Motion is additive.** Every pre-enter state is gated behind `data-motion`,
+  which only the controller sets, so a slide with JavaScript off is a section
+  of an article and never a blank frame. `?view=page` is the same rendering on
+  purpose.
+
+`check-page-walkthrough.mjs` is the browserless half: the chrome, all ten
+masters specified and shown, the alias-layer rule, and the enhancement gating.
 
 ## What the kit decides
 
