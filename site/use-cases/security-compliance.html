@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- PRO-148 — /use-cases/security-compliance, scenarios 1-3 from the Notion
+     page (patch verification, cloud policy compliance, CVE tracking).
+     Built on the design system from PRO-3. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security and Compliance — Provisa</title>
+<meta name="description" content="The governed join across the inventories security already has. Patch verification against builds, cloud inventory joined to policy standards, and CVE tracking across deployments — each a governed query with the audit record attached.">
+<link rel="icon" href="/favicon.svg">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+<link rel="canonical" href="https://provisa.dev/use-cases/security-compliance">
+
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {}
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
+</head>
+<body>
+
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- Hero -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <nav class="pv-crumb" aria-label="Breadcrumb">
+          <a href="/">Provisa</a>
+          <span aria-hidden="true">/</span>
+          <a href="/use-cases">Use Cases</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Security and Compliance</span>
+        </nav>
+
+        <div class="pv-stack pv-stack--sm">
+          <div class="pv-eyebrow">Use Cases · Security and Compliance</div>
+          <h1 class="pv-h pv-h--page">Security is a join problem.
+            <em class="pv-emph">Provisa is the governed join</em>.</h1>
+        </div>
+
+        <div class="pv-rail">
+          <div class="pv-rail__body">
+            <div class="pv-stack">
+              <p class="pv-p pv-p--lede">Provisa is the governed join across
+                the inventories security already has; it does not scan or patch
+                anything itself. The deployment registry, build metadata, patch
+                baseline, cloud inventory APIs, policy tables, SBOM and scanner
+                feeds — each a registered source, joined through approved
+                relationships, published as governed views. The audit record is
+                attached.</p>
+
+              <p class="pv-p">Three scenarios: security verifies that every
+                required patch is applied to every production build; security
+                verifies that every cloud asset meets its policy standards; and
+                cybersecurity lists every CVE that affects an application in
+                production. Each is a governed query over tables the security
+                team already has.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Scenario 1 -->
+  <section class="pv-section pv-section--band" id="patch-verification">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">01</span>
+            <span class="pv-seclabel__text">Scenario one — Patch verification</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">Security verifies that every required
+            patch is applied to every production build.</h2>
+
+          <div class="pv-stack">
+            <p class="pv-p">Federate the deployment registry, build metadata
+              and patch baseline (SQL databases plus OpenAPI or GraphQL API
+              sources). Join them through approved relationships and publish a
+              governed "noncompliant builds" view.</p>
+
+            <p class="pv-p">The deployment registry is a SQL database, an
+              OpenAPI service or a GraphQL endpoint — each registers as a
+              source. Build metadata comes from CI artifacts or container
+              registries. The patch baseline lives in a security team's
+              database or comes from a vendor API. A steward approves the
+              relationships that link build to deployment and deployment to
+              patch requirement.</p>
+
+            <p class="pv-p">A materialized view computes noncompliant builds on
+              a schedule, keeping each run's results as the audit trail. Every
+              governed query lands in an append-only audit log, and a security
+              reviewer queries that log like any table to see who read the
+              noncompliant builds view in the last week.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scenario 2 -->
+  <section class="pv-section" id="cloud-policy">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">02</span>
+            <span class="pv-seclabel__text">Scenario two — Cloud policy compliance</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">Security verifies that every cloud
+            asset meets its policy standards.</h2>
+
+          <div class="pv-stack">
+            <p class="pv-p">Cloud inventory APIs registered as OpenAPI sources,
+              joined to policy tables. A data-quality checker registers as a
+              source and reports rule failures; scorecards and history are
+              materialized views over those results.</p>
+
+            <p class="pv-p">The cloud inventory comes from AWS, Azure or GCP
+              APIs, each registered as an OpenAPI source with the resource type
+              and region as parameters. Policy tables live in the security
+              team's database. A data-quality checker (Soda first) registers as
+              a source and runs checks against the policy: every key is held as
+              a secret, every S3 bucket has encryption enabled, every Lambda
+              has a least-privilege role.</p>
+
+            <p class="pv-p">Scorecards are materialized views over the
+              data-quality results, refreshed on a schedule, keeping each run's
+              results as the compliance trail. A security dashboard reads the
+              scorecard over GraphQL, and the audit log shows who queried which
+              resources when.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scenario 3 -->
+  <section class="pv-section pv-section--band" id="cve-tracking">
+    <div class="pv-container">
+      <div class="pv-rail">
+        <div class="pv-rail__rail">
+          <div class="pv-seclabel">
+            <span class="pv-seclabel__num">03</span>
+            <span class="pv-seclabel__text">Scenario three — CVE tracking</span>
+          </div>
+        </div>
+        <div class="pv-rail__body">
+
+          <h2 class="pv-h pv-h--section">Cybersecurity lists every CVE that
+            affects an application in production.</h2>
+
+          <div class="pv-stack">
+            <p class="pv-p">Join SBOM and scanner feeds to the deployment
+              inventory, with GitHub as a branded source.</p>
+
+            <p class="pv-p">SBOM feeds come from container registries or CI
+              artifacts. Scanner feeds come from vulnerability databases or
+              commercial scanners, registered as OpenAPI sources with the
+              package and version as parameters. GitHub is a branded source that
+              brings repository, commit and release metadata. The deployment
+              inventory lists what is running where.</p>
+
+            <p class="pv-p">A view joins SBOM to deployment to scanner feed and
+              lists CVEs by application, deployment and severity. The view
+              refreshes when a new CVE arrives or a deployment changes. A
+              security analyst queries it in SQL or asks the chat assistant in
+              plain language, and every query lands in the audit log with user,
+              role, tables and timestamp.</p>
+
+            <p class="pv-p">Related: <a href="/industries/cybersecurity">Cybersecurity
+              industry scenarios</a></p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="pv-contact" id="contact">
+    <div class="pv-contact__inner pv-container">
+      <div class="pv-contact__copy">
+        <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h2 class="pv-h pv-h--cta">Run it on your own infrastructure.</h2>
+        <div class="pv-row">
+          <a class="pv-btn pv-btn--on-color" href="/install">Install and deploy</a>
+          <a class="pv-btn pv-btn--inverse" href="/register">Register (free licence)</a>
+        </div>
+        <div class="pv-contact__links">
+          <a class="pv-link pv-link--inverse" href="/why/governance">How governance reaches every surface<span class="pv-link__arrow"> →</span></a>
+          <a class="pv-link pv-link--inverse" href="/why/sources">Source registration<span class="pv-link__arrow"> →</span></a>
+        </div>
+        <p class="pv-contact__sub">Talk to us about a cloud deployment or
+          commercial licence for production use. Provisa runs on your hardware,
+          in your cloud account, or air-gapped.</p>
+      </div>
+      <form class="pv-form" method="post" action="/api/demo">
+        <h3 class="pv-form__title">Book a demo</h3>
+        <div class="pv-form__grid">
+          <label class="pv-sr" for="c-name">Full name</label>
+          <input class="pv-input" id="c-name" name="name" autocomplete="name" placeholder="Full name" required>
+          <label class="pv-sr" for="c-email">Work email</label>
+          <input class="pv-input" id="c-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+        </div>
+        <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+          Licence 1.1 — non-production use (including evaluation) is free
+          forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Active Semantic Layer</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/why/materialized-views">Materialized views</a>
+        <a href="/why/catalog">Catalog</a>
+        <a href="/why/no-lock-in">No lock-in</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
+        <a href="/vs/starburst">vs Starburst</a>
+        <a href="/vs/denodo">vs Denodo</a>
+        <a href="/vs/hasura">Coming from Hasura</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
+    </div>
+    <div class="pv-footer__bottom">
+      <span>© Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
