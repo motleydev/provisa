@@ -340,19 +340,6 @@ const resolves = (href) => {
          existsSync(rel.replace(/\/$/, "") + "/index.html");
 };
 
-/* Two routes in SiteFooter's "Platform" column have no page behind them, on
- * every page of the site that carries the footer — sixteen of them, this
- * walkthrough's five included. It is not this layer's bug and not this
- * layer's fix: the footer is shared chrome, and the missing pages are site
- * content. Named here so the walkthrough's own routes are still checked, and
- * so the exception fails the moment either page lands and the entry goes
- * stale. */
-const KNOWN_404 = ["/platform/views", "/platform/catalog"];
-for (const route of KNOWN_404) {
-  ok(!resolves(route),
-     `the known-missing route ${route} is still missing — drop it from KNOWN_404 once the page lands`);
-}
-
 for (const page of PAGES) {
   const src = strip(read(page));
   const ids = [...src.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
@@ -362,7 +349,7 @@ for (const page of PAGES) {
 
   const hrefs = [...src.matchAll(/href="(\/[^"]*)"/g)].map((m) => m[1]);
   const broken = [...new Set(hrefs.filter(
-    (h) => !h.startsWith("//") && !KNOWN_404.includes(h) && !resolves(h)))];
+    (h) => !h.startsWith("//") && !resolves(h)))];
   ok(broken.length === 0,
      `${page}: every internal route resolves${broken.length ? ` — missing: ${broken.join(", ")}` : ""}`);
 
