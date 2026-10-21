@@ -25,7 +25,7 @@ describe("site source picker", () => {
     expect(total).toBe(SOURCE_TYPES.length + REQUIREMENT_ONLY.length);
   });
 
-  it("is in step with constants.ts in site/index.html and site/why/sources.html", async () => {
+  it("keeps every hosting page and the site's sprite and logo assets in step with constants.ts", async () => {
     expect(await stalePages()).toEqual([]);
   });
 

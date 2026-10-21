@@ -147,11 +147,15 @@ export async function renderPicker() {
   };
 }
 
-// The picker's only home. It was also on site/index.html, whose markers the rebrand's new Home does
-// not carry: the home page's reach section is now three ruled cards and a figure strip, and the full
-// source list lives on /why/sources (PRO-10). splice() throws on a page with no markers, so a page
+// The pages that host the generated fragment — none, for now. site/index.html dropped it with the
+// rebrand (the reach section is three ruled cards and a figure strip, PRO-10), and
+// site/why/sources.html dropped it with the design-system rebuild, whose SME-approved §3 states all
+// 72 types as one index table instead (PRO-83). splice() throws on a page with no markers, so a page
 // that stops hosting the picker has to leave this list rather than silently keep a stale fragment.
-const PAGES = ["site/why/sources.html"];
+// The sprite and the bundled logo files are still generated and still checked, so the assets stay in
+// step with constants.ts for whichever page hosts the picker next; the counts below are the live
+// gate on what the site and the docs state.
+const PAGES = [];
 const START = "<!-- source-picker:start -->";
 const END = "<!-- source-picker:end -->";
 
@@ -260,6 +264,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       const file = path.join(ROOT, f);
       fs.writeFileSync(file, withCounts(fs.readFileSync(file, "utf8"), total, kinds));
     }
-    console.log(`wrote ${total} tiles (${kinds}+ kinds) into ${PAGES.join(", ")}`);
+    const into = PAGES.length ? PAGES.join(", ") : "the assets and the stated counts only (no page hosts the fragment)";
+    console.log(`wrote ${total} tiles (${kinds}+ kinds) into ${into}`);
   }
 }
