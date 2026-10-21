@@ -6,9 +6,12 @@
  * same HTML and the same CSS, so none of them can drift from the others and
  * nobody re-authors a deck in PowerPoint.
  *
- *     python3 site/design-system/serve.py 8731 &
- *     node site/design-system/export-slides.mjs http://127.0.0.1:8731/walkthrough/masters \
- *       --out build/slides/masters
+ *     node site/design-system/export-slides.mjs /walkthrough/ciso --out build/slides/ciso
+ *
+ * A path rather than a URL serves site/ from node:http for the run, so the
+ * export needs a browser and nothing else — no Python, no separate server to
+ * start and remember to stop. Pass a full URL to point it at a server you are
+ * already running.
  *
  * Each .pv-slide__canvas is screenshotted at the reference canvas, 1920x1080,
  * at deviceScaleFactor 2. --u is one percent of the canvas width, so the
@@ -23,7 +26,8 @@
  * the theme bootstrap reads, before the page paints.
  */
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile, readFile, stat } from "node:fs/promises";
+import { createServer } from "node:http";
 import path from "node:path";
 
 const WIDTH = 1920;
@@ -63,6 +67,46 @@ try {
   process.exit(3);
 }
 
+/* A path serves site/ here for the length of the run. Extensionless first,
+ * the way Cloudflare Pages serves the production route. */
+const TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".mjs": "text/javascript; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".woff2": "font/woff2",
+  ".json": "application/json",
+};
+const candidates = (p) => {
+  const clean = path.normalize(p).replace(/^(\.\.[/\\])+/, "").replace(/^\//, "");
+  if (clean === "" || clean.endsWith("/")) return [path.join("site", clean, "index.html")];
+  return [path.join("site", clean), path.join("site", clean + ".html"),
+          path.join("site", clean, "index.html")];
+};
+
+let server = null;
+let target = url;
+if (!/^https?:\/\//.test(url)) {
+  server = createServer(async (req, res) => {
+    const requested = new URL(req.url, "http://127.0.0.1");
+    for (const file of candidates(decodeURIComponent(requested.pathname))) {
+      try {
+        if (!(await stat(file)).isFile()) continue;
+        res.writeHead(200, { "content-type": TYPES[path.extname(file)] || "application/octet-stream" });
+        res.end(await readFile(file));
+        return;
+      } catch {
+        /* Next candidate. A miss here is the 404 below, not an error. */
+      }
+    }
+    res.writeHead(404, { "content-type": "text/plain" });
+    res.end("not found");
+  });
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  target = `http://127.0.0.1:${server.address().port}${url.startsWith("/") ? url : "/" + url}`;
+}
+
 await mkdir(outDir, { recursive: true });
 
 const browser = await chromium.launch();
@@ -93,7 +137,7 @@ const page = await context.newPage();
  * and its motion are both off for the export: ?view=page makes
  * walkthrough.js return before it builds the controller, and the plate
  * geometry below gives each canvas the full 16:9 viewport anyway. */
-const exportUrl = new URL(url);
+const exportUrl = new URL(target);
 exportUrl.searchParams.set("view", "page");
 
 const response = await page.goto(exportUrl.toString(), { waitUntil: "networkidle" });
@@ -117,6 +161,11 @@ await page.addStyleTag({
       width:calc(var(--u) * 100) !important;max-width:none !important;
       aspect-ratio:16/9 !important;padding:calc(var(--u) * 5) !important}
     .pv-rail,.pv-deck__bar{display:none !important}
+    /* The site's chrome is not part of a slide. The header is sticky, so
+     * without this it paints over the top of whichever canvas is being
+     * screenshotted; the rest would simply be captured by a full-page export.
+     * Same set the @media print block in walkthrough.css hides. */
+    .pv-utility,.pv-header,.pv-drawer,.pv-footer,.pv-contact{display:none !important}
   `,
 });
 
@@ -159,4 +208,5 @@ await writeFile(
 );
 
 await browser.close();
+if (server) server.close();
 console.log(`\n${manifest.length} slides exported to ${outDir}`);

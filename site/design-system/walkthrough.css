@@ -1,8 +1,11 @@
 /* Provisa slide masters — the deck layer of the design system (PRO-150).
  *
- * Ten masters for a 16:9 briefing slide, composed from the same aliases
+ * Eleven masters for a 16:9 briefing slide, composed from the same aliases
  * provisa.css reads. Nothing here touches tokens.css, which is the kit
  * verbatim, and nothing here reads the raw palette.
+ *
+ * Ten were specified before the three source decks could be read; M11 is the
+ * one the decks themselves demanded, and the comment above it says why.
  *
  * One source, three outputs: the website walkthrough at /walkthrough/, the
  * PNGs the Notion redesign page embeds, and a print stylesheet for the sales
@@ -93,8 +96,15 @@
  * the container goes on the frame and the canvas reads it. The frame has a
  * definite height in both geometric modes, which is what container-type:size
  * requires. */
+/* --deck-offset is what the chrome above the deck takes: the utility bar and
+ * the sticky header. The controller measures it, because the utility bar has
+ * no height token and the header's wraps at narrow widths, so neither is a
+ * number this file can know. Without it the deck is a full viewport tall
+ * *below* a header, the first slide's foot sits under the fold, and the
+ * document scrolls behind a deck that is already a scroller. The fallback of
+ * 0px is the JavaScript-off case, which never reaches deck mode anyway. */
 .pv-deck[data-mode="deck"]{
-  height:100svh;
+  height:calc(100svh - var(--deck-offset, 0px));
   overflow-y:auto;
   scroll-snap-type:y mandatory;
   overscroll-behavior-y:contain;
@@ -107,7 +117,7 @@
   overflow:hidden;
 }
 .pv-deck[data-mode="deck"] .pv-slide{
-  height:100svh;
+  height:calc(100svh - var(--deck-offset, 0px));
   scroll-snap-align:start;
   scroll-snap-stop:always;
 }
@@ -188,6 +198,83 @@
 }
 .pv-sl__em{color:var(--text-emphasis);font-style:normal}
 
+/* The eyebrow and the heading are one group, so the gap between them is the
+ * group's and not the master's. Without this the eyebrow sits a full master
+ * gap off its own title on every centred master. */
+.pv-sl__head{display:grid;gap:calc(var(--u)*0.7)}
+.pv-sl__head .pv-sl__eyebrow{margin:0}
+/* The cover's middle row, which holds the hero and its lede together. */
+.pv-sl__mid{align-self:center}
+
+/* The closing line. Most briefing slides end on one sentence that names what
+ * the slide was for, and it is neither a body paragraph nor a caption: it runs
+ * wider than the measure because it is one line, and it carries the emphasis
+ * ink because it is the point. */
+.pv-sl__kicker{
+  margin:0;
+  max-width:72ch;
+  font-size:calc(var(--u)*1.05);
+  line-height:1.4;
+  color:var(--text-emphasis);
+}
+
+/* A bullet list, which this system draws with hairlines rather than discs —
+ * the kit has no disc anywhere, and ChoiceCard already rules its items. */
+.pv-sl__bullets{margin:calc(var(--u)*0.9) 0 0;padding:0;list-style:none}
+.pv-sl__bullets li{
+  padding:calc(var(--u)*0.5) 0;
+  border-top:var(--rule-w) solid var(--border-hairline);
+  font-size:calc(var(--u)*0.92);
+  line-height:1.4;
+  color:var(--text-body);
+}
+
+/* A row of the kit's Chips. Several source slides carry a band that is names
+ * and nothing else — six things a region owns, six things a command can wrap.
+ * Those get chips rather than a definition band, because inventing a line of
+ * prose under each name to fill the band would be putting words in the deck's
+ * mouth. */
+.pv-sl__chips{display:flex;flex-wrap:wrap;gap:calc(var(--u)*0.6)}
+.pv-slide .pv-chip{
+  padding:calc(var(--u)*0.4) calc(var(--u)*0.85);
+  font-size:calc(var(--u)*0.82);
+}
+
+/* The definition band: a mono name over one line of prose, repeated across the
+ * slide on a rule. This is the shape most of the source slides are actually
+ * in — a label and a sentence, two to six of them — and it is StatStrip's
+ * geometry with prose in place of the numeral.
+ *
+ * Pairs are wrapped, like .pv-sl__stat is, because grid-auto-flow:column over
+ * bare dt/dd would lay a pair out as two columns instead of one. */
+.pv-sl__defs{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:1fr;
+  gap:calc(var(--u)*1.6);
+  margin:0;
+  border-top:var(--rule-w) solid var(--border-hairline);
+  padding-top:calc(var(--u)*1.1);
+}
+/* Rows instead of columns, for a band with more items than a row can carry. */
+.pv-sl__defs--grid{grid-auto-flow:row;grid-template-columns:repeat(3,1fr)}
+.pv-sl__defs--grid4{grid-auto-flow:row;grid-template-columns:repeat(4,1fr)}
+.pv-sl__def dt{
+  font-family:var(--font-mono);
+  font-size:calc(var(--u)*0.76);
+  letter-spacing:0.06em;
+  color:var(--accent-text);
+}
+.pv-sl__def dd{
+  margin:calc(var(--u)*0.5) 0 0;
+  font-size:calc(var(--u)*0.92);
+  line-height:1.4;
+  color:var(--text-body);
+}
+.pv-sl__def dd strong{color:var(--text-primary);font-weight:600}
+.pv-sl__def .pv-sl__bullets{margin-top:calc(var(--u)*0.5)}
+.pv-sl__def .pv-sl__bullets li:first-child{border-top:0;padding-top:0}
+
 /* The hairline. Its own element rather than a border, because a border cannot
  * draw itself and this one does. */
 .pv-sl__rule{
@@ -227,6 +314,9 @@
   padding-top:calc(var(--u)*1.4);
   border-top:var(--rule-w) solid var(--border-hairline);
 }
+/* The eyebrow's bottom margin is the gap to the heading it labels. In the
+ * footer rule it labels nothing below it, so it carries none. */
+.pv-sl--cover .pv-sl__foot .pv-sl__eyebrow{margin:0}
 
 /* The kit's three bars, at slide scale, reordered so the deck's accent leads. */
 .pv-sl__bars{display:flex;gap:calc(var(--u)*0.4)}
@@ -422,6 +512,12 @@
   border:var(--rule-w) solid var(--border-hairline);
   border-top-width:calc(var(--u)*0.4);
 }
+/* The card keyed to the deck's own accent rather than to a governance group.
+ * The three tinted cards below say see / get / run and mean it; a slide whose
+ * three columns are three audiences, or three tiers, must not borrow that
+ * meaning, so it gets the accent rule and no tint. */
+.pv-sl__card--accent{border-top-color:var(--accent)}
+.pv-sl__card .pv-sl__eyebrow{margin:0 0 calc(var(--u)*0.5)}
 .pv-sl__card--see{border-top-color:var(--group-see);background:var(--group-see-tint)}
 .pv-sl__card--get{border-top-color:var(--group-get);background:var(--group-get-tint)}
 .pv-sl__card--run{border-top-color:var(--group-run);background:var(--group-run-tint)}
@@ -467,6 +563,58 @@
 }
 
 /* ======================================================================
+ * M11 Stacked bands — a head, two or three labelled bands, a closing line.
+ *
+ * This master was not in the original ten, and it is here because the three
+ * source decks put it on roughly half their slides: a title, then two or
+ * three bands that each carry a mono label and a row of definitions, then the
+ * sentence the slide is for. Composing those out of M5 would have made the
+ * ruled list mean "any stack of anything", which is how a master set stops
+ * being a master set. A band owns the gap inside itself; the master owns the
+ * gap between bands.
+ * ====================================================================== */
+
+.pv-slide__canvas.pv-sl--bands{
+  display:grid;
+  align-content:center;
+  gap:calc(var(--u)*2);
+}
+.pv-sl__band{display:grid;gap:calc(var(--u)*0.9)}
+
+/* ======================================================================
+ * The kit's own components, at slide scale.
+ *
+ * Schematic, FigPanel and CodeBlock size themselves in the kit's fixed px
+ * steps, which is right on a page and wrong on a canvas whose every other
+ * length is a percentage of its width: at 1920 the mono labels come out half
+ * the size the slide's own mono is. These rules re-scale the kit's type and
+ * padding onto --u and change nothing else — no colour, no border, no
+ * geometry. A figure on a slide is the same component as a figure on a page.
+ * ====================================================================== */
+
+.pv-slide .pv-schem{padding:calc(var(--u)*1.4)}
+.pv-slide .pv-schem__node{padding:calc(var(--u)*0.8) calc(var(--u)*1)}
+.pv-slide .pv-schem__label{font-size:calc(var(--u)*0.74)}
+.pv-slide .pv-schem__desc{
+  margin-top:calc(var(--u)*0.4);
+  max-width:none;
+  font-size:calc(var(--u)*0.8);
+  line-height:1.35;
+}
+.pv-slide .pv-schem__wire{padding-top:calc(var(--u)*0.35);font-size:calc(var(--u)*0.62)}
+.pv-slide .pv-schem__wire--v{padding:0 0 0 calc(var(--u)*0.35)}
+.pv-slide .pv-code pre{
+  padding:calc(var(--u)*1.1) calc(var(--u)*1.2);
+  font-size:calc(var(--u)*0.72);
+  line-height:1.55;
+}
+.pv-slide .pv-code__title{
+  padding:calc(var(--u)*0.6) calc(var(--u)*1.2);
+  font-size:calc(var(--u)*0.62);
+}
+.pv-slide .pv-fig__label{font-size:calc(var(--u)*0.62)}
+
+/* ======================================================================
  * Motion. Keyed off data-state, which the controller sets. The pre-enter
  * state is only applied when the controller has declared itself through
  * data-motion="on", so a slide with JavaScript off is never left hidden.
@@ -475,6 +623,7 @@
 .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__rule,
 .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__rows,
 .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__stats,
+.pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__defs,
 .pv-deck[data-motion="on"] .pv-slide[data-state="idle"] .pv-sl__bars i{
   transform:scaleX(0);
 }
@@ -493,6 +642,7 @@
 .pv-deck[data-motion="on"] .pv-slide .pv-sl__rule,
 .pv-deck[data-motion="on"] .pv-slide .pv-sl__rows,
 .pv-deck[data-motion="on"] .pv-slide .pv-sl__stats,
+.pv-deck[data-motion="on"] .pv-slide .pv-sl__defs,
 .pv-deck[data-motion="on"] .pv-slide .pv-sl__bars i{
   transform:scaleX(1);
   transform-origin:left center;

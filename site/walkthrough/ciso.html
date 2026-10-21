@@ -1,0 +1,899 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- partials/head.html, with this page's title, description and canonical,
+     plus walkthrough.css for the slide masters and walkthrough.js for deck
+     mode. Order matters: fonts before tokens before provisa.css, and the theme
+     bootstrap before anything paints.
+
+     The CISO deck. Nineteen slides one-for-one from
+     Provisa_CISO_Briefing.pptx, plus one close slide this site adds for the
+     demo booking. Content is the source deck's; form is this design system's.
+     Every departure from the source wording is listed in
+     site/walkthrough/index.html §3, and each one exists because
+     site/claim-bans.mjs struck the original string. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One control point for every way in — the CISO walkthrough — Provisa</title>
+<meta name="description" content="The Provisa security briefing as a click-through walkthrough: one enforcement point for people, apps and AI agents, policy compiled into the plan, the approval hook, and an audit trail you can query.">
+<link rel="icon" href="/favicon.svg">
+<link rel="canonical" href="https://provisa.dev/walkthrough/ciso">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+<link rel="stylesheet" href="/design-system/walkthrough.css">
+
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
+<script src="/design-system/walkthrough.js" defer></script>
+</head>
+<body>
+
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+<main id="main">
+
+  <!-- data-accent="run" is the governance semantic's vermilion — whether it
+       runs — which is what a security briefing is about: enforcement,
+       refusal, residency and the audit record of both. -->
+  <div class="pv-deck" data-walkthrough data-accent="run">
+
+    <!-- ===== 01 · M1 Cover ========================================== -->
+    <section class="pv-slide" id="s-01">
+      <div class="pv-slide__canvas pv-sl--cover">
+        <div class="pv-sl__brow">
+          <span class="pv-sl__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="pv-sl__index">Security briefing <b>· CISO and security architecture</b></span>
+        </div>
+        <div class="pv-sl__mid">
+          <h2 class="pv-sl__display">Provisa for Security Leadership</h2>
+          <p class="pv-sl__body">One governed path to your data — for people,
+            applications and AI agents. Policy compiled into every query. No way in
+            that goes around it.</p>
+        </div>
+        <div class="pv-sl__foot">
+          <span class="pv-sl__eyebrow">A briefing for the CISO and security architecture</span>
+          <span class="pv-sl__index">provisa.dev</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 02 · M4 Two-column argument ============================ -->
+    <section class="pv-slide" id="s-02">
+      <div class="pv-slide__canvas pv-sl--columns">
+        <h2 class="pv-sl__h2">Every new path to data is a new enforcement point</h2>
+        <div class="pv-sl__cols">
+          <div>
+            <ol class="pv-sl__rows">
+              <li><span>01</span><span><strong>BI tools on direct DB
+                credentials.</strong> Row filters live in the dashboard, not the
+                data</span></li>
+              <li><span>02</span><span><strong>Hand-built APIs and BFF
+                services.</strong> Authorization re-coded in each service</span></li>
+              <li><span>03</span><span><strong>Pipelines copying data to a
+                warehouse.</strong> Every copy needs its own controls and
+                retention</span></li>
+              <li><span>04</span><span><strong>AI agents with a database
+                connection.</strong> The newest, least-tested path — and the fastest
+                growing</span></li>
+            </ol>
+          </div>
+          <span class="pv-sl__divide" aria-hidden="true"></span>
+          <div>
+            <p class="pv-sl__eyebrow">The result</p>
+            <ul class="pv-sl__bullets">
+              <li>Policies drift between paths</li>
+              <li>No single answer to “who saw this record?”</li>
+              <li>Data copies multiply the blast radius</li>
+              <li>Audit means reconciling many logs</li>
+            </ul>
+          </div>
+        </div>
+        <p class="pv-sl__kicker">Most organizations don't have a data-access policy
+          problem. They have a policy-enforcement-in-too-many-places problem.</p>
+      </div>
+    </section>
+
+    <!-- ===== 03 · M6 Figure ========================================
+         The source slide's own three bands, drawn with the kit's Schematic so
+         the compiler sits between the consumers and the data as real text in
+         reading order.
+
+         "Six governance layers" was the source's phrase. This site says five
+         layers plus the approval hook beside them — /why/governance §3 — and
+         site/claim-bans.mjs struck the six-layer phrasing, so the band names
+         the same mechanism in the site's own count. -->
+    <section class="pv-slide" id="s-03">
+      <div class="pv-slide__canvas pv-sl--figure">
+        <div class="pv-sl__head">
+          <p class="pv-sl__eyebrow">Fig. 01</p>
+          <h2 class="pv-sl__h2">One control point for every way in</h2>
+          <p class="pv-sl__body">Same enforcement on every surface: SQL, GraphQL,
+            Cypher · pgwire, JDBC, REST, gRPC, Bolt, Arrow Flight, MCP and
+            more.</p>
+        </div>
+        <figure class="pv-schem-fig">
+          <!-- 4/3 rather than the default 16/9: three bands of two lines each
+               do not fit a wide, short canvas, and a node is absolutely
+               positioned, so it spills over the frame rather than growing it. -->
+          <div class="pv-schem pv-schem--tall">
+            <div class="pv-schem__node" style="--l:4;--t:3;--w:92">
+              <span class="pv-schem__label">WHO ASKS</span>
+              <p class="pv-schem__desc">Analysts in BI tools · Applications and
+                services · Data scientists · Other teams · AI agents (MCP)</p>
+            </div>
+            <div class="pv-schem__wire pv-schem__wire--v" style="--l:10;--t:24;--h:12">identity → role</div>
+            <div class="pv-schem__node pv-schem__node--run" style="--l:4;--t:40;--w:92">
+              <span class="pv-schem__label">PROVISA QUERY COMPILER</span>
+              <p class="pv-schem__desc">Five governance layers, plus your approval
+                hook, applied while the plan is built: visibility · domains · row
+                security · masking · join paths · approval</p>
+            </div>
+            <div class="pv-schem__wire pv-schem__wire--v" style="--l:10;--t:64;--h:10">governed plan only</div>
+            <div class="pv-schem__node" style="--l:4;--t:78;--w:92">
+              <span class="pv-schem__label">YOUR DATA</span>
+              <p class="pv-schem__desc">Databases &amp; warehouses · Lakes &amp;
+                files · SaaS (Salesforce, ServiceNow…) · APIs &amp; streams · Graph
+                stores</p>
+            </div>
+          </div>
+          <figcaption class="pv-sl__caption">FIG. 01 — every consumer, one
+            compiler, the data behind it.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===== 04 · M7 Comparison ====================================
+         The source slide was titled "Six layers — and the exposure each one
+         closes". Its own table is numbered 0 to 5, where 5 is the predicate
+         guard and approval hook, which is exactly the distinction this site
+         draws; the title drops the struck count and the rows are the source's
+         verbatim. -->
+    <section class="pv-slide" id="s-04">
+      <div class="pv-slide__canvas pv-sl--compare">
+        <h2 class="pv-sl__h2">The layers — and the exposure each one closes</h2>
+        <table class="pv-sl__table">
+          <thead>
+            <tr>
+              <th scope="col"><span class="pv-sr">Layer number</span></th>
+              <th scope="col">Layer</th>
+              <th scope="col">What it does</th>
+              <th scope="col">Exposure it closes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">0</th>
+              <td>Introspection filtering</td>
+              <td>Hidden tables are absent from the catalog, not discovered then
+                denied</td>
+              <td data-col="accent">Reconnaissance of what exists</td>
+            </tr>
+            <tr>
+              <th scope="row">1</th>
+              <td>Public access</td>
+              <td>Anonymous surface must be declared explicitly</td>
+              <td data-col="accent">Accidental public exposure on registration</td>
+            </tr>
+            <tr>
+              <th scope="row">2</th>
+              <td>Domain access</td>
+              <td>Roles reach only the domains registered to them</td>
+              <td data-col="accent">Lateral movement across business areas</td>
+            </tr>
+            <tr>
+              <th scope="row">3</th>
+              <td>Row-level security</td>
+              <td>Per-role WHERE injection, inherited through views and MVs</td>
+              <td data-col="accent">Over-broad record access via derived data</td>
+            </tr>
+            <tr>
+              <th scope="row">4</th>
+              <td>Column visibility &amp; masking</td>
+              <td>Visible, hidden or masked (regex, constant, truncate)</td>
+              <td data-col="accent">PII and secrets in result sets</td>
+            </tr>
+            <tr>
+              <th scope="row">5</th>
+              <td>Predicate guard &amp; approval</td>
+              <td>Plan sent to your decision service before execution</td>
+              <td data-col="accent">Out-of-policy queries that pass static rules</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="pv-sl__kicker">New sources, columns and relationships are covered
+          by every layer automatically — nothing to remember to re-apply.</p>
+      </div>
+    </section>
+
+    <!-- ===== 05 · M4 Two-column argument ============================ -->
+    <section class="pv-slide" id="s-05">
+      <div class="pv-slide__canvas pv-sl--columns">
+        <h2 class="pv-sl__h2">Policy is compiled in, not checked afterwards</h2>
+        <div class="pv-sl__cols">
+          <div>
+            <p class="pv-sl__eyebrow">Typical: check, then run</p>
+            <ol class="pv-sl__rows">
+              <li><span>01</span><span>Query arrives as written</span></li>
+              <li><span>02</span><span>Compared against a policy list</span></li>
+              <li><span>03</span><span>Allowed query runs as written</span></li>
+              <li><span>04</span><span>Any path that skips the check runs
+                ungoverned</span></li>
+            </ol>
+          </div>
+          <span class="pv-sl__divide" aria-hidden="true"></span>
+          <div>
+            <p class="pv-sl__eyebrow">Provisa: compile the governed query</p>
+            <ol class="pv-sl__rows">
+              <li><span>01</span><span>Identity resolves to a role</span></li>
+              <li><span>02</span><span>All the layers are written into the
+                plan</span></li>
+              <li><span>03</span><span>Only the governed plan exists to
+                execute</span></li>
+              <li><span>04</span><span>Each execution emits its audit row</span></li>
+            </ol>
+          </div>
+        </div>
+        <p class="pv-sl__kicker">There is no version of the query that could have run
+          ungoverned — so there is no bypass to find, test for, or monitor.</p>
+      </div>
+    </section>
+
+    <!-- ===== 06 · M5 Ruled list ===================================== -->
+    <section class="pv-slide" id="s-06">
+      <div class="pv-slide__canvas pv-sl--ruled">
+        <h2 class="pv-sl__h2">Even the joins are governed</h2>
+        <ol class="pv-sl__rows">
+          <li><span>01</span><span><strong>Approved paths only.</strong> A JOIN or
+            graph traversal is legal only along a registered, approved
+            relationship.</span></li>
+          <li><span>02</span><span><strong>Rejected and logged.</strong> Unapproved
+            paths are refused before execution, and the attempt is
+            recorded.</span></li>
+          <li><span>03</span><span><strong>Every edge has a reason.</strong> Each
+            relationship carries a human- and agent-readable reason it
+            exists.</span></li>
+          <li><span>04</span><span><strong>Two keys to opt out.</strong> Lifting the
+            join guard needs both a role-level grant and an explicit per-query
+            flag — and RLS and masking still apply.</span></li>
+        </ol>
+        <p class="pv-sl__kicker">Why it matters: inference attacks and accidental
+          re-identification usually come from joins nobody sanctioned — not from a
+          single table.</p>
+      </div>
+    </section>
+
+    <!-- ===== 07 · M5 Ruled list ===================================== -->
+    <section class="pv-slide" id="s-07">
+      <div class="pv-slide__canvas pv-sl--ruled">
+        <h2 class="pv-sl__h2">Agents get the same controls as people</h2>
+        <ol class="pv-sl__rows">
+          <li><span>01</span><span><strong>Scoped identity.</strong> Remote agents
+            act only as roles their token's principal holds. Local agents are pinned
+            to a configured role set.</span></li>
+          <li><span>02</span><span><strong>Need-to-know.</strong> An agent learns
+            its role and that role's purpose — never the rules, masks or grants.
+            Filtered results aren't flagged.</span></li>
+          <li><span>03</span><span><strong>Probing is cut off.</strong> Naming a
+            role it doesn't hold ends the session and can suspend the principal's
+            token access.</span></li>
+          <li><span>04</span><span><strong>Validated queries.</strong>
+            Natural-language requests are rate-limited per role before any LLM call,
+            and validated before anything runs.</span></li>
+        </ol>
+        <p class="pv-sl__kicker">A data catalog tells an agent what it should do.
+          Provisa enforces what it can do.</p>
+      </div>
+    </section>
+
+    <!-- ===== 08 · M11 Stacked bands ================================= -->
+    <section class="pv-slide" id="s-08">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">Plug in your own decision service</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs pv-sl__defs--grid4">
+            <div class="pv-sl__def"><dt>Query</dt><dd>From any surface</dd></div>
+            <div class="pv-sl__def"><dt>Compiled plan</dt><dd>Layers 0–4 applied</dd></div>
+            <div class="pv-sl__def"><dt>Your PDP</dt><dd>e.g. OPA · webhook, gRPC or socket</dd></div>
+            <div class="pv-sl__def"><dt>Execute or deny</dt><dd>With audit row</dd></div>
+          </dl>
+        </div>
+        <div class="pv-sl__band">
+          <p class="pv-sl__eyebrow">Attribute-based decisions on request-time context</p>
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def"><dt>Ticket number</dt><dd>Tie sensitive access
+              to an open change or incident record</dd></div>
+            <div class="pv-sl__def"><dt>Break-glass approval</dt><dd>Emergency
+              access that is explicit and recorded</dd></div>
+            <div class="pv-sl__def"><dt>Time windows</dt><dd>Restrict access to
+              approved hours or maintenance windows</dd></div>
+          </dl>
+        </div>
+        <p class="pv-sl__kicker">Fail-safe by design. Commands marked “requires
+          approval” never run without a hook. You choose allow or deny on timeout,
+          and a circuit breaker isolates a slow decision service.</p>
+      </div>
+    </section>
+
+    <!-- ===== 09 · M11 Stacked bands ================================= -->
+    <section class="pv-slide" id="s-09">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">Probing is treated as an attack</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs pv-sl__defs--grid4">
+            <div class="pv-sl__def"><dt>Unheld role requested</dt><dd>From any
+              surface — person, app or agent</dd></div>
+            <div class="pv-sl__def"><dt>Refused</dt><dd>“Not permitted” — no hint
+              whether the role exists</dd></div>
+            <div class="pv-sl__def"><dt>Session ends</dt><dd>Token or principal
+              access suspended</dd></div>
+            <div class="pv-sl__def"><dt>Admin lifts it</dt><dd>No timer — a person
+              decides</dd></div>
+          </dl>
+        </div>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def"><dt>Alerted three ways</dt><dd>Admin trail,
+              email to org admins, and your security webhook — with principal,
+              credential, address and transport.</dd></div>
+            <div class="pv-sl__def"><dt>Login throttling</dt><dd>On by default: five
+              failures in five minutes locks the subject out for fifteen.</dd></div>
+            <div class="pv-sl__def"><dt>Complexity and rate limits</dt><dd>Per-role
+              ceilings on query cost and request rate; over-limit queries are
+              refused and logged as policy denials.</dd></div>
+          </dl>
+        </div>
+        <p class="pv-sl__kicker">Enforced the same way on HTTP, MCP, pgwire, Bolt,
+          Arrow Flight and gRPC.</p>
+      </div>
+    </section>
+
+    <!-- ===== 10 · M5 Ruled list ===================================== -->
+    <section class="pv-slide" id="s-10">
+      <div class="pv-slide__canvas pv-sl--ruled">
+        <h2 class="pv-sl__h2">Least privilege that doesn't decay</h2>
+        <ol class="pv-sl__rows">
+          <li><span>01</span><span><strong>Grants that expire.</strong> Any role
+            grant can carry an expiry date, so temporary access ends on
+            schedule.</span></li>
+          <li><span>02</span><span><strong>Unused access removed.</strong> Grants
+            unused for a set number of days are removed automatically. The holder
+            and admins are emailed first, and each removal is recorded.</span></li>
+          <li><span>03</span><span><strong>Every rule has a reason.</strong> Each
+            role and row rule requires a stated purpose, shown next to the rule in
+            access reviews.</span></li>
+          <li><span>04</span><span><strong>Attributes, not hand-made
+            grants.</strong> Roles derived from user attributes carry no rights and
+            can't be granted by hand. Your org's record overrides the
+            IdP.</span></li>
+        </ol>
+        <p class="pv-sl__kicker">Access reviews show what each grant is for — and
+          stale grants clean themselves up.</p>
+      </div>
+    </section>
+
+    <!-- ===== 11 · M4 Two-column argument ============================ -->
+    <section class="pv-slide" id="s-11">
+      <div class="pv-slide__canvas pv-sl--columns">
+        <h2 class="pv-sl__h2">The audit trail is a table you can query</h2>
+        <div class="pv-sl__cols">
+          <div>
+            <dl class="pv-sl__defs">
+              <div class="pv-sl__def"><dt>OpenTelemetry</dt><dd>Traces, metrics and
+                logs collected</dd></div>
+              <div class="pv-sl__def"><dt>Iceberg</dt><dd>Compacted into open table
+                format</dd></div>
+              <div class="pv-sl__def"><dt>Governed table</dt><dd>Registered and
+                queryable like any data</dd></div>
+            </dl>
+            <p class="pv-sl__body">Lives in your org's own schema, in the store you
+              name per region. Append-only; query text encrypted under your key and
+              shown only to authorized admins.</p>
+            <div class="pv-code pv-code--run">
+<pre><span class="pv-code__c">-- who queried customer data this week?</span>
+SELECT c.name, q.actor, q.started_at, q.duration_ms
+FROM customers c
+JOIN queries q ON q.actor = c.email
+WHERE q.started_at &gt; now() - interval '7 days';</pre>
+            </div>
+          </div>
+          <span class="pv-sl__divide" aria-hidden="true"></span>
+          <div>
+            <p class="pv-sl__eyebrow">Lineage leaves the building too</p>
+            <ul class="pv-sl__bullets">
+              <li>One registration publishes to OpenMetadata, DataHub, Collibra,
+                Atlan, Apache Atlas and OpenLineage</li>
+              <li>Column-level lineage for declared datasets</li>
+              <li>Compiled SQL is readable and exportable</li>
+            </ul>
+            <p class="pv-sl__kicker">One place answers “who ran what, against which
+              data, and when” — across humans, apps and agents.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 12 · M5 Ruled list ===================================== -->
+    <section class="pv-slide" id="s-12">
+      <div class="pv-slide__canvas pv-sl--ruled">
+        <h2 class="pv-sl__h2">Identity comes from your IdP — on every surface</h2>
+        <ol class="pv-sl__rows">
+          <li><span>01</span><span><strong>Bring your identity provider.</strong>
+            OIDC (Okta, Azure AD, PingFederate, Auth0), SAML 2.0, LDAP / Active
+            Directory or Keycloak. With LDAP, a directory removal takes effect
+            before the token expires.</span></li>
+          <li><span>02</span><span><strong>TLS 1.2+ and mutual TLS.</strong> Every
+            listener speaks TLS 1.2 or 1.3 and refuses older versions. mTLS on
+            pgwire, Bolt, gRPC and Flight can bind the certificate to the
+            user.</span></li>
+          <li><span>03</span><span><strong>Least privilege per request.</strong> A
+            request acts only as the roles it names; unheld roles are refused by
+            name. Unbound session variables match no rows.</span></li>
+          <li><span>04</span><span><strong>Hardened credentials.</strong> Personal
+            access tokens stored as SHA-256 hashes, shown once, scoped to one org.
+            Login throttling on by default.</span></li>
+        </ol>
+        <p class="pv-sl__kicker">SQL clients, BI tools, Neo4j drivers, Arrow Flight,
+          gRPC and MCP agents all authenticate against the same identity and role
+          model.</p>
+      </div>
+    </section>
+
+    <!-- ===== 13 · M4 Two-column argument ============================ -->
+    <section class="pv-slide" id="s-13">
+      <div class="pv-slide__canvas pv-sl--columns">
+        <h2 class="pv-sl__h2">Secrets never leak — not even into logs</h2>
+        <div class="pv-sl__cols">
+          <div>
+            <p class="pv-sl__eyebrow">Secrets</p>
+            <ul class="pv-sl__bullets">
+              <li>Use HashiCorp Vault, AWS Secrets Manager, Google Secret Manager or
+                Azure Key Vault — or the built-in store</li>
+              <li>Built-in store always encrypts; with no key available it refuses to
+                write</li>
+              <li>No API returns a secret value; platform admins can't read an org's
+                secrets</li>
+              <li>Fail-closed: an unresolved reference is an error, never an empty
+                string</li>
+            </ul>
+          </div>
+          <span class="pv-sl__divide" aria-hidden="true"></span>
+          <div>
+            <p class="pv-sl__eyebrow">Redaction everywhere</p>
+            <ul class="pv-sl__bullets">
+              <li>One redaction rule list per org, on top of built-in rules</li>
+              <li>Applied to OpenTelemetry spans and logs before any exporter —
+                including stdout</li>
+              <li>Applied to audit rows as written and to client-facing errors</li>
+              <li>Every secret Provisa holds or the model references is redacted
+                automatically</li>
+            </ul>
+          </div>
+        </div>
+        <p class="pv-sl__kicker">Source credentials are references resolved at
+          runtime; engine catalogs and their credentials live in memory only.</p>
+      </div>
+    </section>
+
+    <!-- ===== 14 · M11 Stacked bands ================================= -->
+    <section class="pv-slide" id="s-14">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">Encryption under keys you hold</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def">
+              <dt>In transit</dt>
+              <dd>
+                <ul class="pv-sl__bullets">
+                  <li>Every listener: TLS 1.2 or 1.3</li>
+                  <li>Helm generates the CA and node certificates</li>
+                  <li>Engine node-to-node encryption available</li>
+                </ul>
+              </dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>At rest, under your key</dt>
+              <dd>
+                <ul class="pv-sl__bullets">
+                  <li>Opt-in: create your org key to turn it on</li>
+                  <li>Wraps secrets, encrypted columns and audit query text</li>
+                  <li>Uploads, spill and temp files under a key in your own vault</li>
+                </ul>
+              </dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Ephemeral by design</dt>
+              <dd>
+                <ul class="pv-sl__bullets">
+                  <li>Spill encrypted with a per-query key, discarded when the query
+                    ends</li>
+                  <li>Catalog credentials held in memory only</li>
+                </ul>
+              </dd>
+            </div>
+          </dl>
+        </div>
+        <p class="pv-sl__kicker">High-security mode Provisa never handles plaintext:
+          columns are encrypted at the source and decrypted client-side, and data
+          endpoints require a KMS key on every request. Text-oriented surfaces
+          (pgwire, Bolt, MCP) don't start, and the join guard can't be switched
+          off.</p>
+      </div>
+    </section>
+
+    <!-- ===== 15 · M11 Stacked bands ================================= -->
+    <section class="pv-slide" id="s-15">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">Data residency is enforced, not hoped for</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def"><dt>01 · Home region</dt><dd>A table names where
+              it lives; only that region builds its replica</dd></div>
+            <div class="pv-sl__def"><dt>02 · Rules applied at home</dt><dd>A reader
+              elsewhere has row and column rules applied in the home region — only
+              permitted rows cross</dd></div>
+            <div class="pv-sl__def"><dt>03 · Refuse, don't fall back</dt><dd>If the
+              home region is unreachable, the request is refused — never silently
+              read from the source</dd></div>
+          </dl>
+        </div>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def"><dt>Moves need a grant</dt><dd>Changing a
+              table's or view's region requires a data-residency grant covering both
+              regions.</dd></div>
+            <div class="pv-sl__def"><dt>Region-aware policy</dt><dd>A member's
+              region becomes a pseudo-role that masks and grants can reference; row
+              filters can key on the serving region.</dd></div>
+          </dl>
+        </div>
+        <p class="pv-sl__kicker">Each region runs its own engine and stores against
+          one shared model and policy set.</p>
+      </div>
+    </section>
+
+    <!-- ===== 16 · M5 Ruled list ===================================== -->
+    <section class="pv-slide" id="s-16">
+      <div class="pv-slide__canvas pv-sl--ruled">
+        <h2 class="pv-sl__h2">Shrink the attack surface: fewer copies of data</h2>
+        <ol class="pv-sl__rows">
+          <li><span>01</span><span><strong>Query in place.</strong> Federation joins
+            across sources without first copying them into a warehouse or a staging
+            bucket.</span></li>
+          <li><span>02</span><span><strong>Governed hand-offs.</strong> Other teams
+            get a governed result set — not a pipeline and an unmanaged
+            extract.</span></li>
+          <li><span>03</span><span><strong>Masked per role.</strong> PII columns can
+            be masked per role in every result, on every protocol.</span></li>
+          <li><span>04</span><span><strong>Synthetic data.</strong> Auto-generated
+            synthetic datasets let teams build and train without touching real
+            PII.</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== 17 · M11 Stacked bands, opening on the stat strip ====== -->
+    <section class="pv-slide" id="s-17">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">Deploy inside your boundary — airgap included</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__stats">
+            <div class="pv-sl__stat"><dt>1</dt><dd>Python wheel</dd></div>
+            <div class="pv-sl__stat"><dt>0</dt><dd>Docker images to mirror</dd></div>
+            <div class="pv-sl__stat"><dt>0</dt><dd>JVMs or root required</dd></div>
+          </dl>
+        </div>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def"><dt>Familiar supply chain</dt><dd>Installs from
+              your Artifactory PyPI mirror — the channel regulated orgs already
+              approve.</dd></div>
+            <div class="pv-sl__def"><dt>Attested and gated</dt><dd>Sigstore-attested
+              on PyPI. No release publishes until a CVE scan of its locked,
+              hash-pinned dependencies passes.</dd></div>
+            <div class="pv-sl__def"><dt>Your choice of boundary</dt><dd>Self-host,
+              or use the hosted service on a dedicated, physically separated
+              platform.</dd></div>
+          </dl>
+        </div>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def"><dt>Your infrastructure</dt><dd>Self-host via
+              Helm on Kubernetes or Terraform on AWS, Azure, GCP — or use the hosted
+              service.</dd></div>
+            <div class="pv-sl__def"><dt>Your engine</dt><dd>Execution stays on an
+              engine you run: embedded DuckDB, Trino, Snowflake, Databricks,
+              Postgres…</dd></div>
+            <div class="pv-sl__def"><dt>Your config</dt><dd>The model and policy are
+              declarative config in git — versioned, reviewable, promoted as a
+              patch.</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 18 · M11 Stacked bands ================================
+         The source's assurance line named a compliance certification twice.
+         No page on this site names one (site/claim-bans.mjs), so the line
+         keeps its meaning — there is no third-party report yet, self-hosting
+         removes the dependency — without the name. -->
+    <section class="pv-slide" id="s-18">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">Hosted service: isolation and your own keys</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def">
+              <dt>Shared platform</dt>
+              <dd><strong>Logical tenant isolation.</strong> Per-org catalogs,
+                resource groups, keys and spool keys; sources can reach only public
+                addresses. For experimentation and small businesses.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Dedicated platform</dt>
+              <dd><strong>Physically separated.</strong> Separate machines, network
+                and stores for one customer — for production workloads.</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def"><dt>A key only you hold</dt><dd>Create your org
+              key and only you retain it; Provisa keeps just a fingerprint.</dd></div>
+            <div class="pv-sl__def"><dt>Encrypted at rest</dt><dd>Once created, it
+              encrypts secrets, files, spill files and temp files.</dd></div>
+            <div class="pv-sl__def"><dt>Encrypted in transit</dt><dd>All data is
+              served over TLS 1.2 or 1.3.</dd></div>
+          </dl>
+        </div>
+        <p class="pv-sl__kicker">Assurance: no third-party assurance report yet. If
+          you need one today, or the data is highly sensitive, self-host — it runs
+          entirely inside your boundary.</p>
+      </div>
+    </section>
+
+    <!-- ===== 19 · M11 Stacked bands ================================
+         The source's last line listed three hosts. Two are not offered as
+         conversions on this site, so the line points at the three routes this
+         site actually ships. -->
+    <section class="pv-slide" id="s-19">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">A security review your team can run itself</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs pv-sl__defs--grid4">
+            <div class="pv-sl__def"><dt>01 · Stand it up</dt><dd>Install in an
+              isolated environment and create your org key. Use the bundled demo or
+              synthetic data.</dd></div>
+            <div class="pv-sl__def"><dt>02 · Try to go around it</dt><dd>Define a
+              restricted role. Attack it from psql, GraphQL, Cypher and an MCP
+              agent — and watch probing get suspended.</dd></div>
+            <div class="pv-sl__def"><dt>03 · Wire in your PDP</dt><dd>Point layer 5
+              at your decision service and test ticket, break-glass and time-window
+              rules.</dd></div>
+            <div class="pv-sl__def"><dt>04 · Read the audit table</dt><dd>Query what
+              each attempt recorded, including rejected joins, and check your
+              security webhook.</dd></div>
+          </dl>
+        </div>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def">
+              <dt>Get started</dt>
+              <dd><a class="pv-link pv-link--inline" href="/install">provisa.dev/install</a>
+                · <a class="pv-link pv-link--inline" href="/demos">provisa.dev/demos</a>
+                · <a class="pv-link pv-link--inline" href="/register">provisa.dev/register</a></dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Licensing</dt>
+              <dd>Business Source License 1.1. Evaluation and other non-production
+                use are free forever, for any size org — no procurement needed to run
+                this review. Each release converts to GPL v2+ after four years.</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 20 · M10 Close ======================================== -->
+    <section class="pv-slide" id="s-20">
+      <div class="pv-slide__canvas pv-sl--close">
+        <div class="pv-sl__close-grid">
+          <div>
+            <span class="pv-sl__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+            <h2 class="pv-sl__h2">Try to go around it, with us watching.</h2>
+            <hr class="pv-sl__rule">
+            <p class="pv-sl__body">A restricted role, four surfaces, and the audit
+              table open beside them — the review your team runs itself, run
+              together the first time.</p>
+            <span class="pv-sl__url">provisa.dev/walkthrough</span>
+          </div>
+          <form class="pv-form" method="post" action="/api/demo">
+            <h3 class="pv-form__title">Book a demo</h3>
+            <div class="pv-form__grid">
+              <label class="pv-sr" for="x-name">Full name</label>
+              <input class="pv-input" id="x-name" name="name" autocomplete="name" placeholder="Full name" required>
+              <label class="pv-sr" for="x-email">Work email</label>
+              <input class="pv-input" id="x-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+            </div>
+            <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <section class="pv-contact" id="contact">
+    <div class="pv-contact__inner pv-container">
+      <div class="pv-contact__copy">
+        <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h2 class="pv-h pv-h--cta">Walk through it with us.</h2>
+        <div class="pv-contact__links">
+          <a class="pv-link pv-link--inverse" href="/walkthrough/">The other two
+            briefings<span class="pv-link__arrow"> →</span></a>
+          <a class="pv-link pv-link--inverse" href="/why/governance">How governance
+            compiles<span class="pv-link__arrow"> →</span></a>
+        </div>
+      </div>
+      <form class="pv-form" method="post" action="/api/demo">
+        <h3 class="pv-form__title">Book a demo</h3>
+        <div class="pv-form__grid">
+          <label class="pv-sr" for="w-name">Full name</label>
+          <input class="pv-input" id="w-name" name="name" autocomplete="name" placeholder="Full name" required>
+          <label class="pv-sr" for="w-email">Work email</label>
+          <input class="pv-input" id="w-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+        </div>
+        <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+          Licence 1.1 — non-production use (including evaluation) is free
+          forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Active Semantic Layer</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/platform/views">Materialized views</a>
+        <a href="/platform/catalog">Catalog</a>
+        <a href="/why/no-lock-in">No lock-in</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
+        <a href="/vs/starburst">vs Starburst</a>
+        <a href="/vs/denodo">vs Denodo</a>
+        <a href="/vs/hasura">Coming from Hasura</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/walkthrough/">Walk through it</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
+    </div>
+    <div class="pv-footer__bottom">
+      <span>© Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

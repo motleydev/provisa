@@ -52,6 +52,19 @@
   deck.dataset.motion = "on";
   deck.tabIndex = -1;
 
+  /* How much of the viewport the chrome above the deck takes. walkthrough.css
+   * subtracts it from the slide height, because a deck sized at a full
+   * viewport under a sticky header puts the first slide's footer below the
+   * fold and leaves the document scrolling behind a scroller. Measured rather
+   * than declared: the utility bar has no height token, and the header's own
+   * height changes when its nav wraps. */
+  function fitDeck() {
+    const top = deck.getBoundingClientRect().top + window.scrollY;
+    deck.style.setProperty("--deck-offset", Math.max(0, Math.round(top)) + "px");
+  }
+  fitDeck();
+  window.addEventListener("resize", fitDeck);
+
   /* ---- the rail ---------------------------------------------------- */
 
   /* Indices, not dots. The kit numbers its sections and its figures, and a
