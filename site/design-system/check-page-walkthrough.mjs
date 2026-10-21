@@ -200,10 +200,53 @@ ok(/\.pv-deck\[data-walkthrough\]/.test(js),
    "the controller only attaches to a deck that opts in with data-walkthrough");
 ok(/params\.get\("view"\) === "page"/.test(js),
    "?view=page returns before the controller is built — the escape hatch is real");
-ok(/aria-current/.test(js), "the rail marks the current slide");
+ok(/role", "tablist"/.test(js) && /role", "tab"/.test(js) && /role", "tabpanel"/.test(js),
+   "the deck is a tab set: a tablist of slide indices over one panel per slide");
+ok(/aria-selected/.test(js), "the strip marks the slide on the stage");
 ok(/"ArrowRight"/.test(js) && /"Home"/.test(js) && /"End"/.test(js),
    "the keyboard pass covers stepping and both ends");
 ok(/aria-checked", "false"/.test(js), "autoplay starts off");
+
+/* Deck mode is a stage, not a scroller. A slide arriving by scroll is the
+ * behaviour this layer replaced: a reader skims a scroller, and a briefing is
+ * a sequence of statements. The article at ?view=page is what scrolls. */
+ok(/grid-area:stage/.test(cssNoComments),
+   "deck mode stacks every slide on one stage");
+ok(!/scroll-snap/.test(cssNoComments),
+   "deck mode snaps nothing — there is no scroller left to snap");
+const deckMode = (cssNoComments.match(/\.pv-deck\[data-mode="deck"\]\{[^}]*\}/) || [""])[0];
+ok(/overflow:hidden/.test(deckMode) && !/overflow-y:auto/.test(deckMode),
+   `the stage does not scroll (${deckMode.replace(/\s+/g, "") || "no rule found"})`);
+
+/* The leaving slide stays painted under the arriving one until the wipe lands,
+ * and the controller learns that from the wipe itself rather than from a timer
+ * holding a second copy of the duration. That is also what makes reduced
+ * motion need no special case: the kit collapses the duration and the event
+ * arrives in the same frame. */
+ok(/addEventListener\("animationend"/.test(js) && !/setTimeout/.test(js),
+   "the leaving slide is parked by the wipe's own animationend, not by a timer");
+
+/* The chrome above the stage is re-measured when it changes height, which is
+ * what the webfonts landing after first paint does. Without it the stage keeps
+ * a height that was right for a frame, and the slide's footer sits under the
+ * fold on whichever load the fonts were slowest. */
+ok(/ResizeObserver/.test(js) && /document\.fonts\.ready/.test(js),
+   "the stage is re-measured when the chrome above it changes or the fonts land");
+
+/* Both wipe directions exist, and the deck declares which one it is using. */
+ok(/@keyframes pv-slide-in\b/.test(cssNoComments) && /@keyframes pv-slide-in-back\b/.test(cssNoComments),
+   "the wipe has a forward and a backward keyframe");
+ok(/data-dir="back"/.test(cssNoComments) && /dataset\.dir/.test(js),
+   "the direction of travel is declared by the controller and read by the stylesheet");
+
+/* Paper has no "one slide at a time", so the print block has to undo both the
+ * stack and the pre-enter state, or a printed deck is one slide and a run of
+ * half-drawn pages. */
+const printBlock = (css.match(/@media print\{[\s\S]*?\n\}/) || [""])[0];
+ok(/visibility:visible/.test(printBlock) && /display:block/.test(printBlock),
+   "print unstacks the deck and shows every slide");
+ok(/\[data-state="idle"\][\s\S]*?clip-path:none/.test(printBlock),
+   "print lands every slide in its finished state, including the ones never reached");
 
 /* The gallery is a contact sheet, not a deck: it must not opt into the
  * controller, or eleven plates would each try to become a walkthrough. */
@@ -263,14 +306,14 @@ for (const deck of DECKS) {
   ok(/pv-sl--close/.test(last), `${name}: the last slide is M10, the close`);
   ok(/action="\/api\/demo"/.test(last), `${name}: the close slide carries the demo form`);
 
-  /* The rail's halfway CTA and the header's button both target #contact, so
+  /* The strip's halfway CTA and the header's button both target #contact, so
    * the page has to have one. */
-  ok(/id="contact"/.test(dmain), `${name}: #contact exists for the rail CTA and the header button`);
+  ok(/id="contact"/.test(dmain), `${name}: #contact exists for the strip CTA and the header button`);
 
-  /* Autoplay, the page-mode link and the rail are the controller's, not the
-   * page's: a deck that hand-rolled them would drift from the other two. */
-  ok(!/class="pv-rail"/.test(dmain) && !/pv-deck__bar/.test(dmain),
-     `${name}: the rail and the control bar come from the controller, not the markup`);
+  /* Autoplay, the page-mode link and the tab strip are the controller's, not
+   * the page's: a deck that hand-rolled them would drift from the other two. */
+  ok(!/class="pv-tabs"/.test(dmain) && !/pv-deck__bar/.test(dmain),
+     `${name}: the tab strip and the control bar come from the controller, not the markup`);
 }
 
 /* --- the front door links all three, and the gallery ------------------- */

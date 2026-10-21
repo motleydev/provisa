@@ -108,7 +108,33 @@ async function open(path, { width, height, theme = "light", reducedMotion = "no-
   });
   page.on("pageerror", (e) => consoleErrors.push(`${path} — ${e.message}`));
   await page.goto(base + path, { waitUntil: "load" });
+  await settleViewport(page);
   return { context, page };
+}
+
+/* Wait for 100svh to agree with the viewport this context asked for.
+ *
+ * Headless Chromium applies an emulated viewport through the devtools
+ * protocol, and the small-viewport unit can still be reporting the real window
+ * for a frame or two after load — 1233px where innerHeight is already 1080.
+ * A deck sized at calc(100svh - chrome) measured in that window looks 153px
+ * too tall, and the page is not wrong: on a real browser a change in svh
+ * fires a resize, which the controller already re-measures on. Without this
+ * wait the geometry assertions below pass or fail on how fast the emulation
+ * landed, which is the kind of flake that gets a suite ignored. */
+async function settleViewport(page) {
+  await page.waitForFunction(() => {
+    const probe = document.createElement("div");
+    probe.style.cssText =
+      "position:fixed;top:0;left:0;width:0;height:100svh;pointer-events:none;visibility:hidden";
+    document.body.append(probe);
+    const svh = probe.getBoundingClientRect().height;
+    probe.remove();
+    return Math.abs(svh - window.innerHeight) <= 1;
+  }, null, { timeout: 5000 });
+  /* And one frame for the controller's resize handler to have run. */
+  await page.evaluate(() => new Promise((r) =>
+    requestAnimationFrame(() => requestAnimationFrame(r))));
 }
 
 /* ---- 1. nothing is clipped ------------------------------------------- */
@@ -122,7 +148,13 @@ const TOLERANCE = 2;
 for (const deck of DECKS) {
   for (const vp of VIEWPORTS) {
     for (const theme of THEMES) {
-      const { context, page } = await open(`/walkthrough/${deck}`, { width: vp.w, height: vp.h, theme });
+      /* Reduced motion for the overflow pass, which is a geometry question and
+       * not a motion one: every duration collapses to 0.01ms, so a slide is in
+       * its finished state the moment it reaches the stage and the measurement
+       * never catches a rule mid-draw. Sections 2 and 5 exercise the motion. */
+      const { context, page } = await open(`/walkthrough/${deck}`, {
+        width: vp.w, height: vp.h, theme, reducedMotion: "reduce",
+      });
 
       const mode = await page.getAttribute(".pv-deck", "data-mode");
       ok(mode === "deck", `${deck} @ ${vp.w} ${theme}: the controller put the deck in deck mode (${mode})`);
@@ -138,16 +170,20 @@ for (const deck of DECKS) {
       ok(fit.bottom <= fit.viewport + TOLERANCE,
          `${deck} @ ${vp.w} ${theme}: the first slide ends inside the viewport (${fit.bottom} of ${fit.viewport})`);
 
-      /* Every slide is visited rather than measured in place: the slides are
-       * in a scroll-snap container and a slide that has never been scrolled
-       * to still lays out, but the reveal only settles once it has entered,
-       * and a clipped line can hide behind a pre-enter clip-path. */
+      /* The stage holds one slide and the rest are visibility:hidden, so every
+       * slide is brought to the stage by its own tab before it is measured.
+       * A hidden slide still lays out, but the measurement below skips hidden
+       * nodes by design — a figure's shapes among them — so measuring one off
+       * the stage would be measuring an empty box. */
       const slides = await page.locator(".pv-slide").count();
+      const tabs = await page.locator(".pv-tabs__tab").count();
+      ok(tabs === slides, `${deck} @ ${vp.w} ${theme}: one tab per slide (${tabs} of ${slides})`);
+
       const clipped = [];
       const wrongRatio = [];
       for (let i = 0; i < slides; i++) {
         const slide = page.locator(".pv-slide").nth(i);
-        await slide.evaluate((el) => el.scrollIntoView({ block: "start" }));
+        await page.locator(".pv-tabs__tab").nth(i).click();
         await page.waitForTimeout(40);
         const m = await slide.locator(".pv-slide__canvas").evaluate((el) => {
           /* scrollHeight alone is not enough. Most masters centre their rows
@@ -205,6 +241,61 @@ for (const deck of DECKS) {
       ok(wrongRatio.length === 0,
          `${deck} @ ${vp.w} ${theme}: every canvas is 16:9${wrongRatio.length ? ` — ${wrongRatio.join(", ")}` : ""}`);
 
+      /* One slide on the stage, and it is the one the strip says. Two visible
+       * slides would mean a wipe that never finished parking the one it
+       * replaced — which on the close slide is an inverse band over paper.
+       * The parking is the wipe's own animationend, so the wait is for that
+       * event to have been delivered rather than for a number of frames a
+       * headless browser is free not to produce. */
+      let parked = true;
+      try {
+        await page.waitForFunction(
+          () => !document.querySelector('.pv-slide[data-show="out"]'), null, { timeout: 2000 });
+      } catch {
+        parked = false;
+      }
+      ok(parked, `${deck} @ ${vp.w} ${theme}: the wipe parked the slide it replaced`);
+
+      let onStage = true;
+      try {
+        await page.waitForFunction(() => {
+          const shown = [...document.querySelectorAll(".pv-slide")]
+            .filter((el) => getComputedStyle(el).visibility === "visible");
+          const tab = document.querySelector(".pv-tabs__tab[aria-selected='true']");
+          return shown.length === 1 && tab && shown[0].id === tab.getAttribute("aria-controls");
+        }, null, { timeout: 2000 });
+      } catch {
+        onStage = false;
+      }
+      const stage = onStage ? null : await page.evaluate(() => {
+        const tab = document.querySelector(".pv-tabs__tab[aria-selected='true']");
+        return {
+          shown: [...document.querySelectorAll(".pv-slide")]
+            .filter((el) => getComputedStyle(el).visibility === "visible")
+            .map((el) => `${el.id}[show=${el.dataset.show} state=${el.dataset.state}]`),
+          says: tab ? tab.getAttribute("aria-controls") : null,
+        };
+      });
+      ok(onStage,
+         `${deck} @ ${vp.w} ${theme}: one slide on the stage, the one the strip marks` +
+         (stage ? ` — ${stage.shown.join(", ")} / ${stage.says}` : ""));
+
+      /* And nothing in deck mode scrolls — neither the stage nor the document
+       * behind it. The long scroll is ?view=page's job. */
+      const scrollers = await page.evaluate(() => {
+        const d = document.querySelector(".pv-deck");
+        const r = document.documentElement;
+        return {
+          deck: d.scrollHeight - d.clientHeight,
+          root: r.scrollHeight - r.clientHeight,
+          rootOverflow: getComputedStyle(r).overflow,
+        };
+      });
+      ok(scrollers.deck <= TOLERANCE,
+         `${deck} @ ${vp.w} ${theme}: the stage has nothing to scroll (${scrollers.deck}px over)`);
+      ok(scrollers.rootOverflow === "hidden",
+         `${deck} @ ${vp.w} ${theme}: the document cannot be scrolled in deck mode (${scrollers.rootOverflow})`);
+
       await context.close();
     }
   }
@@ -215,37 +306,94 @@ for (const deck of DECKS) {
 for (const deck of DECKS) {
   const { context, page } = await open(`/walkthrough/${deck}`, { width: 1920, height: 1080 });
   const total = await page.locator(".pv-slide").count();
-  const current = () => page.locator(".pv-rail__link[aria-current='true']").getAttribute("aria-label");
+  /* Which slide the strip says is on the stage, by the panel its selected tab
+   * controls. The tab's own text is the index, and its accessible name
+   * carries the slide's title. */
+  const current = () =>
+    page.locator(".pv-tabs__tab[aria-selected='true']").getAttribute("aria-controls");
+  const id = (n) => "s-" + String(n).padStart(2, "0");
 
-  ok((await current()) === "Slide 1", `${deck}: the rail opens on slide 1`);
+  ok((await current()) === id(1), `${deck}: the strip opens on slide 1`);
 
   await page.keyboard.press("ArrowRight");
-  await page.waitForTimeout(120);
-  ok((await current()) === "Slide 2", `${deck}: ArrowRight steps to slide 2`);
+  await page.waitForTimeout(320);
+  ok((await current()) === id(2), `${deck}: ArrowRight steps to slide 2`);
 
   await page.keyboard.press("ArrowLeft");
-  await page.waitForTimeout(120);
-  ok((await current()) === "Slide 1", `${deck}: ArrowLeft steps back`);
+  await page.waitForTimeout(320);
+  ok((await current()) === id(1), `${deck}: ArrowLeft steps back`);
 
   await page.keyboard.press("End");
-  await page.waitForTimeout(160);
-  ok((await current()) === `Slide ${total}`, `${deck}: End jumps to the last slide (${total})`);
+  await page.waitForTimeout(320);
+  ok((await current()) === id(total), `${deck}: End jumps to the last slide (${total})`);
 
   /* The CTA is the deck's own ask, and it is not allowed to appear on slide
-   * two. It arrives once the visitor is past halfway and stays. */
-  ok(!(await page.locator(".pv-rail__cta").isHidden()),
-     `${deck}: the rail CTA is showing at the end of the deck`);
+   * two: it arrives once the visitor is past halfway, and goes again on the
+   * close slide, where the form it jumps to is the slide a reader is looking
+   * at. A button that scrolls you to where you already are is worse than no
+   * button. */
+  ok(await page.locator(".pv-tabs__cta").isHidden(),
+     `${deck}: the strip CTA is gone on the close slide — the form is already on screen`);
+
+  await page.keyboard.press("ArrowLeft");
+  await page.waitForTimeout(320);
+  ok(!(await page.locator(".pv-tabs__cta").isHidden()),
+     `${deck}: the strip CTA is showing on the slide before the close`);
+
+  /* And it jumps to the close slide, which is where the form is. */
+  const target = await page.locator(".pv-tabs__cta").getAttribute("href");
+  ok(target === "#" + id(total),
+     `${deck}: the strip CTA jumps to the close slide (${target})`);
+  await page.locator(".pv-tabs__cta").click();
+  await page.waitForTimeout(320);
+  ok((await current()) === id(total),
+     `${deck}: clicking it puts the close slide on the stage`);
 
   await page.keyboard.press("Home");
-  await page.waitForTimeout(160);
-  ok((await current()) === "Slide 1", `${deck}: Home jumps back to the first slide`);
-  ok(await page.locator(".pv-rail__cta").isHidden(),
-     `${deck}: the rail CTA is hidden on slide 1 — the ask comes after the argument`);
+  await page.waitForTimeout(320);
+  ok((await current()) === id(1), `${deck}: Home jumps back to the first slide`);
+  ok(await page.locator(".pv-tabs__cta").isHidden(),
+     `${deck}: the strip CTA is hidden on slide 1 — the ask comes after the argument`);
 
-  /* Focus lands on the slide's own heading, so a keyboard reader arrives
-   * where a sighted reader's eye does. */
+  /* A tab is a jump, and it keeps focus where a tab set keeps it: on the tab,
+   * so the arrow keys carry on working from there. The slide behind it is the
+   * panel, reachable by Tab, which is the pattern assistive technology knows
+   * how to walk. */
+  await page.locator(".pv-tabs__tab").nth(4).click();
+  await page.waitForTimeout(320);
+  const afterTab = await page.evaluate(() => {
+    const el = document.activeElement;
+    return {
+      onTab: el.classList.contains("pv-tabs__tab"),
+      selected: el.getAttribute("aria-selected"),
+      shown: [...document.querySelectorAll(".pv-slide")]
+        .filter((s) => getComputedStyle(s).visibility === "visible").map((s) => s.id),
+    };
+  });
+  ok((await current()) === id(5), `${deck}: clicking the fifth tab puts slide 5 on the stage`);
+  ok(afterTab.onTab && afterTab.selected === "true",
+     `${deck}: focus stays on the tab that was clicked`);
+  ok(afterTab.shown.length === 1 && afterTab.shown[0] === id(5),
+     `${deck}: the wipe parked the slide it replaced (${afterTab.shown.join(", ")})`);
+
+  /* Arrow keys from inside the strip select as they move and keep focus on
+   * the strip — automatic activation, because the panel is the content. */
   await page.keyboard.press("ArrowRight");
-  await page.waitForTimeout(120);
+  await page.waitForTimeout(320);
+  const stepped = await page.evaluate(() => ({
+    onTab: document.activeElement.classList.contains("pv-tabs__tab"),
+    label: document.activeElement.getAttribute("aria-controls"),
+  }));
+  ok(stepped.onTab && stepped.label === id(6),
+     `${deck}: an arrow key inside the strip moves the selection and keeps focus there (${stepped.label})`);
+
+  /* Stepping from outside the strip lands focus on the slide's own heading,
+   * so a keyboard reader arrives where a sighted reader's eye does. The deck
+   * itself takes focus first, because the assertions above left it on a tab
+   * and a step from there is the tab-set behaviour, not this one. */
+  await page.locator(".pv-deck").evaluate((el) => el.focus());
+  await page.keyboard.press("ArrowRight");
+  await page.waitForTimeout(320);
   const focused = await page.evaluate(() => {
     const el = document.activeElement;
     return { tag: el.tagName.toLowerCase(), inSlide: !!el.closest(".pv-slide") };
@@ -253,32 +401,56 @@ for (const deck of DECKS) {
   ok(/^h[1-3]$/.test(focused.tag) && focused.inSlide,
      `${deck}: stepping moves focus to the new slide's heading (${focused.tag})`);
 
+  /* The strip wears the briefing's accent. It only can while it is inside the
+   * deck, which is where the see/get/run custom properties are declared — as a
+   * sibling above the deck it inherited the page's ink instead and every deck
+   * had the same black tab, which is the one thing three accented briefings
+   * must not look like. */
+  const accent = await page.evaluate(() => {
+    const deckEl = document.querySelector(".pv-deck");
+    const probe = document.createElement("span");
+    probe.style.cssText = "color:var(--accent-text);position:absolute;visibility:hidden";
+    deckEl.append(probe);
+    const want = getComputedStyle(probe).color;
+    probe.remove();
+    const cs = getComputedStyle(document.querySelector(".pv-tabs__tab[aria-selected='true']"));
+    return { want, got: cs.color, rule: cs.borderBottomColor, ink: getComputedStyle(document.body).color };
+  });
+  ok(accent.got === accent.want && accent.rule !== accent.ink,
+     `${deck}: the selected tab is the deck's accent, not the page's ink (${accent.got} / want ${accent.want})`);
+
   /* Autoplay is off on load, every load. */
   ok((await page.locator(".pv-deck__bar [role='switch']").getAttribute("aria-checked")) === "false",
      `${deck}: autoplay is off on load`);
 
   /* The fit check above measures the deck as it loads. This measures it after
-   * a reader has used it, which is a different thing and was broken: stepping
-   * scrolled the document as well as the deck, the utility bar rolled off the
-   * top, and the deck — sized against chrome that included that bar — came up
-   * its height short, so a band of the contact section sat under every slide
-   * with the deck's own footer row over it. The deck fills the space under the
-   * sticky header, and nothing below the deck is on screen. */
+   * a reader has used it, which is a different thing and was broken once:
+   * stepping scrolled the document as well as the deck, the utility bar rolled
+   * off the top, and the deck — sized against chrome that included that bar —
+   * came up its height short, so a band of the contact section sat under every
+   * slide with the deck's own footer row over it. The stage fills the space
+   * under the strip, and nothing below the deck is on screen. */
   const settled = await page.evaluate(() => {
     const d = document.querySelector(".pv-deck").getBoundingClientRect();
     const next = document.querySelector(".pv-contact").getBoundingClientRect();
+    const strip = document.querySelector(".pv-tabs").getBoundingClientRect();
     const header = document.querySelector(".pv-header").getBoundingClientRect();
+    const slide = document.querySelector('.pv-slide[data-show="on"]').getBoundingClientRect();
     return {
       gap: Math.round(window.innerHeight - d.bottom),
-      underHeader: Math.round(d.top - header.bottom),
+      slideUnderStrip: Math.round(slide.top - strip.bottom),
+      slideFoot: Math.round(window.innerHeight - slide.bottom),
+      deckUnderHeader: Math.round(d.top - header.bottom),
       nextTop: Math.round(next.top),
       viewport: window.innerHeight,
     };
   });
   ok(Math.abs(settled.gap) <= TOLERANCE,
      `${deck}: after stepping the deck still reaches the foot of the viewport (${settled.gap}px short)`);
-  ok(settled.underHeader >= -TOLERANCE,
-     `${deck}: after stepping the deck still starts below the sticky header (${settled.underHeader}px)`);
+  ok(Math.abs(settled.slideUnderStrip) <= TOLERANCE && Math.abs(settled.slideFoot) <= TOLERANCE,
+     `${deck}: after stepping the stage is exactly the room under the strip (${settled.slideUnderStrip}px below it, ${settled.slideFoot}px above the fold)`);
+  ok(settled.deckUnderHeader >= -TOLERANCE,
+     `${deck}: the deck starts below the sticky header rather than under it (${settled.deckUnderHeader}px)`);
   ok(settled.nextTop >= settled.viewport - TOLERANCE,
      `${deck}: after stepping nothing below the deck is on screen (contact section at ${settled.nextTop} of ${settled.viewport})`);
 
@@ -290,8 +462,8 @@ for (const deck of DECKS) {
 for (const deck of DECKS) {
   const { context, page } = await open(`/walkthrough/${deck}#s-07`, { width: 1920, height: 1080 });
   await page.waitForTimeout(200);
-  const label = await page.locator(".pv-rail__link[aria-current='true']").getAttribute("aria-label");
-  ok(label === "Slide 7", `${deck}: #s-07 opens on the seventh slide (${label})`);
+  const label = await page.locator(".pv-tabs__tab[aria-selected='true']").getAttribute("aria-controls");
+  ok(label === "s-07", `${deck}: #s-07 opens on the seventh slide (${label})`);
 
   /* And stepping rewrites the hash, so what is in the address bar is what a
    * seller would paste. */
@@ -308,8 +480,8 @@ for (const deck of DECKS) {
   const { context, page } = await open(`/walkthrough/${deck}?view=page`, { width: 1280, height: 900 });
   const mode = await page.getAttribute(".pv-deck", "data-mode");
   ok(mode === "page", `${deck}: ?view=page renders the article (${mode})`);
-  ok((await page.locator(".pv-rail").count()) === 0,
-     `${deck}: the article has no rail — the controller returned before building one`);
+  ok((await page.locator(".pv-tabs").count()) === 0,
+     `${deck}: the article has no tab strip — the controller returned before building one`);
   ok((await page.locator(".pv-deck").getAttribute("data-motion")) === null,
      `${deck}: the article declares no motion, so nothing is pre-hidden`);
 
@@ -323,6 +495,17 @@ for (const deck of DECKS) {
   const hidden = await page.locator(".pv-slide__canvas").evaluateAll(
     (els) => els.filter((el) => el.getBoundingClientRect().height < 40).length);
   ok(hidden === 0, `${deck}: no slide renders empty in the article (${hidden} collapsed)`);
+
+  /* And the article is the rendering that scrolls. Deck mode holds the
+   * document at its top and hides the root's overflow; page mode must undo
+   * both, or ?view=page would be a deck with its controls missing. */
+  const article = await page.evaluate(() => ({
+    deckMode: document.documentElement.dataset.deckMode,
+    overflow: getComputedStyle(document.documentElement).overflow,
+    scrollable: document.documentElement.scrollHeight - document.documentElement.clientHeight,
+  }));
+  ok(article.deckMode === undefined && article.overflow !== "hidden" && article.scrollable > 1000,
+     `${deck}: the article scrolls (${article.scrollable}px of it, root overflow ${article.overflow})`);
   await context.close();
 }
 
@@ -332,6 +515,10 @@ for (const deck of DECKS) {
   const { context, page } = await open(`/walkthrough/${deck}`, {
     width: 1920, height: 1080, reducedMotion: "reduce",
   });
+  /* Two frames: a transition collapsed to 0.01ms still needs a frame to land,
+   * and the reveal starts from the pre-enter state on purpose. */
+  await page.evaluate(() => new Promise((r) =>
+    requestAnimationFrame(() => requestAnimationFrame(r))));
   await page.waitForTimeout(120);
   /* The kit's global block collapses every duration to 0.01ms, so the end
    * state is what paints. The test is that nothing is still mid-reveal: no
@@ -348,6 +535,31 @@ for (const deck of DECKS) {
   });
   ok(mid.length === 0,
      `${deck}: under reduced motion an entered slide is in its end state${mid.length ? ` — ${mid.join(", ")}` : ""}`);
+
+  /* The wipe is an animation rather than a transition, and the kit's block
+   * collapses both, so the arriving slide has to be fully uncovered too — a
+   * slide left at inset(0 0 0 100%) would be a blank stage. */
+  await page.keyboard.press("ArrowRight");
+  /* The wipe's own timing, read through the Web Animations API rather than
+   * guessed at with a wait: the question is whether the kit's block collapsed
+   * this animation's duration, and the answer is a number the browser will
+   * hand over. Waiting for the animation to exist is the only timing here, and
+   * it is a condition rather than a clock. */
+  await page.waitForFunction(() => {
+    const el = document.querySelector('.pv-slide[data-show="on"]');
+    return el && el.getAnimations().length > 0;
+  }, null, { timeout: 2000 });
+  const arrived = await page.evaluate(async () => {
+    const el = document.querySelector('.pv-slide[data-show="on"]');
+    const durations = el.getAnimations().map((a) => a.effect.getComputedTiming().duration);
+    await Promise.all(el.getAnimations().map((a) => a.finished.catch(() => {})));
+    return { id: el.id, durations, clip: getComputedStyle(el).clipPath.replace(/\s+/g, " ") };
+  });
+  /* inset(0px 0px 0px 0%) and inset(0px) are the same end state; the browser
+   * keeps whichever unit the keyframe was written in. */
+  ok(arrived.id === "s-02" && arrived.durations.every((d) => d <= 1) &&
+     (arrived.clip === "none" || /^inset\((0px|0%)( (0px|0%)){0,3}\)$/.test(arrived.clip)),
+     `${deck}: under reduced motion the next slide arrives uncovered at once (${arrived.id}, ${arrived.durations.join("/")}ms, ${arrived.clip})`);
   await context.close();
 }
 
@@ -366,9 +578,10 @@ for (const deck of DECKS) {
      `${deck}: the close slide's email field takes input — the click zone does not swallow it`);
 
   /* Typing in a field must not step the deck. */
-  const label = await page.locator(".pv-rail__link[aria-current='true']").getAttribute("aria-label");
+  const label = await page.locator(".pv-tabs__tab[aria-selected='true']").getAttribute("aria-controls");
   const total = await page.locator(".pv-slide").count();
-  ok(label === `Slide ${total}`, `${deck}: typing in the form does not step the deck (${label})`);
+  ok(label === "s-" + String(total).padStart(2, "0"),
+     `${deck}: typing in the form does not step the deck (${label})`);
   await context.close();
 }
 

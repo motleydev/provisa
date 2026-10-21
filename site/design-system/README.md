@@ -21,11 +21,11 @@ Open `/design-system/` on a running site to see every component rendered.
 | `check-contrast.mjs` | Parses `tokens.css` and asserts WCAG AA on 72 colour pairs in both themes. |
 | `check-kit.mjs` | Resolves every internal `href` in `site/` and asserts every prose class is capped at the measure. No browser. |
 | `verify-ui.mjs` | 103 browser assertions: header composition, both themes, the verified widths, the nav breakpoint, a keyboard pass. Needs Playwright. |
-| `walkthrough.css` | The slide layer: eleven 16:9 masters, the deck accents and the motion. Reads the alias layer and nothing else. |
-| `walkthrough.js` | Deck mode over markup that is already an article: stepping, hash sync, the progress rail, autoplay off by default. |
+| `walkthrough.css` | The slide layer: eleven 16:9 masters, the deck accents, the wipe between slides and the reveal inside one. Reads the alias layer and nothing else. |
+| `walkthrough.js` | Deck mode over markup that is already an article: the tab strip, stepping, hash sync, autoplay off by default. |
 | `export-slides.mjs` | Screenshots each slide canvas at 1920×1080, and optionally a PDF. Serves `site/` itself when given a path. Needs Playwright. |
 | `check-page-walkthrough.mjs` | The slide layer on disk: the masters, each deck's slide count and order, routes and element ids. No browser. |
-| `verify-page-walkthrough.mjs` | 143 browser assertions over the three briefings: overflow, the keyboard pass, hash sync, reduced motion, both themes. Needs Playwright. |
+| `verify-page-walkthrough.mjs` | 275 browser assertions over the three briefings: overflow, one slide on the stage, the keyboard pass, the tab set, hash sync, reduced motion, both themes. Needs Playwright. |
 
 A page includes `partials/head.html` and then composes partials. There is no
 build step; `site/` stays static HTML and CSS, as it was.
@@ -44,15 +44,24 @@ lists where the wording departs from the source decks. Open
 each plate's copy describes the master it sits on and claims nothing about the
 product, for the same reason the `Schematic` specimen draws itself.
 
-Four rules the layer keeps:
+Five rules the layer keeps:
 
+- **A deck is a tab set, not a scroller.** Every slide sits in the same grid
+  area and one is shown; the arriving slide wipes over the leaving one from the
+  side it travelled, and the slide's own rules, headings and figure shapes draw
+  as it lands. The strip above the stage is a `tablist` of slide indices, each
+  tab naming its slide. Nothing in deck mode scrolls, because a scrollbar
+  invites a reader to skim an argument that is meant to be taken a step at a
+  time — `?view=page` is the rendering that scrolls, from a link on every
+  slide.
 - **Deck mode owns the viewport.** The controller sets `data-deck-mode` on the
-  root and holds the document at its top, so the deck is the only scroller and
-  `--deck-offset` — the utility bar plus the sticky header, measured, because
-  neither is a number the stylesheet can know — stays true for the whole deck
-  rather than only its first slide. The contact section and the footer below
-  the deck are out of reach until the reader leaves deck mode; the close slide
-  carries the demo ask, and `?view=page` is the scrollable article.
+  root and holds the document at its top, and `--deck-offset` — the utility bar
+  plus the sticky header, measured, because neither is a number the stylesheet
+  can know — is re-measured whenever that chrome changes height, which is what
+  the webfonts landing after first paint does. The strip is not in that number:
+  it is the deck's own first row, and the stage is whatever it leaves. The
+  contact section and the footer below the deck are out of reach until the
+  reader leaves deck mode; the close slide carries the demo ask.
 - **`--u` is one percent of the canvas width.** In deck mode and on a plate the
   slide frame is a size container and the canvas reads it, so one slide renders
   identically at any size. The reference canvas is 1920×1080.
@@ -69,9 +78,12 @@ Four rules the layer keeps:
 masters specified and shown, the alias-layer rule, the enhancement gating, and
 each briefing's slide count against the deck it was transcribed from.
 
-`verify-page-walkthrough.mjs` is the browser half, and the assertion worth
-knowing about is overflow. A canvas is a 16:9 box with `overflow:hidden`, so a
-slide with one line too many does not break the layout — it clips a sentence
+`verify-page-walkthrough.mjs` is the browser half. It brings each slide to the
+stage by its own tab before measuring it, asserts that exactly one slide is
+visible once the wipe has landed, and that neither the stage nor the document
+has anything to scroll. The assertion worth knowing about is overflow. A canvas
+is a 16:9 box with `overflow:hidden`, so a slide with one line too many does
+not break the layout — it clips a sentence
 and still looks right. Every slide is measured against its own canvas at three
 viewports in both themes, counting absolutely positioned descendants, so a
 `Schematic` node hanging off the end of its frame fails by name. It serves
