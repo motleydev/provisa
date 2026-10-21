@@ -71,16 +71,12 @@ if (fs.existsSync(redirectsFile)) {
  * Delete an entry when its page lands. Do not add one to silence a check: a
  * route only belongs here if a page for it is actually owed.
  *
- *   /platform/views.html  footer, Platform column.
- *   /platform/catalog.html
  *   /docs                 pre-rebrand pages only: demos, privacy, terms,
  *                         register, vs/denodo, vs/hasura and the why/ pages
  *                         not yet rebuilt. The ported chrome links
  *                         https://provisa.dev/docs instead, so this entry
  *                         goes when those pages are rebuilt. */
 const PENDING = new Set([
-  "/platform/views",
-  "/platform/catalog",
   "/docs",
 ]);
 
