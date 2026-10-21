@@ -209,7 +209,11 @@ ok(
     "registered sources at the bottom, the Provisa layer above them holding the model and the compiler"
     in norm,
 )
-ok("two editorial illustrations, IMG-03 and IMG-04", p.cls.get("pv-editorial", 0) == 2, str(p.cls.get("pv-editorial")))
+ok(
+    "two editorial illustrations, IMG-03 and IMG-04",
+    p.cls.get("pv-editorial", 0) == 2,
+    str(p.cls.get("pv-editorial")),
+)
 ok(
     "IMG-04 is the 4/5 editorial illustration (no aspect modifier)",
     p.cls.get("pv-editorial--wide", 0) == 1 and p.cls.get("pv-editorial--square", 0) == 0,
