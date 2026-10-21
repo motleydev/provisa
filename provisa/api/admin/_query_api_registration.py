@@ -243,7 +243,10 @@ async def pipeline_table_refusal(conn: "Connection", model: "Table") -> "Mutatio
             # REQ-1984, REQ-1993: checked against the function it names, in the code as read.
             await _check_code_table(model)
     except (
-        NativeQueryRefused, CosmosTableRefused, QdrantTableRefused, CodeTableRefused
+        NativeQueryRefused,
+        CosmosTableRefused,
+        QdrantTableRefused,
+        CodeTableRefused,
     ) as refused:
         return MutationResult(
             success=False, message=str(refused), code=refused.code, params=refused.params
