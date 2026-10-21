@@ -21,9 +21,54 @@ Open `/design-system/` on a running site to see every component rendered.
 | `check-contrast.mjs` | Parses `tokens.css` and asserts WCAG AA on 72 colour pairs in both themes. |
 | `check-kit.mjs` | Resolves every internal `href` in `site/` and asserts every prose class is capped at the measure. No browser. |
 | `verify-ui.mjs` | 103 browser assertions: header composition, both themes, the verified widths, the nav breakpoint, a keyboard pass. Needs Playwright. |
+| `walkthrough.css` | The slide layer: eleven 16:9 masters, the deck accents and the motion. Reads the alias layer and nothing else. |
+| `walkthrough.js` | Deck mode over markup that is already an article: stepping, hash sync, the progress rail, autoplay off by default. |
+| `export-slides.mjs` | Screenshots each slide canvas at 1920×1080, and optionally a PDF. Serves `site/` itself when given a path. Needs Playwright. |
+| `check-page-walkthrough.mjs` | The slide layer on disk: the masters, each deck's slide count and order, routes and element ids. No browser. |
+| `verify-page-walkthrough.mjs` | 143 browser assertions over the three briefings: overflow, the keyboard pass, hash sync, reduced motion, both themes. Needs Playwright. |
 
 A page includes `partials/head.html` and then composes partials. There is no
 build step; `site/` stays static HTML and CSS, as it was.
+
+## The slide layer
+
+The briefing decks and the walkthrough are the same HTML and the same CSS. A
+slide is a composition of the partials above, so it cannot drift from the site,
+and `export-slides.mjs` renders the same canvases for anywhere a picture is
+needed — which is what stops a deck being re-authored in PowerPoint.
+
+Three briefings use it — `/walkthrough/executive`, `/walkthrough/cto` and
+`/walkthrough/ciso`, fifty-three slides. `/walkthrough/` picks an audience and
+lists where the wording departs from the source decks. Open
+`/walkthrough/masters` for the eleven masters as plates on a contact sheet;
+each plate's copy describes the master it sits on and claims nothing about the
+product, for the same reason the `Schematic` specimen draws itself.
+
+Three rules the layer keeps:
+
+- **`--u` is one percent of the canvas width.** In deck mode and on a plate the
+  slide frame is a size container and the canvas reads it, so one slide renders
+  identically at any size. The reference canvas is 1920×1080.
+- **An accent per audience, from the governance triad.** Cobalt for who can
+  see, forest for what they get, vermilion for whether it runs. Ink, paper,
+  type and grid never move, so decks for different audiences read as one
+  family.
+- **Motion is additive.** Every pre-enter state is gated behind `data-motion`,
+  which only the controller sets, so a slide with JavaScript off is a section
+  of an article and never a blank frame. `?view=page` is the same rendering on
+  purpose.
+
+`check-page-walkthrough.mjs` is the browserless half: the chrome, all eleven
+masters specified and shown, the alias-layer rule, the enhancement gating, and
+each briefing's slide count against the deck it was transcribed from.
+
+`verify-page-walkthrough.mjs` is the browser half, and the assertion worth
+knowing about is overflow. A canvas is a 16:9 box with `overflow:hidden`, so a
+slide with one line too many does not break the layout — it clips a sentence
+and still looks right. Every slide is measured against its own canvas at three
+viewports in both themes, counting absolutely positioned descendants, so a
+`Schematic` node hanging off the end of its frame fails by name. It serves
+`site/` from `node:http`, so the browser half needs a browser and nothing else.
 
 ## What the kit decides
 

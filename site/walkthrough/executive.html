@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- partials/head.html, with this page's title, description and canonical,
+     plus walkthrough.css for the slide masters and walkthrough.js for deck
+     mode. Order matters: fonts before tokens before provisa.css, and the theme
+     bootstrap before anything paints.
+
+     The executive deck. Thirteen slides one-for-one from
+     Provisa_Executive_Briefing.pptx, plus one close slide this site adds for
+     the demo booking. Content is the source deck's; form is this design
+     system's. Every departure from the source wording is listed on the
+     redesign page and in site/walkthrough/index.html §3, and each one exists
+     because site/claim-bans.mjs struck the original string. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One governed data layer — the executive walkthrough — Provisa</title>
+<meta name="description" content="The Provisa executive briefing as a click-through walkthrough: where money and risk leak today, what one governed model consolidates, and the scoped pilot that settles it on evidence.">
+<link rel="icon" href="/favicon.svg">
+<link rel="canonical" href="https://provisa.dev/walkthrough/executive">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+<link rel="stylesheet" href="/design-system/walkthrough.css">
+
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
+<script src="/design-system/walkthrough.js" defer></script>
+</head>
+<body>
+
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+<main id="main">
+
+  <!-- The deck. data-accent="get" is the governance semantic's forest — what
+       they get — which is the executive deck's whole subject: outcome, cost
+       and time to value. data-walkthrough is what walkthrough.js attaches to;
+       without it, and with JavaScript off, everything below is one editorial
+       article in slide order. -->
+  <div class="pv-deck" data-walkthrough data-accent="get">
+
+    <!-- ===== 01 · M1 Cover ========================================== -->
+    <section class="pv-slide" id="s-01">
+      <div class="pv-slide__canvas pv-sl--cover">
+        <div class="pv-sl__brow">
+          <span class="pv-sl__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="pv-sl__index">Executive briefing <b>· CFO and CIO</b></span>
+        </div>
+        <div class="pv-sl__mid">
+          <h2 class="pv-sl__display">One governed data layer</h2>
+          <p class="pv-sl__body">Fewer tools, lower risk, and data that is ready for
+            AI — without moving it or betting on one vendor.</p>
+        </div>
+        <div class="pv-sl__foot">
+          <span class="pv-sl__eyebrow">Executive briefing for the CFO and CIO</span>
+          <span class="pv-sl__index">Provisa · provisa.dev</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 02 · M9 Governance triad, accent-keyed =================
+         Three audiences, not three governance groups, so the cards take the
+         deck's accent rule and none of the triad's tints: the see/get/run
+         colours mean who can see, what they get and whether it runs, and a
+         column headed FOR THE CFO must not borrow that meaning. -->
+    <section class="pv-slide" id="s-02">
+      <div class="pv-slide__canvas pv-sl--triad">
+        <h2 class="pv-sl__h2">The short version</h2>
+        <div class="pv-sl__triad">
+          <div class="pv-sl__card pv-sl__card--accent">
+            <p class="pv-sl__eyebrow">For the CFO</p>
+            <h3 class="pv-sl__h3">Control spend</h3>
+            <ul class="pv-sl__bullets">
+              <li>Decide centrally whose compute meter runs for each query</li>
+              <li>Fewer copies and pipelines to pay for</li>
+              <li>Vendors compete for workloads instead of holding them</li>
+            </ul>
+          </div>
+          <div class="pv-sl__card pv-sl__card--accent">
+            <p class="pv-sl__eyebrow">For the CIO</p>
+            <h3 class="pv-sl__h3">Lower risk, faster delivery</h3>
+            <ul class="pv-sl__bullets">
+              <li>One policy for every user, app and AI agent</li>
+              <li>One audit trail, owned by your organization</li>
+              <li>Domains publish data without a central bottleneck</li>
+            </ul>
+          </div>
+          <div class="pv-sl__card pv-sl__card--accent">
+            <p class="pv-sl__eyebrow">For both</p>
+            <h3 class="pv-sl__h3">AI without new risk</h3>
+            <ul class="pv-sl__bullets">
+              <li>Agents use governed data, not raw database access</li>
+              <li>One audit trail for people and agents</li>
+              <li>No lock-in: engines and vendors stay replaceable</li>
+            </ul>
+          </div>
+        </div>
+        <p class="pv-sl__kicker">The ask: approve a scoped pilot on one real use
+          case, with success measures agreed up front. Evaluation is free — no
+          procurement to start.</p>
+      </div>
+    </section>
+
+    <!-- ===== 03 · M5 Ruled list ===================================== -->
+    <section class="pv-slide" id="s-03">
+      <div class="pv-slide__canvas pv-sl--ruled">
+        <h2 class="pv-sl__h2">Where money and risk leak today</h2>
+        <ol class="pv-sl__rows">
+          <li><span>01</span><span><strong>Four tools, one data estate.</strong>
+            Federation, metrics layer, catalog and policy engine each keep their own
+            description of the same data — and each is licensed, integrated and
+            reconciled separately.</span></li>
+          <li><span>02</span><span><strong>Copies to make data usable.</strong>
+            Pipelines copy data into a warehouse before anyone can join it. Every
+            copy is compute, storage and another store to secure.</span></li>
+          <li><span>03</span><span><strong>Security rebuilt per channel.</strong>
+            BI tools, APIs and services each re-implement access rules. Drift
+            between them is audit risk.</span></li>
+          <li><span>04</span><span><strong>AI is arriving faster than
+            controls.</strong> Teams want agents on company data now. Direct
+            database access gives an agent no policy and little audit
+            trail.</span></li>
+        </ol>
+        <p class="pv-sl__kicker">None of these is a technology failure. They are the
+          cost of describing the same data in many places.</p>
+      </div>
+    </section>
+
+    <!-- ===== 04 · M6 Figure ========================================
+         The one-model picture, drawn with the kit's Schematic so the bands are
+         real text in reading order rather than an image. -->
+    <section class="pv-slide" id="s-04">
+      <div class="pv-slide__canvas pv-sl--figure">
+        <div class="pv-sl__head">
+          <p class="pv-sl__eyebrow">Fig. 01</p>
+          <h2 class="pv-sl__h2">Describe the data once. Everything else is
+            generated.</h2>
+          <p class="pv-sl__body">Not a database and not a new warehouse — a layer
+            above what you have, on an execution engine you choose.</p>
+        </div>
+        <figure class="pv-schem-fig">
+          <!-- 4/3 rather than the default 16/9: three bands of two lines each
+               do not fit a wide, short canvas, and a node is absolutely
+               positioned, so it spills over the frame rather than growing it. -->
+          <div class="pv-schem pv-schem--tall">
+            <div class="pv-schem__node" style="--l:4;--t:3;--w:92">
+              <span class="pv-schem__label">EVERY CONSUMER</span>
+              <p class="pv-schem__desc">BI &amp; spreadsheets · Applications · Data
+                science · Other teams · AI agents</p>
+            </div>
+            <div class="pv-schem__wire pv-schem__wire--v" style="--l:10;--t:24;--h:12">asks</div>
+            <div class="pv-schem__node pv-schem__node--get" style="--l:4;--t:40;--w:92">
+              <span class="pv-schem__label">ONE MODEL</span>
+              <p class="pv-schem__desc">Federation, query in place · Metrics, one
+                definition · Ontology, shared meaning · Governance, compiled into
+                every query</p>
+            </div>
+            <div class="pv-schem__wire pv-schem__wire--v" style="--l:10;--t:64;--h:10">reads</div>
+            <div class="pv-schem__node" style="--l:4;--t:78;--w:92">
+              <span class="pv-schem__label">ENGINES &amp; SOURCES YOU ALREADY OWN</span>
+              <p class="pv-schem__desc">Databases · warehouses (Snowflake,
+                Databricks, BigQuery) · lakes · SaaS (Salesforce, ServiceNow,
+                Stripe) · APIs · files — 72 source types</p>
+            </div>
+          </div>
+          <figcaption class="pv-sl__caption">FIG. 01 — one description, every
+            consumer, the sources you already own.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===== 05 · M4 Two-column argument ============================ -->
+    <section class="pv-slide" id="s-05">
+      <div class="pv-slide__canvas pv-sl--columns">
+        <h2 class="pv-sl__h2">What it consolidates — and what it keeps</h2>
+        <div class="pv-sl__cols">
+          <div>
+            <p class="pv-sl__eyebrow">Consolidates into one model</p>
+            <ul class="pv-sl__bullets">
+              <li>Data federation / virtualization layer</li>
+              <li>Semantic and metrics layer</li>
+              <li>Per-tool access rules and row filters</li>
+              <li>Hand-built APIs and backend glue services</li>
+              <li>Pipelines whose only job is to make a join possible</li>
+            </ul>
+          </div>
+          <span class="pv-sl__divide" aria-hidden="true"></span>
+          <div>
+            <p class="pv-sl__eyebrow">Keeps — and makes more valuable</p>
+            <ul class="pv-sl__bullets">
+              <li><strong>Warehouse &amp; lakehouse</strong> Becomes a replaceable
+                execution engine</li>
+              <li><strong>Data catalog</strong> Fed automatically — OpenMetadata,
+                Collibra, Atlan, DataHub</li>
+              <li><strong>Identity provider</strong> Okta, Azure AD, Ping, SAML,
+                LDAP</li>
+              <li><strong>Policy engine</strong> Plugged in as the final approval
+                step</li>
+              <li><strong>BI tools</strong> Connect as if to Postgres or over
+                JDBC</li>
+            </ul>
+          </div>
+        </div>
+        <p class="pv-sl__kicker">Consolidation without rip-and-replace: the systems
+          you keep get a single governed front door.</p>
+      </div>
+    </section>
+
+    <!-- ===== 06 · M5 Ruled list ===================================== -->
+    <section class="pv-slide" id="s-06">
+      <div class="pv-slide__canvas pv-sl--ruled">
+        <h2 class="pv-sl__h2">Decide whose meter is running</h2>
+        <ol class="pv-sl__rows">
+          <li><span>01</span><span><strong>Route each query to the cheapest
+            path.</strong> Single-source queries go straight to the source and skip
+            federation. Cross-source queries fan out only when they must.</span></li>
+          <li><span>02</span><span><strong>Reuse work already paid for.</strong>
+            Queries rewrite onto a fresh materialized view automatically. Views
+            refresh only when their inputs change.</span></li>
+          <li><span>03</span><span><strong>Stop paying for copies.</strong> Join
+            across sources in place, without a pipeline into a warehouse first.
+            Fewer copies to store, secure and delete.</span></li>
+          <li><span>04</span><span><strong>Place workloads deliberately.</strong>
+            Keep steady workloads on hardware you own and send bursts to the cloud —
+            and keep agent traffic off your systems of record.</span></li>
+        </ol>
+        <p class="pv-sl__kicker">Made centrally, as policy: routing, freshness and
+          refresh rules are declared once and apply to every consumer.</p>
+      </div>
+    </section>
+
+    <!-- ===== 07 · M11 Stacked bands ================================= -->
+    <section class="pv-slide" id="s-07">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">Vendors compete for your workloads</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def">
+              <dt>Today</dt>
+              <dd>Semantics and policy live inside one engine or warehouse.
+                Switching means rebuilding them.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>With Provisa</dt>
+              <dd>Model, semantics and policy sit above the engine. Queries and
+                policies don't change when the engine does.</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs pv-sl__defs--grid4">
+            <div class="pv-sl__def">
+              <dt>At renewal</dt>
+              <dd>Embedded engine, Trino, Snowflake, Databricks — move workloads to
+                the best price and performance.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Re-point sources invisibly</dt>
+              <dd>Move a table from Oracle to Postgres, or MongoDB to Snowflake;
+                consumers never see it move.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Leave with everything</dt>
+              <dd>The model is declarative config in git, and the SQL it compiles is
+                yours to read and keep.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>No lock-in on Provisa either</dt>
+              <dd>Each release converts to an open-source license (GPL v2+) four
+                years after it ships.</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 08 · M11 Stacked bands ================================= -->
+    <section class="pv-slide" id="s-08">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <div class="pv-sl__head">
+          <h2 class="pv-sl__h2">Modernize table by table, not big-bang</h2>
+          <p class="pv-sl__body">A stable, governed API in front of the migration.
+            Consumers keep querying the same model while sources move behind it, one
+            table at a time. Legacy and modern sources share one governance model
+            throughout.</p>
+        </div>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def">
+              <dt>Start from what you have</dt>
+              <dd>Import tables, keys, relationships and metrics from dbt, Cube,
+                Snowflake, Databricks and other semantic layers. Every import is
+                reviewed before it registers.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Bring existing APIs over</dt>
+              <dd>Hasura v2 metadata converts automatically — permissions,
+                relationships, actions and triggers. Anything that can't map is
+                reported, not dropped.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Ship through your process</dt>
+              <dd>Changes are made in an isolated copy and exported as patches for
+                your own release approval — manual or fully automated.</dd>
+            </div>
+          </dl>
+        </div>
+        <p class="pv-sl__kicker">What usually derails migrations — mixed governance
+          models and reconciliation spreadsheets — is designed out.</p>
+      </div>
+    </section>
+
+    <!-- ===== 09 · M5 Ruled list ===================================== -->
+    <section class="pv-slide" id="s-09">
+      <div class="pv-slide__canvas pv-sl--ruled">
+        <h2 class="pv-sl__h2">Say yes to AI agents — safely</h2>
+        <ol class="pv-sl__rows">
+          <li><span>01</span><span><strong>Same rules as people.</strong> Agents
+            connect over MCP; their login maps to a role, so every query passes the
+            same governance.</span></li>
+          <li><span>02</span><span><strong>Same audit trail.</strong> Each agent
+            query is recorded alongside human queries — who, which role, what was
+            applied.</span></li>
+          <li><span>03</span><span><strong>Sources protected.</strong> Agent
+            workloads can run on a separate engine, with load windows that protect
+            busy sources.</span></li>
+          <li><span>04</span><span><strong>Shared meaning.</strong> Glossary,
+            metrics and approved relationships keep agents working from your
+            definitions, not guesses.</span></li>
+        </ol>
+        <p class="pv-sl__kicker">A data catalog tells an agent what it should do.
+          Provisa enforces what it can do.</p>
+      </div>
+    </section>
+
+    <!-- ===== 10 · M5 Ruled list ====================================
+         The source's closing line named a compliance certification. No page on
+         this site names one (site/claim-bans.mjs), so the line keeps its
+         meaning — there is no third-party report yet, self-hosting removes the
+         dependency — without the name. -->
+    <section class="pv-slide" id="s-10">
+      <div class="pv-slide__canvas pv-sl--ruled">
+        <h2 class="pv-sl__h2">Risk and compliance, in one place</h2>
+        <ol class="pv-sl__rows">
+          <li><span>01</span><span><strong>No way around it.</strong> Access rules
+            are compiled into every query, for every tool, app and agent.</span></li>
+          <li><span>02</span><span><strong>Your audit, your data.</strong> The audit
+            trail lives in your organization's own store — not the
+            vendor's.</span></li>
+          <li><span>03</span><span><strong>Residency enforced.</strong> Data can be
+            pinned to a region; reads elsewhere are filtered at home or
+            refused.</span></li>
+          <li><span>04</span><span><strong>Keys you hold.</strong> Create your own
+            organization key to encrypt secrets and files at rest.</span></li>
+          <li><span>05</span><span><strong>Inside your boundary.</strong> Self-host
+            on your own infrastructure — airgapped if needed — or use a dedicated
+            hosted platform.</span></li>
+          <li><span>06</span><span><strong>Access that stays current.</strong> Grants
+            can expire, unused access is removed, and every rule records why it
+            exists.</span></li>
+        </ol>
+        <p class="pv-sl__kicker">Hosted service: there is no third-party assurance
+          report yet. Organizations that need one today can self-host. Full detail is
+          in the CISO briefing.</p>
+      </div>
+    </section>
+
+    <!-- ===== 11 · M11 Stacked bands ================================= -->
+    <section class="pv-slide" id="s-11">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">Authorship is federated; enforcement is shared</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def">
+              <dt>01 · Domains own their data</dt>
+              <dd>Each business domain registers its own sources, tables and
+                relationships. Its rights stop at its boundary.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>02 · Data products, not tickets</dt>
+              <dd>Domains publish data products with a named owner, purpose, terms
+                of use and quality measures — open standard (ODPS).</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>03 · Central policy still applies</dt>
+              <dd>Identity, policy and catalog stay shared, and every query is
+                governed the same way.</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="pv-sl__band">
+          <p class="pv-sl__eyebrow">Domains grow into independence at their own pace</p>
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def">
+              <dt>Namespace</dt>
+              <dd>A governed slice of the shared model</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Own compute</dt>
+              <dd>Run on the domain's own engine</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Own sovereignty</dt>
+              <dd>Keep data in the domain's own region</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 12 · M11 Stacked bands ================================= -->
+    <section class="pv-slide" id="s-12">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">Low cost to start, clear terms to scale</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def">
+              <dt>Free, forever</dt>
+              <dd><strong>Evaluation &amp; non-production.</strong> Any size
+                organization. No time limit.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Free</dt>
+              <dd><strong>Production — small organizations.</strong> Under 100
+                employees and contractors and under $1M annual revenue, budget or
+                spend (with affiliates).</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Commercial license</dt>
+              <dd><strong>Production — everyone else.</strong> 90-day grace period
+                after outgrowing the free tier.</dd>
+            </div>
+          </dl>
+          <p class="pv-sl__caption">Business Source License 1.1 — each release
+            converts to GPL v2+ four years after it ships.</p>
+        </div>
+        <div class="pv-sl__band">
+          <p class="pv-sl__eyebrow">Ways to run it</p>
+          <dl class="pv-sl__defs pv-sl__defs--grid4">
+            <div class="pv-sl__def">
+              <dt>Laptop</dt>
+              <dd>Desktop installer or one pip install</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Your cloud or data center</dt>
+              <dd>Kubernetes (Helm) or Terraform on AWS, Azure, GCP</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Hosted — dedicated</dt>
+              <dd>Physically separated platform</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Hosted — shared</dt>
+              <dd>For trials and small businesses</dd>
+            </div>
+          </dl>
+        </div>
+        <p class="pv-sl__kicker">Same platform at every size: what you pilot on a
+          laptop is what you run in production.</p>
+      </div>
+    </section>
+
+    <!-- ===== 13 · M11 Stacked bands ================================
+         The source's last line listed three hosts. Two of them are not offered
+         as conversions on this site (site/claim-bans.mjs withdrew one in plan
+         revision 3; the other appears nowhere in the published material), so
+         the line points at the three routes this site actually ships. -->
+    <section class="pv-slide" id="s-13">
+      <div class="pv-slide__canvas pv-sl--bands">
+        <h2 class="pv-sl__h2">The decision: a scoped pilot</h2>
+        <div class="pv-sl__band">
+          <dl class="pv-sl__defs pv-sl__defs--grid4">
+            <div class="pv-sl__def">
+              <dt>01 · Pick one use case</dt>
+              <dd>BI without a warehouse copy, an API over mismatched sources, or AI
+                agents on governed data.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>02 · Connect real sources</dt>
+              <dd>Two or three systems the use case depends on, with one restricted
+                role.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>03 · Measure</dt>
+              <dd>Agree the metrics below before starting, with a baseline from
+                today.</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>04 · Decide</dt>
+              <dd>Expand, adjust or stop — on evidence, not slides.</dd>
+            </div>
+          </dl>
+        </div>
+        <div class="pv-sl__band">
+          <p class="pv-sl__eyebrow">Suggested success measures</p>
+          <dl class="pv-sl__defs">
+            <div class="pv-sl__def">
+              <dt>CFO</dt>
+              <dd>Compute and egress per workload; pipelines and copies avoided</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>CIO</dt>
+              <dd>Time from request to governed access; policies verified by
+                security</dd>
+            </div>
+            <div class="pv-sl__def">
+              <dt>Both</dt>
+              <dd>AI and analyst use cases served under one policy; security review
+                passed</dd>
+            </div>
+          </dl>
+        </div>
+        <p class="pv-sl__kicker">Start today: <a class="pv-link pv-link--inline"
+          href="/install">provisa.dev/install</a> · <a class="pv-link pv-link--inline"
+          href="/demos">provisa.dev/demos</a> · <a class="pv-link pv-link--inline"
+          href="/register">provisa.dev/register</a></p>
+      </div>
+    </section>
+
+    <!-- ===== 14 · M10 Close ========================================
+         Not in the source deck. The source closes on the decision, which is
+         the right place to close a meeting; a walkthrough a stranger clicked
+         through needs somewhere to say yes. -->
+    <section class="pv-slide" id="s-14">
+      <div class="pv-slide__canvas pv-sl--close">
+        <div class="pv-sl__close-grid">
+          <div>
+            <span class="pv-sl__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+            <h2 class="pv-sl__h2">Put the pilot on a real use case.</h2>
+            <hr class="pv-sl__rule">
+            <p class="pv-sl__body">One use case, two or three real sources, and the
+              success measures agreed before anything starts.</p>
+            <span class="pv-sl__url">provisa.dev/walkthrough</span>
+          </div>
+          <form class="pv-form" method="post" action="/api/demo">
+            <h3 class="pv-form__title">Book a demo</h3>
+            <div class="pv-form__grid">
+              <label class="pv-sr" for="x-name">Full name</label>
+              <input class="pv-input" id="x-name" name="name" autocomplete="name" placeholder="Full name" required>
+              <label class="pv-sr" for="x-email">Work email</label>
+              <input class="pv-input" id="x-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+            </div>
+            <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- The site's own conversion band, after the deck. It is what the header's
+       "Book a demo" and the rail's halfway CTA both target, and in the article
+       rendering it is the end of the page. -->
+  <section class="pv-contact" id="contact">
+    <div class="pv-contact__inner pv-container">
+      <div class="pv-contact__copy">
+        <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h2 class="pv-h pv-h--cta">Walk through it with us.</h2>
+        <div class="pv-contact__links">
+          <a class="pv-link pv-link--inverse" href="/walkthrough/">The other two
+            briefings<span class="pv-link__arrow"> →</span></a>
+          <a class="pv-link pv-link--inverse" href="/pricing/">Editions and
+            terms<span class="pv-link__arrow"> →</span></a>
+        </div>
+      </div>
+      <form class="pv-form" method="post" action="/api/demo">
+        <h3 class="pv-form__title">Book a demo</h3>
+        <div class="pv-form__grid">
+          <label class="pv-sr" for="w-name">Full name</label>
+          <input class="pv-input" id="w-name" name="name" autocomplete="name" placeholder="Full name" required>
+          <label class="pv-sr" for="w-email">Work email</label>
+          <input class="pv-input" id="w-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+        </div>
+        <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+          Licence 1.1 — non-production use (including evaluation) is free
+          forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Active Semantic Layer</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/platform/views">Materialized views</a>
+        <a href="/platform/catalog">Catalog</a>
+        <a href="/why/no-lock-in">No lock-in</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
+        <a href="/vs/starburst">vs Starburst</a>
+        <a href="/vs/denodo">vs Denodo</a>
+        <a href="/vs/hasura">Coming from Hasura</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/walkthrough/">Walk through it</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
+    </div>
+    <div class="pv-footer__bottom">
+      <span>© Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

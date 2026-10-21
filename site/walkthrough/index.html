@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- partials/head.html, with this page's title, description and canonical.
+     Order matters: fonts before tokens before provisa.css, and the theme
+     bootstrap before anything paints.
+
+     The walkthrough's front door: pick an audience, and the note on what the
+     three decks are. No walkthrough.css here — this page carries no slide. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walk through it — the three Provisa briefings — Provisa</title>
+<meta name="description" content="The Provisa executive, CTO and security briefings as click-through walkthroughs. Pick an audience, step through with the arrow keys, or read any of them as one page.">
+<link rel="icon" href="/favicon.svg">
+<link rel="canonical" href="https://provisa.dev/walkthrough/">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
+</head>
+<body>
+
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+<main id="main">
+
+  <!-- ==================================================================
+       §1 What this is.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <nav class="pv-crumb" aria-label="Breadcrumb">
+          <a href="/">Provisa</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Walk through it</span>
+        </nav>
+
+        <div class="pv-stack">
+          <p class="pv-eyebrow">Three briefings</p>
+          <h1 class="pv-h pv-h--page">Getting to yes, one slide at a time —
+            <em class="pv-emph">click through it yourself</em>.</h1>
+          <p class="pv-p pv-p--lede">The three Provisa briefings as walkthroughs:
+            step with the arrow keys, deep-link any slide, or read a whole briefing
+            as one page. Each one ends where a meeting would — with the decision and
+            a way to book the demo.</p>
+          <p class="pv-p">They are the same three decks a seller would present,
+            rebuilt in this site's design system. The argument is the decks'; the
+            typography, the grid, the hairlines and the colour are this site's. A
+            slide is a composition of the same partials every other page is built
+            from, so a briefing cannot drift from the website — it is the
+            website.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §2 Pick an audience.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">02</span>
+          <span class="pv-seclabel__text">Pick an audience</span>
+        </div>
+
+        <div class="pv-grid pv-grid--3">
+
+          <div class="pv-choice pv-choice--get">
+            <h2 class="pv-choice__title">Executive — CFO and CIO</h2>
+            <ul class="pv-choice__items">
+              <li><span>Where money and risk leak today</span></li>
+              <li><span>What one model consolidates, and what it keeps</span></li>
+              <li><span>Deciding whose compute meter runs</span></li>
+              <li><span>The scoped pilot, and how to measure it</span></li>
+            </ul>
+            <p class="pv-p pv-p--sm">Fourteen slides. Accent: forest — what they
+              get.</p>
+            <a class="pv-btn pv-btn--block" href="/walkthrough/executive">Walk
+              through the executive briefing</a>
+          </div>
+
+          <div class="pv-choice">
+            <h2 class="pv-choice__title">CTO — engineering leadership</h2>
+            <ul class="pv-choice__items">
+              <li><span>What every team rebuilds today</span></li>
+              <li><span>One registration, every interface</span></li>
+              <li><span>Environments, synthetic data and CI</span></li>
+              <li><span>An engineering pilot measured on build effort</span></li>
+            </ul>
+            <p class="pv-p pv-p--sm">Nineteen slides. Accent: cobalt — who can
+              see.</p>
+            <a class="pv-btn pv-btn--block" href="/walkthrough/cto">Walk through the
+              CTO briefing</a>
+          </div>
+
+          <div class="pv-choice pv-choice--run">
+            <h2 class="pv-choice__title">CISO — security architecture</h2>
+            <ul class="pv-choice__items">
+              <li><span>One control point for every way in</span></li>
+              <li><span>The layers, and the exposure each one closes</span></li>
+              <li><span>Your own decision service at layer 5</span></li>
+              <li><span>A security review your team runs itself</span></li>
+            </ul>
+            <p class="pv-p pv-p--sm">Twenty slides. Accent: vermilion — whether it
+              runs.</p>
+            <a class="pv-btn pv-btn--block" href="/walkthrough/ciso">Walk through the
+              security briefing</a>
+          </div>
+
+        </div>
+
+        <p class="pv-p">One accent per audience, taken from the governance triad
+          rather than chosen for variety, so the colour means something: cobalt for
+          who can see, forest for what they get, vermilion for whether it runs. Ink,
+          paper, type and grid never move, so the three read as one family while a
+          viewer can still tell which briefing they are in. The
+          <a class="pv-link" href="/walkthrough/masters">eleven slide masters</a>
+          they are all built from are on their own page.</p>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §3 Where the wording departs from the source decks.
+
+       This section is the honest half of "one for one in content". The three
+       source decks carry five strings this site has struck — the list and the
+       reason for each are in site/claim-bans.mjs, and site/verify-claims.mjs
+       sweeps every page for them. A redesign that quietly dropped them would
+       read as a faithful copy and not be one, so each change is named here
+       with what it replaced and why.
+       ================================================================== -->
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">03</span>
+          <span class="pv-seclabel__text">Where the wording departs from the source</span>
+        </div>
+
+        <div class="pv-stack">
+          <h2 class="pv-h">Five changes, and the rule behind each one</h2>
+          <p class="pv-p pv-p--lede">Everything else is the source decks' wording,
+            reflowed to this type scale and nothing more. These five lines are not,
+            because this site has struck the strings they used.</p>
+        </div>
+
+        <div class="pv-table">
+          <table>
+            <caption class="pv-sr">Changes between the source decks and this
+              walkthrough</caption>
+            <thead>
+              <tr>
+                <td></td>
+                <th scope="col">The source said</th>
+                <th scope="col" data-highlight>The walkthrough says</th>
+                <th scope="col">Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">CISO 3 · 4 · 5<br>CTO 13</th>
+                <td>A six-layer count, in four places — a heading, a figure band,
+                  a step and a defaults row</td>
+                <td data-highlight>Five layers, plus the approval hook beside
+                  them</td>
+                <td>The count this site uses everywhere, including
+                  <a class="pv-link" href="/why/governance">/why/governance</a>.
+                  The layers are numbered 0 to 4 and the approval hook is beside
+                  them, which is how the source's own table is numbered.</td>
+              </tr>
+              <tr>
+                <th scope="row">Executive 10<br>CISO 18</th>
+                <td>A named compliance certification, three times</td>
+                <td data-highlight>“No third-party assurance report yet”</td>
+                <td>No page on this site names a compliance certification. The
+                  substance is unchanged: there is no report today, and self-hosting
+                  removes the dependency.</td>
+              </tr>
+              <tr>
+                <th scope="row">Executive 13<br>CISO 19</th>
+                <td>Three host names in the closing line</td>
+                <td data-highlight>/install · /demos · /register</td>
+                <td>One of the three was withdrawn as a conversion; the other
+                  appears nowhere in the published material. These are the routes
+                  this site actually ships.</td>
+              </tr>
+              <tr>
+                <th scope="row">Executive 4</th>
+                <td>A 70-plus connector count</td>
+                <td data-highlight>72 source types</td>
+                <td>72, 63 and 37 are the reproducible reach figures, and a page
+                  quoting a count has to quote one of them.</td>
+              </tr>
+              <tr>
+                <th scope="row">Every deck</th>
+                <td>No closing CTA slide</td>
+                <td data-highlight>One added close slide per deck</td>
+                <td>A deck closes in a meeting, where the ask is spoken. A
+                  walkthrough a stranger clicked through needs somewhere to say
+                  yes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="pv-p">The speaker notes on the source slides are not published
+          here. They are instructions to a presenter — which number to ask for,
+          which objection to expect — and they are not the briefing.</p>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §4 How to drive it.
+       ================================================================== -->
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">04</span>
+          <span class="pv-seclabel__text">How to drive it</span>
+        </div>
+
+        <div class="pv-grid pv-grid--2">
+          <div class="pv-stack pv-stack--sm">
+            <h2 class="pv-h">In the deck</h2>
+            <p class="pv-p"><strong>← → or space</strong> step a slide,
+              <strong>Home</strong> and <strong>End</strong> jump to either end, and
+              <strong>Esc</strong> leaves deck mode for the article. Clicking the
+              outer third of either side steps too, and a swipe does on touch. The
+              numbered rail on the right is the slide index: it marks where you are
+              and every number is a link.</p>
+            <p class="pv-p">Any slide is addressable — <code>#s-07</code> is the
+              seventh — so one slide can be sent on its own. Nothing advances by
+              itself unless you switch on “advance automatically”, which is off
+              every time the page loads, because a deck that starts moving on load
+              takes the pace away from the reader.</p>
+          </div>
+          <div class="pv-stack pv-stack--sm">
+            <h2 class="pv-h">Without the deck</h2>
+            <p class="pv-p">Append <code>?view=page</code> to any briefing, or
+              follow the “Read as one page” link at the bottom left, and the same
+              markup renders as one editorial article: every heading in order, every
+              figure captioned, printable. That is also exactly what a browser with
+              JavaScript disabled gets, because the deck is an upgrade of the
+              article rather than a replacement for it.</p>
+            <p class="pv-p">If your system asks for reduced motion, nothing animates
+              and every slide arrives in its finished state. No figure here is an
+              image: the diagrams are drawn in CSS from the brand's own colours, so
+              they invert with the theme and cost no download.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       §5 Conversion. The site's own contact band, unchanged.
+       ================================================================== -->
+  <section class="pv-contact" id="contact">
+    <div class="pv-contact__inner pv-container">
+      <div class="pv-contact__copy">
+        <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h2 class="pv-h pv-h--cta">Walk through it with us.</h2>
+        <div class="pv-contact__links">
+          <a class="pv-link pv-link--inverse" href="/platform">What the platform
+            does<span class="pv-link__arrow"> →</span></a>
+          <a class="pv-link pv-link--inverse" href="/demos">Live demos, no
+            install<span class="pv-link__arrow"> →</span></a>
+        </div>
+      </div>
+      <form class="pv-form" method="post" action="/api/demo">
+        <h3 class="pv-form__title">Book a demo</h3>
+        <div class="pv-form__grid">
+          <label class="pv-sr" for="w-name">Full name</label>
+          <input class="pv-input" id="w-name" name="name" autocomplete="name" placeholder="Full name" required>
+          <label class="pv-sr" for="w-email">Work email</label>
+          <input class="pv-input" id="w-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+        </div>
+        <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+          Licence 1.1 — non-production use (including evaluation) is free
+          forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Active Semantic Layer</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/platform/views">Materialized views</a>
+        <a href="/platform/catalog">Catalog</a>
+        <a href="/why/no-lock-in">No lock-in</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
+        <a href="/vs/starburst">vs Starburst</a>
+        <a href="/vs/denodo">vs Denodo</a>
+        <a href="/vs/hasura">Coming from Hasura</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/walkthrough/">Walk through it</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
+    </div>
+    <div class="pv-footer__bottom">
+      <span>© Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
