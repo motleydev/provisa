@@ -210,21 +210,38 @@ ok("the prose panel resolves a background rather than inheriting the ink", !!rin
 
 /* ---- 6. the figures ------------------------------------------------ */
 head("figures");
-const figs = await page.$$eval(".pv-editorial", (fs) => fs.map((f) => {
+/* IMG-04 is loading="lazy" and sits well below the fold, so it is not fetched
+ * until it has a box inside the viewport: reading naturalWidth straight off the
+ * loaded page reports a PNG that is on disk as missing, and the earlier
+ * keyboard pass happening to scroll near it is what made that read land either
+ * way between runs. Each figure is scrolled to and the variant the theme
+ * displays is decoded before anything is read. The light <img> stays the one
+ * src and alt are read from — the dark variant is aria-hidden with an empty alt
+ * (PRO-154). */
+const figs = await page.$$eval(".pv-editorial", (fs) => Promise.all(fs.map(async (f) => {
+  f.scrollIntoView({ block: "center" });
+  const shown = [...f.querySelectorAll("img")]
+    .filter((i) => getComputedStyle(i).display !== "none");
+  /* decode() rejects when the PNG fails to load, which is the failure this
+   * check reports — recorded here, asserted on below. */
+  const decoded = await Promise.all(shown.map((i) => i.decode().then(() => true, () => false)));
   const r = f.getBoundingClientRect();
-  const img = f.querySelector("img");
+  const img = f.querySelector(".pv-editorial__img--light");
   return {
     ratio: r.width / r.height,
     wide: f.classList.contains("pv-editorial--wide"),
     square: f.classList.contains("pv-editorial--square"),
     src: img?.getAttribute("src") || "",
     alt: img?.getAttribute("alt") || "",
-    loaded: !!img && img.complete && img.naturalWidth > 0,
+    variants: shown.length,
+    loaded: shown.length === 1 && decoded[0] && shown[0].complete && shown[0].naturalWidth > 0,
     label: f.getAttribute("aria-label") || "",
     role: f.getAttribute("role"),
   };
-}));
+})));
 ok("two editorial figures", figs.length === 2, `${figs.length}`);
+ok("each figure displays one theme variant",
+  figs.every((f) => f.variants === 1), figs.map((f) => f.variants).join(", "));
 ok("IMG-03 is 16/9", figs[0].wide && Math.abs(figs[0].ratio - 16 / 9) < 0.05, figs[0].ratio.toFixed(3));
 ok("IMG-04 is 4/5", !figs[1].wide && !figs[1].square
   && Math.abs(figs[1].ratio - 4 / 5) < 0.05, figs[1].ratio.toFixed(3));

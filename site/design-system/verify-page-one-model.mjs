@@ -107,12 +107,32 @@ for (const theme of THEMES) {
     /* Both editorial figures load, carry a labelled role=img, and keep the
      * declared aspect ratio. Shape-level geometry is now inside the PNG, so
      * the browser check verifies the image renders rather than reasoning
-     * about painted shapes. */
-    const figs = await page.evaluate(() => {
+     * about painted shapes.
+     *
+     * Each figure ships a light <img> and a dark one and the kit puts
+     * display:none on whichever the theme is not showing. A lazy image is only
+     * fetched once it has a box inside the viewport, so for IMG-08b — which is
+     * loading="lazy" and sits near the foot of the page — a plain naturalWidth
+     * read after load reports a PNG that is on disk as missing: in light it has
+     * not been scrolled to, and in dark the light variant has no box at all and
+     * is never fetched however far you scroll. So the figure is brought into
+     * view and the variant the theme actually displays is decoded before
+     * anything is read, and that variant is the one the load assertion is
+     * about. The light <img> stays the one the src and alt assertions read: it
+     * is the labelled one, the dark variant is aria-hidden with an empty alt
+     * (PRO-154). */
+    const figs = await page.evaluate(async () => {
       const out = [];
       for (const f of document.querySelectorAll(".pv-editorial")) {
+        f.scrollIntoView({ block: "center" });
+        const shown = [...f.querySelectorAll("img")]
+          .filter((i) => getComputedStyle(i).display !== "none");
+        /* decode() rejects when the PNG itself fails to load, which is the
+         * failure this check exists to report — it is recorded and asserted
+         * on below rather than thrown out of the evaluate. */
+        const decoded = await Promise.all(shown.map((i) => i.decode().then(() => true, () => false)));
         const fr = f.getBoundingClientRect();
-        const img = f.querySelector("img");
+        const img = f.querySelector(".pv-editorial__img--light");
         const ratio = fr.height > 0 ? fr.width / fr.height : 0;
         out.push({
           w: fr.width, h: fr.height, ratio,
@@ -120,7 +140,10 @@ for (const theme of THEMES) {
           label: f.getAttribute("aria-label") || "",
           src: img?.getAttribute("src") || "",
           alt: img?.getAttribute("alt") || "",
-          loaded: !!img && img.complete && img.naturalWidth > 0,
+          variants: shown.length,
+          shownSrc: shown.map((i) => i.getAttribute("src")).join(" "),
+          loaded: shown.length === 1 && decoded[0]
+                  && shown[0].complete && shown[0].naturalWidth > 0,
           wide: f.classList.contains("pv-editorial--wide"),
           square: f.classList.contains("pv-editorial--square"),
         });
@@ -133,8 +156,12 @@ for (const theme of THEMES) {
        `${at}: both figures carry a labelled role="img"`);
     ok(figs.every((f) => /^\/assets\/editorial\/img-08[ab]-light\.png$/.test(f.src)),
        `${at}: both figures reference an IMG-08 light PNG (${figs.map((f) => f.src).join(", ")})`);
+    ok(figs.every((f) => f.variants === 1),
+       `${at}: each figure displays one theme variant (${figs.map((f) => f.variants).join(", ")})`);
+    ok(figs.every((f) => f.shownSrc.endsWith(`-${theme}.png`)),
+       `${at}: the variant on display is the ${theme} PNG (${figs.map((f) => f.shownSrc).join(", ")})`);
     ok(figs.every((f) => f.loaded),
-       `${at}: both editorial PNGs load (${figs.map((f) => `${f.src}:${f.loaded}`).join(", ")})`);
+       `${at}: both editorial PNGs load (${figs.map((f) => `${f.shownSrc}:${f.loaded}`).join(", ")})`);
     ok(figs.every((f) => f.alt === f.label),
        `${at}: each <img> alt mirrors its figure's aria-label`);
     /* Both figures ship at 4:5 (no --wide, no --square modifier). */
