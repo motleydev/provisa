@@ -145,7 +145,18 @@ ok("no link to a Phase 2 page that is not built",
   hrefs.filter((h) => /\/vs\/hasura|one-model/.test(h)).join(", "));
 ok("Book a demo reaches the demo form on this page",
   hrefs.includes("#contact-demo") && await page.$("#contact-demo") !== null);
-ok("no product screenshot", (await page.$$("main img")).length === 0);
+/* What this forbids is a product screenshot. It used to say so by counting
+ * every <img> in main and requiring none, which was true until PRO-143 placed
+ * the IMG-07 editorial illustration here — a light <img> and an aria-hidden
+ * dark one. That commit taught the browserless half (check-page-interfaces.py)
+ * about the pair and left this one asserting zero, so it has failed on every
+ * run since. Named for what it means, and matched to the Python half
+ * (PRO-154). */
+const mainImgs = await page.$$eval("main img", (is) => is.map((i) => i.getAttribute("src") || ""));
+ok("no product screenshot in main — only the IMG-07 editorial pair",
+  mainImgs.length === 2
+  && mainImgs.every((s) => /^\/assets\/editorial\/img-07-(light|dark)\.png$/.test(s)),
+  `${mainImgs.length} <img> in main: ${mainImgs.join(", ")}`);
 
 /* ---- 6. the accordion and the tabs work by keyboard ---------------- */
 head("keyboard");

@@ -196,7 +196,7 @@ for (const theme of THEMES) {
     ok(tables.every((t) => t.narrowest >= 90),
        `${at}: narrowest cell ${Math.min(...tables.map((t) => t.narrowest))}px`);
 
-    /* ---- the Accordion. Seven panels, one open at a time ------------- */
+    /* ---- the Accordion. Six panels, one open at a time --------------- */
 
     const acc = await page.evaluate(() => {
       const items = [...document.querySelectorAll(".pv-acc__item")];
@@ -210,7 +210,10 @@ for (const theme of THEMES) {
         }),
       };
     });
-    ok(acc.count === 7, `${at}: §5's Accordion has 7 panels (${acc.count})`);
+    /* Six since PRO-79 dropped the Panel 7 claims the published material does
+     * not make. check-page-vs-hasura.mjs was taught the new count then; this
+     * half was not (PRO-154). */
+    ok(acc.count === 6, `${at}: §5's Accordion has 6 panels (${acc.count})`);
     ok(acc.open === 1, `${at}: exactly one panel starts open (${acc.open})`);
     ok(acc.wired, `${at}: every panel button controls a panel that exists`);
 
@@ -272,7 +275,7 @@ for (const theme of THEMES) {
 
 /* One keyboard and a11y pass, at one width, because the components are the
  * kit's and the kit's own pass covers them. What is new here is the page
- * composition and the seven-panel Accordion. */
+ * composition and §5's Accordion. */
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
@@ -282,20 +285,31 @@ for (const theme of THEMES) {
   const first = await page.evaluate(() => document.activeElement.className);
   ok(first.includes("pv-skip"), `keyboard: the first Tab reaches the skip link (${first})`);
 
-  /* Opening panel 7 closes panel 1: the kit keeps one open at a time, and the
-   * disclosure in the Callout above is not affected by any of it. */
-  await page.click(".pv-acc__item:nth-child(7) .pv-acc__btn");
-  const afterOpen = await page.evaluate(() => {
+  /* Opening the last panel closes panel 1: the kit keeps one open at a time,
+   * and the disclosure in the Callout above is not affected by any of it.
+   *
+   * The index is read off the page rather than written into the selector.
+   * PRO-79 dropped the seventh panel and taught check-page-vs-hasura.mjs the
+   * new count, but this half went on clicking :nth-child(7) and waiting for
+   * #a-gap7 — so every run since has died on a TimeoutError before reaching
+   * the a11y checks below it. The panel count itself is pinned at 6 by the
+   * browserless half; what matters here is that the panel being opened is not
+   * panel 1 (PRO-154). */
+  const panels = await page.$$eval(".pv-acc__item", (is) => is.length);
+  ok(panels >= 2, `keyboard: §5's Accordion has a panel to open other than the first (${panels})`);
+  await page.click(`.pv-acc__item:nth-child(${panels}) .pv-acc__btn`);
+  const afterOpen = await page.evaluate((n) => {
     const items = [...document.querySelectorAll(".pv-acc__item")];
+    const lastId = items[n - 1].querySelector(".pv-acc__btn").getAttribute("aria-controls");
     return {
       open: items.map((i) => i.querySelector(".pv-acc__btn").getAttribute("aria-expanded")),
-      seventhVisible: !document.getElementById("a-gap7").hidden,
+      lastVisible: !document.getElementById(lastId).hidden,
       calloutVisible: getComputedStyle(document.querySelector("#gaps .pv-callout")).display !== "none",
     };
-  });
+  }, panels);
   ok(afterOpen.open.filter((o) => o === "true").length === 1,
-     `keyboard: one panel open after opening panel 7 (${afterOpen.open.join(",")})`);
-  ok(afterOpen.seventhVisible, "keyboard: panel 7 is visible when opened");
+     `keyboard: one panel open after opening panel ${panels} (${afterOpen.open.join(",")})`);
+  ok(afterOpen.lastVisible, `keyboard: panel ${panels} is visible when opened`);
   ok(afterOpen.calloutVisible, "keyboard: §5's Callout is unaffected by the Accordion");
 
   const named = await page.evaluate(() =>
