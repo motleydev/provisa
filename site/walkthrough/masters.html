@@ -1,9 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<!-- partials/head.html, with this page's title, description and canonical,
-     plus walkthrough.css for the slide masters.
-     Order matters: fonts before tokens before provisa.css, and the theme
+<!-- Order matters: fonts before tokens before provisa.css, and the theme
      bootstrap before anything paints. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,9 +17,6 @@
 <link rel="stylesheet" href="/design-system/provisa.css">
 <link rel="stylesheet" href="/design-system/walkthrough.css">
 
-<!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
-     external script runs after first paint, which is exactly the flash of the
-     wrong theme this prevents. Same code as partials/head.html. -->
 <script>
   (function () {
     try {
@@ -141,11 +136,9 @@
             already ships. The slides, the walkthrough and the exported PNGs come from
             one source, <code>site/design-system/walkthrough.css</code>, so a slide
             cannot drift from the site. It is the site.</p>
-          <p class="pv-p">The copy on each plate describes the master it sits on.
-            Nothing here is a claim about the product, for the same reason the
-            Schematic specimen draws itself: a gallery carrying product copy becomes
-            one more page somebody has to claim-check. The three briefings that use
-            them are at <a class="pv-link" href="/walkthrough/">/walkthrough</a>.</p>
+          <p class="pv-p">The copy on each plate describes the master it sits on,
+            not the product itself. The three briefings that use these masters are
+            at <a class="pv-link" href="/walkthrough/">/walkthrough</a>.</p>
         </div>
 
       </div>
@@ -153,9 +146,7 @@
   </section>
 
   <!-- ==================================================================
-       §2 The plates. Each is the same markup the deck uses, laid out as a
-       contact sheet: .pv-plate gives the slide frame a 16:9 box, so the
-       canvas's --u resolves against it exactly as it does at full size.
+       §2 The plates
        ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container">
