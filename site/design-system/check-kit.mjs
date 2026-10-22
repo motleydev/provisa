@@ -69,15 +69,8 @@ if (fs.existsSync(redirectsFile)) {
  * dead href that is not on this list fails, which is the point.
  *
  * Delete an entry when its page lands. Do not add one to silence a check: a
- * route only belongs here if a page for it is actually owed.
- *
- *   /docs                 pre-rebrand pages only: demos, privacy, terms,
- *                         register, vs/denodo, vs/hasura and the why/ pages
- *                         not yet rebuilt. The ported chrome links
- *                         https://provisa.dev/docs instead, so this entry
- *                         goes when those pages are rebuilt. */
+ * route only belongs here if a page for it is actually owed. */
 const PENDING = new Set([
-  "/docs",
 ]);
 
 /* Only count a regular file — Cloudflare Pages serves files, not bare
@@ -128,9 +121,12 @@ ok("every internal href resolves, or is a route the programme owes",
  * place this is worth enforcing — it is inlined into every page, so a
  * non-canonical href there is a non-canonical href everywhere.
  *
- * /pricing/ is the exception, and only because verify-ui.mjs asserts that
- * exact string on the footer's Editions link. Reconcile the two together. */
-const CANON_EXCEPT = new Set(["/", "/pricing/"]);
+ * /pricing/ is the one such exception, and only because verify-ui.mjs asserts
+ * that exact string on the footer's Editions link. /walkthrough/ is the
+ * second, and only because that is the canonical the hub itself declares
+ * (site/walkthrough/index.html's <link rel="canonical">); the footer's link
+ * matches that string. Reconcile both when the hubs reconcile. */
+const CANON_EXCEPT = new Set(["/", "/pricing/", "/walkthrough/"]);
 const offenders = [];
 for (const file of htmlFiles(path.join(DS, "partials"))) {
   const src = fs.readFileSync(file, "utf8").replace(/<!--[\s\S]*?-->/g, "");
@@ -185,7 +181,53 @@ for (const [sel, prop, want] of CAPPED) {
      found ? found[1].trim() : block ? `no ${prop}` : "selector not found");
 }
 
-/* ---- 3. editorial image theme swap ---------------------------------- *
+/* ---- 3. one footer markup ships -------------------------------------- *
+ * The kit ships one footer — site/design-system/partials/site-footer.html —
+ * inlined into every page under site/, with `<footer class="pv-footer">` and
+ * the shape the partial declares (brand blurb, three link columns, Keep me
+ * posted, a ruled bottom row). PRO-152 collapsed three variants onto that
+ * one: a second `.pv-footer` on /use-cases that reused the prefix with
+ * different internals (`.pv-footer__nav`, `.pv-footer__heading`), and the
+ * pre-rebrand `<footer class="footer">` on seven pages.
+ *
+ * This check keeps it collapsed. It fails when any page carries a footer
+ * markup other than the kit's — the pre-rebrand class, the alternative
+ * `.pv-footer__nav`/`.pv-footer__heading` shape, or more than one <footer>
+ * element — and it fails when any page is missing the kit's footer
+ * altogether. A fourth variant cannot land quietly. */
+const FOOTER_FORBIDDEN = [
+  /* `footer` as a bare space-delimited class token on a <footer>, not the
+   * substring inside `pv-footer`. The character class before and after the
+   * token restricts the match to `class="footer"`, `class="footer foo"` and
+   * `class="foo footer"`, which is what the pre-rebrand chrome shipped. */
+  [/<footer\b[^>]*\bclass="(?:[^"]*\s)?footer(?:\s[^"]*)?"/, '<footer class="footer"> — the pre-rebrand chrome'],
+  [/\bpv-footer__nav\b/, "pv-footer__nav — the deprecated /use-cases shape"],
+  [/\bpv-footer__heading\b/, "pv-footer__heading — the deprecated /use-cases shape"],
+];
+const footerOffenders = [];
+const footerMissing = [];
+const footerDuplicates = [];
+for (const file of pages) {
+  if (file.startsWith(path.join(DS, "partials") + path.sep)) continue;
+  if (file.startsWith(DS + path.sep)) continue;
+  const src = fs.readFileSync(file, "utf8").replace(/<!--[\s\S]*?-->/g, "");
+  for (const [re, label] of FOOTER_FORBIDDEN)
+    if (re.test(src)) footerOffenders.push(`${path.relative(SITE, file)} → ${label}`);
+  const footers = src.match(/<footer\b/g) || [];
+  if (footers.length === 0) footerMissing.push(path.relative(SITE, file));
+  else if (footers.length > 1) footerDuplicates.push(`${path.relative(SITE, file)} (${footers.length})`);
+  else if (!/<footer\b[^>]*class="pv-footer"/.test(src))
+    footerOffenders.push(`${path.relative(SITE, file)} → footer is not <footer class="pv-footer">`);
+}
+ok("every page ships the kit's footer, and only the kit's footer",
+   footerOffenders.length === 0 && footerMissing.length === 0 && footerDuplicates.length === 0,
+   [
+     footerOffenders.length ? `forbidden markup: ${footerOffenders.join(", ")}` : "",
+     footerMissing.length ? `no <footer>: ${footerMissing.join(", ")}` : "",
+     footerDuplicates.length ? `multiple <footer>s: ${footerDuplicates.join(", ")}` : "",
+   ].filter(Boolean).join("; ") || `${pages.length - htmlFiles(path.join(DS)).length} pages carry one <footer class="pv-footer">`);
+
+/* ---- 4. editorial image theme swap ---------------------------------- *
  * Each editorial figure ships a light and a dark <img> that swap on the
  * site's [data-theme] toggle. The CSS below is what makes the swap happen;
  * if any of these three rules disappears, dark-theme users see light PNGs

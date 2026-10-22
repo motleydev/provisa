@@ -1536,3 +1536,73 @@ img,svg{max-width:100%}
 }
 .picker-sub li::after{content:","}
 .picker-sub li:last-child::after{content:""}
+
+/* ======================================================================
+ * The generated live-demos cards.
+ *
+ * scripts/gen-site-demos.mjs writes the markup between the <!-- demos:start -->
+ * and <!-- demos:end --> markers in site/demos.html and owns its class names;
+ * this block is the design system's rendering of them, the way the picker
+ * block above is. Changing a name here without changing the generator breaks
+ * the page.
+ * ====================================================================== */
+
+.demo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:var(--space-24);
+}
+.demo-card{
+  display:flex;
+  flex-direction:column;
+  background:var(--surface-page);
+  border:var(--rule-w) solid var(--border-hairline);
+  border-top:var(--rule-top-card) solid var(--border-strong);
+}
+.demo-shot{
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:16/10;
+  object-fit:cover;
+  object-position:top left;
+  border-bottom:var(--rule-w) solid var(--border-hairline);
+  background:var(--surface-sunken);
+}
+.demo-body{
+  display:flex;
+  flex-direction:column;
+  gap:var(--space-12);
+  padding:var(--space-20) var(--space-24) var(--space-24);
+  flex:1;
+}
+.demo-body h2{
+  margin:0;
+  font-family:var(--font-serif);
+  font-weight:600;
+  font-size:var(--type-h3);
+  line-height:1.2;
+  color:var(--text-primary);
+}
+.demo-body>p{margin:0;color:var(--text-primary);flex:1}
+.demo-note{
+  font-size:var(--type-caption);
+  color:var(--text-muted);
+  flex:0 1 auto;
+}
+.demo-card .btn{
+  align-self:flex-start;
+  display:inline-flex;
+  align-items:center;
+  padding:12px 20px;
+  background:var(--action-primary);
+  color:var(--action-primary-text);
+  font-family:var(--font-mono);
+  font-size:var(--type-nav);
+  font-weight:500;
+  text-transform:uppercase;
+  letter-spacing:0.02em;
+  text-decoration:none;
+}
+.demo-card .btn:hover{background:var(--action-primary-hover)}
+

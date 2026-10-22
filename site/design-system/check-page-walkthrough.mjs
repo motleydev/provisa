@@ -318,6 +318,10 @@ for (const deck of DECKS) {
 
 /* --- the front door links all three briefings -------------------------- */
 
+/* PRO-155 (063f71938) made the walkthrough index visitor-focused and took the
+ * design-system references out of it, including the sentence that linked
+ * /walkthrough/masters. The gallery is still a public route the kit checks
+ * elsewhere; it is not linked from the index on purpose. */
 const index = strip(read(INDEX));
 for (const deck of DECKS) {
   ok(new RegExp(`href="/walkthrough/${deck.route}"`).test(index),
