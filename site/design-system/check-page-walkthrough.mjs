@@ -316,14 +316,17 @@ for (const deck of DECKS) {
      `${name}: the tab strip and the control bar come from the controller, not the markup`);
 }
 
-/* --- the front door links all three, and the gallery ------------------- */
+/* --- the front door links all three ------------------------------------ */
 
+/* PRO-155 (063f71938) made the walkthrough index visitor-focused and took the
+ * design-system references out of it, including the sentence that linked
+ * /walkthrough/masters. The gallery is still a public route the kit checks
+ * elsewhere; it is not linked from the index on purpose. */
 const index = strip(read(INDEX));
 for (const deck of DECKS) {
   ok(new RegExp(`href="/walkthrough/${deck.route}"`).test(index),
      `the front door links the ${deck.route} briefing`);
 }
-ok(/href="\/walkthrough\/masters"/.test(index), "the front door links the master gallery");
 
 /* --- 6. routes resolve, and no page repeats an id --------------------- */
 

@@ -1,157 +1,348 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Provisa and Denodo — Provisa</title>
-  <meta name="description" content="Both are data virtualization with unified semantics and governance. Provisa differs on the way in — GraphQL, Cypher, and nine wire protocols — on engine choice, and on how small the smallest deployment is." />
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../styles.css" />
-  <link rel="canonical" href="https://provisa.dev/vs/denodo" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Provisa and Denodo — Provisa</title>
+<meta name="description" content="Both are data virtualization with unified semantics and governance. Provisa differs on the way in — GraphQL, Cypher, and nine wire protocols — on engine choice, and on how small the smallest deployment is.">
+<link rel="icon" href="/favicon.svg">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+<link rel="canonical" href="https://provisa.dev/vs/denodo">
+
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="nav" id="nav">
-    <div class="container nav-inner">
-      <a class="brand" href="/" aria-label="Provisa home">
-        <svg class="brand-mark" viewBox="0 0 512 512" width="28" height="28" aria-hidden="true">
-          <rect width="512" height="512" rx="112" fill="#1F2933" />
-          <g transform="translate(48,66) scale(4.0)">
-            <rect x="30" y="18" width="15" height="64" rx="7" fill="#ffffff" />
-            <circle cx="52" cy="35" r="22" fill="#ffffff" />
-            <circle cx="52" cy="34" r="10.5" fill="#1F2933" />
-            <circle cx="52" cy="34" r="4.5" fill="#10B981" />
-          </g>
-        </svg>
-        <span class="brand-word">Provisa</span>
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
       </a>
-      <nav class="nav-links" aria-label="Primary">
-        <a href="/#interfaces">Interfaces</a>
-        <a href="/#governance">Governance</a>
-        <a href="/#sources">Sources</a>
-        <a href="/demos">Live demos</a>
-        <a href="/docs">Docs</a>
-        <a class="nav-cta" href="/#download">Download</a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
       </nav>
     </div>
-  </header>
+  </div>
+</div>
 
-  <main id="main" class="doc">
-    <div class="container">
-      <div class="doc-head">
-        <p class="crumb"><a href="/">Provisa</a> <span>/</span> <span>vs Denodo</span></p>
-        <h1>Same category. Different center of gravity.</h1>
-        <p class="lead">
-          Denodo and Provisa agree on the premise: unified semantics and governed access
-          over distributed data, without duplicating it. They differ on how you get in,
-          what runs the query, and how small the smallest useful deployment is.
-        </p>
+<main id="main">
+
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <nav class="pv-crumb" aria-label="Breadcrumb">
+          <a href="/">Provisa</a>
+          <span aria-hidden="true">/</span>
+          <span>Compare</span>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">vs Denodo</span>
+        </nav>
+
+        <div class="pv-stack pv-stack--sm">
+          <div class="pv-eyebrow">Compare</div>
+          <h1 class="pv-h pv-h--hero">Same category.
+            <em class="pv-emph">Different center of gravity.</em></h1>
+        </div>
+
+        <p class="pv-p pv-p--lede">Denodo and Provisa agree on the premise:
+          unified semantics and governed access over distributed data, without
+          duplicating it. They differ on how you get in, what runs the query,
+          and how small the smallest useful deployment is.</p>
+
       </div>
+    </div>
+  </section>
 
-      <div class="doc-body">
-        <h2>Where they agree</h2>
-        <p>
-          Both are data virtualization rather than another warehouse. Both put a semantic
-          layer over heterogeneous sources, govern access centrally, and optimize queries
-          so that leaving data in place doesn't mean paying for it in latency. If you are
-          evaluating Denodo, you have already accepted the argument Provisa makes.
-        </p>
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
 
-        <h2>Where they differ</h2>
-        <div class="cmp-wrap">
-          <table class="cmp">
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">01</span>
+          <span class="pv-seclabel__text">The shared premise</span>
+        </div>
+
+        <h2 class="pv-h pv-h--section">Where they agree.</h2>
+
+        <p class="pv-p">Both are data virtualization rather than another
+          warehouse. Both put a semantic layer over heterogeneous sources,
+          govern access centrally, and optimize queries so that leaving data in
+          place doesn't mean paying for it in latency. If you are evaluating
+          Denodo, you have already accepted the argument Provisa makes.</p>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">02</span>
+          <span class="pv-seclabel__text">What differs</span>
+        </div>
+
+        <h2 class="pv-h pv-h--section">Where they differ.</h2>
+
+        <div class="pv-table">
+          <table>
+            <caption class="pv-sr">Denodo compared with Provisa across seven
+              capabilities</caption>
             <thead>
-              <tr><th>&nbsp;</th><th>Denodo</th><th>Provisa</th></tr>
+              <tr>
+                <td></td>
+                <th scope="col">Denodo</th>
+                <th scope="col" data-highlight>Provisa</th>
+              </tr>
             </thead>
             <tbody>
               <tr>
-                <th>Query languages</th>
+                <th scope="row">Query languages</th>
                 <td>SQL, with REST and GraphQL publication</td>
-                <td class="is-us">GraphQL, SQL, and Cypher as peers over one model — Cypher and graph traversal are first-class, not published views</td>
+                <td data-highlight>GraphQL, SQL, and Cypher as peers over one
+                  model — Cypher and graph traversal are first-class, not
+                  published views</td>
               </tr>
               <tr>
-                <th>Ways in</th>
+                <th scope="row">Ways in</th>
                 <td>JDBC/ODBC, REST, OData, GraphQL</td>
-                <td class="is-us">pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST, WebSocket, Airport, and MCP</td>
+                <td data-highlight>pgwire, Bolt, Arrow Flight, gRPC, JDBC, REST,
+                  WebSocket, Airport, and MCP</td>
               </tr>
               <tr>
-                <th>Execution</th>
+                <th scope="row">Execution</th>
                 <td>Its own optimizer and execution engine</td>
-                <td class="is-us">The engine is yours to choose — Trino, DuckDB, ClickHouse, Postgres, Snowflake, Databricks, BigQuery, or the embedded engine</td>
+                <td data-highlight>The engine is yours to choose — Trino,
+                  DuckDB, ClickHouse, Postgres, Snowflake, Databricks, BigQuery,
+                  or the embedded engine</td>
               </tr>
               <tr>
-                <th>Graph and RDF sources</th>
+                <th scope="row">Graph and RDF sources</th>
                 <td>Available as sources</td>
-                <td class="is-us">First-class in the model — Neo4j and SPARQL participate in the same relationship registry and traversals</td>
+                <td data-highlight>First-class in the model — Neo4j and SPARQL
+                  participate in the same relationship registry and
+                  traversals</td>
               </tr>
               <tr>
-                <th>AI access</th>
+                <th scope="row">AI access</th>
                 <td>Platform AI features</td>
-                <td class="is-us">An MCP server where the OAuth token maps to a role, so agents get the same five governance layers and no bypass</td>
+                <td data-highlight>An MCP server where the OAuth token maps to
+                  a role, so agents get the same five governance layers and no
+                  bypass</td>
               </tr>
               <tr>
-                <th>Smallest deployment</th>
+                <th scope="row">Smallest deployment</th>
                 <td>Platform install or managed cloud</td>
-                <td class="is-us"><code>pip install "provisa[embedded]"</code> — one wheel, no Docker, no JVM, no root</td>
+                <td data-highlight><code>pip install
+                  "provisa[embedded]"</code> — one wheel, no Docker, no JVM,
+                  no root</td>
               </tr>
               <tr>
-                <th>Model portability</th>
+                <th scope="row">Model portability</th>
                 <td>Platform-native modeling</td>
-                <td class="is-us">Declarative config in git, promoted as a diff; the compiled SQL is yours to read and export</td>
+                <td data-highlight>Declarative config in git, promoted as a
+                  diff; the compiled SQL is yours to read and export</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h2>The evaluation that separates them</h2>
-        <p>
-          Ask what happens on a Tuesday afternoon. Can an analyst point psql at it and get
-          a governed answer? Can a developer query the same model in GraphQL without a
-          publication step? Can an agent connect and inherit the analyst's policy rather
-          than a service account's? Can you run the whole thing on a laptop to try
-          something, and in an airgap without mirroring a container registry?
-        </p>
-        <p>
-          Those are the questions Provisa is built to answer yes to. On the classic
-          enterprise virtualization checklist — breadth of connectors, optimizer maturity,
-          a support organization with two decades behind it — Denodo is the incumbent, and
-          that deserves real weight in your evaluation.
-        </p>
-      </div>
-
-      <div class="doc-next">
-        <a class="more" href="/why/interfaces">Every way in</a>
-        <a class="more" href="/#download">Try it on a laptop</a>
       </div>
     </div>
-  </main>
+  </section>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div class="brand">
-        <svg class="brand-mark" viewBox="0 0 512 512" width="24" height="24" aria-hidden="true">
-          <rect width="512" height="512" rx="112" fill="#1F2933" />
-          <g transform="translate(48,66) scale(4.0)">
-            <rect x="30" y="18" width="15" height="64" rx="7" fill="#ffffff" />
-            <circle cx="52" cy="35" r="22" fill="#ffffff" />
-            <circle cx="52" cy="34" r="10.5" fill="#1F2933" />
-            <circle cx="52" cy="34" r="4.5" fill="#10B981" />
-          </g>
-        </svg>
-        <span class="brand-word">Provisa</span>
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">03</span>
+          <span class="pv-seclabel__text">The evaluation</span>
+        </div>
+
+        <h2 class="pv-h pv-h--section">The evaluation that separates them.</h2>
+
+        <p class="pv-p">Ask what happens on a Tuesday afternoon. Can an analyst
+          point psql at it and get a governed answer? Can a developer query the
+          same model in GraphQL without a publication step? Can an agent
+          connect and inherit the analyst's policy rather than a service
+          account's? Can you run the whole thing on a laptop to try something,
+          and in an airgap without mirroring a container registry?</p>
+
+        <p class="pv-p">Those are the questions Provisa is built to answer yes
+          to. On the classic enterprise virtualization checklist — breadth of
+          connectors, optimizer maturity, a support organization with two
+          decades behind it — Denodo is the incumbent, and that deserves real
+          weight in your evaluation.</p>
+
       </div>
-      <p class="footer-note">Config-driven data virtualization. Business Source License 1.1 — non-production use (including evaluation) is free forever, for any size organization. Production use is also free for organizations that, together with their affiliates, have under 100 employees and contractors and under $1M in annual revenue, budget, or expenditures; others need a <a href="mailto:license@provisa.dev">commercial license</a> for production use.</p>
-      <nav class="footer-links" aria-label="Footer">
-        <a href="/vs/starburst">vs Starburst</a>
-        <a href="/vs/hasura">Coming from Hasura</a>
-        <a href="/vs/denodo">vs Denodo</a>
-        <a href="/docs">Docs</a>
+    </div>
+  </section>
+
+  <section class="pv-contact pv-contact--inverse" id="contact">
+    <div class="pv-contact__inner pv-container">
+      <div class="pv-contact__copy">
+        <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h2 class="pv-h pv-h--cta">Bring your reviewer.</h2>
+        <div class="pv-contact__links">
+          <a class="pv-link pv-link--inverse" href="/install">Download Provisa</a>
+          <a class="pv-link pv-link--inverse" href="/register">Get a free licence</a>
+        </div>
+      </div>
+      <form class="pv-form" method="post" action="/api/demo">
+        <h3 class="pv-form__title">Book a demo</h3>
+        <div class="pv-form__grid">
+          <label class="pv-sr" for="c-name">Full name</label>
+          <input class="pv-input" id="c-name" name="name" autocomplete="name" placeholder="Full name" required>
+          <label class="pv-sr" for="c-email">Work email</label>
+          <input class="pv-input" id="c-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+        </div>
+        <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+          Licence 1.1 — non-production use (including evaluation) is free
+          forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Active Semantic Layer</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/why/materialized-views">Materialized views</a>
+        <a href="/why/catalog">Catalog</a>
+        <a href="/why/no-lock-in">No lock-in</a>
       </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
+        <a href="/vs/starburst">vs Starburst</a>
+        <a href="/vs/denodo" aria-current="page">vs Denodo</a>
+        <a href="/vs/hasura">Coming from Hasura</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/walkthrough/">Walk through it</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
     </div>
-  </footer>
+    <div class="pv-footer__bottom">
+      <span>© Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
