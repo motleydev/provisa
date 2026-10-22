@@ -5,10 +5,31 @@ name: Unit Tests
 # in minutes, not only when the (much more expensive) e2e lanes happen to run — see
 # ui-e2e-core.yml/ui-e2e-trino.yml, which are workflow_dispatch/release-branch only.
 
+# A change of only the website starts no run: no test in tests/unit/ reads a page under site/, so
+# such a change cannot fail this gate -- and a gate that cannot fail is red only for something the
+# change did not touch, which is how every open pull request came to carry four red checks none of
+# them caused. Documentation is NOT filtered out here, unlike integration-suite.yml: tests in this
+# directory do read documentation files (docs/arch/canonical-mail-schema.md,
+# docs/metadata-export.md, docs/sources.md, docs/arch/*.yaml), so a docs change can fail this gate
+# and must run it. tests/unit/test_ci_pr_paths.py holds both halves.
 on:
   push:
     branches: [main]
+    paths:
+      - "**"
+      - "!site/**"
+      - "!.github/workflows/docs.yml"
+      - "!.github/workflows/site-*.yml"
+      - "!scripts/gen-site-*.mjs"
   pull_request:
+    # Written out rather than aliased: `on:` is the one block GitHub reads before it runs
+    # anything, and an alias it refused there would stop the workflow on every event.
+    paths:
+      - "**"
+      - "!site/**"
+      - "!.github/workflows/docs.yml"
+      - "!.github/workflows/site-*.yml"
+      - "!scripts/gen-site-*.mjs"
   workflow_dispatch:
 
 permissions:

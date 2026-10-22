@@ -3,10 +3,36 @@ name: Requirements CI
 # Validates requirements.yaml schema, checks generated artifacts for drift,
 # runs pytest-bdd scenarios, and enforces coverage for MUST behavioral requirements.
 
+# The website starts no run: nothing here reads site/. Markdown is filtered out except the two
+# files these generators write -- docs/arch/requirements.md and docs/features.md -- because a hand
+# edit to one of those IS the drift this gate reports, while a change to any other markdown file
+# cannot fail it. The third generated artifact (tests/features/*.feature) and the two sources of
+# truth (docs/arch/requirements.yaml, docs/arch/features.yaml) are not markdown and stay in by `**`.
+# tests/unit/test_ci_pr_paths.py holds this.
 on:
   push:
     branches: [main]
+    paths:
+      - "**"
+      - "!site/**"
+      - "!**/*.md"
+      - "!.github/workflows/docs.yml"
+      - "!.github/workflows/site-*.yml"
+      - "!scripts/gen-site-*.mjs"
+      - "docs/arch/requirements.md"
+      - "docs/features.md"
   pull_request:
+    # Written out rather than aliased: `on:` is the one block GitHub reads before it runs
+    # anything, and an alias it refused there would stop the workflow on every event.
+    paths:
+      - "**"
+      - "!site/**"
+      - "!**/*.md"
+      - "!.github/workflows/docs.yml"
+      - "!.github/workflows/site-*.yml"
+      - "!scripts/gen-site-*.mjs"
+      - "docs/arch/requirements.md"
+      - "docs/features.md"
   workflow_dispatch:
 
 permissions:

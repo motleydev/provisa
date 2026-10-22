@@ -1,0 +1,56 @@
+name: Site Generators
+
+# The website's generated pages, checked against the sources they are generated from. These two
+# checks ran inside ui-unit-tests.yml, where they were the only steps that read site/ -- so the
+# workflow had to run on every pull request, and the type check and the vitest suite beside them
+# were then red on a site-only change for an app reason the change did not touch. Split out: the
+# app lane is filtered to the app, and the website keeps the gate that is actually its own.
+#
+# This is the gate that would have caught the last break: #40 rebuilt the design system and dropped
+# site/why/sources.html, whose marker comments the source picker writes between, so the generator
+# threw and took `tsc + vitest` down on main and on every open pull request at once.
+#
+# Deliberately NOT path-filtered. A drift here comes from either side and from more than one tree:
+# the generators read provisa-ui/src (SOURCE_TYPES, SourceLogo, the bundled logo files) and
+# demo/named/*/demo.yaml, and they write site/ pages, README.md, docs/*.md, mkdocs.yml and
+# provisa-ui/public/guides-md/readme.md. A pattern list naming those inputs is a list that goes
+# stale the first time a generator gains one, without saying so -- and then this check is green
+# having run on nothing. Every pull request runs it; a red run here is always a real drift.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to the same ref supersedes the run before it.
+concurrency:
+  group: site-generators-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generators:
+    name: generated pages in step with their sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # The generators resolve their own dependencies (js-yaml, typescript, simple-icons) from
+      # provisa-ui/package.json, so they need that install and nothing else: no graph renderer,
+      # no browser.
+      - name: Set up the UI toolchain
+        uses: ./.github/actions/setup-ui
+
+      # REQ-2006: provisa.dev's live demos page is generated from demo/named/*/demo.yaml; a demo
+      # published, changed or withdrawn without regenerating the page fails here.
+      - name: Live demos page in step with its demos
+        run: node scripts/gen-site-demos.mjs --check
+
+      # The site's source picker and every count of connectors it states, in figures or in words,
+      # are generated from SOURCE_TYPES; a source added without regenerating them fails here.
+      - name: Site source picker and counts in step with SOURCE_TYPES
+        run: node scripts/gen-site-source-picker.mjs --check

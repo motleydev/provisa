@@ -5,10 +5,36 @@ name: Lint
 # never consulted -- which is how the type-error count grew unobserved. CI is the gate that
 # does not depend on a developer's local hook wiring.
 
+# Filtered as the container suite is (integration-suite.yml): a change of only the website, the
+# documentation or a markdown file cannot fail this gate, and a gate that cannot fail is red only
+# for something the change did not touch -- which is how every open pull request came to carry four
+# red checks none of them caused. The website's own Python checkers (site/design-system/check-*.py)
+# are ruff's, so they are kept in: site/design-system/check-page-platform.py arrived over the limit
+# through a site pull request and this is the gate that says so.
 on:
   push:
     branches: [main]
+    paths:
+      - "**"
+      - "!site/**"
+      - "!docs/**"
+      - "!**/*.md"
+      - "!.github/workflows/docs.yml"
+      - "!.github/workflows/site-*.yml"
+      - "!scripts/gen-site-*.mjs"
+      - "site/**/*.py"
   pull_request:
+    # Written out rather than aliased: `on:` is the one block GitHub reads before it runs
+    # anything, and an alias it refused there would stop the workflow on every event.
+    paths:
+      - "**"
+      - "!site/**"
+      - "!docs/**"
+      - "!**/*.md"
+      - "!.github/workflows/docs.yml"
+      - "!.github/workflows/site-*.yml"
+      - "!scripts/gen-site-*.mjs"
+      - "site/**/*.py"
   workflow_dispatch:
 
 permissions:
