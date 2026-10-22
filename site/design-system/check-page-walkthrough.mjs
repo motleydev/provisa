@@ -316,14 +316,22 @@ for (const deck of DECKS) {
      `${name}: the tab strip and the control bar come from the controller, not the markup`);
 }
 
-/* --- the front door links all three, and the gallery ------------------- */
+/* --- the front door links all three briefings -------------------------- */
 
 const index = strip(read(INDEX));
 for (const deck of DECKS) {
   ok(new RegExp(`href="/walkthrough/${deck.route}"`).test(index),
      `the front door links the ${deck.route} briefing`);
 }
-ok(/href="\/walkthrough\/masters"/.test(index), "the front door links the master gallery");
+
+/* The gallery is not one of them. PRO-155 took the design-system paragraph —
+ * and with it the gallery link — off the visitor front door, because a
+ * contact sheet of slide masters is material for whoever builds a deck, not
+ * for whoever is deciding whether to book a demo. So the route still has to
+ * be reachable, just from the kit's own index rather than from a marketing
+ * page: README.md is where someone looking for a master starts. */
+ok(/\/walkthrough\/masters/.test(read("site/design-system/README.md")),
+   "the design system's README names the master gallery route");
 
 /* --- 6. routes resolve, and no page repeats an id --------------------- */
 

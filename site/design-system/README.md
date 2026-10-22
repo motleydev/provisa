@@ -39,7 +39,8 @@ needed — which is what stops a deck being re-authored in PowerPoint.
 
 Three briefings use it — `/walkthrough/executive`, `/walkthrough/cto` and
 `/walkthrough/ciso`, fifty-three slides. `/walkthrough/` picks an audience and
-lists where the wording departs from the source decks. Open
+says nothing about how the decks were built — PRO-155 took the design-system
+material off it, so this README is the only route to the gallery. Open
 `/walkthrough/masters` for the eleven masters as plates on a contact sheet;
 each plate's copy describes the master it sits on and claims nothing about the
 product, for the same reason the `Schematic` specimen draws itself.
