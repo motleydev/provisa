@@ -4,9 +4,19 @@ name: Docker Image
 # workflows build it only at release time, so a break in the Dockerfile reached main unseen. The
 # built image then draws render_graph's PNGs through its own node, renderer and fonts (REQ-1990).
 
+# Filtered as the container suite is (integration-suite.yml): the image carries the product, not
+# the website, so a push of only the website, the documentation or a markdown file starts no build.
 on:
   push:
     branches: [main]
+    paths:
+      - "**"
+      - "!site/**"
+      - "!docs/**"
+      - "!**/*.md"
+      - "!.github/workflows/docs.yml"
+      - "!.github/workflows/site-*.yml"
+      - "!scripts/gen-site-*.mjs"
   workflow_dispatch:
 
 permissions:

@@ -4,10 +4,34 @@ name: UI Unit Tests
 # workflow they ran only on a maintainer's machine, so a type error or a failing component test
 # reached main unseen by CI (the Playwright workflows are release-branch and on demand).
 
+# Filtered as the container suite is (integration-suite.yml): the type check, the vitest suite and
+# the graph renderer read provisa-ui/ alone, so a change of only the website, the documentation or
+# a markdown file cannot fail them -- and a gate that cannot fail is red only for something the
+# change did not touch. The two generator checks that DID read site/ were the reason this workflow
+# went red on every pull request (a site page whose marker comments a rebuild dropped); they are
+# the website's own gate now and live in site-generators.yml, which does run on a site change.
 on:
   push:
     branches: [main]
+    paths:
+      - "**"
+      - "!site/**"
+      - "!docs/**"
+      - "!**/*.md"
+      - "!.github/workflows/docs.yml"
+      - "!.github/workflows/site-*.yml"
+      - "!scripts/gen-site-*.mjs"
   pull_request:
+    # Written out rather than aliased: `on:` is the one block GitHub reads before it runs
+    # anything, and an alias it refused there would stop the workflow on every event.
+    paths:
+      - "**"
+      - "!site/**"
+      - "!docs/**"
+      - "!**/*.md"
+      - "!.github/workflows/docs.yml"
+      - "!.github/workflows/site-*.yml"
+      - "!scripts/gen-site-*.mjs"
   workflow_dispatch:
 
 permissions:
@@ -41,16 +65,6 @@ jobs:
 
       - name: Unit tests
         run: npx vitest run
-
-      # REQ-2006: provisa.dev's live demos page is generated from demo/named/*/demo.yaml; a demo
-      # published, changed or withdrawn without regenerating the page fails here.
-      - name: Live demos page in step with its demos
-        run: node ../scripts/gen-site-demos.mjs --check
-
-      # The site's source picker and every count of connectors it states, in figures or in words,
-      # are generated from SOURCE_TYPES; a source added without regenerating them fails here.
-      - name: Site source picker and counts in step with SOURCE_TYPES
-        run: node ../scripts/gen-site-source-picker.mjs --check
 
       # render_graph's renderer (REQ-1990): its own package, tested by node --test against its
       # built bundle -- each layout on each theme, as the MCP server runs it.

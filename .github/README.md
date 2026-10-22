@@ -38,12 +38,21 @@ and passes each leg the same `version` and `publish`.
 
 | Trigger | Workflows |
 | --- | --- |
-| push to `main` | Unit Tests, UI Unit Tests, Lint, Requirements CI, CVE Audit, Integration suite, Deploy Site, NixOS, amd64-only engines, windows-container-smoke |
-| pull request | Unit Tests, UI Unit Tests, Lint, Requirements CI, CVE Audit, amd64-only engines, windows-container-smoke |
+| push to `main` | Unit Tests, UI Unit Tests, Lint, Requirements CI, CVE Audit, Docker Image, Integration suite, Site Generators, Site Review Gate, Deploy Site, NixOS, amd64-only engines, windows-container-smoke |
+| pull request | Unit Tests, UI Unit Tests, Lint, Requirements CI, CVE Audit, Site Generators, Site Review Gate, amd64-only engines, windows-container-smoke |
 | tag `v*` | Build Provisa Packages (the release), Release Exports, both extension builds, the three UI e2e lanes |
 | push to `release/**` | the three UI e2e lanes |
 | nightly | the warehouse lane, CVE Audit, NixOS |
+| weekly (Mondays) | CVE Audit |
 | push to `ci/**` touching `.github/` or `scripts/ci/` | CI leaf check |
+
+Every entry in the first two rows is filtered by path, and the filter is part of what the gate
+means. The product lanes — Unit Tests, UI Unit Tests, Lint, Requirements CI, CVE Audit, Docker
+Image — do not run on a change of only the website; Unit Tests and Requirements CI keep the
+documentation files they read. The website's two gates — Site Review Gate and Site Generators —
+do run on such a change. `amd64-only engines` and `windows-container-smoke` name the handful of
+files they cover. A lane left unfiltered is red on a change it cannot have been broken by, and
+that red hides the next one: rule 17.
 
 The warehouse lane, the Salesforce lane and the core UI lane read live credentials. The core UI
 lane also resumes a paid Fabric capacity. They run on the triggers above and on a dispatch.
@@ -115,6 +124,14 @@ by review alone.
 15. A failure has a cause. Read the error and find it; do not re-run to make it pass. — *no test*
 16. A defect that lets a caller exceed their rights, or that exposes a secret, goes to the lead
     for a private advisory. The public issue follows once the fix is on main. — *no test*
+17. A workflow runs on the paths it can fail on, and on no others. Every open pull request once
+    carried the same four red checks for causes in files none of them touched; red a change
+    cannot have caused is read as noise, and the noise hid four real breaks. The filter is part
+    of the gate: a lane excluded from the change that breaks it reports nothing. —
+    `test_a_website_only_change_starts_no_app_lane`,
+    `test_an_app_lane_filters_its_pull_requests_and_not_only_its_pushes`,
+    `test_every_file_under_docs_that_a_unit_test_reads_still_starts_the_unit_workflow`,
+    `test_each_site_generator_check_is_run_by_exactly_one_workflow`
 
 ## What has been proven, and where
 
