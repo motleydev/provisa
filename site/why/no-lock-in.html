@@ -1,8 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-<!-- partials/head.html, verbatim but for the title, the description and the
-     canonical link. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>No lock-in — Provisa</title>
@@ -16,9 +14,6 @@
 <link rel="stylesheet" href="/design-system/provisa.css">
 <link rel="canonical" href="https://provisa.dev/why/no-lock-in">
 
-<!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
-     external script runs after first paint, which is exactly the flash of the
-     wrong theme this prevents. -->
 <script>
   (function () {
     try {
@@ -113,14 +108,7 @@
 
 <main id="main">
 
-  <!-- §1 Hero =======================================================
-       Breadcrumb notes: /why/ has no hub, so the middle crumb is a span,
-       per partials/breadcrumb.html. Hero copy is C-1 as the SME verdict
-       rewrote it: the "does not store data" claim is false for the
-       Materialize, Direct-read and Athena cross-source paths, which the
-       Sources page describes on the same site, and a procurement reader
-       will read both. -->
-  <section class="pv-section">
+    <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
       <nav class="pv-crumb" aria-label="Breadcrumb">
         <a href="/">Provisa</a>
@@ -142,16 +130,7 @@
     </div>
   </section>
 
-  <!-- §2 A layer, not a platform ====================================
-       Three RuledCards, per the brief. The card titles and bodies are
-       the SME verdicts for C-2, C-3 and C-4: C-2's title drops the
-       "doesn't store your data" wording because every Materialize,
-       Direct-read and Athena cross-source path lands a replica
-       (docs/sources.md § Execution Model, docs/architecture.md line
-       224), and C-4 swaps the scanner/patch/SIEM exclusions for the
-       warehouse / ETL / catalog exclusions this reader actually asks
-       about. -->
-  <section class="pv-section pv-section--band" id="scope">
+    <section class="pv-section pv-section--band" id="scope">
     <div class="pv-container pv-stack pv-stack--lg">
       <div class="pv-stack">
         <div class="pv-seclabel">
@@ -192,16 +171,7 @@
     </div>
   </section>
 
-  <!-- §3 Standard protocols =========================================
-       StatStrip over body copy. REST / JSON:API / OpenAPI is marked
-       "In development" in docs/features.md § REST, JSON:API and OpenAPI,
-       and "in development" is a banned claim string (site/claim-bans.mjs),
-       so the row is dropped rather than qualified. C-10 is reworded per
-       the SME verdict: Provisa does ship client libraries (a JDBC driver
-       and a Python client, docs/features.md line 566), so the "no
-       proprietary driver or vendor SDK" line goes and the sentence
-       describes what the libraries do instead. -->
-  <section class="pv-section" id="protocols">
+    <section class="pv-section" id="protocols">
     <div class="pv-container pv-stack pv-stack--lg">
       <div class="pv-stack">
         <div class="pv-seclabel">
@@ -255,19 +225,7 @@
     </div>
   </section>
 
-  <!-- §4 Swappable engine ===========================================
-       ComparisonTable per the brief. The SME verdict for C-12 expands
-       the engine list to match docs/engines.md § Federating engines and
-       § Warehouse engines — the brief's four omit ClickHouse, Snowflake,
-       Databricks, Fabric, Synapse and the SQLAlchemy family. The
-       table's four rows stay as the brief's shortlist but every number
-       in them is dropped per C-13 / C-14 / C-15: no count is published
-       anywhere, local or upstream, and docs/engines.md § What an engine
-       changes says to ask the running system rather than infer it. The
-       "parallel engines" callout is cut per C-17 (contradicted by
-       docs/engines.md line 97: "the engine is chosen once at boot
-       (REQ-916)") and replaced with the chosen-at-boot sentence. -->
-  <section class="pv-section pv-section--band" id="engine">
+    <section class="pv-section pv-section--band" id="engine">
     <div class="pv-container pv-stack pv-stack--lg">
       <div class="pv-stack">
         <div class="pv-seclabel">
@@ -328,15 +286,7 @@
     </div>
   </section>
 
-  <!-- §5 The licence ================================================
-       Verdict for C-18 rewrites the headline to the LICENSE's own
-       thresholds — "fewer than 100 employees and contractors counted
-       together" and "USD 1,000,000 in revenue, budget, or expenditures"
-       with a 90-day grace — rather than the paraphrase on the previous
-       brief. The CodeBlock quotes the LICENSE Parameters block verbatim
-       per C-22; "unconditionally free" is wrong for a copyleft licence,
-       so C-21's card reads "an OSI-approved open-source licence". -->
-  <section class="pv-section" id="licence">
+    <section class="pv-section" id="licence">
     <div class="pv-container pv-stack pv-stack--lg">
       <div class="pv-stack">
         <div class="pv-seclabel">
@@ -408,14 +358,7 @@ Change License:       GNU General Public License, Version 2.0 or later.</pre>
     </div>
   </section>
 
-  <!-- §6 Export =====================================================
-       `provisa config export` does not exist in docs/cli.md (its CLI
-       reference lists `run`, `license`, `metadata export`, `env`,
-       `maintenance`), so the brief's CodeBlock is replaced with the
-       admin API endpoint `GET /admin/config/live` from docs/api-reference.md
-       and the Ossie export (`GET /admin/ossie`, docs/admin.md line 306)
-       is named as the standards-based second path. -->
-  <section class="pv-section pv-section--band" id="export">
+    <section class="pv-section pv-section--band" id="export">
     <div class="pv-container pv-stack pv-stack--lg">
       <div class="pv-stack">
         <div class="pv-seclabel">
@@ -445,14 +388,7 @@ curl -H "Authorization: Bearer $TOKEN" \
     </div>
   </section>
 
-  <!-- §7 Import =====================================================
-       SME verdict for C-26 strips inherited roles and rate limits (not
-       published in docs/import.md § Hasura v2) from the item list and
-       drops the "another product's v2 importer reads the same export"
-       sentence — the export is Hasura's, not Provisa's, so it says
-       nothing about leaving Provisa. The leaving-Provisa path is §6's
-       YAML export; this section is about moving to. -->
-  <section class="pv-section" id="import">
+    <section class="pv-section" id="import">
     <div class="pv-container pv-stack pv-stack--lg">
       <div class="pv-stack">
         <div class="pv-seclabel">
@@ -475,11 +411,7 @@ curl -H "Authorization: Bearer $TOKEN" \
     </div>
   </section>
 
-  <!-- §8 Conversion =================================================
-       The CTA ladder from site/design-system/README.md: /install primary,
-       /register beside it, Book a demo as the secondary. The architecture
-       link under the band is the brief's requested TextLink to /platform. -->
-  <section class="pv-contact" id="contact">
+    <section class="pv-contact" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">
         <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>

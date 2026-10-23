@@ -113,12 +113,7 @@
 
 <main id="main">
 
-  <!-- ==================================================================
-       §Hero
-       The pitch: governance for security data, not scanning. Three
-       scenarios the page then walks through: noncompliant builds, cloud
-       inventory joined to policy, and CVE × deployment.
-       ================================================================== -->
+  
   <section class="pv-section">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -140,11 +135,7 @@
         <div class="pv-rail">
           <div class="pv-rail__body">
             <div class="pv-stack">
-              <!-- [C-1] The pitch. Governance for security data, not a
-                   scanner or a patch system. The three scenarios Ken set
-                   out — noncompliant builds, cloud inventory against
-                   policy, CVE across deployments — are the shape of the
-                   page. -->
+              
               <p class="pv-p pv-p--lede">A security team already has the
                 data: a build registry, a cloud inventory, a vulnerability
                 feed, an SBOM, a repository, a quality checker, a log
@@ -154,10 +145,7 @@
                 set of roles, rules and relationships, and records every
                 query against it.</p>
 
-              <!-- [C-2] Any source — RDBMS or HTTP endpoint — registers
-                   as queryable tables. The three source families on the
-                   docs are RDBMS, API (openapi, graphql_remote,
-                   grpc_remote) and file. -->
+              
               <p class="pv-p">Every tool a security team runs publishes
                 somewhere: a database, an HTTP endpoint, a file on object
                 storage. Provisa registers each as a source, so a build
@@ -165,11 +153,7 @@
                 SBOM on S3 are all tables in the same catalog, read with
                 the same SQL, GraphQL or Cypher under the same role.</p>
 
-              <!-- [C-3] Every join is an approved relationship (V002).
-                   The join guard is the sentence that lets a reviewer
-                   accept the page's premise: a security investigation is
-                   joins, and every one of them is a declared edge
-                   someone said yes to. -->
+              
               <p class="pv-p">And every join between those tables — a
                 build to its scan result, a deployment to its image hash,
                 an application to its SBOM — matches a relationship
@@ -178,9 +162,7 @@
             </div>
           </div>
           <div class="pv-rail__rail">
-            <!-- IMG — FigPanel, 4/5. Three rings: the three scenarios the
-                 page walks. Rings carry no caption; the SectionLabel
-                 above each §scenario is the caption. -->
+            
             <div class="pv-fig pv-fig--rings" role="img"
                  aria-label="Three stacked scenarios — noncompliant builds, cloud inventory joined to policy, and CVEs by application and deployment — converging into one governed semantic layer.">
               <span class="pv-fig__label">FIG. 01</span>
@@ -195,12 +177,7 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §1 Scenario 1 — Noncompliant builds
-       A published view in the security domain. The role granted the
-       domain reads the view; row filters narrow each team to its own
-       deployments.
-       ================================================================== -->
+  
   <section class="pv-section pv-section--band" id="noncompliant-builds">
     <div class="pv-container">
       <div class="pv-rail">
@@ -215,10 +192,7 @@
           <h2 class="pv-h pv-h--section">A governed view, in the security
             domain, that every allowed role may ask.</h2>
 
-          <!-- [C-4] Publish a governed noncompliant-builds view in the
-               security domain; any role granted that domain may query
-               it. REQ-133 views, REQ-134 same governance pipeline as
-               tables. -->
+          
           <p class="pv-p">Publish a governed "noncompliant builds" view in
             the security domain; any role granted that domain may query
             it. The view is defined once, flows through the same
@@ -260,10 +234,7 @@ views:
         visible_to: [security_admin, security_analyst, app_team]</pre>
           </div>
 
-          <!-- [C-5] Reworded: row filters limit each team's role to its
-               own deployments; a role with no filter on the table sees
-               every row. Drop "org_admin sees all" — nothing published
-               says the admin role bypasses row rules. -->
+          
           <p class="pv-p">Row filters limit each team's role to its own
             deployments; a role with no filter on the table sees every
             row. The filter is a predicate written on user attributes and
@@ -281,10 +252,7 @@ rls_rules:
     filter: "deployment = current_setting('provisa.user_team')"</pre>
           </div>
 
-          <!-- [C-6] Ken's scenario 1 is the frame for the whole section.
-               The closing callout names what the published view buys an
-               auditor: one place to point, with the policy and the
-               predicates on it. -->
+          
           <div class="pv-callout">
             <span class="pv-callout__label">ONE PLACE TO POINT</span>
             <span class="pv-callout__body">A reviewer asks "who could see
@@ -299,12 +267,7 @@ rls_rules:
     </div>
   </section>
 
-  <!-- ==================================================================
-       §2 Scenario 2 — Cloud inventory joined to policy
-       REQ-1947 cloud inventory source, policy tables, approved
-       relationships, data-quality checker as a source reading the view
-       through pgwire.
-       ================================================================== -->
+  
   <section class="pv-section" id="cloud-inventory">
     <div class="pv-container">
       <div class="pv-rail">
@@ -319,9 +282,7 @@ rls_rules:
           <h2 class="pv-h pv-h--section">One set of tables for every cloud,
             joined to policy by a relationship a steward approved.</h2>
 
-          <!-- [C-7] Reworded: Azure, AWS and GCP inventories register
-               through the cloud inventory source — one set of tables...
-               with a cloud_provider column. REQ-1947. -->
+          
           <p class="pv-p">Azure, AWS and GCP inventories register through
             the cloud inventory source — one set of tables for compute,
             storage, Kubernetes clusters, databases, networks, IAM,
@@ -375,10 +336,7 @@ rls_rules:
             </table>
           </div>
 
-          <!-- [C-8] Reworded: policy tables declaring what each resource
-               type must comply with, joined to the inventory through an
-               approved relationship. Carries over the C-3 join-guard
-               thread. -->
+          
           <p class="pv-p">Alongside the inventory, policy tables declare
             what each resource type must comply with: an encryption rule
             for storage, a public-exposure rule for compute, a tagging
@@ -387,10 +345,7 @@ rls_rules:
             the security domain and a steward on the inventory domain each
             said yes.</p>
 
-          <!-- [C-9] Reworded: a data-quality checker is a source — Soda
-               Core or Great Expectations — scanning the governed view
-               through pgwire; results land as rows on the source's
-               cadence. Cut "in real time" and "Soda first". -->
+          
           <p class="pv-p">A data-quality checker — Soda Core or Great
             Expectations — registers as a source. It scans the governed
             view through pgwire, and each check result lands as a row on
@@ -399,7 +354,7 @@ rls_rules:
             that inherits lineage, freshness, row-level security and the
             audit record from the layer it reads.</p>
 
-          <!-- [C-10] Materialized view with refresh_interval. REQ-135. -->
+          
           <div class="pv-code pv-code--get">
             <div class="pv-code__title">provisa.yaml — the compliance view, refreshed on a schedule</div>
 <pre><span class="pv-code__c"># A materialized view (REQ-135). target_catalog and target_schema</span>
@@ -420,18 +375,14 @@ materialized_views:
     enabled: true</pre>
           </div>
 
-          <!-- [C-11] Reworded: audit log records who queried, under which
-               role and over which surface. The log does not record which
-               violations came back. -->
+          
           <p class="pv-p">The audit log records who queried the violation
             tables, under which role and over which surface. It does not
             record which violations came back — the query text itself is
             not stored in the clear and the record is of access, not of
             answers.</p>
 
-          <!-- [C-12] Ken's scenario 2 — the frame. Closing callout: the
-               value is in the join across tools that otherwise disagree
-               on what a resource is. -->
+          
           <div class="pv-callout pv-callout--get">
             <span class="pv-callout__label">THE JOIN IS THE PRODUCT</span>
             <span class="pv-callout__body">The scanner, the inventory, the
@@ -447,12 +398,7 @@ materialized_views:
     </div>
   </section>
 
-  <!-- ==================================================================
-       §3 Scenario 3 — CVE × deployment, in three languages
-       SBOM as file source, GitHub as a source with a PAT, MV refreshed
-       on a schedule or when a freshness probe finds the upstream
-       changed, three languages generated — SQL, GraphQL, Cypher.
-       ================================================================== -->
+  
   <section class="pv-section pv-section--band" id="cve-deployment">
     <div class="pv-container">
       <div class="pv-rail">
@@ -468,11 +414,7 @@ materialized_views:
             source. The CVE view is three questions, one per
             language.</h2>
 
-          <!-- [C-13] Reworded: SBOM exports and scanner outputs register
-               as file sources — JSON, CSV, Parquet, local or S3 — and
-               scanner publishing OpenAPI registers as API source. No
-               SBOM/CVE connector is published; these are the customer's
-               files. -->
+          
           <p class="pv-p">SBOM exports and scanner outputs register as
             file sources — JSON, CSV or Parquet, local or on
             <code>s3://</code> — and a scanner that publishes an OpenAPI
@@ -480,9 +422,7 @@ materialized_views:
             CVE connector shipped: these are the customer's files, and
             registering them is the configuration step.</p>
 
-          <!-- [C-14] Reworded: joined to the deployment inventory through
-               an approved relationship on application name or image
-               hash. -->
+          
           <p class="pv-p">The SBOM is joined to the deployment inventory
             through an approved relationship on application name or image
             hash. Which key is right is the organisation's choice; the
@@ -490,9 +430,7 @@ materialized_views:
             domain approves it, and SQL and Cypher check every join
             against that record at compile time.</p>
 
-          <!-- [C-15] Reworded: GitHub registers as a source with a PAT;
-               steward registers the repository and commit tables wanted;
-               commit SHAs link builds to repositories. REQ-1923. -->
+          
           <p class="pv-p">GitHub registers as a source with a personal
             access token; the steward registers the repository and commit
             tables wanted, so commit SHAs link builds to their
@@ -516,11 +454,7 @@ tables:
     domain_id: security</pre>
           </div>
 
-          <!-- [C-16] Reworded: an MV lists CVEs by application, severity
-               and deployment, refreshed on a schedule or when a freshness
-               probe finds the upstream changed. REQ: freshness probe is
-               published; change streams carry an In-development marker.
-               The sentence stops at the probe. -->
+          
           <p class="pv-p">A materialized view lists CVEs by application,
             severity and deployment, refreshed on a schedule or when a
             freshness probe finds the vulnerability feed or the deployment
@@ -528,9 +462,7 @@ tables:
             the schedule is the fallback when the probe is not configured
             or the upstream exposes no change signal.</p>
 
-          <!-- [C-17] Reworded in verdict as OK: the same question, in
-               three languages, is enforced the same way under the role.
-               Not six — three: SQL, GraphQL, Cypher. -->
+          
           <p class="pv-p">The same question is asked in whichever of three
             query languages suits the caller — SQL on pgwire, GraphQL on
             HTTP, Cypher on Bolt — and the row filters, column masks and
@@ -602,12 +534,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §4 What Provisa does, and what it does not
-       Positioning. The verdict is explicit: do not say "does not ingest
-       logs" — Splunk and Logs are source types, and reading them is
-       exactly what Provisa does.
-       ================================================================== -->
+  
   <section class="pv-section" id="does-and-doesnt">
     <div class="pv-container">
      <div class="pv-stack pv-stack--lg">
@@ -623,9 +550,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
           <h2 class="pv-h pv-h--section">The scanners, the patchers and the
             alerters already exist. We are the join across them.</h2>
 
-          <!-- [C-18] Reworded: does not scan, patch or alert — reads
-               Splunk and log files as tables. "Does not ingest logs"
-               was wrong. -->
+          
           <p class="pv-p">Provisa does not scan infrastructure, patch
             systems or raise alerts. It is the governed join across the
             tools that do — and it reads what they write, Splunk and log
@@ -637,7 +562,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
       </div>
 
       <div class="pv-grid pv-grid--2">
-        <!-- [C-19] Positioning: what Provisa is in this stack. -->
+        
         <div class="pv-ruled pv-ruled--see pv-ruled--thick">
           <h3 class="pv-ruled__title">What Provisa is</h3>
           <div class="pv-ruled__body">A semantic and governance layer:
@@ -646,8 +571,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
             record of who asked what, under which role, on which surface.
             The engine stays yours.</div>
         </div>
-        <!-- [C-20] Positioning: stays in its lane because of how it is
-             built, not as spin. -->
+        
         <div class="pv-ruled pv-ruled--run pv-ruled--thick">
           <h3 class="pv-ruled__title">Why it stays in its lane</h3>
           <div class="pv-ruled__body">Not positioning — construction. There
@@ -662,13 +586,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §5 How the governance applies to security work
-       The cross-cutting mechanics: approved joins, row-level security,
-       the audit log as a table, materialized views for compliance
-       summaries, bitemporal history, and the three languages generated
-       from a plain-language question.
-       ================================================================== -->
+  
   <section class="pv-section pv-section--band" id="governance-applied">
     <div class="pv-container">
       <div class="pv-rail">
@@ -685,10 +603,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
 
           <div class="pv-stack pv-stack--sm">
 
-            <!-- [C-21] Reworded: every join is a relationship declared
-                 and approved by a steward holding the relationship right
-                 in each domain. Capability name omitted — the two docs
-                 disagree on it. -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <h3 class="pv-ruled__title">Every join is an approved
                 relationship</h3>
@@ -700,8 +615,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
                 <code>V002</code>, naming which domain is missing the yes.</div>
             </div>
 
-            <!-- [C-22] Row-level security with user attributes. OK as
-                 published. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <h3 class="pv-ruled__title">Row-level security on user
                 attributes</h3>
@@ -713,9 +627,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
                 and Cypher without being written three times.</div>
             </div>
 
-            <!-- [C-23] Audit log is a queryable table through SQL
-                 (pgwire), GraphQL and Cypher — same domain access and
-                 masking as any business table. -->
+            
             <div class="pv-ruled pv-ruled--run pv-ruled--accent">
               <h3 class="pv-ruled__title">The audit log is a table</h3>
               <div class="pv-ruled__body">Access records are queryable
@@ -727,9 +639,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
                 same language, under their own role.</div>
             </div>
 
-            <!-- [C-24] Reworded: materialized views compute compliance
-                 summaries on a schedule, or when a freshness probe
-                 finds the upstream changed. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <h3 class="pv-ruled__title">Compliance summaries, in
                 materialized views</h3>
@@ -741,10 +651,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
                 are what keeps it current.</div>
             </div>
 
-            <!-- [C-25] Reworded: a view with history keeps every
-                 version; two headers re-read it as of a time and as
-                 recorded then. Cut "even if the policy was corrected
-                 later" — policy replay is not published. -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <h3 class="pv-ruled__title">History, for the past audit</h3>
               <div class="pv-ruled__body">A compliance view that declares
@@ -756,10 +663,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
                 saw.</div>
             </div>
 
-            <!-- [C-26] Reworded: a question in plain language is turned
-                 into SQL, GraphQL and Cypher. The model sees only the
-                 role's schema; every generated query runs under that
-                 role. Three languages — not six. -->
+            
             <div class="pv-ruled pv-ruled--run pv-ruled--accent">
               <h3 class="pv-ruled__title">Plain language, three languages
                 generated</h3>
@@ -778,13 +682,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §6 The six-surface spine
-       Published statuses. No status badge on the strip per C-28's
-       verdict note: GraphQL is headlined on README but the local
-       docs/features.md still carries "In development", so the strip
-       stays unbadged and the sentence underneath carries the nuance.
-       ================================================================== -->
+  
   <section class="pv-section" id="surfaces">
     <div class="pv-container">
      <div class="pv-stack pv-stack--lg">
@@ -809,12 +707,9 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
         </div>
       </div>
 
-      <!-- The six-surface strip. No status badge on the strip itself,
-           per C-28: GraphQL is headlined on README but the local
-           docs/features.md marker says "In development". The strip is
-           the names; the paragraph underneath carries any nuance. -->
+      
       <div class="pv-grid pv-grid--3">
-        <!-- [C-27] pgwire + JDBC, Available. -->
+        
         <div class="pv-ruled pv-ruled--see pv-ruled--thick">
           <h3 class="pv-ruled__title">PostgreSQL wire protocol</h3>
           <div class="pv-ruled__body">SQL on pgwire for the tools and
@@ -822,8 +717,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
             is the same wire — a Java client connects as if it were a
             Postgres database.</div>
         </div>
-        <!-- [C-28] GraphQL — headlined on README; no "In development"
-             badge on the strip, per the verdict note. -->
+        
         <div class="pv-ruled pv-ruled--see pv-ruled--thick">
           <h3 class="pv-ruled__title">GraphQL</h3>
           <div class="pv-ruled__body">The schema the gRPC, JSON:API and
@@ -831,7 +725,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
             selections, and the row filters and masks compiled into the
             resolver before the engine runs anything.</div>
         </div>
-        <!-- [C-29] gRPC, Available. -->
+        
         <div class="pv-ruled pv-ruled--see pv-ruled--thick">
           <h3 class="pv-ruled__title">gRPC</h3>
           <div class="pv-ruled__body">A proto generated per role, so the
@@ -839,7 +733,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
             ones they may call. The enforcement is the same compile
             step as every other surface.</div>
         </div>
-        <!-- [C-30] REST, Available upstream. -->
+        
         <div class="pv-ruled pv-ruled--see pv-ruled--thick">
           <h3 class="pv-ruled__title">REST, JSON:API and OpenAPI</h3>
           <div class="pv-ruled__body">A REST surface and a JSON:API
@@ -847,15 +741,14 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
             model — endpoints a reviewer can read before any code
             calls one.</div>
         </div>
-        <!-- [C-31] Arrow Flight, Available. -->
+        
         <div class="pv-ruled pv-ruled--see pv-ruled--thick">
           <h3 class="pv-ruled__title">Arrow Flight</h3>
           <div class="pv-ruled__body">Columnar reads over Flight for the
             analytics clients and notebooks that prefer Arrow over a row
             cursor. The same role, the same filters, the same record.</div>
         </div>
-        <!-- [C-32] MCP, Available: every tool call scoped to the
-             capabilities of the identity behind it. -->
+        
         <div class="pv-ruled pv-ruled--see pv-ruled--thick">
           <h3 class="pv-ruled__title">MCP for AI agents</h3>
           <div class="pv-ruled__body">An MCP server exposes the model to
@@ -869,14 +762,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §7 How to run it
-       C-33, matched exactly to brief-install r7 C-1: pip install
-       "provisa[embedded]" then provisa run — no Docker, no Node, no
-       external services; Python 3.12. The two phrases the verdict
-       removes from this sentence are the JVM / root clause and the
-       pgwire-listener clause; docs/cli.md names neither.
-       ================================================================== -->
+  
   <section class="pv-section pv-section--band" id="install">
     <div class="pv-container">
       <div class="pv-rail">
@@ -891,14 +777,7 @@ RETURN a.application, d.deployment, c.cve_id, c.severity</pre>
           <h2 class="pv-h pv-h--section">One command, Python 3.12, and the
             API and the web UI are up.</h2>
 
-          <!-- [C-33] Reworded: pip install "provisa[embedded]" then
-               provisa run — no Docker, no Node, no external services;
-               Python 3.12. One command starts the API and the web UI.
-               Connect your build registry and patch baseline as sources,
-               join them, and query the result. Matches brief-install r7
-               C-1 wording exactly. The JVM / root clause and the
-               pgwire-listener clause are what the verdict removes —
-               docs/cli.md names neither. -->
+          
           <p class="pv-p"><code>pip install "provisa[embedded]"</code>
             then <code>provisa run</code> — no Docker, no Node, no
             external services; Python 3.12. One command starts the API
@@ -934,10 +813,7 @@ provisa run</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §Conversion. ContactBand, forest. CTA = /install primary +
-       /register secondary, per the brief. Carries id="contact".
-       ================================================================== -->
+  
   <section class="pv-contact" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">

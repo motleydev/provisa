@@ -113,15 +113,7 @@
 
 <main id="main">
 
-  <!-- ==================================================================
-       §1 Hero
-       The "one thing" rewritten per the SME page-level verdict: the brief's
-       "HIPAA-aligned" is unpublished. docs/marketing.md:77 lists HIPAA as a
-       "compliance hook", nothing more; a page claiming it as a product
-       property would be a certification claim Provisa does not hold.
-       Positioning stays on the three things the product actually does —
-       consented research, PHI role scoping, one audit log across sources.
-       ================================================================== -->
+  
   <section class="pv-section">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -162,10 +154,7 @@
             </div>
           </div>
           <div class="pv-rail__rail">
-            <!-- FigPanel, 4/5. Three bars for the three mechanisms the
-                 page carries, aligned left-to-right with the §2/§3/§4
-                 ordering. The decorative mark is kit-typical for a
-                 scenario-led industry page. -->
+            
             <div class="pv-fig pv-fig--rings" role="img"
                  aria-label="Three stacked mechanisms — row-level security, column visibility and the single audit log — meeting at one governed pipeline.">
               <span class="pv-fig__label">FIG. 01</span>
@@ -180,14 +169,7 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §2 Scenario 1 — Consented research view
-       Ken's Notion scenario 34. The YAML is rewritten to the published
-       syntax per the SME verdict for C-6: two blocks, `visible_to` per
-       column and a separate `rls_rules` block, source_id and domain_id
-       as the keys. The "nothing in the result reveals which rows were
-       filtered" line is cut (C-8) — not published.
-       ================================================================== -->
+  
   <section class="pv-section pv-section--band" id="consented-research">
     <div class="pv-container">
       <div class="pv-rail">
@@ -203,9 +185,7 @@
             un-consent, because the predicate is in the statement before
             execution.</h2>
 
-          <!-- [C-1] Keep the question; replace "our Epic FHIR server" with
-               "our FHIR server's API" (verdict). "Epic" is not a published
-               connector; the buyer may say "our EHR". -->
+          
           <p class="pv-p">"We need a researcher view over the patient
             table in our FHIR server's API, limited to patients who have
             consented to research, without the researcher having to add
@@ -214,14 +194,13 @@
             — the researcher does not write it, cannot forget it, and
             cannot see the column that proves it.</p>
 
-          <!-- [C-2] REQ-041, REQ-263 — RLS as the mechanism. -->
+          
           <p class="pv-p">Row-level security in Provisa is a per-table,
             per-role predicate declared once in configuration and injected
             into every <code>SELECT</code> against that table for that
             role. It is the <code>WHERE</code> the analyst did not write.</p>
 
-          <!-- [C-3] Reworded: predicate injected after compilation, before
-               execution — not by the analyst remembering to. -->
+          
           <div class="pv-callout">
             <span class="pv-callout__label">THE REWRITE</span>
             <span class="pv-callout__body">A <code>researcher</code>
@@ -231,27 +210,21 @@
               to.</span>
           </div>
 
-          <!-- [C-4] REQ-041 (security.md:3) + the NL endpoint ref — the
-               mechanism is the same whether the question arrived as SQL
-               or English. -->
+          
           <p class="pv-p">The researcher writes the ordinary query. The
             same question arriving over GraphQL, over the SQL endpoint,
             over the natural-language endpoint or over pgwire is rewritten
             at the one pipeline every surface shares; a plan that reaches
             the FHIR API already carries the predicate.</p>
 
-          <!-- [C-5] REQ cross-source — the same rewrite applies on
-               Snowflake and BigQuery readers too. -->
+          
           <p class="pv-p">The source makes no difference. A researcher
             whose work spans the EHR mirror in Postgres, a Snowflake
             claims warehouse and a BigQuery research dataset gets the
             same rule compiled into each statement the engine routes to
             each source.</p>
 
-          <!-- [C-6] Reworded per verdict: two blocks, published keys.
-               source_id: fhir_api, domain_id: clinical. visible_to per
-               column; rls_rules separately. Rename "epic_fhir" to
-               "fhir_api" (also enforced on C-16). -->
+          
           <h3 class="pv-h pv-h--sub">What the configuration says</h3>
 
           <div class="pv-code">
@@ -281,22 +254,18 @@ rls_rules:
     filter: "consent_research = true"</pre>
           </div>
 
-          <!-- [C-7] Reworded: role cannot see the consent_research column,
-               but the predicate evaluates against the raw row, so it
-               still applies. Verdict evidence: security.md Layer 3 — "The
-               predicates evaluate against raw data". -->
+          
           <p class="pv-p">The role cannot see the <code>consent_research</code>
             column, but the predicate evaluates against the raw row, so it
             still applies. The column is absent from the schema the
             researcher is handed; the value is still there to be filtered
             on, on the server, before anything leaves it.</p>
 
-          <!-- [C-8] CUT per verdict. Keep only "A query for diagnosis_codes
-               returns only rows where the patient opted in." -->
+          
           <p class="pv-p">A query for <code>diagnosis_codes</code> returns
             only rows where the patient opted in.</p>
 
-          <!-- [C-9] Docs link rewritten per verdict. -->
+          
           <a class="pv-link" href="https://provisa.dev/docs/security/#row-level-security-rls">Row-level
             security, in the docs<span class="pv-link__arrow"> →</span></a>
 
@@ -305,15 +274,7 @@ rls_rules:
     </div>
   </section>
 
-  <!-- ==================================================================
-       §3 Scenario 2 — Role-scoped PHI columns
-       Ken's Notion scenario 35. The researcher holds query_development
-       plus domain access to encounters, but the PHI columns list only
-       clinician in visible_to — C-12 corrected per verdict (capability vs
-       grant distinction). Hidden columns are absent from schema and
-       catalog, not refused on request (C-13). Join enforces both tables
-       and the approved-relationship check (C-15).
-       ================================================================== -->
+  
   <section class="pv-section" id="phi-columns">
     <div class="pv-container">
       <div class="pv-rail">
@@ -328,7 +289,7 @@ rls_rules:
           <h2 class="pv-h pv-h--section">The PHI columns a clinician sees
             are not in the schema the researcher's session is handed.</h2>
 
-          <!-- [C-10] Ken scenario 35 — framing. -->
+          
           <p class="pv-p">The same <code>encounters</code> table is used
             by two roles: a clinician who needs the identifying columns
             to do their work, and a researcher who needs the clinical
@@ -336,7 +297,7 @@ rls_rules:
             and address; the researcher sees diagnosis, length of stay
             and outcome, and no PHI column at all.</p>
 
-          <!-- [C-11] REQ-042, REQ-249 — column permission model. -->
+          
           <p class="pv-p">The column permission model holds per column,
             per role. A column is declared with the list of roles that
             can see it, and that list is the schema the role is given;
@@ -344,9 +305,7 @@ rls_rules:
             role is not in <code>visible_to</code> is absent from its
             schema entirely.</p>
 
-          <!-- [C-12] Reworded per verdict: query_development is a
-               capability, domain_access is the grant, PHI columns list
-               only clinician in visible_to. -->
+          
           <div class="pv-callout">
             <span class="pv-callout__label">THE SPLIT</span>
             <span class="pv-callout__body">The <code>researcher</code> role
@@ -357,8 +316,7 @@ rls_rules:
               <code>clinician</code> in <code>visible_to</code>.</span>
           </div>
 
-          <!-- [C-13] Hidden column is absent from the schema and catalog.
-               Not refused on request — not in the catalog at all. -->
+          
           <p class="pv-p">A hidden column is absent from the schema and
             catalog. The researcher does not discover <code>mrn</code> and
             get refused — it is not in the information schema their
@@ -366,9 +324,7 @@ rls_rules:
             and not autocompleted. Layer 0: a column that is not there
             cannot be queried, autocompleted, or inferred to exist.</p>
 
-          <!-- [C-14] Composition across subqueries, CTEs, joins, star
-               expansion. features.md:671 — "whatever shape the SQL takes".
-               -->
+          
           <p class="pv-p">The rule holds through subqueries, CTEs, joins
             and star expansion alike. A <code>SELECT *</code> under the
             researcher's session returns the clinical columns, not the
@@ -376,10 +332,7 @@ rls_rules:
             else is parsed, resolved, and refused at the name — because
             the name was never in the role's schema in the first place.</p>
 
-          <!-- [C-15] Reworded per verdict: join enforces both tables'
-               visibility rules in one plan, and the join itself must
-               match an approved relationship. "Roles that cannot see the
-               join key cannot join" dropped — not published. -->
+          
           <h3 class="pv-h pv-h--sub">The joined query</h3>
 
           <p class="pv-p">A query that joins <code>encounters</code> to
@@ -391,8 +344,7 @@ rls_rules:
             that no approved relationship covers is refused at parse
             time.</p>
 
-          <!-- [C-16] Reworded per verdict: rename "source: epic_fhir" to
-               "source_id: fhir_api". -->
+          
           <div class="pv-code">
             <div class="pv-code__title">provisa.yaml — the encounters block</div>
 <pre><span class="pv-code__c"># visible_to per column. researcher sees clinical columns;</span>
@@ -427,7 +379,7 @@ tables:
             five clinical columns, because those are the five in the
             schema their role was issued.</p>
 
-          <!-- [C-17] Docs link rewritten per verdict. -->
+          
           <a class="pv-link" href="https://provisa.dev/docs/security/#column-permission-model">The
             column permission model, in the docs<span class="pv-link__arrow"> →</span></a>
 
@@ -436,16 +388,7 @@ tables:
     </div>
   </section>
 
-  <!-- ==================================================================
-       §4 Scenario 3 — One audit log across sources
-       Ken's Notion scenario 40. The record is written at the single
-       governed pipeline, so no surface can skip it (C-19). Fields per
-       C-20. Queryable through governed views in the ops domain (C-21).
-       Keeps what was enforced, not just what was asked (C-22).
-       policy_denials for refusals (C-23). SQL example widened to 90
-       days using ops.pii_access (C-24). provisa_audit_log is NOT a
-       table.
-       ================================================================== -->
+  
   <section class="pv-section pv-section--band" id="audit-log">
     <div class="pv-container">
       <div class="pv-rail">
@@ -460,26 +403,21 @@ tables:
           <h2 class="pv-h pv-h--section">One record, every source, every
             surface, every query.</h2>
 
-          <!-- [C-18] Ken scenario 40 — framing. -->
+          
           <p class="pv-p">"We need one audit log that answers 'who read
             PHI in the last 90 days' across the EHR mirror, the claims
             warehouse and the research dataset. We do not want three
             logs, we do not want a joined view across three logs, and we
             do not want the application layer to be what makes it one."</p>
 
-          <!-- [C-19] Reworded: one audit log at the single governed
-               pipeline, so no surface can skip it. "In the federation
-               graph" dropped per verdict. -->
+          
           <p class="pv-p">One audit log, written at the single governed
             pipeline, so no surface can skip it. The record is written
             where the governed statement is compiled, not where the
             source is read; a surface that bypassed it would be a surface
             that bypassed the compiler, and there is not one.</p>
 
-          <!-- [C-20] Reworded per verdict: every query from Snowflake,
-               Postgres or BigQuery, logged with timestamp, user, role,
-               tables touched, surface, status, duration, row count, what
-               was enforced. Query text encrypted. -->
+          
           <h3 class="pv-h pv-h--sub">What is written</h3>
 
           <p class="pv-p">Every query — whether it reads from Snowflake,
@@ -489,17 +427,13 @@ tables:
             on the statement. The query text is stored encrypted and
             never exposed in the queryable views.</p>
 
-          <!-- [C-21] Reworded per verdict: queryable through governed
-               views in the ops domain — ops.pii_access for who read PII
-               in 90 days. -->
+          
           <p class="pv-p">The log is queryable through governed views in
             the <code>ops</code> domain, so compliance can ask "who read
             PII-tagged patient tables in the last 90 days" in SQL. The
             answer is a query, not an export.</p>
 
-          <!-- [C-22] Reworded per verdict: record keeps what was enforced
-               — row rules, masks, column rules — not just what was
-               requested. -->
+          
           <div class="pv-callout">
             <span class="pv-callout__label">WHAT WAS ENFORCED</span>
             <span class="pv-callout__body">The record keeps what was
@@ -510,10 +444,7 @@ tables:
               did.</span>
           </div>
 
-          <!-- [C-23] Reworded per verdict: refused requests land in the
-               policy-denials view. "Withheld" claim dropped — a hidden
-               column is not in the schema at all, nothing published says
-               a silent strip is logged. -->
+          
           <p class="pv-p">A request governance refused lands in the
             policy-denials view. <code>ops.policy_denials</code> holds
             every access attempt the policy layer rejected — the role
@@ -522,10 +453,7 @@ tables:
             a request that tried to name one is a schema error, not a
             policy denial, and shows up as such.</p>
 
-          <!-- [C-24] Reworded per verdict: SQL widened to 90 days using
-               ops.pii_access with columns user_id, role_id, source,
-               pii_column, logged_at. The table provisa_audit_log and
-               columns accessed_columns/query_text do not exist. -->
+          
           <h3 class="pv-h pv-h--sub">The 90-day question, in SQL</h3>
 
           <div class="pv-code pv-code--get">
@@ -544,7 +472,7 @@ ORDER BY logged_at DESC;</pre>
             compliance analyst who holds the domain reads the log; a
             researcher does not.</p>
 
-          <!-- [C-25] Docs link rewritten per verdict. -->
+          
           <a class="pv-link" href="https://provisa.dev/docs/security/#audit-logging">Audit
             logging, in the docs<span class="pv-link__arrow"> →</span></a>
 
@@ -553,14 +481,7 @@ ORDER BY logged_at DESC;</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §5 Natural-language queries for researchers
-       The question becomes SQL, GraphQL and Cypher (three languages, not
-       six — brief house rule). The endpoint runs under the asking role's
-       rights (C-30). A role without domain access cannot ask in SQL or
-       English (C-31). Scoped to the role's visible schema (REQ-356,
-       C-29).
-       ================================================================== -->
+  
   <section class="pv-section" id="natural-language">
     <div class="pv-container">
       <div class="pv-rail">
@@ -576,22 +497,20 @@ ORDER BY logged_at DESC;</pre>
             The question is rewritten into the three generated languages,
             each under the researcher's rights.</h2>
 
-          <!-- [C-26] Available — docs/features.md § NL. -->
+          
           <p class="pv-p">The natural-language query endpoint is
             available on the governed pipeline, so a researcher who
             prefers to ask in English does not fall outside the
             compiler's reach.</p>
 
-          <!-- [C-27] NL endpoint — api-reference.md:397, features.md:499. -->
+          
           <p class="pv-p">The endpoint is <code>POST /query/nl</code>.
             The caller is the role; the question is a string. What comes
             back is the answer and the three generated statements that
             produced it, so the researcher can see — and the compliance
             team can audit — what the English became.</p>
 
-          <!-- [C-28] Reworded per verdict: the question becomes SQL,
-               GraphQL and Cypher, each runs under researcher's rights
-               with the same governance — row filters included. -->
+          
           <div class="pv-callout">
             <span class="pv-callout__label">THREE LANGUAGES</span>
             <span class="pv-callout__body">When a <code>researcher</code>
@@ -601,25 +520,20 @@ ORDER BY logged_at DESC;</pre>
               any query — row filters included.</span>
           </div>
 
-          <!-- [C-29] Scoped to the role's visible schema — REQ-356. -->
+          
           <p class="pv-p">The prompt the natural-language service is
             handed is scoped to the role's visible schema (REQ-356). A
             table outside the researcher's schema is not described to
             the model, so the model cannot propose a plan that reads it.</p>
 
-          <!-- [C-30] Reworded per verdict: endpoint runs under the asking
-               role's rights. A table outside the role's domain access is
-               rejected before execution, whether SQL or English. -->
+          
           <p class="pv-p">The endpoint runs under the asking role's
             rights. A table outside the role's domain access is rejected
             before execution, whether the question arrived as SQL or
             English. The compiler does not care which endpoint produced
             the plan — it rewrites and checks the same way.</p>
 
-          <!-- [C-31] Reworded per verdict: a role without domain access
-               to patients cannot ask about it, in SQL or in English.
-               Dropped "query_development on the patients domain" — a
-               capability is not granted per domain. -->
+          
           <div class="pv-callout">
             <span class="pv-callout__label">OUTSIDE THE SCHEMA</span>
             <span class="pv-callout__body">A role without domain access
@@ -628,7 +542,7 @@ ORDER BY logged_at DESC;</pre>
               access to; the compiler would refuse them anyway.</span>
           </div>
 
-          <!-- [C-32] Docs link rewritten per verdict. -->
+          
           <a class="pv-link" href="https://provisa.dev/docs/api-reference/#post-querynl">POST
             /query/nl, in the docs<span class="pv-link__arrow"> →</span></a>
 
@@ -637,14 +551,7 @@ ORDER BY logged_at DESC;</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §6 Sources
-       Verdict drops Epic, Cerner, HL7 and FHIR as published connectors —
-       none is. The published list is: relational databases, Snowflake,
-       BigQuery, files on disk or S3, HTTP APIs with OpenAPI. The right
-       phrases are "PostgreSQL EHR mirror" and "FHIR API registered from
-       OpenAPI".
-       ================================================================== -->
+  
   <section class="pv-section pv-section--band" id="sources">
     <div class="pv-container">
      <div class="pv-stack pv-stack--lg">
@@ -660,10 +567,7 @@ ORDER BY logged_at DESC;</pre>
           <h2 class="pv-h pv-h--section">Healthcare data lives where it
             lives. Provisa reads it where it is.</h2>
 
-          <!-- [C-33] Reworded per verdict. Epic, Cerner, HL7, FHIR as
-               "connectors" dropped — none is published. Published list:
-               relational DBs, Snowflake, BigQuery, files on disk or S3,
-               HTTP APIs with OpenAPI. -->
+          
           <p class="pv-p">Healthcare data lives in EHR databases, FHIR
             and other HTTP APIs, claims warehouses, research platforms
             and files. Provisa reads relational databases, Snowflake and
@@ -674,9 +578,7 @@ ORDER BY logged_at DESC;</pre>
       </div>
 
       <div class="pv-grid pv-grid--2">
-        <!-- [C-34] Reworded per verdict: the right phrases are
-             "PostgreSQL EHR mirror" and "FHIR API registered from
-             OpenAPI". -->
+        
         <div class="pv-ruled pv-ruled--see pv-ruled--thick">
           <h3 class="pv-ruled__title">The same rules reach every source</h3>
           <div class="pv-ruled__body">A row rule or a column rule applies
@@ -701,13 +603,7 @@ ORDER BY logged_at DESC;</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §7 Governance + Interfaces: the two closing claims
-       C-35 — row-level security per table per role; visible_to per
-       column. C-36 — every client path gets the same governance.
-       The CTA at the end is the §7-cut replacement from the verdict:
-       install + register ladder, no cloud.provisa.dev, no "ten minutes".
-       ================================================================== -->
+  
   <section class="pv-section" id="governance-interfaces">
     <div class="pv-container">
       <div class="pv-rail">
@@ -722,8 +618,7 @@ ORDER BY logged_at DESC;</pre>
           <h2 class="pv-h pv-h--section">The three scenarios above are
             two mechanisms and one place every surface shares.</h2>
 
-          <!-- [C-35] RLS per table, per role; visible_to per column.
-               security.md § RLS + configuration.md:667. -->
+          
           <p class="pv-p">Row-level security is per table, per role: a
             <code>WHERE</code> predicate declared in the model and
             injected into every <code>SELECT</code> for that role on that
@@ -734,8 +629,7 @@ ORDER BY logged_at DESC;</pre>
             missing <code>mrn</code> are the same mechanism in two
             places.</p>
 
-          <!-- [C-36] Every client path gets the same governance.
-               features.md:671; security.md:3. -->
+          
           <p class="pv-p">Every client path gets the same governance.
             GraphQL, SQL over HTTP, pgwire, Bolt, Arrow Flight, gRPC —
             and the natural-language endpoint — all pass through the one
@@ -748,18 +642,13 @@ ORDER BY logged_at DESC;</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §Conversion. REQ-2014 ladder per the §7 verdict cut: cut the
-       cloud.provisa.dev link and the "ten minutes" line. Replace with
-       primary [Install and deploy](/install) and secondary [Register
-       (free licence)](/register). Body line is the pip tier one-liner.
-       ================================================================== -->
+  
   <section class="pv-contact pv-contact--inverse" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">
         <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
         <h2 class="pv-h pv-h--cta">Run it against your own tables.</h2>
-        <!-- The body line per verdict §7, verbatim. -->
+        
         <p class="pv-contact__sub">Run it on your own infrastructure.
           <code>pip install "provisa[embedded]"</code> then
           <code>provisa run</code> — no Docker, no Node, no external
