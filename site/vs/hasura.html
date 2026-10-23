@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- partials/head.html, verbatim but for the title, the description and the
-     canonical link. Order matters: fonts before tokens before provisa.css, and
-     the theme bootstrap before anything paints.
-
-     This file is a rebuild, not a new page. The old one was on the pre-kit
-     stylesheet (site/styles.css) and is indexed at /vs/hasura; the route does
-     not move and there is no redirect. Two things from the old file had to come
-     across rather than be rewritten from the brief, and both are below: the
-     PRO-34 rate-limit correction (§4 RuledCard 3 and §5 Panel 6) and the
-     comment recording why that sentence may not change back (§5 Panel 6). -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Coming from Hasura — Provisa</title>
@@ -55,16 +45,6 @@
   </div>
 </div>
 
-<!-- SiteHeader — partials/site-header.html, and the same bytes /vs/starburst
-     ships but for one attribute.
-
-     The kit's `Compare` item targets /vs/starburst. That is a different page
-     from this one, so this file does not carry aria-current="page" on it: a
-     current-page marker on a link that navigates away is the one way this
-     attribute misleads a screen reader. The footer's Compare column has an
-     entry for this route and that is where the marker goes. The nav item
-     itself stays as the shared chrome has it — raised on PRO-3, where the fix
-     is one file. -->
 <header class="pv-header">
   <div class="pv-header__inner pv-container">
     <a class="pv-wordmark" href="/">
