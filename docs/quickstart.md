@@ -9,7 +9,7 @@ This guide is for running Provisa **from the repository** — active development
 ## Prerequisites
 
 - **Docker Desktop** (running)
-- **Python 3.12+**
+- **Python 3.12** — exactly 3.12; `requires-python` is `>=3.12,<3.13` (`pyproject.toml:6`) because a dependency ships cp39–cp312 wheels and no source distribution
 - **Node.js 20+**
 - **Git**
 

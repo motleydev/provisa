@@ -5,11 +5,6 @@ embedded local platform, so the region-specific admin UX is visible end to end. 
 embedded Postgres (the model store and both regions' stores), each runs its own DuckDB engine, and a
 single fakeredis TCP server is the cache.
 
-> Status: scaffolded, not yet provable. Two regions share one Postgres, so it depends on
-> region-qualified schema and cache names (so the regions do not collide). Do not run the launch
-> until that lands; `scripts/launch-demo-regions.sh --check` validates the layout without starting
-> anything.
-
 ## Start it
 
 ```
@@ -53,5 +48,3 @@ Open the **eu** UI at http://127.0.0.1:8310 and the **us** UI at http://127.0.0.
   data_residency grant — is the design point. Reads are unaffected: what a reader sees across regions
   is governed by RLS, not by data_residency. (The break-glass `admin` superuser is control-plane only
   and holds no data capabilities, so it is not used for this.)
-- **A draft table.** Pending replica-layout-2's draft work; the demo's draft table and this step are
-  added when draft lands on regions-3c.
