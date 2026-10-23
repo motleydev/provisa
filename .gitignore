@@ -78,9 +78,14 @@ Screenshot*
 # Node
 node_modules/
 
-# Claude Code / Codex — local only
-/.claude/
-!/.claude/settings.local.json
+# Claude Code / Codex — local only, except the tracked project settings.
+# `/.claude/*` rather than `/.claude/`: git never descends into an excluded
+# directory, so a negation under one is inert, which is why the
+# `!/.claude/settings.local.json` that used to sit here never took effect. It is
+# gone rather than fixed: settings.local.json is per-machine by convention, and
+# settings.json is the file a hook has to be wired in to reach an agent run.
+/.claude/*
+!/.claude/settings.json
 /.codex/
 /jdbc-driver/target/
 /.wrangler/cache/pages.json
