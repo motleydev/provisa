@@ -34,7 +34,6 @@
 
 <a class="pv-skip" href="#main">Skip to content</a>
 
-<!-- UtilityBar — partials/utility-bar.html. -->
 <div class="pv-utility">
   <div class="pv-utility__inner pv-container">
     <nav class="pv-utility__links" aria-label="Utility">
@@ -112,27 +111,9 @@
 
 <main id="main">
 
-  <!-- ==================================================================
-       §1 Hero. Breadcrumb + Eyebrow + Heading + Emph.
-
-       No FigPanel, and not by omission: the image-register has no slot for a
-       /vs/* page (IMG-15 is the Compare hub, not a comparison), and a figure
-       above the fold pushes §5 further down, which is the one thing this page
-       cannot afford. If the VP wants a slot it goes between §6 and §7, never
-       above §5.
-
-       The standfirst names four things and points at §3's table for the rest.
-       It is not an eleven-item list and must not become one again: every item
-       in the long version was cited, so this was never a claims problem — an
-       evaluator scanning for their own permission shape cannot find it in
-       prose that long. §3's table is where comprehensiveness belongs.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
 
-      <!-- Breadcrumb. `Compare` is not a link: the hub does not exist yet
-           (build note 3) and /vs/ has no index, so the only honest middle
-           crumb is the label. -->
       <nav class="pv-crumb" aria-label="Breadcrumb">
         <a href="/">Provisa</a>
         <span aria-hidden="true">/</span>
@@ -167,25 +148,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §2 Run it. CodeTabs ×2 + SectionLabel + CodeBlock + Callout.
-
-       Two routes, each complete on its own. The CLI takes a metadata
-       *directory* and calls parse_metadata_dir unconditionally; the metadata
-       API's consolidated document is an upload and goes to the admin import
-       tab. An earlier revision offered the API export as an alternative inside
-       the CLI flow, which led a reader who drives Hasura over HTTP into a dead
-       end two commands in. Do not re-merge the two routes.
-
-       The two tabs compose: tab 1 writes the directory tab 2 converts. An
-       earlier revision exported with `--output metadata.yaml` and then
-       converted `./metadata`, which gets a reader a file and then a missing
-       directory on the page's primary command path.
-
-       Each panel carries its code block and its prose, so it is a
-       pv-codetabs__panel--prose with a pv-code inside rather than a bare
-       code panel.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container pv-stack pv-stack--lg">
 
