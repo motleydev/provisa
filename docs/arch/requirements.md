@@ -23207,3 +23207,353 @@ Each tour declares its prerequisites, what its steps show of the org beyond the 
 **Code:** —
 
 **Tests:** —
+
+## 0. Architecture & Design Principles
+
+### REQ-2014 · Marketing & Design System {#REQ-2014}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+The marketing site has a single CTA ladder with three fixed rungs, written in site/design-system/README.md under "The CTA ladder" so pages source labels from the kit rather than copy: (1) Primary—download-and-register: "Download Provisa" to /install and "Get a free licence" to /register as one rung (the licence is free, a registration artifact, does not gate functionality per [REQ-1137](#REQ-1137)); (2) Secondary—contact path: "Book a demo" to page-closing band's demo form at #contact (alternative to installing, never the only action); (3) No page links cloud.provisa.dev as a way to run Provisa, in any tense; "coming soon" and "in development" are not available; no managed-hosting SKU (go-to-market is licence sales per docs/marketing.md). Label specimens are propagation sources; the rule lives in the kit and per-page checkers, not only in plan revisions.
+
+**Use case:** A new page reads CTA labels from site/design-system/README.md; no label escapes into specimen code that later spreads to other pages.
+
+**Code:** `site/design-system/README.md`, `site/design-system/check-page-platform.py`
+
+**Tests:** —
+
+## 10. UI & Admin Surfaces
+
+### REQ-2015 · Marketing & Design System {#REQ-2015}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+The site's message spine is "ask once in English, and up to six governed surfaces answer — SQL, GraphQL, Cypher, gRPC, JSON:API and OpenAPI, each generated for the asking role and run through the same compiled governance". This spine replaces "one model, three languages" wherever it appears: Home hero, Home §5 CodeTabs, Platform lead, Interfaces lead, the kit's Accordion title and TextLink sample, /why/one-model's federation paragraph, and /vs/starburst's meta description. The spine embodies the decision recorded in docs/claim-audit.md §5.1a–c (PRO-8), executed site-side on PRO-26.
+
+**Use case:** Visitors understand Provisa's unique value in a single consistent message across every marketing surface: one natural-language question answered on multiple governed protocol surfaces, not three language choices.
+
+**Code:** —
+
+**Tests:** —
+
+### REQ-2016 · Marketing & Design System {#REQ-2016}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+Three qualifiers are mandatory wherever the spine ([REQ-2015](#REQ-2015)) appears. (a) "up to six" — six is the capability, never a count promised per question. (b) gRPC, JSON:API and OpenAPI are the request a client would send plus the envelope it would receive, computed through the governed pipeline, not a network round trip. (c) Those three express row, aggregate and group-by questions only; anything else returns the branch's "not applicable". Qualifier (a) travels in the spine sentence itself and a page that drops it fails review outright; (b) and (c) must be visible on the same page, in page text or in a footnote per that page's design.
+
+**Use case:** The marketing message is precise and defensible; prospects know that not every question lands on every surface, and that gRPC et al. are governed outputs, not separate backend deployments.
+
+**Code:** —
+
+**Tests:** —
+
+### REQ-2017 · Marketing & Design System {#REQ-2017}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+The query-language claim is NOT the spine and is not rewritten by [REQ-2015](#REQ-2015): "Starburst speaks SQL; Provisa speaks SQL, GraphQL and Cypher over one model" stays on /vs/starburst (lede at :164, structural-difference row at :448) and in any comparison-table cell of the same shape, because Starburst's protocol surface count was never audited ([REQ-2015](#REQ-2015) is a site governance claim, not a competitive claim).
+
+**Use case:** The comparison with Starburst is scoped to query languages, not to all six governed surfaces, and the claim is not overstated relative to what Starburst's marketing discloses.
+
+**Code:** —
+
+**Tests:** —
+
+### REQ-2018 · Marketing & Design System {#REQ-2018}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+"Six governed surfaces" (what one English question comes back on) and "sixteen surfaces" (the client-facing protocol surfaces riding seven listeners) are different counts of different things; any page using both must say so. Home §6 carries that sentence. The two terms must not appear on the same page without clarification.
+
+**Use case:** Marketing collateral is internally consistent; readers do not confuse the surfaces a question lands on with the total protocol surface area of the system.
+
+**Code:** —
+
+**Tests:** —
+
+### REQ-2019 · Marketing & Design System {#REQ-2019}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+"Nine protocols" is struck sitewide. The framing is seven listeners and sixteen surfaces, per [REQ-2018](#REQ-2018). No page references "nine protocols" in any tense or context.
+
+**Use case:** Marketing terminology is unified and aligned with the governance and protocol surface counts defined in [REQ-2015](#REQ-2015), [REQ-2018](#REQ-2018), and docs/claim-audit.md.
+
+**Code:** —
+
+**Tests:** —
+
+### REQ-2020 · Marketing & Design System {#REQ-2020}
+
+**Status:** 💡 proposed · **Priority:** MUST · **Type:** constraint
+
+A labelled diagram on the site is built from `Schematic` (`.pv-schem`), not from `FigPanel`, and its nodes and connectors are text in document order: nothing inside a schematic carries `aria-hidden`, `aria-label` or `role`, so the written order of the nodes and wires is the reading order a screen reader and the stacked form under 900px both get. The canvas does not clip — a label that no longer fits where it was positioned escapes its canvas and fails `verify-ui.mjs` rather than being silently cut off.
+
+**Use case:** A region, lineage or topology diagram is readable rather than decorative, and a figure whose labels have outgrown their positions fails loudly instead of shipping truncated.
+
+**Code:** `site/design-system/provisa.css`, `site/design-system/partials/schematic.html`
+
+**Tests:** `site/design-system/verify-ui.mjs`, `site/design-system/check-contrast.mjs`
+
+### REQ-2021 · Marketing & Design System {#REQ-2021}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+The struck-claim list is one module, `site/claim-bans.mjs`, carrying each struck string with the reason it was struck, and every site checker reads it rather than keeping a copy. `site/verify-claims.mjs` sweeps that list across every `.html` page under `site/` except `site/design-system/`, which is the component kit and is `check-kit.mjs`'s. The sweep needs no browser and no server, because `site/` has no build step and the served bytes are the bytes on disk. A struck claim is struck on whichever page it appears: a list checked against one page is not a claim check, which is how `/why/one-model` shipped "85+", "six layers" and "No invalid join ever runs on your data" past a green `verify-home.mjs` (PRO-27). "62 connectors" and "six governance layers" join the list. HTML comments are excluded before matching: a struck string inside a comment is not copy a reader or a crawler is served, and the comments on these pages quote the struck strings in order to name the rule.
+
+**Use case:** A claim the SME struck cannot reappear on any page of the site, and a reviewer checking the whole site for it runs one command that needs nothing installed.
+
+**Code:** `site/claim-bans.mjs`, `site/verify-claims.mjs`, `site/verify-home.mjs`
+
+**Tests:** `site/verify-claims.mjs`
+
+### REQ-2022 · Marketing & Design System {#REQ-2022}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+The claim sweep also enforces three things no string ban can see. A count of source types on any page is 72, 63 or 37 and nothing else (`docs/claim-audit.md` §1.1 and §1.2) — the failure this catches is a page contradicting itself, as `/why/one-model` did with an "All 62 connectors" link under a "72 connectors" sentence. A page using both "six governed surfaces" and "sixteen surfaces" carries the distinguishing sentence, per [REQ-2018](#REQ-2018). The spine sentence keeps its "up to six" qualifier, per [REQ-2016](#REQ-2016): the check is on the sentences that deliver — "answered on six governed surfaces", "six governed surfaces answer" — not on a later back-reference to the six on a page that already stated the spine with its qualifier.
+
+**Use case:** The numbers on the site are reproducible and mutually consistent, and a page cannot drift into contradicting its own figures between one paragraph and the link beneath it.
+
+**Code:** `site/verify-claims.mjs`
+
+**Tests:** `site/verify-claims.mjs`
+
+### REQ-2023 · Marketing & Design System {#REQ-2023}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A page may carry a struck string only through an exception declared in `site/verify-claims.mjs`'s `EXCEPTIONS`, scoped to that one string on that one page and naming the requirement that mandates it. One exists: `/demos` links a `cloud.provisa.dev` sandbox because [REQ-2006](#REQ-2006) specifies that button, the ban being on offering the host as a conversion rather than on the demo sandbox. The sweep holds each exception to two further assertions, so that an exception cannot quietly become a licence: the page still contains the string, or the exception is stale and fails; and, for the hosted host, the page does not sell it — no "free trial", "hosted service" or "sign up for" wording — because the hosted conversion stays withdrawn.
+
+**Use case:** The one page that must name the hosted host can name it, every other page still cannot, and an exception that has outlived its reason fails the check instead of outliving it silently.
+
+**Code:** `site/verify-claims.mjs`
+
+**Tests:** `site/verify-claims.mjs`
+
+### REQ-2024 · Marketing & Design System {#REQ-2024}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+Browser render-pass verification of a site/ page must be run against a server that resolves pages by their extensionless production route (e.g. /why/interfaces, not /why/interfaces.html), because nav links and Cloudflare Pages both address pages that way. `site/design-system/serve.py` is that server — it resolves `path`, then `path.html`, then `path/index.html` like Pages does. `python3 -m http.server --directory site` must not be used for verify scripts that assert on a route, as it 404s on extensionless routes. Scripts that request `.html` files or directory indexes may use either server.
+
+**Use case:** Verify scripts test the site in the routing pattern that users and production see, not an alternate pattern that silently passes while users hit 404s.
+
+**Code:** `site/design-system/serve.py`
+
+**Tests:** `site/design-system/verify-page-interfaces.mjs`
+
+### REQ-2025 · Marketing & Design System {#REQ-2025}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+/why/one-model is built on the Home chrome (fonts.css/tokens.css/provisa.css, the inline theme bootstrap, pv-utility, pv-header, the drawer, pv-skip, SiteFooter), no page-level CSS, and the audit's copy is carried verbatim into kit components rather than reworded. The old page's site/styles.css, Google Fonts link, and mismatched navigation are asserted absent by name, not merely assumed gone.
+
+**Use case:** A page rebuilt on the kit uses only the shared chrome, and migrated copy is not accidentally reworded in the transition.
+
+**Code:** `site/why/one-model.html`, `site/design-system/check-page-one-model.mjs`
+
+**Tests:** `site/design-system/check-page-one-model.mjs`
+
+### REQ-2026 · Marketing & Design System {#REQ-2026}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+Every page built on the kit carries its own pair of checkers on the documented split — one that needs no browser (composition plus the page's copy word for word) and one .mjs render pass at 360/768/1280/1920/2560 in both themes against the extensionless production route. A page checker does not restate the struck-claim list, because [REQ-2021](#REQ-2021) sweeps it site-wide; duplicating it is the drift that module exists to prevent.
+
+**Use case:** Each page validates its composition and copy independently; the sitewide claim sweep ([REQ-2021](#REQ-2021)) centrally enforces struck claims across all pages to prevent checker fragmentation and checker drift.
+
+**Code:** `site/design-system/check-page-one-model.mjs`, `site/design-system/verify-page-one-model.mjs`
+
+**Tests:** `site/design-system/check-page-one-model.mjs`, `site/design-system/verify-page-one-model.mjs`
+
+### REQ-2027 · Marketing & Design System {#REQ-2027}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A page whose content is running prose and nothing else measures its prose: every .pv-p and every Callout carrying prose is capped at --measure, and the render pass asserts the widest block against the resolved cap at every width. A Callout does not cap itself, so it carries the .pv-measure utility.
+
+**Use case:** Prose readability is preserved at every viewport width; the render pass confirms no line exceeds the configured measure.
+
+**Code:** `site/design-system/provisa.css`, `site/design-system/verify-page-one-model.mjs`
+
+**Tests:** `site/design-system/verify-page-one-model.mjs`
+
+### REQ-2028 · Marketing & Design System {#REQ-2028}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+The governance figure on /why/one-model draws five rings — one per layer compiled into the query plan — and does not draw the approval hook, which sits outside the plan. The render pass measures five painted widths closing on the vermilion core rather than counting markup, because pv-fig--rings has rendered one ring fewer than it was given before.
+
+**Use case:** The figure's ring count is verified by render width, not by markup count, catching silent off-by-one rendering errors.
+
+**Code:** `site/design-system/verify-page-one-model.mjs`
+
+**Tests:** `site/design-system/verify-page-one-model.mjs`
+
+### REQ-2029 · Marketing & Design System {#REQ-2029}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+A dead-link assertion that exists only because a page is unbuilt is removed when that page lands, and replaced by an assertion of the link. site/verify-home.mjs now asserts Home §5's "Read the model page →" TextLink to /why/one-model instead of asserting no body link to it.
+
+**Use case:** Once a page is built and live, its link is asserted as functional rather than asserted as dead; the dead-link check ceases to apply.
+
+**Code:** `site/verify-home.mjs`
+
+**Tests:** `site/verify-home.mjs`
+
+### REQ-2030 · Marketing & Design System {#REQ-2030}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+Dating a competitor column does not date its cells. A cell in `docs/competitive_analysis.md` may back a published negative claim only if it carries its own `(Verified <date>, <documentation>)` stamp naming the product version and documentation area it was read against. An unstamped cell in a dated column remains under the undated-column rule.
+
+**Use case:** A page author can tell from the cell alone whether a claim is publishable, instead of inferring it from a column-level date that may cover only some cells.
+
+**Code:** `docs/competitive_analysis.md`
+
+**Tests:** `site/verify-claims.mjs`
+
+### REQ-2031 · Marketing & Design System {#REQ-2031}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+Before a competitor negative is published, the competitor's nearest documented capability is named in the same cell and the distinction drawn from it. Neo4j 2026.09 property-based access control is named before any row-level-security distinction; GraphOS Router authorization directives are named before any platform-enforcement distinction; Apollo Connectors are named before any source-connection distinction; GraphOS Router entity caching is named before any security-partitioned-cache distinction.
+
+**Use case:** A competitor's sales engineer reading the page finds their own capability acknowledged, so the distinction that follows is credible rather than discreditable.
+
+**Code:** `docs/competitive_analysis.md`
+
+**Tests:** `site/verify-claims.mjs`
+
+### REQ-2032 · Marketing & Design System {#REQ-2032}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+A bare "Not available" or "No X" in a competitor column is a defect, not a claim. Natural language query was published as "Not available" for both Neo4j and Apollo GraphOS while Neo4j documented `Text2CypherRetriever` and Apollo MCP Server was generally available. A capability negative is written as a statement about the competitor's documentation on a date.
+
+**Use case:** The published comparison cannot be refuted by one link to the competitor's own docs.
+
+**Code:** `docs/competitive_analysis.md`
+
+**Tests:** `site/verify-claims.mjs`
+
+### REQ-2033 · Marketing & Design System {#REQ-2033}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+No page claims a migrated limit is preserved on a dimension the converter does not carry exactly. Hasura v2's `rate_limit` is per minute and a role's `requests_per_second` is per second, so the import rounds and floors at 1: a role set to 10 requests per minute arrives serving 60, one set to 150 per minute arrives throttled to 120, and the value is exact only at a multiple of 60. A page states which dimensions convert exactly and tells the reader to re-read the rate on every throttled role. The word is not banned site-wide — a cron expression is preserved, and a lineage graph preserves its CTEs and joins — so the check is a scoped window: preservation language in the same sentence as a rate or API limit fails.
+
+**Use case:** A buyer migrating an expensive reporting role throttled on purpose is told to check the converted number, instead of discovering the role serving six times its v2 rate in production.
+
+**Code:** `site/vs/hasura.html`, `docs/import.md`
+
+**Tests:** `site/verify-claims.mjs`
+
+## 12. Migration & Compatibility (Hasura)
+
+### REQ-2034 · Hasura v2 Import: Unconverted Sections {#REQ-2034}
+
+**Status:** ✅ complete · **Priority:** MUST · **Type:** structural
+
+Hasura v2 import reports the five unconverted export sections (query_collections, allowlist, rest_endpoints, network, opentelemetry) identically from both the consolidated metadata document and the CLI metadata directory. Both readers share one reporting table so they cannot drift. In a directory, presence is judged on file content rather than file existence; both the CLI spelling `allow_list.yaml` and the API spelling `allowlist.yaml` match and report under the API key `allowlist`. Each key is reported once across the directory root and all `databases/<name>/` subdirectories.
+
+**Use case:** Administrators using either Hasura export format receive consistent unconverted-section warnings, enabling uniform migration guidance and preventing silent loss of configuration sections.
+
+**Code:** `provisa/hasura_v2/parser.py`
+
+**Tests:** `tests/unit/test_hasura_unconverted_sections.py`
+
+## 11. Platform, Infrastructure & Delivery
+
+### REQ-2038 · CI & Verification {#REQ-2038}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A missing toolchain on the agent runners is not a blocker. The runners are NixOS with no `apt-get`, no FHS library directory, and no `nix` on `PATH` — which is what made two verifications look impossible rather than merely awkward. `nix` is at `/run/current-system/sw/bin/nix` whether or not `PATH` names it, and the binary cache is reachable, so anything in nixpkgs is a `nix build` away. A verification that cannot run for want of an interpreter or a shared object is reported as the environment gap it is, with the closure that closes it, not as a property of the thing being verified.
+
+**Use case:** Two site verifications sat unrunnable for a day on the reading that the sandbox could not host them. Both ran the same afternoon once nix was found where NixOS keeps it.
+
+**Code:** `scripts/install-env.sh`, `site/design-system/browser-deps.py`
+
+**Tests:** —
+
+### REQ-2039 · CI & Verification {#REQ-2039}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+The install page's blocks are executed against the interpreter they name, not the one the runner ships. `scripts/install-env.sh <command>` puts nix's python 3.12 and postgresql 16 ahead of the runner's 3.13 on `PATH`, and sets `LD_LIBRARY_PATH` to libstdc++ and zlib so the embedded tier's manylinux wheels load: duckdb's `_duckdb.so` wants `libstdc++.so.6` by bare soname and finds nothing at an FHS path, so `provisa run` otherwise dies on `import duckdb` immediately after an install that reported success. Not glibc — a second glibc on `LD_LIBRARY_PATH` would be swapped under every process the command starts.
+
+**Use case:** The page tells a reader to run two blocks. Nobody had run either, because the runner's 3.13 is the one interpreter the package excludes.
+
+**Code:** `scripts/install-env.sh`
+
+**Tests:** —
+
+### REQ-2040 · CI & Verification {#REQ-2040}
+
+**Status:** ✓ accepted · **Priority:** SHOULD · **Type:** constraint
+
+A command handed to an environment wrapper is run directly, not inside a bare `bash -c`. The agent runners set `BASH_ENV`, so a nested shell re-runs that rc file and re-prepends the runner's own python 3.13 — the wrapper's work is undone silently and the symptom is the exact failure the wrapper exists to prevent. `env -u BASH_ENV bash -c` where a shell is genuinely needed.
+
+**Use case:** `install-env.sh install bash -c 'python3 -V'` answered 3.13 while `install-env.sh python3 -V` answered 3.12.14, from the same wrapper, on the same runner, one second apart.
+
+**Code:** `scripts/install-env.sh`
+
+**Tests:** —
+
+## 12. Migration & Compatibility (Hasura)
+
+### REQ-2041 · Hasura v2 Import: Command-Name Collision Resolution {#REQ-2041}
+
+**Status:** ✅ complete · **Priority:** MUST · **Type:** behavioral
+
+In Hasura v2 import, when a computed field and a tracked function in the same or different sources claim the same command name, the computed field wins and the tracked function is dropped (not an error). Commands and webhooks share one address space ([REQ-1385](#REQ-1385)), making such configurations unrepresentable. The drop is reported as a [functions] warning naming both claimants and their remedies: untrack the function in Hasura v2 or rename the computed field. Collision detection scans all sources' computed fields before any mapping runs, enabling cross-source collision detection — the table pass for a later source would otherwise run after the tracked-function pass for an earlier source and miss it.
+
+**Use case:** A Hasura v2 export has a computed field `get_claims` on table `entities` and a tracked function `get_claims` in the same or different database. The importer must not fail; it drops the tracked function and reports the collision with both remedies.
+
+**Code:** `provisa/hasura_v2/mapper.py`
+
+**Tests:** `tests/unit/test_hasura_v2.py`
+
+## 0. Architecture & Design Principles
+
+### REQ-2042 · Marketing & Design System {#REQ-2042}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A marketing page does not go live describing converter or product behaviour that is true in the repository but not yet in a published release. The site and the product ship on separate trains — the site deploys from this repository while a reader obtains the converter from a GitHub release or `pip install provisa` — so merging a fix to `main` publishes the page while the reader still holds the old artifact. Where a page's copy depends on such a fix, the page is held on a release gate rather than carrying a version-conditional caveat, and the gate is recorded in three places: the page brief's header, the page register's state cell, and a numbered acceptance criterion on the build issue naming the command that proves it. The gate is executable rather than remembered: the page's checker runs the acceptance criterion's commands against the converter an interpreter resolves and fails by default, `--pre-release` downgrades it to a report for the build-and-commit phase only, and a converter resolved out of this repository's source tree fails the gate rather than satisfying it.
+
+**Use case:** A reader runs the exact command the page prints, against the release the page's own download link gives them, and the output matches what the page said it would be. `/vs/hasura` carries gates on [REQ-2034](#REQ-2034) (both Hasura export layouts report the five unconverted sections) and [REQ-2041](#REQ-2041) (a computed field and a tracked function claiming one command name warns instead of crashing); both are true in the repository and neither is in a published release.
+
+**Code:** `site/vs/hasura.html`, `site/design-system/check-page-vs-hasura.mjs`
+
+**Tests:** —
+
+## 11. Platform, Infrastructure & Delivery
+
+### REQ-2043 · CI & Verification {#REQ-2043}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A site task ships on its own branch, cut from the integration branch, and its own pull request. The issue closes on the merge of that pull request, not on the existence of its commits. Two workflows gate a pull request touching `site/**`: `site-review.yml` for the browserless checkers and `site-review-browser.yml` for the Playwright pass at every verified width in both themes. The monorepo jobs — `ruff + pyright`, `tsc + vitest`, `pytest tests/unit`, `Validate requirements.yaml` — are red on `main` independently of any site work and are not a verdict on a page.
+
+**Use case:** Ten issues read `done` with commits only on `pro8-source-corrections-claim-sets`, and thirteen further commits for `done` issues existed only in one agent checkout, unpushed to any remote. Five agents shared one branch feeding one pull request of 93 files and +15,904 lines, so no page was reviewed before the board called it done.
+
+**Code:** `docs/ops/site-task-pipeline.md`, `.github/workflows/site-review.yml`
+
+**Tests:** —
+
+### REQ-2044 · CI & Verification {#REQ-2044}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** behavioral
+
+Binding an issue to a non-primary project workspace — `PATCH /api/issues/{id}` with `projectWorkspaceId` — routes the next run's execution workspace to that workspace's `cwd`, so a site task gets its own checkout without the board-only `enableIsolatedWorkspaces` instance flag. The row that reports the binding still carries `mode: shared_workspace` and `strategyType: project_primary`, the same labels the primary rows carry, and `currentExecutionWorkspace` on `GET /api/issues/{id}` reads `null` during the run that owns the row — `cwd` is the field that tells two workspaces apart.
+
+**Use case:** Measured 2026-10-17 on two runs: both read `$PAPERCLIP_WORKSPACE_CWD` and `pwd` at the bound worktree path, `$PAPERCLIP_WORKSPACE_ID` as the bound workspace id, and `GET /api/companies/{companyId}/execution-workspaces` carried a row at that `cwd` whose `sourceIssueId` was the bound issue. Without this route, parallel site tasks share one checkout and overwrite each other.
+
+**Code:** `docs/ops/site-task-pipeline.md`
+
+**Tests:** —
