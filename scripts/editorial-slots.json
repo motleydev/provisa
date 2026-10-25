@@ -1,0 +1,343 @@
+{
+  "comment": "Per-slot briefs for the editorial illustrations series. Palette, grid, and visual-system rules are defined once in editorial-generate.sh; this file holds only the per-slot semantics the shared brief cannot infer: what the drawing means, which forms must appear, which connections exist, which element is the focal accent, and any required labels. See PRO-143 and PRO-142 for the shared direction. IMG-18 is deferred (register note: ships with Insights).",
+  "slots": [
+    {
+      "id": "img-01",
+      "page": "home",
+      "aspect": "4:5",
+      "size_long_edge_px": 2000,
+      "title": "Home hero: the layer between sources and consumers",
+      "meaning": "Provisa as the mediating layer that lets a shared model answer across many sources. The eye should land on that layer first.",
+      "composition": {
+        "left_column": "Three source marks (a slim stack of three thin rectangles of varied width) in a loose vertical column on the left, in forest, representing registered data sources.",
+        "centre_band": "One wide, shallow horizontal bar across the middle of the frame in cobalt — this is Provisa. It is the dominant element: wider than any other, placed on the frame's optical centre, with a thin inner rule suggesting layered composition.",
+        "right_column": "Three consumer marks on the right in ink — small squares arranged in a shallow stair, representing people, dashboards and agents reading from the same model.",
+        "focal_accent": "A single vermilion square sits inside the central cobalt band at approximately 1/3 from the right — the focal accent. It represents the one shared model answered consistently to every consumer.",
+        "connections": "Three straight lines run from each source mark into the left edge of the cobalt band. Three straight lines run from the right edge of the cobalt band to the three consumer marks on the right. No connectors cross; each is a straight run with one controlled bend to resolve height difference. Lines are the fine ink hairline weight."
+      },
+      "labels": null,
+      "notes": "Do not render any text. Avoid any pair of squares that could read as eyes."
+    },
+    {
+      "id": "img-02",
+      "page": "home",
+      "aspect": "1:1",
+      "size_long_edge_px": 1600,
+      "title": "Buyer-path fork: three tiles",
+      "meaning": "Three parallel entry paths into Provisa — evaluate it technically, bring a team on, run procurement. One frame, three disciplined marks.",
+      "composition": {
+        "layout": "A single 1:1 composition divided into three equal vertical panels by two fine ink rules. Each panel contains one mark, aligned on a shared baseline and framed by generous negative space.",
+        "panel_1_left": "Evaluate. A single tall rectangle in cobalt with a thin horizontal inner rule at 1/3 height — an engineer's slot, a page being read.",
+        "panel_2_centre": "Team. A short, wide horizontal bar in forest with three equally spaced small squares along its top edge — a shared surface with multiple seats, no faces or figures.",
+        "panel_3_right": "Procurement. A vertical column of four thin horizontal bars in ink of varying short widths, like a stack of signed pages. One of the bars has a vermilion dot aligned on its right end — the sign-off.",
+        "focal_accent": "The vermilion dot in the right-most panel; it is the only vermilion in the frame.",
+        "connections": "No connectors between panels; the dividing rules separate the paths."
+      },
+      "labels": null,
+      "notes": "Panels must be visibly peers. Do not centre a dominant element in any one panel."
+    },
+    {
+      "id": "img-03",
+      "page": "platform",
+      "aspect": "16:9",
+      "size_long_edge_px": 2400,
+      "title": "Platform architecture: sources → Provisa → engine → interfaces, engine shown as swappable",
+      "meaning": "The single most important composition on the site. Reads left to right: inputs on the left, Provisa in the middle, engine (a swappable slot) just below Provisa, interfaces fanned on the right.",
+      "composition": {
+        "left": "A tight column of five varied source marks on the left — thin rectangles and small squares in forest, representing databases, warehouses, data lakes, SaaS and files. They sit on a shared left baseline.",
+        "centre_upper": "A wide, shallow cobalt bar spanning roughly 50% of the width, centred vertically slightly above the midline — Provisa itself. It carries the illustration.",
+        "centre_lower_slot": "Directly beneath the cobalt bar, aligned to its horizontal span, is an outlined rectangle in ink, with a one-line hairline inside breaking it into three equal segments. This is the swappable engine slot. One of the three segments is filled with vermilion — the active engine. The other two are empty, showing alternatives.",
+        "right": "On the right, five small ink marks fan out from the right edge of the cobalt bar — a mix of circles, squares, and short bars representing interfaces (SQL, GraphQL, API, MCP, UI). They sit at slightly different vertical positions, radiating from a single anchor on the cobalt bar's right edge.",
+        "focal_accent": "The vermilion engine segment in the slot beneath Provisa.",
+        "connections": "Five fine ink lines run from each source into the left edge of the cobalt bar as straight horizontal runs with one broad bend each where the vertical positions differ. One short vertical connector drops from the cobalt bar's underside into the engine slot. Five fine lines fan from the cobalt bar's right edge out to the five interface marks."
+      },
+      "labels": null,
+      "notes": "The swappable engine idea must read without text: the slotted outline with one filled segment makes the metaphor. The cobalt bar must be the dominant horizontal mass."
+    },
+    {
+      "id": "img-04",
+      "page": "platform",
+      "aspect": "4:5",
+      "size_long_edge_px": 2000,
+      "title": "Deployment shapes: embedded, self-hosted, private cloud, air-gapped",
+      "meaning": "Four distinct deployment stances rendered as four distinct geometric treatments of the same Provisa object.",
+      "composition": {
+        "layout": "A 2×2 grid, with each cell holding one treatment of a wide, shallow cobalt bar labelled by context, not by text.",
+        "cell_top_left_embedded": "The cobalt bar is tucked inside a larger ink outline rectangle — hosted by a surrounding application.",
+        "cell_top_right_self_hosted": "The cobalt bar sits above a single flat ink bar — the customer's own ground.",
+        "cell_bottom_left_private_cloud": "The cobalt bar is enclosed by a thin ink rectangle that has one open side (the right) — perimeter present but customer-controlled.",
+        "cell_bottom_right_air_gapped": "The cobalt bar sits inside a tightly closed ink rectangle with a narrow margin on all sides and no connectors exiting — fully sealed.",
+        "focal_accent": "A single small vermilion square inside the air-gapped cell at the top-right corner of its enclosing ink rectangle — flagging the strictest stance as the one most carefully contained.",
+        "connections": "No connectors between cells. Each cell is independent."
+      },
+      "labels": null,
+      "notes": "The four cells must share the same cobalt bar proportions so the differences read as context, not as different objects."
+    },
+    {
+      "id": "img-05",
+      "page": "governance",
+      "aspect": "4:5",
+      "size_long_edge_px": 2000,
+      "title": "Governance six-layer figure: six layers compiling into one query plan",
+      "meaning": "Six governance decisions — who can see it, what they get, whether it runs — stacked into a single plan that comes out below.",
+      "composition": {
+        "top_stack": "Six concentric square frames centred horizontally in the upper 2/3 of the composition, nested cleanly. From outside to inside, their fills alternate the three governance tones: cobalt (see), forest (get), vermilion (run), cobalt (see), forest (get), vermilion (run), each at a slightly reduced saturation step for the inner rings. The innermost square is solid vermilion — the compiled core.",
+        "bottom_bar": "Directly below the stack, separated by a generous gap, is one wide shallow ink bar — the query plan — spanning roughly 60% of the composition's width. A single fine vertical hairline connects the base of the innermost vermilion square to the top edge of the plan bar.",
+        "focal_accent": "The innermost solid vermilion square — the point where six layers resolve.",
+        "connections": "Only one connector: the vertical hairline from the inner square to the plan bar. The nested squares are not individually connected to the plan bar; the nesting itself is the compilation."
+      },
+      "labels": null,
+      "notes": "The three semantic colours must appear in the correct see/get/run order. The nested squares must be clearly concentric, not stacked above each other. Avoid any arrangement that reads as a pair of eyes."
+    },
+    {
+      "id": "img-06",
+      "page": "governance",
+      "aspect": "16:9",
+      "size_long_edge_px": 2400,
+      "title": "Policy in plan: query in, plan with policy inlined out",
+      "meaning": "A query enters on the left as one shape; it emerges on the right as the same shape with governance rules fused into it, not bolted on.",
+      "composition": {
+        "left": "A single tall cobalt rectangle on the left — the incoming query. Clean, one solid field.",
+        "centre": "A small ink diamond on the vertical midline between the two bars, with three short fine ink hairlines radiating from it toward the right-hand bar — the inlining pass.",
+        "right": "A single tall cobalt rectangle on the right, same height and width as the left one, but with three thin horizontal vermilion bands sitting inside it at three different vertical positions — governance clauses now part of the plan.",
+        "focal_accent": "The three vermilion bands inside the right rectangle — the policies now fused into the plan.",
+        "connections": "A single straight ink line from the right edge of the left rectangle to the diamond, and from the diamond to the left edge of the right rectangle."
+      },
+      "labels": null,
+      "notes": "The vermilion bands must be inside the right-hand rectangle, not attached to it from outside, so the policy reads as inlined, not appended."
+    },
+    {
+      "id": "img-07",
+      "page": "interfaces",
+      "aspect": "4:5",
+      "size_long_edge_px": 2000,
+      "title": "Protocol fan: one model, many ways in",
+      "meaning": "A single shared model, with many access protocols all terminating on it.",
+      "composition": {
+        "centre_right": "A wide, shallow cobalt bar oriented vertically along the right 1/3 of the composition — the model.",
+        "left_fan": "Six fine ink hairlines originate from six evenly spaced points along the left edge of the cobalt bar and fan out to the left. Each terminates at a small distinct mark: a square, a circle, a short bar, a thin rectangle, a notched rectangle, and a small diamond — six protocol shapes. They sit at varied vertical heights, filling the left 2/3 of the composition.",
+        "focal_accent": "One of the six terminal marks — the small vermilion diamond, placed at upper-middle height on the left side — the protocol currently in focus.",
+        "connections": "Six fan lines, straight runs with one broad bend each, from the cobalt bar's left edge to the six protocol marks. No crossings."
+      },
+      "labels": null,
+      "notes": "The protocol marks must be visibly different from each other — the diversity is the point. Avoid any pair that reads as eyes."
+    },
+    {
+      "id": "img-08",
+      "page": "why-one-model",
+      "aspect": "4:5",
+      "size_long_edge_px": 2000,
+      "title": "One model, three languages: SQL, GraphQL, Cypher",
+      "meaning": "A single modelled entity answered in three languages. The entity is one shape; the answers are three distinct shapes, same source.",
+      "composition": {
+        "top": "One solid cobalt square at the horizontal centre, roughly 1/4 of the frame's width — the modelled entity.",
+        "middle_junction": "A small ink diamond directly below the cobalt square, aligned on its vertical axis.",
+        "bottom_row": "Three equally spaced marks across the bottom of the frame: a thin wide rectangle on the left (SQL — a tabular result row), a small clustered network of three forest dots connected by two fine lines in the centre (GraphQL — a selected tree), and a slim graph of four cobalt dots connected by three fine curved runs on the right (Cypher — a path through a graph).",
+        "focal_accent": "The central modelled entity (cobalt square at the top) — the single source behind the three answers.",
+        "connections": "A short vertical ink line from the base of the cobalt square to the diamond. Three fine ink lines from the diamond to each of the three bottom marks, with one broad bend each."
+      },
+      "labels": null,
+      "notes": "The three bottom marks must look like different kinds of answers, not three copies of the same shape. The focal cobalt square at the top must dominate."
+    },
+    {
+      "id": "img-09",
+      "page": "why-semantics",
+      "aspect": "4:5",
+      "size_long_edge_px": 2000,
+      "title": "Concept graph: glossary as a graph of concepts, separate from metrics",
+      "meaning": "A graph of concepts connected by meaning, with metrics as a separate parallel structure that references but does not define them.",
+      "composition": {
+        "upper_graph": "In the upper 2/3 of the frame, a loose constellation of seven forest circles of varying size, connected by eight fine ink lines. The arrangement is irregular but disciplined — not a grid, not a tree. Larger circles sit near the centre; smaller circles at the periphery.",
+        "lower_strip": "In the lower 1/3, separated by a generous gap and a thin ink hairline rule across the full width, is a quiet row of five cobalt bars of varied short widths — the metrics layer. The bars are evenly spaced, aligned on a shared baseline.",
+        "cross_reference": "Three fine ink hairlines drop from three of the forest circles in the upper graph, cross the rule, and terminate at three of the cobalt bars below — references, not identity.",
+        "focal_accent": "One of the upper forest circles is filled vermilion — the concept currently being read.",
+        "connections": "Graph edges in the upper region connect circles that share meaning. Three vertical hairlines cross the rule into the lower strip."
+      },
+      "labels": null,
+      "notes": "The upper concept graph must feel organic without being tangled. Avoid any symmetry that creates a face."
+    },
+    {
+      "id": "img-10",
+      "page": "lineage",
+      "aspect": "16:9",
+      "size_long_edge_px": 2400,
+      "title": "Lineage trace: column-level provenance across two sources",
+      "meaning": "A traced path from two source columns, through transformations, into one result column. The real shape of a trace: not tidy.",
+      "composition": {
+        "left": "Two forest rectangles stacked vertically on the far left — two source tables. Each has a small vermilion dot on its right edge indicating the traced column.",
+        "centre": "An irregular routing field across the centre: several fine ink hairlines running from the two source dots, through five small ink diamonds (transformation nodes) placed asymmetrically, with varied spacing. The lines are mostly straight with controlled bends; two of them merge at one of the diamonds before continuing right.",
+        "right": "On the far right, one cobalt rectangle — the destination table — with a single vermilion dot on its left edge where the trace terminates.",
+        "focal_accent": "The merge diamond at centre-right where the two source paths converge into one — the point where provenance resolves.",
+        "connections": "Four to six fine ink hairlines connecting the two source dots to the destination dot via five transformation diamonds, with one merge junction. No connector crosses another."
+      },
+      "labels": null,
+      "notes": "The composition must look like a real routed trace, not a symmetrical fan. The merge is the semantic point."
+    },
+    {
+      "id": "img-11",
+      "page": "catalog",
+      "aspect": "4:5",
+      "size_long_edge_px": 2000,
+      "title": "Catalogue surface: discovery over registered sources",
+      "meaning": "A browse-and-search surface laid over a field of registered sources.",
+      "composition": {
+        "background": "A 4×5 grid of small ink squares filling the lower 2/3 of the composition, loosely regular — the registered sources. Three of the squares are forest-filled, scattered — selected or matched.",
+        "foreground": "In the upper 1/3, one wide shallow cobalt bar — the catalogue surface — floating above the grid. It is slightly wider than the grid beneath, suggesting it covers all the sources.",
+        "focal_accent": "A single vermilion square inside the cobalt bar, right-of-centre — the active catalogue entry.",
+        "connections": "Three fine hairlines drop from the underside of the cobalt bar to each of the three forest-filled squares below — the lookup. Lines are straight."
+      },
+      "labels": null,
+      "notes": "The grid must feel like a quiet field, not a precise matrix — slight variations in square size help."
+    },
+    {
+      "id": "img-12",
+      "page": "sources",
+      "aspect": "4:5",
+      "size_long_edge_px": 2000,
+      "title": "Source field: breadth, atmosphere around the generated picker",
+      "meaning": "A quiet, large field of varied source marks — the breadth of what Provisa connects to. Atmosphere, not a diagram.",
+      "composition": {
+        "field": "A field of ~22 small marks of varied kinds — squares, thin rectangles, short bars, small circles — scattered loosely across the whole frame with disciplined but non-grid spacing. Most are forest; a few are ink; two are cobalt.",
+        "focal_accent": "One small vermilion square placed slightly above the horizontal midline, roughly 1/3 from the right edge — the currently active source.",
+        "connections": "None. The breadth is the point. No lines; the marks sit independently."
+      },
+      "labels": null,
+      "notes": "The field must feel curated but not uniform. Variation in mark size and type carries the breadth idea."
+    },
+    {
+      "id": "img-13",
+      "page": "why-no-lock-in",
+      "aspect": "4:5",
+      "size_long_edge_px": 2000,
+      "title": "No lock-in: data stays in its lane, engine swappable, exit visible",
+      "meaning": "The data remains where it was; the engine passes through and can be swapped; the exit is a visible open channel, not a theoretical one.",
+      "composition": {
+        "left_lane": "A tall forest rectangle on the left — the data in place. A thin ink rule inside it indicates that it is a stable, bounded zone.",
+        "centre_engine": "A wide, shallow cobalt bar across the middle of the frame, passing over (but not inside) the forest rectangle. It extends from the left edge to the right edge. The bar has a visible seam near its centre — a thin ink hairline across its full height, suggesting the engine is a replaceable segment.",
+        "right_exit": "A small open ink rectangle on the right edge of the frame, aligned with the cobalt bar's right end — the exit, not sealed. One short straight hairline passes through its open side.",
+        "focal_accent": "The seam in the cobalt bar — the swap point.",
+        "connections": "A short straight hairline connects the cobalt bar's right end to the open exit on the right edge. The forest rectangle on the left is not connected to the bar; the bar passes over it."
+      },
+      "labels": null,
+      "notes": "The exit rectangle must be visibly open on one side. The seam must read as a swap point, not as decoration."
+    },
+    {
+      "id": "img-14",
+      "page": "install",
+      "aspect": "16:9",
+      "size_long_edge_px": 2400,
+      "title": "Install paths: pip, container, Helm, air-gap",
+      "meaning": "Four install surfaces, visibly distinct, converging on the same running Provisa.",
+      "composition": {
+        "left_column": "Four small marks of distinct shape stacked loosely in the left 1/3 of the composition: a slim rectangle (pip, a single file), a tall ink-outlined rectangle (container), a short bar on top of a wider bar (Helm chart on cluster), and a tight closed rectangle with an inner square (air-gapped bundle). They sit at varied vertical positions.",
+        "centre_right": "A wide shallow cobalt bar centred in the right 2/3 of the frame — Provisa running.",
+        "focal_accent": "One small vermilion dot on the left edge of the cobalt bar — the handoff point where any of the four paths lands.",
+        "connections": "Four fine ink hairlines, one from each of the four install marks, converging on the vermilion dot. The lines are mostly straight with one broad bend each; they merge visually at the dot."
+      },
+      "labels": null,
+      "notes": "The four install marks must look visibly different; the convergence is the point."
+    },
+    {
+      "id": "img-15",
+      "page": "compare-hub",
+      "aspect": "1:1",
+      "size_long_edge_px": 1600,
+      "title": "Three compare marks",
+      "meaning": "Three comparisons, one frame. Each mark reads as a disciplined, specific geometric contrast — Provisa versus the other.",
+      "composition": {
+        "layout": "A single 1:1 frame divided into three equal vertical panels by two fine ink rules. Each panel contains one comparison mark.",
+        "panel_1_left": "A short wide cobalt bar sitting next to a taller narrow ink rectangle, same baseline — the clean platform contrasted against something more vertical and segmented.",
+        "panel_2_centre": "A small cobalt square sitting inside a larger ink outlined rectangle — a focused platform contrasted against a broader frame.",
+        "panel_3_right": "Two cobalt squares aligned horizontally versus one wider forest bar below them — multiplicity versus singular surface.",
+        "focal_accent": "A single vermilion dot on top of the cobalt bar in the left panel — the primary comparison in the series.",
+        "connections": "No connectors between panels."
+      },
+      "labels": null,
+      "notes": "The three panels must feel like peers. The forms should be legibly different."
+    },
+    {
+      "id": "img-16",
+      "page": "industries-hub",
+      "aspect": "1:1",
+      "size_long_edge_px": 1600,
+      "title": "Four vertical marks: cybersecurity, financial services, healthcare, government",
+      "meaning": "Four verticals represented by four disciplined marks in a 2×2 arrangement.",
+      "composition": {
+        "layout": "A 1:1 frame split into four equal cells by one horizontal and one vertical fine ink rule.",
+        "cell_top_left_cybersecurity": "A chain of three cobalt squares connected by two short ink lines — the CVE → CWE → asset chain.",
+        "cell_top_right_financial_services": "A ladder of four horizontal ink bars of equal length and tight spacing — a filing stack.",
+        "cell_bottom_left_healthcare": "A single forest circle with three small cobalt squares arranged around it as satellites — a patient at the centre of three care surfaces.",
+        "cell_bottom_right_government": "A grid of nine small ink squares, 3×3, with the centre one filled vermilion — geospatial cells with one in focus.",
+        "focal_accent": "The vermilion square in the bottom-right cell — the government mark's point.",
+        "connections": "No connectors between cells. Within cells, use only the connectors described."
+      },
+      "labels": null,
+      "notes": "The four cells must share scale so none dominates. Each cell's mark must be legible at thumbnail size."
+    },
+    {
+      "id": "img-17-cybersecurity",
+      "page": "industries/cybersecurity",
+      "aspect": "16:9",
+      "size_long_edge_px": 2400,
+      "title": "Cybersecurity traversal: CVE → CWE → product → asset",
+      "meaning": "A left-to-right traversal across four distinct typed entities. The current entity in focus is the final asset.",
+      "composition": {
+        "entities": "Four shapes placed in a horizontal row with varied vertical offsets to avoid rigid alignment: a cobalt diamond (CVE) on the left, a cobalt circle (CWE) next, a cobalt square (product) third, and a vermilion rectangle (asset) on the right. All at a shared mid-vertical band.",
+        "connections": "Three fine ink hairlines connecting each entity to the next in sequence, straight with one broad bend each. The arrows are not drawn as arrows; the direction reads from the position in the row.",
+        "focal_accent": "The vermilion rectangle at the right — the asset.",
+        "context": "A quiet background of ~10 small forest dots scattered loosely across the full frame — the broader threat landscape, with the traced path cutting through it."
+      },
+      "labels": null,
+      "notes": "The four entity shapes must be visibly distinct. The traversal must read left-to-right without arrowheads."
+    },
+    {
+      "id": "img-17-financial-services",
+      "page": "industries/financial-services",
+      "aspect": "16:9",
+      "size_long_edge_px": 2400,
+      "title": "Financial services traversal: entity → filing → risk",
+      "meaning": "An entity connected to a filing, surfaced to a risk marker. Three shapes, one path.",
+      "composition": {
+        "entities": "Three shapes in a horizontal row: a cobalt square (entity) on the left, a tall ink rectangle with three fine horizontal rules inside (filing) in the centre — a filed document, and a vermilion diamond (risk flag) on the right.",
+        "connections": "Two fine ink hairlines, each straight with one controlled bend, connecting the three shapes in sequence.",
+        "focal_accent": "The vermilion diamond on the right — the surfaced risk.",
+        "context": "A quiet background of ~8 small forest rectangles scattered loosely across the frame, slightly smaller than the entity — the universe of filings."
+      },
+      "labels": null,
+      "notes": "The filing rectangle must have internal rules so it reads as a document, not a plain shape."
+    },
+    {
+      "id": "img-17-healthcare",
+      "page": "industries/healthcare",
+      "aspect": "16:9",
+      "size_long_edge_px": 2400,
+      "title": "Healthcare traversal: provider → patient → claim",
+      "meaning": "A provider linked to a patient, whose claim is the surfaced output.",
+      "composition": {
+        "entities": "Three shapes in a horizontal arrangement with the patient as the central anchor: a cobalt square (provider) on the left; a forest circle (patient) in the centre, slightly larger; a vermilion bar with a thin inner rule (claim) on the right.",
+        "connections": "Two fine ink hairlines connecting provider→patient and patient→claim. Each is straight with one controlled bend; they do not cross.",
+        "focal_accent": "The vermilion claim bar on the right.",
+        "context": "A quiet background of ~8 small forest and ink dots across the frame — the surrounding care network."
+      },
+      "labels": null,
+      "notes": "The patient circle must be the clear visual anchor between the two others."
+    },
+    {
+      "id": "img-17-government",
+      "page": "industries/government",
+      "aspect": "16:9",
+      "size_long_edge_px": 2400,
+      "title": "Government traversal: open-data geospatial",
+      "meaning": "A grid of geographic cells, with a traced path through a handful of them, culminating in one focused cell — the surfaced finding.",
+      "composition": {
+        "grid": "A grid of 6×4 small ink squares filling the right 2/3 of the composition, loosely regular — geographic cells.",
+        "trace": "A single fine ink hairline connecting five of the squares in a loose L-shape path across the grid, with controlled bends at each turn.",
+        "focal_accent": "The final cell in the trace is filled vermilion — the surfaced result.",
+        "left_context": "On the left 1/3, two small forest marks — a dataset and a filter — connected by a short fine line into the grid's left edge.",
+        "connections": "The trace line through the grid plus the two left-context marks connected by one line into the grid's left edge."
+      },
+      "labels": null,
+      "notes": "The trace must read as a specific route, not a random walk. The vermilion cell is the finding."
+    }
+  ]
+}
