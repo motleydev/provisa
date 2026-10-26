@@ -4,9 +4,9 @@
 <!-- partials/head.html, verbatim but for the title, the description and the
      canonical link.
 
-     This is PRO-93 — the /pricing page. The content follows the SME-validated
-     verdict in the attachment on PRO-88 (24 pass, 8 pass/reword, 1 fail,
-     against the editions-brief rev 2 on PRO-5). Every claim here has a
+     This is the /pricing page. The content follows the SME-validated
+     verdict in the attachment (24 pass, 8 pass/reword, 1 fail,
+     against the editions-brief rev 2). Every claim here has a
      published citation: LICENSE, README.md, docs/marketing.md,
      docs/deployment.md, docs/competitive_analysis.md or a REQ id in
      docs/arch/requirements.md. The HTML comments carry the citation beside
@@ -448,18 +448,16 @@
          jargon. Verdict wording:
            "The free licence file is a registration record. It does not
             grant production rights; the BSL does."
-         REQ-1138 ("The license is a one-time registration capture"),
-         REQ-1137 ("The license is free; nothing is charged or blocked").
 
        C-18 (pass/reword, fix citations): the brief cited source files
          (provisa/licensing/*.py); the SME rule forbids citing the
          Designer-unreadable app. Switched to REQs. The brief's "on every
-         protocol" overstates REQ-1137, which skips protocols with no
+         protocol" overstates the requirement, which skips protocols with no
          safe out-of-band channel — "on every supported interface" is the
-         accurate form. REQ-1138 (offline Ed25519 verification),
-         REQ-1139 (machine_id binding), REQ-1136 (30-day expiry — the
-         expired-at-30-days line is at docs/arch/requirements.md:11195),
-         REQ-1137 (non-fatal notice; never gates or degrades).
+         accurate form. Offline Ed25519 verification, machine_id binding,
+         30-day expiry (the expired-at-30-days line is at
+         docs/arch/requirements.md:11195), non-fatal notice; never gates or
+         degrades.
        ================================================================== -->
   <section class="pv-section" id="registration-vs-production">
     <div class="pv-container">
