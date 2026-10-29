@@ -59,7 +59,7 @@ const ANCHORS = [
  * below name the trace in text. */
 const REQUIRED = [
   ["Federation, metrics, ontology and governance from one model. Nothing to keep in sync.",
-   "C-1",   "Hero H1, verbatim positioning"],
+   "C-1",   "Hero positioning line, under the H1 since PRO-191 (the H1 is now the drift line)"],
   ["A catalog tells an agent what it should do.",
    "C-2",   "Hero standfirst — the enforce-versus-advise sentence"],
   ["Provisa enforces what it can do.",
