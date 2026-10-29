@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How it works — a data kernel for your data control plane — Provisa</title>
+<meta name="description" content="Provisa is a data kernel: a small set of semantic primitives compiled into one governed query plan and executed by the engine you choose. Here is the mechanism, the method behind it and the bar it was built to clear.">
+<link rel="icon" href="/favicon.svg">
+
+<link rel="preload" href="/assets/fonts/public-sans-var-latin.c1b6da516e.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/source-serif-4-var-latin.2a24bad466.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/design-system/fonts.css">
+<link rel="stylesheet" href="/design-system/tokens.css">
+<link rel="stylesheet" href="/design-system/provisa.css">
+<link rel="canonical" href="https://provisa.dev/how-it-works">
+
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem("provisa-theme") === "dark")
+        document.documentElement.setAttribute("data-theme", "dark");
+    } catch (e) {
+      /* Storage disabled: light stands, which is the default anyway. */
+    }
+  })();
+</script>
+
+<script src="/design-system/provisa.js" defer></script>
+</head>
+<body>
+
+<a class="pv-skip" href="#main">Skip to content</a>
+
+<div class="pv-utility">
+  <div class="pv-utility__inner pv-container">
+    <nav class="pv-utility__links" aria-label="Utility">
+      <a href="https://provisa.dev/docs">Docs</a>
+      <a href="#contact">Support</a>
+      <a href="/register">Register (free licence)</a>
+    </nav>
+  </div>
+</div>
+
+<header class="pv-header">
+  <div class="pv-header__inner pv-container">
+    <a class="pv-wordmark" href="/">
+      <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      Provisa
+    </a>
+    <nav class="pv-header__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-header__actions">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <a class="pv-header__secondary" href="/register">Get a free licence</a>
+      <a class="pv-btn pv-btn--sm" href="#contact">Book a demo</a>
+    </div>
+    <button class="pv-header__menu" type="button" data-drawer="pv-drawer"
+            aria-expanded="false" aria-controls="pv-drawer">
+      <i aria-hidden="true"></i>Menu
+    </button>
+  </div>
+</header>
+
+<div class="pv-drawer" id="pv-drawer" role="dialog" aria-modal="true"
+     aria-label="Menu" aria-hidden="true">
+  <div class="pv-drawer__inner pv-container">
+    <div class="pv-drawer__top">
+      <a class="pv-wordmark" href="/">
+        <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        Provisa
+      </a>
+      <button class="pv-drawer__close" type="button" data-drawer-close>Close</button>
+    </div>
+    <nav class="pv-drawer__nav" aria-label="Main">
+      <a href="/platform">Platform</a>
+      <a href="/why/governance">Governance</a>
+      <a href="/industries">Industries</a>
+      <a href="/why/interfaces">Interfaces</a>
+      <a href="/why/sources">Sources</a>
+      <a href="/vs/starburst">Compare</a>
+    </nav>
+    <div class="pv-drawer__actions">
+      <a class="pv-btn pv-btn--block" href="#contact">Book a demo</a>
+      <a class="pv-btn pv-btn--block pv-btn--secondary" href="/register">Get a free licence</a>
+    </div>
+    <div class="pv-drawer__foot">
+      <div class="pv-theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="light" aria-pressed="true">light</button>
+        <button type="button" data-theme-set="dark" aria-pressed="false">dark</button>
+      </div>
+      <nav class="pv-drawer__utility" aria-label="Utility">
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="#contact">Support</a>
+        <a href="/register">Register (free licence)</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <nav class="pv-crumb" aria-label="Breadcrumb">
+          <a href="/">Provisa</a>
+          <span aria-hidden="true">/</span>
+          <a href="/platform">Platform</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">How it works</span>
+        </nav>
+
+        <div class="pv-stack pv-stack--sm">
+          <div class="pv-eyebrow">How it works</div>
+          <h1 class="pv-h pv-h--page">Provisa is a
+            <em class="pv-emph">data kernel</em>.</h1>
+        </div>
+
+        <p class="pv-p pv-p--lede">A compiler and runtime for building your
+          data control plane. Declare a small set of primitives and the whole
+          governed API follows: the query endpoints, the legal join paths, the
+          access rules and the audit trail.</p>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">01</span>
+          <span class="pv-seclabel__text">The mechanism</span>
+        </div>
+
+        <h2 class="pv-h pv-h--section">A small kernel. Drivers on one side,
+          clients on the other.</h2>
+
+        <p class="pv-p">The primitives are <strong>sources</strong>,
+          <strong>tables</strong>, <strong>relationships</strong>,
+          <strong>terms</strong>, <strong>roles</strong>,
+          <strong>capabilities</strong>, <strong>grants</strong>,
+          <strong>scope</strong>, <strong>products</strong> and
+          <strong>contracts</strong>. Every language compiles to one
+          intermediate form. Governance is applied there and pushed down into
+          the native query your engine runs, so a GraphQL query, a SQL
+          statement and a Cypher traversal all pass through the same
+          governance point before anything reaches your data.</p>
+
+        <div class="pv-grid pv-grid--3">
+          <div class="pv-ruled">
+            <span class="pv-ruled__num">01</span>
+            <h3 class="pv-ruled__title">The kernel</h3>
+            <div class="pv-ruled__body">The primitives, compiled. Isolation
+              and permissions are enforced here, once, so no application has
+              to write them again.</div>
+          </div>
+          <div class="pv-ruled pv-ruled--get">
+            <span class="pv-ruled__num">02</span>
+            <h3 class="pv-ruled__title">Drivers</h3>
+            <div class="pv-ruled__body">Source drivers, engine drivers and
+              secrets drivers plug in and swap without reinstalling. Provisa
+              drives your systems; it does not run on them and never becomes
+              their engine.</div>
+          </div>
+          <div class="pv-ruled pv-ruled--run">
+            <span class="pv-ruled__num">03</span>
+            <h3 class="pv-ruled__title">Clients</h3>
+            <div class="pv-ruled__body">BI tools, notebooks, agents and apps
+              connect over standard protocols. Command bindings answer other
+              tools’ calls.</div>
+          </div>
+        </div>
+
+        <p class="pv-p">Provisa compiles each request and hands it to your
+          engine. Results stream back. It scales horizontally and vertically
+          to support your workloads, and the heavy compute is offloaded to the
+          engine you chose.</p>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">02</span>
+          <span class="pv-seclabel__text">The method, from devops</span>
+        </div>
+
+        <h2 class="pv-h pv-h--section">Ask which primitives would let the
+          solution be assembled, not written.</h2>
+
+        <p class="pv-p">Operating systems, virtual machines, Kubernetes,
+          Terraform and Helm share a habit. Faced with a problem, they first
+          ask which primitives would let the solution be assembled instead of
+          written. Code stays valuable. It keeps its place behind contracts,
+          for the work the primitives can’t express.</p>
+
+        <p class="pv-p">Infrastructure has already made this move. Servers
+          used to be built by hand and kept alive by scripts; today you
+          declare them, and a controller reconciles what runs with what you
+          declared. Data is where infrastructure stood before Kubernetes and
+          Terraform. Each of those tools gave Provisa one idea, and so did a
+          compiler toolkit, LLVM.</p>
+
+        <div class="pv-grid pv-grid--2">
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">Operating systems and virtual
+              machines: a small kernel that enforces isolation</h3>
+            <div class="pv-ruled__body">The primitives above are Provisa’s
+              kernel. It enforces isolation and permissions, so governance is
+              compiled into every request. Sources and engines are drivers:
+              you plug them in, and you can swap one without touching the
+              model above it.</div>
+          </div>
+          <div class="pv-ruled pv-ruled--get">
+            <h3 class="pv-ruled__title">Terraform: declare the desired state,
+              and plan before you apply</h3>
+            <div class="pv-ruled__body">Your model lives in git branches. A
+              change shows up as a diff, with an impact analysis of everything
+              it touches, and it is approved before it moves from one
+              environment to the next.</div>
+          </div>
+          <div class="pv-ruled pv-ruled--run">
+            <h3 class="pv-ruled__title">Kubernetes and Helm: a control plane
+              that reconciles</h3>
+            <div class="pv-ruled__body">What you declared and what is running
+              are kept apart. The model store holds the declaration; the state
+              store holds what the runtime is doing. The runtime keeps
+              converging replicas, freshness and materialized views toward the
+              model, so what you serve follows what you declared.</div>
+          </div>
+          <div class="pv-ruled">
+            <h3 class="pv-ruled__title">LLVM: many front ends, one
+              intermediate form, many back ends</h3>
+            <div class="pv-ruled__body">GraphQL, SQL, Cypher, SPARQL, gRPC and
+              MCP each compile to one intermediate form. Governance,
+              materialized-view rewrites and optimization run as passes over
+              it, once, for every language. The engines are the back ends that
+              run the result.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">03</span>
+          <span class="pv-seclabel__text">The bar, from regulated
+            industries</span>
+        </div>
+
+        <h2 class="pv-h pv-h--section">Governance, lineage and stewardship are
+          in the kernel, not bolted on.</h2>
+
+        <p class="pv-p">Dataops, data management, data architecture and data
+          governance decided which primitives the kernel needed. Highly
+          regulated industries set the bar. Four of their demands are built
+          in.</p>
+
+        <div class="pv-grid pv-grid--2">
+          <div class="pv-ruled">
+            <span class="pv-ruled__num">01</span>
+            <h3 class="pv-ruled__title">Every answer traceable and
+              reproducible</h3>
+            <div class="pv-ruled__body">Citations and run records take you
+              from an answer back to the sources, rules and definitions that
+              produced it.</div>
+          </div>
+          <div class="pv-ruled pv-ruled--see">
+            <span class="pv-ruled__num">02</span>
+            <h3 class="pv-ruled__title">Least privilege by construction</h3>
+            <div class="pv-ruled__body">A role reads only what its grants
+              allow, and the compiler applies those grants to every query in
+              every language.</div>
+          </div>
+          <div class="pv-ruled pv-ruled--get">
+            <span class="pv-ruled__num">03</span>
+            <h3 class="pv-ruled__title">Residency by region</h3>
+            <div class="pv-ruled__body">Tables, sources and materialized views
+              carry a region. Moving one across a border takes a grant of its
+              own.</div>
+          </div>
+          <div class="pv-ruled pv-ruled--run">
+            <span class="pv-ruled__num">04</span>
+            <h3 class="pv-ruled__title">Review before production</h3>
+            <div class="pv-ruled__body">A change reaches production through a
+              merge request, approved by someone other than the person who
+              asked for it.</div>
+          </div>
+        </div>
+
+        <p class="pv-p">Both heritages point at one goal: the smallest
+          possible set of primitives with which you can define, secure and
+          operate a data estate.</p>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">04</span>
+          <span class="pv-seclabel__text">One compiler, every language</span>
+        </div>
+
+        <h2 class="pv-h pv-h--section">Why one compiler can speak every
+          language.</h2>
+
+        <p class="pv-p">Languages are ways of expressing logic, and the logic
+          of data is bounded: select, join, aggregate, traverse. Transports
+          are bounded too: whatever the protocol, data leaves through a socket
+          as rows, nested documents, graphs, columnar batches or streams.
+          Programming languages have shared one compiler infrastructure for
+          twenty years; Provisa does the same for data.</p>
+
+        <p class="pv-p">Building a compiler front end has also become cheap:
+          parser generators like ANTLR and mature open-source parsers for SQL,
+          GraphQL and SPARQL do most of the work, so a new language is a
+          translation into the intermediate form, not a new system. Each
+          request is compiled when it arrives, governed there, handed to your
+          engine as native SQL, and shaped on the way out for the transport
+          that asked.</p>
+
+        <p class="pv-p">It also means the pace of change isn’t a constraint.
+          New query languages, protocols, engines and sources keep arriving;
+          for most stacks each one is a migration. Here, a new language or
+          transport is a front end or a shaper, and a new engine or source is
+          a driver: additions to the edges, with the model and its governance
+          unchanged.</p>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-section pv-section--band">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">05</span>
+          <span class="pv-seclabel__text">Command bindings</span>
+        </div>
+
+        <h2 class="pv-h pv-h--section">Does it support the tool you already
+          use? Create its command bindings.</h2>
+
+        <p class="pv-p">A command is written once, and every language can call
+          it, each under the name that language’s callers expect: that’s
+          <code>apoc.meta.data</code> for a Cypher tool, a catalog function for
+          a SQL client, a field in GraphQL, a tool in MCP. Every command is
+          offered in every language by default. Renaming it or leaving it out
+          of a language is an explicit choice, and SQL is always there because
+          everything compiles to it.</p>
+
+        <p class="pv-p">Each one runs governed, so a mimicked tool call never
+          sees more than the role may read. It’s how you teach Provisa any
+          other dialect yourself, without waiting for a release.</p>
+
+        <div class="pv-callout pv-callout--get">
+          <span class="pv-callout__label">CHECK IT</span>
+          <span class="pv-callout__body">The generated SQL is visible for any
+            query in the explorer: write a GraphQL query and the Query
+            Language Explorer shows its Semantic SQL and Cypher translations
+            beside your query, before it runs.</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-section">
+    <div class="pv-container">
+      <div class="pv-stack pv-stack--lg">
+
+        <div class="pv-seclabel">
+          <span class="pv-seclabel__num">06</span>
+          <span class="pv-seclabel__text">What it is not</span>
+        </div>
+
+        <h2 class="pv-h pv-h--section">Not a database. Not your
+          warehouse.</h2>
+
+        <p class="pv-p">Provisa is a semantic and governance layer that runs on
+          an engine you choose. Your warehouse becomes a replaceable execution
+          engine, not the place your semantics live. Starburst is a query
+          engine; Provisa sits above one and can use it as its engine.</p>
+
+        <div class="pv-row">
+          <a class="pv-link" href="/platform">Read the architecture<span class="pv-link__arrow"> →</span></a>
+          <a class="pv-link" href="/vs/starburst">Provisa and Starburst<span class="pv-link__arrow"> →</span></a>
+          <a class="pv-link" href="/why/no-lock-in">No lock-in<span class="pv-link__arrow"> →</span></a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-contact pv-contact--inverse" id="contact">
+    <div class="pv-contact__inner pv-container">
+      <div class="pv-contact__copy">
+        <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
+        <h2 class="pv-h pv-h--cta">Bring your reviewer.</h2>
+        <div class="pv-contact__links">
+          <a class="pv-link pv-link--inverse" href="/install">Download Provisa</a>
+          <a class="pv-link pv-link--inverse" href="/register">Get a free licence</a>
+        </div>
+      </div>
+      <form class="pv-form" method="post" action="/api/demo">
+        <h3 class="pv-form__title">Book a demo</h3>
+        <div class="pv-form__grid">
+          <label class="pv-sr" for="c-name">Full name</label>
+          <input class="pv-input" id="c-name" name="name" autocomplete="name" placeholder="Full name" required>
+          <label class="pv-sr" for="c-email">Work email</label>
+          <input class="pv-input" id="c-email" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+        </div>
+        <button class="pv-btn pv-btn--block" type="submit">Book a demo</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pv-footer">
+  <div class="pv-footer__inner pv-container">
+    <div class="pv-footer__top">
+      <div class="pv-footer__brand">
+        <span class="pv-wordmark">Provisa</span>
+        <p class="pv-footer__blurb">Provisa is a data kernel: a compiler and runtime for building your data control plane. Federation, metrics, ontology and governance from a single model. Nothing to keep in sync. Business Source
+          Licence 1.1 — non-production use (including evaluation) is free
+          forever, for any size organization.</p>
+      </div>
+      <nav class="pv-footer__col" aria-labelledby="f-platform">
+        <h2 id="f-platform">Platform</h2>
+        <a href="/platform">Architecture</a>
+        <a href="/how-it-works" aria-current="page">How it works</a>
+        <a href="/why/interfaces">Interfaces</a>
+        <a href="/why/governance">Governance</a>
+        <a href="/why/sources">Sources</a>
+        <a href="/why/materialized-views">Materialized views</a>
+        <a href="/why/catalog">Catalog</a>
+        <a href="/why/no-lock-in">No lock-in</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-compare">
+        <h2 id="f-compare">Compare</h2>
+        <a href="/vs/starburst">vs Starburst</a>
+        <a href="/vs/denodo">vs Denodo</a>
+        <a href="/vs/hasura">Coming from Hasura</a>
+      </nav>
+      <nav class="pv-footer__col" aria-labelledby="f-start">
+        <h2 id="f-start">Get started</h2>
+        <a href="/pricing/">Editions</a>
+        <a href="https://provisa.dev/docs">Docs</a>
+        <a href="/walkthrough/">Walk through it</a>
+        <a href="/register">Register (free licence)</a>
+        <a href="#contact">Support</a>
+        <a href="#contact">Book a demo</a>
+      </nav>
+      <div class="pv-footer__keep">
+        <h2>Keep me posted</h2>
+        <p>Want the release notes? Get new features and platform updates by
+          email.</p>
+        <form class="pv-subscribe" method="post" action="/api/subscribe">
+          <label class="pv-sr" for="f-sub">Work email</label>
+          <input id="f-sub" name="email" type="email" autocomplete="email" placeholder="Work email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+        <span class="pv-footer__fine">Product updates only. No spam,
+          unsubscribe anytime.</span>
+      </div>
+    </div>
+    <div class="pv-footer__bottom">
+      <span>© Provisa</span>
+      <div class="pv-footer__legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
