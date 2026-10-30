@@ -4,9 +4,9 @@
 <!-- partials/head.html, verbatim but for the title, the description and the
      canonical link.
 
-     This is PRO-93 — the /pricing page. The content follows the SME-validated
-     verdict in the attachment on PRO-88 (24 pass, 8 pass/reword, 1 fail,
-     against the editions-brief rev 2 on PRO-5). Every claim here has a
+     This is the /pricing page. The content follows the SME-validated
+     verdict in the attachment (24 pass, 8 pass/reword, 1 fail,
+     against the editions-brief rev 2). Every claim here has a
      published citation: LICENSE, README.md, docs/marketing.md,
      docs/deployment.md, docs/competitive_analysis.md or a REQ id in
      docs/arch/requirements.md. The HTML comments carry the citation beside
@@ -448,18 +448,16 @@
          jargon. Verdict wording:
            "The free licence file is a registration record. It does not
             grant production rights; the BSL does."
-         REQ-1138 ("The license is a one-time registration capture"),
-         REQ-1137 ("The license is free; nothing is charged or blocked").
 
        C-18 (pass/reword, fix citations): the brief cited source files
          (provisa/licensing/*.py); the SME rule forbids citing the
          Designer-unreadable app. Switched to REQs. The brief's "on every
-         protocol" overstates REQ-1137, which skips protocols with no
+         protocol" overstates the requirement, which skips protocols with no
          safe out-of-band channel — "on every supported interface" is the
-         accurate form. REQ-1138 (offline Ed25519 verification),
-         REQ-1139 (machine_id binding), REQ-1136 (30-day expiry — the
-         expired-at-30-days line is at docs/arch/requirements.md:11195),
-         REQ-1137 (non-fatal notice; never gates or degrades).
+         accurate form. Offline Ed25519 verification, machine_id binding,
+         30-day expiry (the expired-at-30-days line is at
+         docs/arch/requirements.md:11195), non-fatal notice; never gates or
+         degrades.
        ================================================================== -->
   <section class="pv-section" id="registration-vs-production">
     <div class="pv-container">
@@ -593,13 +591,14 @@
     <div class="pv-footer__top">
       <div class="pv-footer__brand">
         <span class="pv-wordmark">Provisa</span>
-        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+        <p class="pv-footer__blurb">Provisa is a data kernel: a compiler and runtime for building your data control plane. Federation, metrics, ontology and governance from a single model. Nothing to keep in sync. Business Source
           Licence 1.1 &mdash; non-production use (including evaluation) is free
           forever, for any size organization.</p>
       </div>
       <nav class="pv-footer__col" aria-labelledby="f-platform">
         <h2 id="f-platform">Platform</h2>
-        <a href="/platform">Active Semantic Layer</a>
+        <a href="/platform">Architecture</a>
+        <a href="/how-it-works">How it works</a>
         <a href="/why/interfaces">Interfaces</a>
         <a href="/why/governance">Governance</a>
         <a href="/why/sources">Sources</a>

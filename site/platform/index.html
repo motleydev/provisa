@@ -115,11 +115,11 @@
 <main id="main">
 
   <!-- ==================================================================
-       §1 Hero. Heading + Emph + FigPanel (IMG-03).
+       §1 Hero. Heading + Emph + FigPanel.
 
-       IMG-03 is 16/9 and is the page's own drawing, so it takes the container
+       The figure is 16/9 and is the page's own drawing, so it takes the container
        below the copy rather than the hero's narrow rail — the rail column is
-       300px and a 16/9 panel in it is a strip. Home's IMG-01 is 4/5 and does
+       300px and a 16/9 panel in it is a strip. Home's figure is 4/5 and does
        sit in the rail; the aspect is what differs, not the rhythm.
        ================================================================== -->
   <section class="pv-section">
@@ -136,6 +136,10 @@
           <div class="pv-eyebrow">Architecture</div>
           <h1 class="pv-h pv-h--hero">One model, one compiler,
             <em class="pv-emph">an engine you can replace</em>.</h1>
+          <p class="pv-p">Provisa is a data kernel: a compiler and runtime for
+            building your data control plane. Sources and engines plug in as
+            drivers. <a class="pv-link" href="/how-it-works">How the kernel
+            works<span class="pv-link__arrow"> →</span></a></p>
           <p class="pv-p">Provisa sits between the sources you already run and
             the people and programs that query them. It holds one model —
             sources, tables, columns, relationships, domains, roles, rules and
@@ -143,7 +147,7 @@
             out is a single canonical PostgreSQL-style statement, translated
             into the dialect of whatever will run it, so the protocol you
             connected with does not change the SQL.</p>
-          <!-- Spine position (PRO-26; claim-audit §5.1b/§5.1c). Qualifier 1,
+          <!-- Spine position. Qualifier 1,
                "up to six", is in the sentence and is not optional. -->
           <p class="pv-p">That is also why one question can be asked once, in
             English, and answered on up to six governed surfaces — SQL,
@@ -161,7 +165,7 @@
             requirements behind it, and their status is in the repository.</p>
         </div>
 
-        <!-- IMG-03. Platform architecture, 16:9. -->
+        <!-- Platform architecture, 16:9. -->
         <figure class="pv-editorial pv-editorial--wide" role="img"
              aria-label="Figure 1: registered sources at the bottom, the Provisa layer above them holding the model and the compiler, a swappable engine slot to one side, and the query interfaces at the top.">
             <img class="pv-editorial__img pv-editorial__img--light" src="/assets/editorial/img-03-light.png" alt="Figure 1: registered sources at the bottom, the Provisa layer above them holding the model and the compiler, a swappable engine slot to one side, and the query interfaces at the top." fetchpriority="high" decoding="async">
@@ -313,7 +317,7 @@ curl -X POST https://provisa.internal/data/compile \
                and inline <code> work inside it unchanged in both themes. The
                tablist stays ink. `--prose` is the one class this page needed
                that the kit did not have; it is in provisa.css with the rest of
-               CodeTabs and raised on PRO-3. -->
+               CodeTabs. -->
           <div class="pv-codetabs__panel pv-codetabs__panel--prose" role="tabpanel"
                id="p-back" aria-labelledby="t-back" hidden>
             <p class="pv-p pv-p--sm">Not the result. A description of what the
@@ -484,15 +488,14 @@ curl -X POST https://provisa.internal/data/compile \
        The centrepiece.
 
        The brief sets the three groups out as three tables. They ship as three
-       rows of one table, because the acceptance criterion is that they read as
-       one comparison at 360 as well as at 2560, and three stacked tables are
-       three unrelated lists on a phone — which turns one honest architecture
-       into three pieces of bad news. No copy is cut and none is invented: each
-       group's own title supplies two cells, the placement and what the engine
-       pushes down, and its named list is the third. ComparisonTable holds a
-       640px minimum and scrolls horizontally under it by design, so the three
-       rows stay one comparison at every width instead of reflowing into
-       separate lists. Reported on PRO-15.
+       rows of one table, because they read as one comparison at 360 as well as
+       at 2560, and three stacked tables are three unrelated lists on a phone —
+       which turns one honest architecture into three pieces of bad news. No copy
+       is cut and none is invented: each group's own title supplies two cells,
+       the placement and what the engine pushes down, and its named list is the
+       third. ComparisonTable holds a 640px minimum and scrolls horizontally
+       under it by design, so the three rows stay one comparison at every width
+       instead of reflowing into separate lists.
        ================================================================== -->
   <section class="pv-section">
     <div class="pv-container">
@@ -899,7 +902,7 @@ WHERE o.total &gt; 1000;</pre>
   </section>
 
   <!-- ==================================================================
-       §12 Running it. RuledCard ×4 + FigPanel (IMG-04) + Callout.
+       §12 Running it. RuledCard ×4 + FigPanel + Callout.
 
        The Helm card claims the two things that are complete and not the two
        that are in progress; the Terraform card claims the AWS cluster and not
@@ -916,7 +919,7 @@ WHERE o.total &gt; 1000;</pre>
               <span class="pv-seclabel__num">11</span>
               <span class="pv-seclabel__text">Deployment</span>
             </div>
-            <!-- IMG-04. Deployment shapes, 4:5. -->
+            <!-- Deployment shapes, 4:5. -->
             <figure class="pv-editorial" role="img"
                  aria-label="Figure 2: four deployment shapes in one figure — a laptop, a single server, a cluster behind a load balancer, and a rack with no network edge.">
                 <img class="pv-editorial__img pv-editorial__img--light" src="/assets/editorial/img-04-light.png" alt="Figure 2: four deployment shapes in one figure — a laptop, a single server, a cluster behind a load balancer, and a rack with no network edge." loading="lazy" decoding="async">
@@ -1030,13 +1033,14 @@ WHERE o.total &gt; 1000;</pre>
     <div class="pv-footer__top">
       <div class="pv-footer__brand">
         <span class="pv-wordmark">Provisa</span>
-        <p class="pv-footer__blurb">The Active Semantic Layer. Business Source
+        <p class="pv-footer__blurb">Provisa is a data kernel: a compiler and runtime for building your data control plane. Federation, metrics, ontology and governance from a single model. Nothing to keep in sync. Business Source
           Licence 1.1 — non-production use (including evaluation) is free
           forever, for any size organization.</p>
       </div>
       <nav class="pv-footer__col" aria-labelledby="f-platform">
         <h2 id="f-platform">Platform</h2>
-        <a href="/platform">Active Semantic Layer</a>
+        <a href="/platform">Architecture</a>
+        <a href="/how-it-works">How it works</a>
         <a href="/why/interfaces">Interfaces</a>
         <a href="/why/governance">Governance</a>
         <a href="/why/sources">Sources</a>
