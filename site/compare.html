@@ -1,18 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- partials/head.html, verbatim but for the title, the description and the
-     canonical link. Order matters: fonts before tokens before provisa.css, and
-     the theme bootstrap before anything paints.
-
-     This is PRO-52 — the Compare hub at /compare, built on the design system
-     from PRO-3 and from brief-compare revision 2 on PRO-5 (verdict on PRO-43).
-
-     The hub is a content page, not an index: neither Neo4j nor Apollo GraphOS
-     has a /vs/* page, and neither is in the register, so §4 and §5 are the
-     only place on the site those two comparisons exist. Two comparison cards,
-     not three — /vs/denodo has no evidence base and gets no card. It still
-     resolves, per the brief's §8. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Compare — Provisa</title>
@@ -46,7 +34,6 @@
 
 <a class="pv-skip" href="#main">Skip to content</a>
 
-<!-- UtilityBar — partials/utility-bar.html. -->
 <div class="pv-utility">
   <div class="pv-utility__inner pv-container">
     <nav class="pv-utility__links" aria-label="Utility">
@@ -57,11 +44,6 @@
   </div>
 </div>
 
-<!-- SiteHeader — partials/site-header.html, except the Compare nav item now
-     targets /compare rather than /vs/starburst. This is the Compare page, so
-     aria-current="page" belongs on this link; the sibling /vs/* pages still
-     ship the kit's /vs/starburst target because the shared chrome is the
-     same bytes on every page by design, and PRO-3 owns the one-file fix. -->
 <header class="pv-header">
   <div class="pv-header__inner pv-container">
     <a class="pv-wordmark" href="/">
@@ -129,14 +111,6 @@
 
 <main id="main">
 
-  <!-- ==================================================================
-       §1 Hero. Eyebrow + Heading + Emph + standfirst.
-
-       No FigPanel. The image-register's IMG-15 slot is for §3's cards and
-       belongs there; a figure above §2 pushes the category map below the
-       fold, and §2 is this page's argument. If a slot is added later it goes
-       below §2, never above it.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -153,13 +127,10 @@
       </div>
 
       <div class="pv-stack">
-        <!-- C-1. Spine, swept sitewide (REQ-2015 to REQ-2019). -->
         <p class="pv-p pv-p--lede">Provisa is a governed semantic layer.
           Federation, metrics, ontology and governance come from one model,
           and the engine underneath it is yours and swappable.</p>
 
-        <!-- C-2. The framing. "On" is cited: /vs/starburst C-2 and
-             docs/competitive_analysis.md:62 (BYO Trino). -->
         <p class="pv-p">It is not an MPP query engine, not a graph database
           and not a GraphQL gateway. If you run one of those, it stays — the
           comparison on this page is about what sits above it, and in two
@@ -170,18 +141,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §2 The category map. ComparisonTable + Callout.
-
-       Three columns — Category / The question it answers / What Provisa
-       does with it. Four rows. The fourth row names the category and makes
-       no claim about any product in it: no Denodo column exists in
-       docs/competitive_analysis.md and §3 ships no Denodo card.
-
-       Build note (from the brief, §6-paragraph "Reader"): the row that
-       decides it is the second column. The Callout under the table says so,
-       in the brief's words, verbatim.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -200,8 +159,6 @@
           </thead>
           <tbody>
             <tr>
-              <!-- C-3. "Starburst" is not a supported engine name; the row
-                   says Trino-protocol. -->
               <th scope="row"><strong>MPP SQL engine</strong> — Trino,
                 Starburst</th>
               <td>How fast can I scan this lake</td>
@@ -210,7 +167,6 @@
                 half of a plan</td>
             </tr>
             <tr>
-              <!-- C-4. SME publishable list, row 1. -->
               <th scope="row"><strong>Graph database</strong> — Neo4j</th>
               <td>What does this traversal tell me</td>
               <td data-highlight>Leaves it alone. Cypher over your relational
@@ -218,7 +174,6 @@
                 and deep traversal is the store's</td>
             </tr>
             <tr>
-              <!-- C-5. claim-audit §5.1c — the three-language form. -->
               <th scope="row"><strong>GraphQL gateway</strong> — Apollo
                 GraphOS, Hasura</th>
               <td>How do my teams' services become one API</td>
@@ -227,7 +182,6 @@
                 rather than in the gateway</td>
             </tr>
             <tr>
-              <!-- C-6. Category only, no Denodo claim. -->
               <th scope="row"><strong>Data virtualization</strong> — Denodo
                 and the category around it</th>
               <td>How do I query what I cannot move</td>
@@ -239,7 +193,6 @@
         </table>
       </div>
 
-      <!-- C-7. The deciding question. -->
       <div class="pv-callout">
         <span class="pv-callout__label">THE ROW THAT DECIDES</span>
         <span class="pv-callout__body">The row that decides it is usually the
@@ -253,18 +206,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §3 The comparison pages. ChoiceCard ×2.
-
-       Two cards, not three. /vs/denodo gets no card and no link, because no
-       Denodo column exists in docs/competitive_analysis.md and a card
-       pointing at a page built on nothing is worse than no card. The route
-       must still resolve, per §8 of the brief, and the footer carries it.
-
-       IMG-15 is two marks, not three — the image-register entry still says
-       three and the VP owns that document. One mark per card, at 1/1
-       (pv-editorial--square). The brief forbids a figure above §2.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -272,9 +213,7 @@
 
       <div class="pv-grid pv-grid--2 pv-grid--tight">
 
-        <!-- ChoiceCard 1 — Starburst and Trino → /vs/starburst. C-8. -->
         <div class="pv-choice">
-          <!-- IMG-15a. MPP-coordinator editorial, 1:1. -->
           <figure class="pv-editorial pv-editorial--square" role="img"
                aria-label="Figure: an MPP coordinator in cobalt, with a highlighted node for the Trino protocol Provisa adopts.">
               <img class="pv-editorial__img pv-editorial__img--light" src="/assets/editorial/img-15a-light.png" alt="Figure: an MPP coordinator in cobalt, with a highlighted node for the Trino protocol Provisa adopts." loading="lazy" decoding="async">
@@ -294,13 +233,7 @@
             detail<span class="pv-link__arrow"> →</span></a>
         </div>
 
-        <!-- ChoiceCard 2 — Coming from Hasura → /vs/hasura. C-9.
-             "end-of-life" is a forbidden string on this page; the card uses
-             "there is no in-place upgrade path from v2 to DDN" and "v2
-             remains supported under their LTS policy", which is Hasura's
-             own documentation. -->
         <div class="pv-choice pv-choice--get">
-          <!-- IMG-15b. Hasura v2 metadata editorial, 1:1. -->
           <figure class="pv-editorial pv-editorial--square" role="img"
                aria-label="Figure: a Hasura v2 metadata file in forest, with the fields that convert highlighted.">
               <img class="pv-editorial__img pv-editorial__img--light" src="/assets/editorial/img-15b-light.png" alt="Figure: a Hasura v2 metadata file in forest, with the fields that convert highlighted." loading="lazy" decoding="async">
@@ -326,30 +259,11 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §4 If you run Neo4j. Callout + body + ComparisonTable + Callout.
-
-       The fit statement Callout sits FIRST, before the body dateline and
-       the table. Reordering so the differences come first inverts the
-       page's argument. The checker (check-page-compare.mjs) asserts the
-       source order.
-
-       Six rows, every one a dated documentation claim. Row 3 (DENY) is
-       verbatim, which is why the exact string is in the required-strings
-       list of the checker.
-
-       C-17 is a published restraint at full weight, in this section's
-       body colour. Not a footnote, not a lighter tone — this is the one
-       thing on the page a competitor's field team cannot use against us.
-       ================================================================== -->
   <section class="pv-section pv-section--band" id="neo4j">
     <div class="pv-container pv-stack pv-stack--lg">
 
       <h2 class="pv-h pv-h--section">If you run Neo4j</h2>
 
-      <!-- C-10. SME publishable list, row 1. Unhedged, by position: this
-           Callout is FIRST, before the body paragraph and the table. The
-           checker asserts the order. -->
       <div class="pv-callout pv-callout--get">
         <span class="pv-callout__label">THEIRS</span>
         <span class="pv-callout__body"><strong>Cypher is theirs and graph
@@ -360,9 +274,6 @@
           going to argue with you.</span>
       </div>
 
-      <!-- The dateline is in the body, in body type. REQ-2030. A design
-           pass that moves this into a footnote breaks REQ-2030 on the page
-           that publishes REQ-2030 as a selling point. -->
       <p class="pv-p">Where the two stop overlapping is scope and
         enforcement. Read from Neo4j's published documentation on
         <strong>14 October 2026</strong> — Neo4j 2026.09 (Operations
@@ -381,7 +292,6 @@
           </thead>
           <tbody>
             <tr>
-              <!-- C-11 + C-12. SME publishable list, row 2. -->
               <td><strong>Composite databases</strong> query across Neo4j
                 databases — local or on remote DBMSs — through a single
                 Cypher query, and every constituent is a Neo4j database.
@@ -396,8 +306,6 @@
                 governed, joinable tables.</td>
             </tr>
             <tr>
-              <!-- C-13. SME publishable list, row 3. Masking is a
-                   transformation claim, not an access-control claim. -->
               <td><strong>Access control hides; it does not transform.</strong>
                 Read and traverse privileges on labels, relationship types
                 and properties, with predicate conditions on property values.
@@ -408,9 +316,6 @@
                 withheld, and which one is a policy on the column.</td>
             </tr>
             <tr>
-              <!-- C-14. SME publishable list, reworded by the SME verdict.
-                   DENY quotation is VERBATIM, including the quotation
-                   marks. The layer count is gone (brief revision 2 §1). -->
               <td><strong><code>DENY</code> fails open, in their words:</strong>
                 "a <code>DENY</code> rule fails open when its criteria
                 cannot be evaluated, which means the restriction is not
@@ -422,7 +327,6 @@
                 not run.</td>
             </tr>
             <tr>
-              <!-- C-15. SME publishable list, row 5. -->
               <td><strong>Vector embeddings live in the graph.</strong>
                 Cypher 25 vector indexes are supported, not beta, cosine and
                 Euclidean, over node and relationship properties. An
@@ -432,8 +336,6 @@
                 like any other column.</td>
             </tr>
             <tr>
-              <!-- C-16. SME publishable list, row 6. The documentation
-                   asymmetry only. -->
               <td><strong>Their catalog is per-role for labels, not for
                 property keys.</strong> <code>db.labels()</code> and
                 <code>db.relationshipTypes()</code> are documented as
@@ -448,12 +350,6 @@
         </table>
       </div>
 
-      <!-- C-17. The published restraint. At full weight, in this section's
-           body type and colour. Opening is now affirmative, per revision 2
-           §2 — "One thing this page will not tell you" was the tease, and
-           it is gone. Moving this into a footnote or a lighter tone would
-           remove the only thing on the page a competitor's field team
-           cannot use against us. -->
       <div class="pv-callout">
         <span class="pv-callout__label">WHAT THIS PAGE DOES NOT CLAIM</span>
         <span class="pv-callout__body">Nobody has run this, so there is no
@@ -468,31 +364,11 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §5 If you run Apollo GraphOS. Callout + body + ComparisonTable
-       + Callout.
-
-       Same shape as §4: fit statement FIRST, then dateline, then table,
-       then the published restraint (C-23/C-24).
-
-       Five rows, every one a dated quotation. Row 1 (@connect) is verbatim
-       and the brief notes it is "the strongest row available against
-       Apollo" — the quotation is REQ-2031's shape, so changing it drops
-       the row's scope.
-
-       The C-23/C-24 callout is in body type at full weight. REQ-2032 and
-       the SME's not-publishable row 4: this is the page's withdrawal of a
-       claim that was false (security-partitioned caching). The brief says
-       publishing the withdrawal is "mine" — the Designer's decision — and
-       the SME verdict kept it. Demoting it to a footnote erases the thing
-       the page is testing when it says it is checkable.
-       ================================================================== -->
   <section class="pv-section" id="apollo">
     <div class="pv-container pv-stack pv-stack--lg">
 
       <h2 class="pv-h pv-h--section">If you run Apollo GraphOS</h2>
 
-      <!-- C-18. SME publishable list, Apollo row 1. Unhedged. -->
       <div class="pv-callout pv-callout--get">
         <span class="pv-callout__label">THEIRS</span>
         <span class="pv-callout__body"><strong>Composing GraphQL services
@@ -504,8 +380,6 @@
           GraphOS is built for exactly that.</span>
       </div>
 
-      <!-- Dateline in body. GraphOS is continuously released, so the row
-           carries a read date rather than a version. REQ-2030. -->
       <p class="pv-p">Read from Apollo's published documentation on
         <strong>14 October 2026</strong> — GraphOS Router v2, Federation
         v2.12, and the Connectors <code>connect</code> spec v0.4. GraphOS
@@ -524,8 +398,6 @@
           </thead>
           <tbody>
             <tr>
-              <!-- C-19 + C-12. SME publishable list, Apollo row 2.
-                   @connect quotation is VERBATIM. -->
               <td><strong>The transport is the boundary, in their
                 sentence:</strong> <code>@connect</code> "can only
                 retrieve data from HTTP APIs that return JSON data and,
@@ -536,8 +408,6 @@
                 and a join across two of them is one statement.</td>
             </tr>
             <tr>
-              <!-- C-20. SME publishable list, Apollo row 3. Concession
-                   first. -->
               <td><strong>Authorization is field-and-type.</strong>
                 <code>@authenticated</code>, <code>@requiresScopes</code>
                 and <code>@policy</code> are enforced at the router and
@@ -550,7 +420,6 @@
                 result.</td>
             </tr>
             <tr>
-              <!-- C-21. SME publishable list, Apollo row 4. -->
               <td><strong>Schema differentiation is per variant.</strong>
                 Contracts filter individual fields by <code>@tag</code> and
                 publish a separate variant with its own router, so a new
@@ -560,10 +429,6 @@
                 deployment.</td>
             </tr>
             <tr>
-              <!-- C-22. SME publishable list, Apollo row 5. Concede the
-                   licences fully, then land the deploy-path point.
-                   "SaaS only" was false; the forbidden-strings list
-                   forbids it. -->
               <td><strong>The air-gapped thing is the router, not
                 GraphOS.</strong> Offline licences exist — Enterprise, on
                 request, valid for the contract term or one year, 28-day
@@ -577,11 +442,6 @@
         </table>
       </div>
 
-      <!-- C-23 + C-24. The two withdrawals. At full weight. REQ-2032 and
-           the SME's not-publishable row 4. Revision 2 §3 restored C-24
-           in full: the middle clause "so a table or column the role
-           cannot see is not in the prompt" is the mechanism, and without
-           it the sentence is one every NL-to-SQL product can say. -->
       <div class="pv-callout">
         <span class="pv-callout__label">TWO THINGS THIS PAGE NO LONGER
           CLAIMS</span>
@@ -604,27 +464,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §6 How this page is made. RuledCard ×3 + body + TextLink.
-
-       The method, published. Three cards each name a REQ: C-25/REQ-2030,
-       C-26/REQ-2031, C-27/REQ-2032. The last card's second sentence is an
-       admission on a public page — the brief notes the VP may want it
-       softer; the brief's author keeps it, because it is the sentence that
-       makes §6 credible rather than decorative.
-
-       The TextLink points at docs/competitive_analysis.md on the public
-       repository's default branch. Criterion 5 of the acceptance list: a
-       404 there turns this section into a bluff. The checker asserts the
-       URL.
-
-       The release gate (PRO-45) is not here: it is a gate on go-live, not
-       on the build or the merge, so there is no banner — the gate lives
-       in the issue header and in the page-register state cell. The brief
-       says explicitly: build, commit, check and merge now; do not go live
-       while docs/exports/competitive_matrix.md contradicts §5 of this
-       page.
-       ================================================================== -->
   <section class="pv-section pv-section--band" id="how">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -636,7 +475,6 @@
 
       <div class="pv-grid pv-grid--3 pv-grid--tight">
 
-        <!-- C-25. REQ-2030. -->
         <div class="pv-ruled">
           <span class="pv-ruled__num">01</span>
           <h3 class="pv-ruled__title">A date, or it does not ship</h3>
@@ -647,7 +485,6 @@
             publishes nothing.</div>
         </div>
 
-        <!-- C-26. REQ-2031. -->
         <div class="pv-ruled">
           <span class="pv-ruled__num">02</span>
           <h3 class="pv-ruled__title">Their nearest capability, before our
@@ -657,8 +494,6 @@
             not do that were removed rather than softened.</div>
         </div>
 
-        <!-- C-27. REQ-2032. The second sentence is the admission the SME
-             would not take out. -->
         <div class="pv-ruled">
           <span class="pv-ruled__num">03</span>
           <h3 class="pv-ruled__title">No bare negatives</h3>
@@ -669,9 +504,6 @@
 
       </div>
 
-      <!-- C-28. The link that is this section's whole point. If this URL
-           404s, §6 is a bluff. Criterion 5 of the acceptance list — the
-           checker asserts the exact href. -->
       <p class="pv-p">The file these rows come from is in the repository,
         with the read dates in it, per cell:
         <a class="pv-link pv-link--inline"
@@ -682,17 +514,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §7 Where Provisa is the wrong answer. RuledCard ×3.
-
-       Three concessions, unhedged. C-29 is the managed-service concession
-       the whole site concedes — REQ-2014 and plan revision 3 decision 4.
-       C-30 is cited from brief-vs-starburst §2. C-31 restates the Neo4j
-       fit statement as a concession, which is C-10 inverted.
-
-       No managed-service language in any tense. The forbidden-strings
-       list in check-page-compare.mjs enforces that.
-       ================================================================== -->
   <section class="pv-section" id="not-us">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -700,7 +521,6 @@
 
       <div class="pv-grid pv-grid--3 pv-grid--tight">
 
-        <!-- C-29. The managed-service concession, unhedged. REQ-2014. -->
         <div class="pv-ruled pv-ruled--run">
           <span class="pv-ruled__num">01</span>
           <h3 class="pv-ruled__title">You want a managed service</h3>
@@ -711,7 +531,6 @@
             requirement.</div>
         </div>
 
-        <!-- C-30. The MPP concession. Cited from brief-vs-starburst §2. -->
         <div class="pv-ruled pv-ruled--run">
           <span class="pv-ruled__num">02</span>
           <h3 class="pv-ruled__title">You need the fastest scan over a
@@ -721,7 +540,6 @@
             Provisa at it.</div>
         </div>
 
-        <!-- C-31. The graph concession. C-10 inverted. -->
         <div class="pv-ruled pv-ruled--run">
           <span class="pv-ruled__num">03</span>
           <h3 class="pv-ruled__title">Your problem is a graph</h3>
@@ -736,19 +554,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §8 Conversion. Heading + Button + TextLink.
-
-       REQ-2014 rung 2 then rung 1 — the order is inverted from the other
-       Phase 1 pages because the procurement reader is the one who reads
-       §6, and §6 is the reason they talk to us. The Button is "Book a
-       demo" → #contact and the TextLink is "Get a free licence" →
-       /register.
-
-       No /install link: the route does not exist (PRO-17, PRO-40) and
-       seven links on three pages already wait on it. The CTA ladder's
-       primary rung becomes half a rung on this page, like /vs/hasura.
-       ================================================================== -->
   <section class="pv-section pv-section--tight">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -768,17 +573,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       ContactBand. The shared chrome every rebuilt page ships, and the
-       target §8's Button, the header button and the utility bar all
-       point at. The band's heading is the form's name rather than new
-       copy: §8 is the brief's conversion block and this band is the
-       form it jumps to.
-
-       The band's "What the model is" secondary link points at /platform,
-       which is where a reader who finished the Compare hub goes next in
-       the brief's §8 link table.
-       ================================================================== -->
   <section class="pv-contact" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">
@@ -804,11 +598,6 @@
 
 </main>
 
-<!-- SiteFooter — partials/site-footer.html. The Compare column marks this
-     page with aria-current, because this is the Compare hub. The /vs/denodo
-     entry stays in the footer: the brief's §8 says an unlinked page is not a
-     deleted page, and /vs/denodo must still resolve — this is where it
-     resolves from. -->
 <footer class="pv-footer">
   <div class="pv-footer__inner pv-container">
     <div class="pv-footer__top">

@@ -105,13 +105,7 @@
 
   <main id="main">
 
-    <!-- §1 Hero =====================================================
-         C-1: the "63 reachable / 37 live" numbers are cut, per the SME
-         verdict on PRO-81 — no derivation for them in the published docs.
-         The split sentence stays, without the counts; the StatStrip
-         carries 72 / 5 paths / sub-100ms, which are all in the docs.
-         C-2 (72), C-3 (sub-100ms) are OK as-is. -->
-    <section class="pv-section">
+        <section class="pv-section">
       <div class="pv-container pv-stack pv-stack--lg">
         <nav class="pv-crumb" aria-label="Breadcrumb">
           <a href="/">Provisa</a>
@@ -151,13 +145,7 @@
       </div>
     </section>
 
-    <!-- §2 The five execution paths ================================
-         C-4 reworded to "Every query ultimately executes through the
-         federation engine. Sources fall into five execution paths based
-         on their connectivity." The brief said "three categories" was
-         in the docs text — brief uses five, which the table shows.
-         C-9 reworded: 12 more, not 15. Enterprise SaaS clause added. -->
-    <section class="pv-section pv-section--band" id="execution-paths">
+        <section class="pv-section pv-section--band" id="execution-paths">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
@@ -237,21 +225,7 @@
       </div>
     </section>
 
-    <!-- §3 All 72 ====================================================
-         SME content note: the brief outlined 12 accordions and the copy
-         had 18, which is a long scroll for "is my stack on the list".
-         Replaced with a single index table (one row per group), listing
-         every type by name. Notes live inline where published:
-           - C-12 Druid/Pinot push-down CUT (no published source).
-           - C-15 Code sources reworded to the arch definition.
-           - C-17 Push receiver note.
-           - C-22 API sources — GitHub/GitLab/Stripe register internally.
-           - C-23 GovData reworded.
-           - C-24 Data quality — docs wording swap.
-           - C-25 Data profiler note.
-           - C-26 Kaggle, C-27 Wikipedia staging note.
-         C-10, C-11, C-13, C-14, C-16, C-18, C-19, C-20, C-21: OK as-is. -->
-    <section class="pv-section" id="all-72">
+        <section class="pv-section" id="all-72">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
@@ -408,9 +382,7 @@
       </div>
     </section>
 
-    <!-- §4 Wire-compatible ===========================================
-         C-28: OK, verbatim from the brief. -->
-    <section class="pv-section" id="wire-compatible">
+        <section class="pv-section" id="wire-compatible">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
@@ -430,11 +402,7 @@
       </div>
     </section>
 
-    <!-- §5 Warehouses ================================================
-         C-29, C-30, C-31: OK as-is.
-         C-32 reworded per SME: as sources, these land replicas; as the
-         engine, they are partial federators. Both roles named. -->
-    <section class="pv-section pv-section--band" id="warehouses">
+        <section class="pv-section pv-section--band" id="warehouses">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
@@ -477,9 +445,7 @@
       </div>
     </section>
 
-    <!-- §6 Athena ====================================================
-         C-33, C-34, C-35: all OK as published. -->
-    <section class="pv-section" id="athena">
+        <section class="pv-section" id="athena">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
@@ -519,13 +485,7 @@
       </div>
     </section>
 
-    <!-- §7 API sources ==============================================
-         C-36, C-37, C-38 reworded to the published mechanisms. No
-         OAuth2 / API keys / bearer tokens language for generic OpenAPI
-         (bearer is documented for Stripe only). gRPC uses server
-         reflection, not a .proto file. GraphQL uses mapping headers and
-         client-header forwarding, not "bearer tokens". -->
-    <section class="pv-section pv-section--band" id="apis">
+        <section class="pv-section pv-section--band" id="apis">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
@@ -561,14 +521,7 @@
       </div>
     </section>
 
-    <!-- §8 Register =================================================
-         C-39: OK near-verbatim.
-         C-40: brief YAML was invented. Use the published snippet from
-         docs/sources.md:1148-1156, with its inline comments. The id
-         `my-snowflake` and host `org.snowflakecomputing.com` are the
-         docs' values; the brief's `warehouse` id / `account: xy12345`
-         were not. -->
-    <section class="pv-section" id="register">
+        <section class="pv-section" id="register">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
@@ -600,10 +553,7 @@
       </div>
     </section>
 
-    <!-- §9 Conversion ================================================
-         CTA ladder per design-system/README.md: /install primary,
-         /register beside it, Book a demo as the secondary. -->
-    <section class="pv-contact" id="contact">
+        <section class="pv-contact" id="contact">
       <div class="pv-contact__inner pv-container">
         <div class="pv-contact__copy">
           <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>

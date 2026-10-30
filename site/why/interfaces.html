@@ -14,10 +14,7 @@
   <link rel="stylesheet" href="/design-system/tokens.css">
   <link rel="stylesheet" href="/design-system/provisa.css">
 
-  <!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
-       external script runs after first paint, which is exactly the flash of the
-       wrong theme this prevents. -->
-  <script>
+    <script>
     (function () {
       try {
         if (localStorage.getItem("provisa-theme") === "dark")
@@ -43,12 +40,7 @@
     </div>
   </div>
 
-  <!-- The header's secondary action is the free licence. Plan revision 3
-       withdraws the evaluation trial as a conversion, and PRO-11 acceptance
-       criterion 7 says no link on this page may point at the trial host. The
-       site-wide header partial still carries that link; removing it there is
-       the Home build issue's change, since it owns the design-system edit. -->
-  <header class="pv-header">
+    <header class="pv-header">
     <div class="pv-header__inner pv-container">
       <a class="pv-wordmark" href="/">
         <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -134,13 +126,7 @@
                 on how you asked. Translation belongs to the compiler, not to
                 the protocol you connected with — pgwire, Flight, GraphQL and
                 the rest produce the same SQL for the same question.</p>
-              <!-- Spine position, and the page that proves it (PRO-26;
-                   claim-audit Page 4 item 1, §5.1b). GraphQL is the canonical
-                   schema and REST, JSON:API, OpenAPI and gRPC are derived from
-                   it — that derivation is why one English question comes back
-                   on six surfaces with no extra modelling, so the lead says
-                   both. Qualifier 1, "up to six", stays in the sentence. -->
-              <p class="pv-p">One schema is the reason the count is possible:
+                            <p class="pv-p">One schema is the reason the count is possible:
                 GraphQL is canonical, and REST, JSON:API, OpenAPI and gRPC are
                 derived from it. So a question asked once in English comes back
                 on up to six governed surfaces — SQL, GraphQL, Cypher, gRPC,
@@ -160,8 +146,7 @@
             </div>
           </div>
           <div class="pv-rail__rail">
-            <!-- IMG-07. Protocol-fan editorial, 4:5. -->
-            <figure class="pv-editorial" role="img"
+                        <figure class="pv-editorial" role="img"
                  aria-label="A fan of protocol names in mono converging on a single model.">
                 <img class="pv-editorial__img pv-editorial__img--light" src="/assets/editorial/img-07-light.png" alt="A fan of protocol names in mono converging on a single model." fetchpriority="high" decoding="async">
                 <img class="pv-editorial__img pv-editorial__img--dark" src="/assets/editorial/img-07-dark.png" alt="" aria-hidden="true" fetchpriority="high" decoding="async">
@@ -192,10 +177,7 @@
             surfaces is a taxonomy someone chose.</p>
         </div>
 
-        <!-- The canonical definition of "sixteen surfaces" for the whole site.
-             Home §6 mirrors it row for row; a row changed here changes there,
-             and goes past the Content Manager first (PRO-11 criterion 2). -->
-        <div class="pv-table">
+                <div class="pv-table">
           <table>
             <caption class="pv-sr">Provisa's seven server listeners, whether
               each one starts by default, and the client-facing surfaces each
@@ -675,11 +657,7 @@ tbl = conn.cursor().execute(
       </div>
     </section>
 
-    <!-- §7 Coming from Hasura v2 ====================================
-         The "Coming from Hasura v2 →" text link is omitted at build:
-         /vs/hasura is a Phase 2 page and the brief's §8 says to omit the link
-         rather than point it at a page that is not the rebuilt one. -->
-    <section class="pv-section pv-section--tight">
+        <section class="pv-section pv-section--tight">
       <div class="pv-container">
         <div class="pv-callout pv-callout--inverse">
           <span class="pv-callout__label">ON HASURA V2?</span>

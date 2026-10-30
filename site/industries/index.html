@@ -1,28 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-<!-- partials/head.html, verbatim but for the title, the description and the
-     canonical link.
-
-     This is PRO-94 — the Industries hub at /industries, built on the design
-     system from PRO-3 against the SME verdict on PRO-88 (10 claims: 9 OK,
-     13 reworded, 4 cut). The four vertical cards clear because PRO-86's
-     verdict on the four vertical briefs landed; the governance pillars cite
-     REQs verified against docs/arch/requirements.md.
-
-     Page-level rules from the PRO-88 verdict, applied here:
-       1. Never "compliant" or "certified"; compliance names are "hooks"
-          in docs/marketing.md:75-78, not attestations. The sitewide ban in
-          site/claim-bans.mjs keeps SOC 2, HIPAA, FedRAMP, PCI and GDPR out
-          of served copy on every page, this one included.
-       2. Every REQ id is verified against the heading in
-          docs/arch/requirements.md before citing. The two miscitations
-          flagged on the brief (C-7's REQ-1616, C-10's REQ-1619) are
-          replaced by the right ones below.
-       3. "Region-locked" is replaced by "region-homed data" or "regional
-          clusters on one model" (C-1, REQ-1921 HOME REGION amendment,
-          REQ-1922). "Classification-based" is kept on the government tile
-          only, where the vertical page explains it. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Industries — Provisa</title>
@@ -133,22 +111,6 @@
 
 <main id="main">
 
-  <!-- ==================================================================
-       §Hero
-       Breadcrumb + eyebrow + hero heading + lede + standfirst.
-
-       [C-1] The one claim this page makes before the tiles: regulated
-       work is a join across tables a team already has, and the governance
-       primitives are column visibility, regional clusters on one shared
-       model (REQ-1921 HOME REGION amendment, REQ-1922), an audit log
-       over every surface (REQ-596, REQ-613) and masking (REQ-971,
-       REQ-1494, REQ-087 to REQ-091). "Region-homed" and "regional
-       clusters on one model" per the verdict; the forbidden
-       "region-locked deployment" is not in copy and is not in the
-       struck-string list below either because the ban in
-       site/claim-bans.mjs covers the compliance names, not the
-       deployment wording.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -168,10 +130,6 @@
         <div class="pv-rail">
           <div class="pv-rail__body">
             <div class="pv-stack">
-              <!-- [C-1] The pitch, across the four verticals. The
-                   governance is in the model: column visibility, regional
-                   clusters, the audit record and masking. The four
-                   tiles are the shape of the page. -->
               <p class="pv-p pv-p--lede">A regulated team already has the
                 data: a build registry and a vulnerability feed; positions
                 and prices; an electronic record and a claims warehouse;
@@ -181,12 +139,6 @@
                 model answers it across the four verticals this page
                 lists.</p>
 
-              <!-- [C-1 reworded, continued] "Region-homed data" or
-                   "regional clusters on one shared model" are the
-                   published wordings (REQ-1921 HOME REGION amendment,
-                   REQ-1922). "Classification-based" sits on the government
-                   tile only, where the vertical page explains it from the
-                   row and column rules. -->
               <p class="pv-p">The model's primitives are the same whether
                 the vertical is cybersecurity, financial services,
                 healthcare or government. A column names the roles that
@@ -204,30 +156,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §Verticals. Four TileCards, pv-grid--4.
-
-       [C-2] Cybersecurity — brief-cybersecurity verdict (PRO-86); the
-             vertical page at /industries/cybersecurity ships this
-             branch.
-       [C-3] Financial services — brief-financial-services verdict
-             (PRO-86); the vertical page at
-             /industries/financial-services ships this branch.
-       [C-4] Healthcare — brief-healthcare verdict (PRO-86); the vertical
-             page at /industries/healthcare is a sibling site task.
-             "Audit trails for HIPAA reporting" is the SME phrasing in
-             the verdict for the body claim; the sitewide ban keeps
-             "HIPAA" out of served copy, so this card's body stops at
-             the published mechanism: opt-in filters, PHI columns absent
-             from a researcher's schema, and one audit log over every
-             surface.
-       [C-5] Government — brief-government verdict (PRO-86); the vertical
-             page at /industries/government is a sibling site task.
-             "Multi-agency data isolation" maps to domains in the
-             government brief C-11 to C-16: agency-by-agency domains with
-             row rules on classification level. No FedRAMP, no JWICS, no
-             NIPR; the ban keeps the compliance names out.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -235,8 +163,6 @@
 
       <div class="pv-grid pv-grid--4 pv-grid--tight">
 
-        <!-- [C-2] Cybersecurity. The three scenarios the vertical page
-             walks are the one-line summary. -->
         <a class="pv-tile" href="/industries/cybersecurity">
           <span class="pv-tile__fig"><span class="pv-tile__num">01</span></span>
           <h3 class="pv-tile__title">Cybersecurity</h3>
@@ -245,10 +171,6 @@
             a query over tables the security team already has.</p>
         </a>
 
-        <!-- [C-3] Financial services. Views with history is the
-             strongest new material on this vertical (PRO-86 question 1
-             and PRO-88 Financial Services C-7). The one-line summary
-             names it without the mechanism copy. -->
         <a class="pv-tile pv-tile--get" href="/industries/financial-services">
           <span class="pv-tile__fig"><span class="pv-tile__num">02</span></span>
           <h3 class="pv-tile__title">Financial services</h3>
@@ -258,14 +180,6 @@
             and the time the row was recorded.</p>
         </a>
 
-        <!-- [C-4] Healthcare. "Audit trails for HIPAA reporting" is the
-             SME's reworded phrasing in PRO-88 §2 — but the sitewide
-             claim ban keeps "HIPAA" out of served copy, so the tile
-             body stops at the published mechanism: opt-in filters, PHI
-             columns absent from the researcher's schema, and one audit
-             log over every surface. The vertical page is PRO-86's
-             healthcare brief, which this site task delivers in a
-             separate PR. -->
         <a class="pv-tile pv-tile--run" href="/industries/healthcare">
           <span class="pv-tile__fig"><span class="pv-tile__num">03</span></span>
           <h3 class="pv-tile__title">Healthcare</h3>
@@ -274,12 +188,6 @@
             log over every surface — SQL, GraphQL and Cypher alike.</p>
         </a>
 
-        <!-- [C-5] Government. "Multi-agency data isolation" maps to
-             domains (government brief C-11 to C-16): one agency's role
-             reads inside the agency's domain and is refused on another
-             agency's with the published V000 message. "Classification"
-             sits on the row filter, as the government vertical page
-             explains. -->
         <a class="pv-tile" href="/industries/government">
           <span class="pv-tile__fig"><span class="pv-tile__num">04</span></span>
           <h3 class="pv-tile__title">Government</h3>
@@ -293,49 +201,13 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §Governance pillars. Four RuledCards, pv-grid--4.
-
-       [C-6] The section heading. No factual claim: the facts are in the
-             four cards below.
-       [C-7] Column visibility. REQ-1131, REQ-1614, REQ-1778. The brief
-             cited REQ-1616 ("Invitations"), which is wrong; the three
-             cited here are the right requirements and the right
-             published mechanism — a role sees only the columns it was
-             granted, and a table with no visible column on a role's
-             schema is dropped from that schema.
-       [C-8] Regions. REQ-1921 (HOME REGION amendment and the SIMPLE RULE
-             that supersedes it), REQ-1922. "Each region runs its own
-             engine, storage and cache on one shared model" is the
-             verdict's wording; "reads from other regions are served in
-             place under the reader's rules" replaces the brief's
-             "cross-border aggregates" (plan jargon).
-       [C-9] Audit. REQ-596, REQ-613 (superseded by REQ-596), with
-             docs/features.md:363 as the published summary. "Every
-             governed query" not "every query"; "tables touched" not
-             "data accessed". The record stores a hash and the tables,
-             not the data.
-       [C-10] Masking. REQ-971, REQ-1494, REQ-087 to REQ-091. The brief
-              cited REQ-1619 ("Federation Engine"), which is wrong; the
-              five cited here cover masking as a projection in the
-              governed IR, pushed down to the source wherever the source
-              can evaluate it.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
 
-      <!-- [C-6] Heading only. The published rails of the model, named
-           once for the whole hub. The vertical pages above apply them to
-           four specific sets of tables. -->
       <h2 class="pv-h pv-h--section">The governance, named once</h2>
 
       <div class="pv-grid pv-grid--4 pv-grid--tight">
 
-        <!-- [C-7] Column visibility. REQ-1131 (admin bypass defined,
-             which is the shape of the per-column grant); REQ-1614 (a
-             table with no visible column is dropped from the role's
-             schema); REQ-1778 ("*" visible-to is "visible to every
-             role"). -->
         <div class="pv-ruled">
           <span class="pv-ruled__num">01</span>
           <h3 class="pv-ruled__title">Column visibility</h3>
@@ -345,11 +217,6 @@
             is not a column it can discover.</div>
         </div>
 
-        <!-- [C-8] Regions. REQ-1922 (regional clusters, one shared
-             model). REQ-1921's HOME REGION amendment and the SIMPLE
-             RULE that supersedes it (a table names its home region;
-             whole-table copies live only there; readers elsewhere are
-             served in place under their own row and column rules). -->
         <div class="pv-ruled pv-ruled--get">
           <span class="pv-ruled__num">02</span>
           <h3 class="pv-ruled__title">Regions</h3>
@@ -360,10 +227,6 @@
             reader's rules.</div>
         </div>
 
-        <!-- [C-9] Audit. REQ-596 (query_audit_log row shape, written at
-             the single governed pipeline), REQ-613 (append-only, now
-             superseded by REQ-596 but still cited as a cross-reference
-             in docs/features.md:363). -->
         <div class="pv-ruled pv-ruled--run">
           <span class="pv-ruled__num">03</span>
           <h3 class="pv-ruled__title">Audit</h3>
@@ -374,12 +237,6 @@
             clear.</div>
         </div>
 
-        <!-- [C-10] Masking. REQ-971 (expressed as semantic SQL
-             projection expressions within the governed IR, pushed down
-             where the connector can evaluate the mask), REQ-1494 (the
-             mask kinds and the engine computing the fake at read),
-             REQ-087 to REQ-091 (the published mask kinds: regex,
-             constant, truncate; the type validation at config load). -->
         <div class="pv-ruled">
           <span class="pv-ruled__num">04</span>
           <h3 class="pv-ruled__title">Masking</h3>
@@ -395,18 +252,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §Conversion. Heading + body + Button + TextLink.
-
-       Industries is a procurement-path page; the ladder matches
-       cybersecurity.html and financial-services.html — Install primary,
-       Register secondary — and the Book-a-demo button in the header
-       and ContactBand carries the demo request. "Book a demo" is the
-       primary demand verb across the site; "Install and deploy" and
-       "Register (free licence)" sit under it on this page's own
-       conversion band because every vertical page beneath this hub
-       uses the same ladder.
-       ================================================================== -->
   <section class="pv-section pv-section--band pv-section--tight">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -426,11 +271,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §Conversion band. The shared ContactBand chrome every rebuilt
-       page ships; the secondary link points at /platform, which is
-       where a reader who finished the Industries hub goes next.
-       ================================================================== -->
   <section class="pv-contact" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">
