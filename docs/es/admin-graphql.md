@@ -126,7 +126,7 @@ Argumentos: `sourceId`, `domainId`, `schemaName`, `tableName`, `cacheTtl`, `pref
 
 #### `columnDependents(tableId: String!, renamed: [String!], removed: [String!]) → [ColumnDependentsType!]!`
 
-Artefactos que un cambio de alias o una eliminación de columna pendientes romperían. Es informativo — la UI de administración lo muestra antes de guardar y el administrador decide. Debe llamarse *antes* de guardar, porque los dependientes fueron escritos contra el nombre expuesto que la columna lleva actualmente. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1301-1331`]
+Artefactos que un cambio de alias o una eliminación de columna pendientes romperían. Es informativo — la UI de administración lo muestra antes de guardar y el administrador decide. Debe llamarse *antes* de guardar, porque los dependientes fueron escritos contra el nombre expuesto que la columna lleva actualmente. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1939-1972`]
 
 ---
 

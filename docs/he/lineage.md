@@ -27,21 +27,21 @@ JOIN   enrich_grpc_set('main.public.orders') e ON o.id = e.id
 המשפט הזה מייצר שלוש עמודות פלט. הגרף עבור `geo_u` נראה כך:
 
 ```text
-orders.geo  ──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
-orders.id   ─╮                                              (taint closure)
-orders.region ─╯
+main.public.orders.id     ─╮
+main.public.orders.region ─╯──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
+                              (taint closure over the declared input contract)
 ```
 
 - ‏`orders.id`, `orders.region` ו-`orders.geo` הם צמתי **source** ‏(חוזה הקלט הצר
   של `enrich_grpc_set` מצהיר על `id` ועל `region`; סגור הזיהום המלא מחבר את כל הקלטים
-  המוצהרים לכל הפלטים). [tool-verified: `_splice_commands` in graph.py:223-242]
+  המוצהרים לכל הפלטים). [tool-verified: `_splice_commands` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 - ‏`e.embedding` ו-`e.geo` הם צמתי **command** — גבול ה-`enrich_grpc_set`.
 - ‏`geo_u` הוא צומת **derived** המיוצר על ידי פונקציית ה-SQL `UPPER`.
 
 גבול הפקודה **אינו אטום**. משום ש-`enrich_grpc_set` מצהיר על עמודות הקלט שלו
 (`id`, `region`) ועל עמודות הפלט שלו (`id`, `embedding`, `geo`), מנוע ה-Data Lineage משחיל את
 סגור הזיהום ברציפות מהעמודות המוצהרות של יחס המקור אל כל פלט.
-[tool-verified: `_splice_commands` and `_input_relation` in graph.py:245-271]
+[tool-verified: `_splice_commands` and `_input_relation` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 ### סוגי צמתים ורמזים חזותיים
 
@@ -67,7 +67,7 @@ orders.region ─╯
 כל קשת נושאת את ביטוי ה-SQL הגולמי המייצר את עמודת היעד, בתוספת רשימת פעולות
 בעלות שם: פונקציות SQL ‏(`sql_function`), אופרטורים אריתמטיים/לוגיים (`operator`), פקודות
 רשומות (`command`), הפניות עמודה חשופות (`identity`) וליטרלים (`constant`).
-[tool-verified: TransformOp and name_transform in graph.py:36-145]
+[tool-verified: TransformOp and name_transform in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 קשת מקריאת פקודה מוצגת כקו סגול מקווקו בממשק המשתמש.
 [tool-verified: LineageDag.tsx:122-124]
@@ -78,7 +78,7 @@ orders.region ─╯
 זהות הצומת היא `relation.column` — עמודת פלט של תצוגה אחת והפניית קלט של תצוגה אחרת
 לאותה עמודה מתקרסות לצומת אחד. התוצאה היא DAG יחיד מעמודות מקור בסיסיות אל
 כל ערכת נתונים נגזרת בפלטפורמה. [tool-verified: `build_federation_graph` in merge.py:205-229
-and `qualify_outputs` in graph.py:275-299]
+and `qualify_outputs` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 השתמשו ב-`focus`, `direction` ו-`depth` כדי לתחום את התצוגה בקנה מידה של פדרציה מבלי לחשב מחדש
 את הגרף. [tool-verified: `slice_graph` in merge.py:160-189]
@@ -121,24 +121,35 @@ Content-Type: application/json
 [tool-verified: `lineage_graph` endpoint at lineage_router.py:45-54, LineageGraphRequest model at
 lineage_router.py:29-31]
 
-צורת התגובה [tool-verified: `LineageGraph.to_dict` in graph.py:82-105]:
+התשובה המלאה עבור אותה הצהרה — שישה nodes וארבעה edges, מודפס כפי שה-endpoint החזיר אותה [tool-verified: `POST /admin/lineage/graph` called over HTTP on a running instance with the shipped `enrich_grpc_set` command registered (`config/provisa.yaml`: inputs `id` and `region`, outputs `id`, `embedding`, `geo`), sqlglot 30.9.0, 16 October 2026; shape is `LineageGraph.to_dict` in graph.py:82-105]:
 
 ```json
 {
   "nodes": [
-    {"id": "orders.id", "column": "id", "relation": "orders", "kind": "source", "materialized": false}
+    {"id": "id", "column": "id", "relation": null, "kind": "derived", "materialized": false},
+    {"id": "orders.id", "column": "id", "relation": "orders", "kind": "source", "materialized": false},
+    {"id": "embedding", "column": "embedding", "relation": null, "kind": "derived", "materialized": false},
+    {"id": "e.embedding", "column": "embedding", "relation": "e", "kind": "command", "materialized": false},
+    {"id": "main.public.orders.id", "column": "id", "relation": "main.public.orders",
+     "kind": "source", "materialized": false},
+    {"id": "main.public.orders.region", "column": "region", "relation": "main.public.orders",
+     "kind": "source", "materialized": false}
   ],
   "edges": [
-    {
-      "source": "orders.id",
-      "target": "e.id",
-      "transform": "enrich_grpc_set(...)",
-      "ops": [{"name": "enrich_grpc_set", "kind": "command"}]
-    }
+    {"source": "orders.id", "target": "id", "transform": "o.id",
+     "ops": [{"name": "id", "kind": "identity", "args": []}]},
+    {"source": "e.embedding", "target": "embedding", "transform": "e.embedding",
+     "ops": [{"name": "embedding", "kind": "identity", "args": []}]},
+    {"source": "main.public.orders.id", "target": "e.embedding", "transform": "enrich_grpc_set(...)",
+     "ops": [{"name": "enrich_grpc_set", "kind": "command", "args": []}]},
+    {"source": "main.public.orders.region", "target": "e.embedding", "transform": "enrich_grpc_set(...)",
+     "ops": [{"name": "enrich_grpc_set", "kind": "command", "args": []}]}
   ],
   "outputs": ["id", "embedding"]
 }
 ```
+
+שתי צורות של source id מופיעות, והן nodes שונים. `orders.id` הוא ה-`o.id` של רשימת הבחירה, נקרא דרך ה-alias. ה-inputs המוצהרים של פקודה מסווגים מארגומנט היחס המילולי של הקריאה במקום זאת, כך שהם מגיעים כ-`main.public.orders.id` ו-`main.public.orders.region`. שני ה-edges של `enrich_grpc_set` הם ה-taint closure: כל input מוצהר של הקריאה, על ה-command output היחיד שהצהרה זו בוחרת. `e.id` נמצא ב-join condition ומעולם לא נחצה, כך שהוא אינו node כאן.
 
 מחזירה HTTP 422 כשלא ניתן לנתח את ה-SQL.
 [tool-verified: lineage_router.py:51-54]

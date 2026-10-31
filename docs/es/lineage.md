@@ -28,22 +28,20 @@ JOIN   enrich_grpc_set('main.public.orders') e ON o.id = e.id
 Esta sentencia produce tres columnas de salida. El grafo para `geo_u` se ve así:
 
 ```text
-orders.geo  ──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
-orders.id   ─╮                                              (taint closure)
-orders.region ─╯
+main.public.orders.id     ─╮
+main.public.orders.region ─╯──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
+                              (taint closure over the declared input contract)
 ```
 
-- `orders.id`, `orders.region` y `orders.geo` son nodos **origen** (el contrato de entrada estrecho
-  de `enrich_grpc_set` declara `id` y `region`; el cierre de contaminación (taint closure) completo
-  conecta todas las entradas declaradas con todas las salidas). [tool-verified: `_splice_commands`
-  en graph.py:223-242]
-- `e.embedding` y `e.geo` son nodos **command** — el límite de `enrich_grpc_set`.
-- `geo_u` es un nodo **derived** producido por la función SQL `UPPER`.
+- `main.public.orders.id` y `main.public.orders.region` son **source** nodes — el input contract reducido de `enrich_grpc_set`, calificado desde la relación nombrada en la llamada. `geo` es un *output* declarado del comando, por lo que `orders.geo` no es un node: nada upstream de `e.geo` existe excepto los inputs declarados. El closure conecta cada input declarado con cada output declarado, por lo que `e.embedding` lleva los mismos dos edges. [tool-verified: `_splice_commands` in graph.py:266-285; `POST /admin/lineage/graph` called on this statement, 16 October 2026 — eight nodes and seven edges, with `main.public.orders.{id,region}` the only nodes upstream of `e.geo` and `e.embedding`]
+- `e.embedding` y `e.geo` son **command** nodes — el boundary de `enrich_grpc_set`.
+- `geo_u` es un **derived** node producido por la función SQL `UPPER`.
+- `orders.id` también es un source node, de `o.id` en la lista de selección — la forma calificada por alias, distinta del `main.public.orders.id` del comando.
 
 El límite del comando **no es opaco**. Dado que `enrich_grpc_set` declara sus columnas de entrada
 (`id`, `region`) y columnas de salida (`id`, `embedding`, `geo`), el motor de linaje empalma el
 cierre de contaminación de forma continua desde las columnas declaradas de la relación de origen
-hasta cada salida. [tool-verified: `_splice_commands` y `_input_relation` en graph.py:245-271]
+hasta cada salida. [tool-verified: `_splice_commands` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 ### Tipos de nodo y señales visuales
 
@@ -125,24 +123,35 @@ Content-Type: application/json
 [tool-verified: `lineage_graph` endpoint at lineage_router.py:45-54, LineageGraphRequest model at
 lineage_router.py:29-31]
 
-Forma de la respuesta [tool-verified: `LineageGraph.to_dict` en graph.py:82-105]:
+La respuesta completa para esa declaración — seis nodes y cuatro edges, impresa como la devolvió el endpoint [tool-verified: `POST /admin/lineage/graph` called over HTTP on a running instance with the shipped `enrich_grpc_set` command registered (`config/provisa.yaml`: inputs `id` and `region`, outputs `id`, `embedding`, `geo`), sqlglot 30.9.0, 16 October 2026; shape is `LineageGraph.to_dict` in graph.py:82-105]:
 
 ```json
 {
   "nodes": [
-    {"id": "orders.id", "column": "id", "relation": "orders", "kind": "source", "materialized": false}
+    {"id": "id", "column": "id", "relation": null, "kind": "derived", "materialized": false},
+    {"id": "orders.id", "column": "id", "relation": "orders", "kind": "source", "materialized": false},
+    {"id": "embedding", "column": "embedding", "relation": null, "kind": "derived", "materialized": false},
+    {"id": "e.embedding", "column": "embedding", "relation": "e", "kind": "command", "materialized": false},
+    {"id": "main.public.orders.id", "column": "id", "relation": "main.public.orders",
+     "kind": "source", "materialized": false},
+    {"id": "main.public.orders.region", "column": "region", "relation": "main.public.orders",
+     "kind": "source", "materialized": false}
   ],
   "edges": [
-    {
-      "source": "orders.id",
-      "target": "e.id",
-      "transform": "enrich_grpc_set(...)",
-      "ops": [{"name": "enrich_grpc_set", "kind": "command"}]
-    }
+    {"source": "orders.id", "target": "id", "transform": "o.id",
+     "ops": [{"name": "id", "kind": "identity", "args": []}]},
+    {"source": "e.embedding", "target": "embedding", "transform": "e.embedding",
+     "ops": [{"name": "embedding", "kind": "identity", "args": []}]},
+    {"source": "main.public.orders.id", "target": "e.embedding", "transform": "enrich_grpc_set(...)",
+     "ops": [{"name": "enrich_grpc_set", "kind": "command", "args": []}]},
+    {"source": "main.public.orders.region", "target": "e.embedding", "transform": "enrich_grpc_set(...)",
+     "ops": [{"name": "enrich_grpc_set", "kind": "command", "args": []}]}
   ],
   "outputs": ["id", "embedding"]
 }
 ```
+
+Aparecen dos formas de source id, y son nodes diferentes. `orders.id` es el `o.id` de la lista de selección, leído a través del alias. Los inputs declarados de un comando se califican desde el argumento de relación literal de la llamada en su lugar, por lo que llegan como `main.public.orders.id` y `main.public.orders.region`. Los dos edges de `enrich_grpc_set` son el taint closure: cada input declarado de la llamada, sobre el único command output que esta declaración selecciona. `e.id` está en la join condition y nunca se atraviesa, por lo que no es un node aquí.
 
 Devuelve HTTP 422 cuando el SQL no se puede analizar (parsear).
 [tool-verified: lineage_router.py:51-54]

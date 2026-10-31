@@ -126,7 +126,7 @@ Argomenti: `sourceId`, `domainId`, `schemaName`, `tableName`, `cacheTtl`, `prefe
 
 #### `columnDependents(tableId: String!, renamed: [String!], removed: [String!]) → [ColumnDependentsType!]!`
 
-Artefatti che una ridenominazione di alias o rimozione di colonna in sospeso romperebbe. Consultivo — la UI admin lo mostra prima di salvare e l'amministratore decide. Deve essere chiamato *prima* di salvare, perché i dipendenti sono stati scritti contro il nome esposto che la colonna porta attualmente. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1301-1331`]
+Artefatti che una ridenominazione di alias o rimozione di colonna in sospeso romperebbe. Consultivo — la UI admin lo mostra prima di salvare e l'amministratore decide. Deve essere chiamato *prima* di salvare, perché i dipendenti sono stati scritti contro il nome esposto che la colonna porta attualmente. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1939-1972`]
 
 ---
 

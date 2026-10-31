@@ -28,21 +28,20 @@ JOIN   enrich_grpc_set('main.public.orders') e ON o.id = e.id
 Questa istruzione produce tre colonne di output. Il grafo di `geo_u` si presenta così:
 
 ```text
-orders.geo  ──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
-orders.id   ─╮                                              (taint closure)
-orders.region ─╯
+main.public.orders.id     ─╮
+main.public.orders.region ─╯──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
+                              (taint closure over the declared input contract)
 ```
 
-- `orders.id`, `orders.region` e `orders.geo` sono nodi **source** (il contratto di input ristretto
-  di `enrich_grpc_set` dichiara `id` e `region`; la chiusura per contaminazione completa collega
-  tutti gli input dichiarati a tutti gli output). [tool-verified: `_splice_commands` in graph.py:223-242]
-- `e.embedding` ed `e.geo` sono nodi **command** — il confine di `enrich_grpc_set`.
-- `geo_u` è un nodo **derived** prodotto dalla funzione SQL `UPPER`.
+- `main.public.orders.id` e `main.public.orders.region` sono **source** nodes — l'input contract ristretto di `enrich_grpc_set`, qualificato dalla relazione nominata nella chiamata. `geo` è un *output* dichiarato del comando, quindi `orders.geo` non è un node: niente upstream di `e.geo` esiste tranne gli inputs dichiarati. Il closure connette ogni input dichiarato a ogni output dichiarato, quindi `e.embedding` porta gli stessi due edges. [tool-verified: `_splice_commands` in graph.py:266-285; `POST /admin/lineage/graph` called on this statement, 16 October 2026 — eight nodes and seven edges, with `main.public.orders.{id,region}` the only nodes upstream of `e.geo` and `e.embedding`]
+- `e.embedding` e `e.geo` sono **command** nodes — il boundary di `enrich_grpc_set`.
+- `geo_u` è un **derived** node prodotto dalla funzione SQL `UPPER`.
+- `orders.id` è anche un source node, da `o.id` nella lista di selezione — la forma qualificata per alias, distinta dal `main.public.orders.id` del comando.
 
 Il confine del comando **non è opaco**. Poiché `enrich_grpc_set` dichiara le proprie colonne di
 input (`id`, `region`) e di output (`id`, `embedding`, `geo`), il motore di derivazione salda la
 chiusura per contaminazione senza interruzioni, dalle colonne dichiarate della relazione di origine
-fino a ciascun output. [tool-verified: `_splice_commands` and `_input_relation` in graph.py:245-271]
+fino a ciascun output. [tool-verified: `_splice_commands` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 ### Tipi di nodo e segnali visivi
 
@@ -68,7 +67,7 @@ Anelli aggiuntivi su un nodo:
 Ogni arco porta con sé l'espressione SQL grezza che produce la colonna di destinazione, più un
 elenco di operazioni nominate: funzioni SQL (`sql_function`), operatori aritmetici e logici
 (`operator`), comandi registrati (`command`), riferimenti diretti a colonna (`identity`) e letterali
-(`constant`). [tool-verified: TransformOp and name_transform in graph.py:36-145]
+(`constant`). [tool-verified: TransformOp and name_transform in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 Un arco che nasce da una chiamata a comando viene disegnato nella UI come una linea viola
 tratteggiata. [tool-verified: LineageDag.tsx:122-124]
@@ -80,7 +79,7 @@ di provenienza. L'identità di un nodo è `relation.column` — la colonna di ou
 riferimento in input di un'altra vista alla stessa colonna collassano in un unico nodo. Il risultato
 è un solo DAG che va dalle colonne di origine di base a ogni dataset derivato della piattaforma.
 [tool-verified: `build_federation_graph` in merge.py:205-229
-and `qualify_outputs` in graph.py:275-299]
+and `qualify_outputs` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 Usare `focus`, `direction` e `depth` per delimitare la vista su scala di federazione senza
 ricalcolare il grafo. [tool-verified: `slice_graph` in merge.py:160-189]
@@ -123,24 +122,35 @@ Content-Type: application/json
 [tool-verified: `lineage_graph` endpoint at lineage_router.py:45-54, LineageGraphRequest model at
 lineage_router.py:29-31]
 
-Forma della risposta [tool-verified: `LineageGraph.to_dict` in graph.py:82-105]:
+La risposta completa per quell'istruzione — sei nodes e quattro edges, stampata come restituita dall'endpoint [tool-verified: `POST /admin/lineage/graph` called over HTTP on a running instance with the shipped `enrich_grpc_set` command registered (`config/provisa.yaml`: inputs `id` and `region`, outputs `id`, `embedding`, `geo`), sqlglot 30.9.0, 16 October 2026; shape is `LineageGraph.to_dict` in graph.py:82-105]:
 
 ```json
 {
   "nodes": [
-    {"id": "orders.id", "column": "id", "relation": "orders", "kind": "source", "materialized": false}
+    {"id": "id", "column": "id", "relation": null, "kind": "derived", "materialized": false},
+    {"id": "orders.id", "column": "id", "relation": "orders", "kind": "source", "materialized": false},
+    {"id": "embedding", "column": "embedding", "relation": null, "kind": "derived", "materialized": false},
+    {"id": "e.embedding", "column": "embedding", "relation": "e", "kind": "command", "materialized": false},
+    {"id": "main.public.orders.id", "column": "id", "relation": "main.public.orders",
+     "kind": "source", "materialized": false},
+    {"id": "main.public.orders.region", "column": "region", "relation": "main.public.orders",
+     "kind": "source", "materialized": false}
   ],
   "edges": [
-    {
-      "source": "orders.id",
-      "target": "e.id",
-      "transform": "enrich_grpc_set(...)",
-      "ops": [{"name": "enrich_grpc_set", "kind": "command"}]
-    }
+    {"source": "orders.id", "target": "id", "transform": "o.id",
+     "ops": [{"name": "id", "kind": "identity", "args": []}]},
+    {"source": "e.embedding", "target": "embedding", "transform": "e.embedding",
+     "ops": [{"name": "embedding", "kind": "identity", "args": []}]},
+    {"source": "main.public.orders.id", "target": "e.embedding", "transform": "enrich_grpc_set(...)",
+     "ops": [{"name": "enrich_grpc_set", "kind": "command", "args": []}]},
+    {"source": "main.public.orders.region", "target": "e.embedding", "transform": "enrich_grpc_set(...)",
+     "ops": [{"name": "enrich_grpc_set", "kind": "command", "args": []}]}
   ],
   "outputs": ["id", "embedding"]
 }
 ```
+
+Appaiono due forme di source id, e sono nodes differenti. `orders.id` è il `o.id` della lista di selezione, letto attraverso l'alias. Gli inputs dichiarati di un comando sono qualificati dall'argomento di relazione letterale della chiamata invece, quindi arrivano come `main.public.orders.id` e `main.public.orders.region`. I due edges di `enrich_grpc_set` sono il taint closure: ogni input dichiarato della chiamata, sull'unico command output che questa istruzione seleziona. `e.id` è nella join condition e non viene mai attraversato, quindi non è un node qui.
 
 Restituisce HTTP 422 quando il SQL non può essere analizzato.
 [tool-verified: lineage_router.py:51-54]

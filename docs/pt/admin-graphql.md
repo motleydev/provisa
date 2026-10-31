@@ -126,7 +126,7 @@ Argumentos: `sourceId`, `domainId`, `schemaName`, `tableName`, `cacheTtl`, `pref
 
 #### `columnDependents(tableId: String!, renamed: [String!], removed: [String!]) → [ColumnDependentsType!]!`
 
-Artefatos que uma renomeação de alias ou exclusão de coluna pendente quebraria. Consultivo — a interface de administração mostra isso antes de salvar e o administrador decide. Deve ser chamado *antes* de salvar, porque os dependentes foram escritos contra o nome exposto que a coluna carrega atualmente. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1301-1331`]
+Artefatos que uma renomeação de alias ou exclusão de coluna pendente quebraria. Consultivo — a interface de administração mostra isso antes de salvar e o administrador decide. Deve ser chamado *antes* de salvar, porque os dependentes foram escritos contra o nome exposto que a coluna carrega atualmente. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1939-1972`]
 
 ---
 

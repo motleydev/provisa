@@ -21,17 +21,17 @@ JOIN   enrich_grpc_set('main.public.orders') e ON o.id = e.id
 这条语句产出三个输出列。`geo_u` 的图形如下：
 
 ```text
-orders.geo  ──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
-orders.id   ─╮                                              (taint closure)
-orders.region ─╯
+main.public.orders.id     ─╮
+main.public.orders.region ─╯──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
+                              (taint closure over the declared input contract)
 ```
 
-- `orders.id`、`orders.region` 和 `orders.geo` 是**源**节点（`enrich_grpc_set` 的窄输入契约声明了 `id` 和 `region`；完整的污点闭包把所有已声明的输入连到所有输出）。[tool-verified: `_splice_commands` in graph.py:223-242]
+- `orders.id`、`orders.region` 和 `orders.geo` 是**源**节点（`enrich_grpc_set` 的窄输入契约声明了 `id` 和 `region`；完整的污点闭包把所有已声明的输入连到所有输出）。[tool-verified: `_splice_commands` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 - `e.embedding` 和 `e.geo` 是**命令**节点——即 `enrich_grpc_set` 边界。
 - `geo_u` 是由 `UPPER` 这个 SQL 函数产出的**派生**节点。
 
 命令边界**并不是不透明的**。由于 `enrich_grpc_set` 声明了它的输入列（`id`、`region`）和输出列（`id`、`embedding`、`geo`），血缘引擎会把污点闭包从源关系已声明的列一直连续拼接到每一个输出。
-[tool-verified: `_splice_commands` and `_input_relation` in graph.py:245-271]
+[tool-verified: `_splice_commands` and `_input_relation` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 ### 节点种类与视觉提示
 
@@ -55,7 +55,7 @@ orders.region ─╯
 ### 边上的具名变换
 
 每条边都携带产出目标列的原始 SQL 表达式，外加一份具名操作清单：SQL 函数（`sql_function`）、算术/逻辑运算符（`operator`）、已注册的命令（`command`）、裸列引用（`identity`）以及字面量（`constant`）。
-[tool-verified: TransformOp and name_transform in graph.py:36-145]
+[tool-verified: TransformOp and name_transform in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 来自命令调用的边在 UI 中渲染为紫色虚线。
 [tool-verified: LineageDag.tsx:122-124]
@@ -63,7 +63,7 @@ orders.region ─╯
 ## 联邦级图（REQ-1161）
 
 联邦图把每个已注册 MV 的按语句血缘合并成一张溯源图。节点身份是 `relation.column`——某个视图的输出列与另一个视图对同一个列的输入引用会坍缩成同一个节点。结果是一张从基础源列通往平台中每一个派生数据集的单一 DAG。[tool-verified: `build_federation_graph` in merge.py:205-229
-and `qualify_outputs` in graph.py:275-299]
+and `qualify_outputs` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 使用 `focus`、`direction` 和 `depth` 可以在联邦规模下限定视图范围，而无需重新计算整张图。[tool-verified: `slice_graph` in merge.py:160-189]
 
@@ -101,7 +101,7 @@ Content-Type: application/json
 [tool-verified: `lineage_graph` endpoint at lineage_router.py:45-54, LineageGraphRequest model at
 lineage_router.py:29-31]
 
-响应结构 [tool-verified: `LineageGraph.to_dict` in graph.py:82-105]：
+响应结构 [tool-verified: `LineageGraph.to_dict` in graph.py:266-285 and `_input_relation` in graph.py:307-317]：
 
 ```json
 {

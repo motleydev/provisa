@@ -126,7 +126,7 @@ OpenAPI 数据源的非 GET 操作（POST、PUT、PATCH、DELETE）。对于非 
 
 #### `columnDependents(tableId: String!, renamed: [String!], removed: [String!]) → [ColumnDependentsType!]!`
 
-待处理的别名重命名或列删除将破坏的构件。仅供参考——管理 UI 会在保存前显示此信息，由管理员决定。必须在*保存之前*调用，因为依赖项是针对该列当前所持有的暴露名称编写的。（REQ-1484）[tool-verified: `provisa/api/admin/schema_query.py:1301-1331`]
+待处理的别名重命名或列删除将破坏的构件。仅供参考——管理 UI 会在保存前显示此信息，由管理员决定。必须在*保存之前*调用，因为依赖项是针对该列当前所持有的暴露名称编写的。（REQ-1484）[tool-verified: `provisa/api/admin/schema_query.py:1939-1972`]
 
 ---
 

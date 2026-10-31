@@ -28,21 +28,16 @@ JOIN   enrich_grpc_set('main.public.orders') e ON o.id = e.id
 Это выражение производит три выходные колонки. Граф для `geo_u` выглядит так:
 
 ```text
-orders.geo  ──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
-orders.id   ─╮                                              (taint closure)
-orders.region ─╯
+main.public.orders.id     ─╮
+main.public.orders.region ─╯──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
+                              (taint closure over the declared input contract)
 ```
 
-- `orders.id`, `orders.region` и `orders.geo` — узлы **source** (узкий входной контракт
-  `enrich_grpc_set` объявляет `id` и `region`; полное замыкание taint-closure соединяет все
-  объявленные входы со всеми выходами). [tool-verified: `_splice_commands` in graph.py:223-242]
-- `e.embedding` и `e.geo` — узлы **command** — граница `enrich_grpc_set`.
-- `geo_u` — узел **derived**, произведённый SQL-функцией `UPPER`.
+- `main.public.orders.id` и `main.public.orders.region` — это **source** nodes — узкий input contract для `enrich_grpc_set`, квалифицированный из отношения, названного в вызове. `geo` является объявленным *output* команды, поэтому `orders.geo` не является node: ничего upstream от `e.geo` не существует, кроме объявленных inputs. Closure соединяет каждый объявленный input с каждым объявленным output, поэтому `e.embedding` несет те же два edges. [tool-verified: `_splice_commands` in graph.py:266-285; `POST /admin/lineage/graph` called on this statement, 16 October 2026 — eight nodes and seven edges, with `main.public.orders.{id,region}` the only nodes upstream of `e.geo` and `e.embedding`]
+- `e.embedding` и `e.geo` — это **command** nodes — boundary `enrich_grpc_set`.
+- `geo_u` — это **derived** node, произведенный SQL-функцией `UPPER`.
+- `orders.id` также является source node, из `o.id` в списке выбора — форма, квалифицированная по alias, отличная от `main.public.orders.id` команды.
 
-Граница команды **не непрозрачна**. Поскольку `enrich_grpc_set` объявляет свои входные колонки
-(`id`, `region`) и выходные колонки (`id`, `embedding`, `geo`), движок происхождения непрерывно
-сращивает taint-замыкание от объявленных колонок исходного отношения к каждому выходу.
-[tool-verified: `_splice_commands` and `_input_relation` in graph.py:245-271]
 
 ### Виды узлов и визуальные подсказки
 
@@ -68,7 +63,7 @@ orders.region ─╯
 Каждое ребро несёт исходное SQL-выражение, производящее целевую колонку, плюс список именованных
 операций: SQL-функции (`sql_function`), арифметические и логические операторы (`operator`),
 зарегистрированные команды (`command`), голые ссылки на колонки (`identity`) и литералы
-(`constant`). [tool-verified: TransformOp and name_transform in graph.py:36-145]
+(`constant`). [tool-verified: TransformOp and name_transform in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 Ребро от вызова команды отрисовывается в UI пунктирной фиолетовой линией.
 [tool-verified: LineageDag.tsx:122-124]
@@ -80,7 +75,7 @@ orders.region ─╯
 входная ссылка другого представления на ту же колонку схлопываются в один узел. Результат —
 единый DAG от колонок базовых источников до каждого производного набора данных на платформе.
 [tool-verified: `build_federation_graph` in merge.py:205-229 and `qualify_outputs` in
-graph.py:275-299]
+graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 Используйте `focus`, `direction` и `depth`, чтобы сузить представление в масштабе федерации без
 пересчёта графа. [tool-verified: `slice_graph` in merge.py:160-189]
@@ -123,7 +118,7 @@ Content-Type: application/json
 [tool-verified: `lineage_graph` endpoint at lineage_router.py:45-54, LineageGraphRequest model at
 lineage_router.py:29-31]
 
-Форма ответа [tool-verified: `LineageGraph.to_dict` in graph.py:82-105]:
+Форма ответа [tool-verified: `LineageGraph.to_dict` in graph.py:266-285 and `_input_relation` in graph.py:307-317]:
 
 ```json
 {

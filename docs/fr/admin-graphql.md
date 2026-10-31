@@ -126,7 +126,7 @@ Arguments : `sourceId`, `domainId`, `schemaName`, `tableName`, `cacheTtl`, `pref
 
 #### `columnDependents(tableId: String!, renamed: [String!], removed: [String!]) → [ColumnDependentsType!]!`
 
-Artefacts qu'un renommage d'alias ou une suppression de colonne en attente casserait. Consultatif — l'interface admin l'affiche avant l'enregistrement et l'administrateur décide. Doit être appelé *avant* l'enregistrement, car les dépendants ont été écrits contre le nom exposé que la colonne porte actuellement. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1301-1331`]
+Artefacts qu'un renommage d'alias ou une suppression de colonne en attente casserait. Consultatif — l'interface admin l'affiche avant l'enregistrement et l'administrateur décide. Doit être appelé *avant* l'enregistrement, car les dépendants ont été écrits contre le nom exposé que la colonne porte actuellement. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1939-1972`]
 
 ---
 

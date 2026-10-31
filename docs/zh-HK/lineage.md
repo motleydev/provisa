@@ -21,17 +21,17 @@ JOIN   enrich_grpc_set('main.public.orders') e ON o.id = e.id
 這段陳述式產出三個輸出欄位。`geo_u` 的圖長成這樣：
 
 ```text
-orders.geo  ──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
-orders.id   ─╮                                              (taint closure)
-orders.region ─╯
+main.public.orders.id     ─╮
+main.public.orders.region ─╯──[enrich_grpc_set(...)]──►  e.geo  ──[UPPER]──►  geo_u
+                              (taint closure over the declared input contract)
 ```
 
-- `orders.id`、`orders.region` 與 `orders.geo` 是**來源**節點（`enrich_grpc_set` 的窄輸入合約宣告了 `id` 與 `region`；完整的污染閉合會把所有已宣告的輸入連到所有輸出）。[tool-verified: `_splice_commands` in graph.py:223-242]
+- `orders.id`、`orders.region` 與 `orders.geo` 是**來源**節點（`enrich_grpc_set` 的窄輸入合約宣告了 `id` 與 `region`；完整的污染閉合會把所有已宣告的輸入連到所有輸出）。[tool-verified: `_splice_commands` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 - `e.embedding` 與 `e.geo` 是**命令**節點——即 `enrich_grpc_set` 這道邊界。
 - `geo_u` 是由 `UPPER` 這個 SQL 函式產出的**衍生**節點。
 
 命令邊界**並非不透明**。由於 `enrich_grpc_set` 宣告了自己的輸入欄位（`id`、`region`）與輸出欄位（`id`、`embedding`、`geo`），血緣引擎得以把污染閉合從來源關聯的已宣告欄位，連續地接合到每個輸出。
-[tool-verified: `_splice_commands` and `_input_relation` in graph.py:245-271]
+[tool-verified: `_splice_commands` and `_input_relation` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 ### 節點種類與視覺提示
 
@@ -55,7 +55,7 @@ orders.region ─╯
 ### 邊上的具名轉換
 
 每條邊都帶著產出目標欄位的原始 SQL 運算式，以及一份具名操作清單：SQL 函式（`sql_function`）、算術／邏輯運算子（`operator`）、已註冊的命令（`command`）、裸欄位引用（`identity`），以及常值（`constant`）。
-[tool-verified: TransformOp and name_transform in graph.py:36-145]
+[tool-verified: TransformOp and name_transform in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 由命令呼叫而來的邊，在 UI 中以紫色虛線呈現。
 [tool-verified: LineageDag.tsx:122-124]
@@ -63,7 +63,7 @@ orders.region ─╯
 ## 聯邦級圖（REQ-1161）
 
 聯邦圖把每個已註冊 MV 的逐陳述式血緣合併成一張來源圖。節點身分為 `relation.column`——某個檢視的輸出欄位，與另一個檢視對同一欄位的輸入引用，會收攏成同一個節點。結果是一張由基底來源欄位通往平台上每個衍生數據集的單一 DAG。[tool-verified: `build_federation_graph` in merge.py:205-229
-and `qualify_outputs` in graph.py:275-299]
+and `qualify_outputs` in graph.py:266-285 and `_input_relation` in graph.py:307-317]
 
 用 `focus`、`direction` 與 `depth` 可在聯邦規模下縮限檢視範圍，而毋須重新計算整張圖。[tool-verified: `slice_graph` in merge.py:160-189]
 
@@ -101,7 +101,7 @@ Content-Type: application/json
 [tool-verified: `lineage_graph` endpoint at lineage_router.py:45-54, LineageGraphRequest model at
 lineage_router.py:29-31]
 
-回應形狀 [tool-verified: `LineageGraph.to_dict` in graph.py:82-105]：
+回應形狀 [tool-verified: `LineageGraph.to_dict` in graph.py:266-285 and `_input_relation` in graph.py:307-317]：
 
 ```json
 {
