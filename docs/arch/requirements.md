@@ -23207,3 +23207,53 @@ Each tour declares its prerequisites, what its steps show of the org beyond the 
 **Code:** —
 
 **Tests:** —
+
+## 0. Architecture & Design Principles
+
+### REQ-2050 · Agent Contract {#REQ-2050}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+A requirement is written to docs/arch/requirements.yaml, never to docs/arch/requirements.md. The Markdown file is generated from the YAML by scripts/gen_requirements_md.py and declares so on its third line, so a requirement appended to it is deleted by the next `make sync-reqs`. A new REQ id is allocated above the highest id in any ref (`git log --all -p -- docs/arch/requirements.yaml`), not above the tail of the working copy: two branches numbering from their own tail mint the same id, and because they append in different places the collision reaches the integration branch as duplicate anchors rather than as a merge conflict.
+
+**Use case:** Twenty-five requirements written by agents over one week exist only in the generated Markdown and would be erased by one regeneration, and seven ids were minted twice by two agents numbering off two branches.
+
+**Code:** `agents/requirements-tracker.md`, `CLAUDE.md`, `AGENTS.md`, `skills/audit-workflow/SKILL.md`
+
+**Tests:** `n/a — a constraint on how a requirement is recorded.`
+
+### REQ-2051 · Agent Contract {#REQ-2051}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+Every skill named in AGENTS.md, CLAUDE.md, a role file under agents/ or product config has a file at skills/<name>/SKILL.md, and every such file is reachable from AGENTS.md's list. A name with no file is refused for the same reason a fallback value is: an agent instructed to read a missing convention proceeds as though it had read one.
+
+**Use case:** Nineteen skills were instructed by the role files and existed in no clone, so every agent that was told to apply python-style, test-tiers or anti-patterns applied its own judgement and reported having followed the convention.
+
+**Code:** `skills/`, `AGENTS.md`
+
+**Tests:** `n/a — a constraint on the instruction set, checkable by comparing AGENTS.md's list with the directory.`
+
+### REQ-2052 · Agent Contract {#REQ-2052}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** structural
+
+The agent contract is tracked at the repository root — agents/, skills/, refs/ and hooks/ — not under .claude/. The .claude/ directory is gitignored so the commercial plugin can live there, which means anything filed under it reaches no clone and no agent run. The one exception is .claude/settings.json, tracked by name through a /.claude/* ignore rule, because that is the only path Claude Code reads hook wiring from.
+
+**Use case:** A prose-check hook, a prose-quality reference, a swarm-mode reference and nineteen skills were all documented as living under .claude/ and could never have shipped from there.
+
+**Code:** `.gitignore`, `.claude/settings.json`, `refs/prose-quality.md`, `hooks/prose-check.py`
+
+**Tests:** `n/a — a structural constraint on where the contract is stored.`
+
+### REQ-2053 · Delivery Process {#REQ-2053}
+
+**Status:** ✓ accepted · **Priority:** MUST · **Type:** constraint
+
+main is the integration point. Work that does not depend on the site rebrand branches from main and targets main in its own pull request, gated by the checks that apply to it, and reaches done when that pull request merges — not when its commits exist in a shared checkout. Site work continues on the rebrand branch until the rebrand is finished and that branch merges to main once.
+
+**Use case:** Ten issues read done with commits that existed only on one shared branch and on no remote, and five agents shared one checkout feeding one pull request of 93 files, so nothing could be reviewed before the board called it done.
+
+**Code:** `.github/workflows/`
+
+**Tests:** `n/a — a constraint on delivery, observable in the pull request history.`

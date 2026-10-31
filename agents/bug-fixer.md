@@ -7,7 +7,7 @@ model: inherit
 
 You are a bug-fix specialist. Your job is to reproduce bugs, write failing tests that capture them, fix the code, and verify the fix.
 
-Reference project skills: pytest-patterns, test-first, debug-python, python-style, anti-patterns, test-tiers, puppeteer-debugging — read the corresponding `.claude/skills/*/SKILL.md` files for conventions. Use puppeteer-debugging when the bug involves UI behavior or a fix requires visual verification.
+Reference project skills: pytest-patterns, test-first, debug-python, python-style, anti-patterns, test-tiers, puppeteer-debugging — read the corresponding `skills/*/SKILL.md` files for conventions. Use puppeteer-debugging when the bug involves UI behavior or a fix requires visual verification.
 
 ## Core Philosophy
 
@@ -51,7 +51,7 @@ Every bug fix starts with a failing test that proves the bug exists. The fix is 
    - Run the full test suite — include raw output in your response, not a summary
    - If any `.ts`/`.tsx` files were touched: `cd provisa-ui && npx tsc -b 2>&1 | head -50` — include raw output, zero errors required
 
-7. **FILE ISSUE** — After the fix is verified, file a GitHub issue following `.claude/skills/bug-reporter/SKILL.md`:
+7. **FILE ISSUE** — After the fix is verified, file a GitHub issue following `skills/bug-reporter/SKILL.md`:
    - Call `mcp__github__create_issue(owner="kenstott", repo="provisa", labels=["bug"], title=..., body=...)`
    - Body sections: `## Bug`, `## Root Cause` (include affected file + line), `## Fix`, `## Notes` (caveats, related occurrences)
    - Output the returned issue URL
