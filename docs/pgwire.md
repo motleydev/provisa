@@ -8,7 +8,7 @@ Queries go through the full governance stack: RLS enforcement, masking rules, re
 
 ## Connection Details
 
-The server starts when `PROVISA_PGWIRE_PORT` is set to a non-zero integer. It is disabled by default. (REQ-527) [tool-verified: `app.py:1739`]
+The server starts when `server.pgwire_port` resolves to a non-zero integer. The setting's default is `0`, so the listener is off until a deployment asks for it, and `PROVISA_PGWIRE_PORT` is the variable bound to it. (REQ-527, REQ-1913) A port saved through the settings page wins over the variable. Under `security.mode=high` the listener is never started whatever the port says (REQ-693), and a startup failure is logged without stopping the boot — the HTTP API comes up either way. [tool-verified: `settings_catalog.py:618-629`; `app_startup.py:419-467`]
 
 ```yaml
 Host: 0.0.0.0  (all interfaces)

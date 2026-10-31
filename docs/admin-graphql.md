@@ -130,7 +130,7 @@ Arguments: `sourceId`, `domainId`, `schemaName`, `tableName`, `cacheTtl`, `repli
 
 #### `columnDependents(tableId: String!, renamed: [String!], removed: [String!]) → [ColumnDependentsType!]!`
 
-Artifacts that a pending alias rename or column drop would break. Advisory — the admin UI shows this before saving and the administrator decides. Must be called *before* saving, because the dependents were authored against the exposed name the column currently carries. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1301-1331`]
+Artifacts that a pending alias rename or column drop would break. Advisory — the admin UI shows this before saving and the administrator decides. Must be called *before* saving, because the dependents were authored against the exposed name the column currently carries. (REQ-1484) [tool-verified: `provisa/api/admin/schema_query.py:1939-1972`]
 
 ---
 
