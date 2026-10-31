@@ -10,7 +10,7 @@
 
 // Pure graph-model helpers and wire types extracted from GraphFrame.tsx.
 // No React/Apollo dependencies — independently testable. Imported by
-// GraphFrame (the component) and GraphPage. See react-graphql SKILL.md
+// GraphFrame (the component) and GraphPage. See skills/react-graphql/SKILL.md
 // (Module Size — Subdivide Past 1000 Lines).
 
 import type { ResultRedirect } from "../../api/admin";
