@@ -13724,7 +13724,7 @@ UI locale translation is performed in-session by the Claude agent via the i18n-t
 
 **Use case:** In-session translation via Claude agent eliminates external service dependencies and API costs, reducing operational complexity. Incremental translation memory keeps translation artifacts locally and avoids redundant retranslations, accelerating catalog updates. English catalogs (en.json + en/<ns>.json) remain the sole source of truth for keys.
 
-**Code:** `provisa-ui/src/i18n/`, `.claude/skills/i18n-translate/`
+**Code:** `provisa-ui/src/i18n/`, `skills/i18n-translate/`
 
 **Tests:** —
 
@@ -23207,3 +23207,15 @@ Each tour declares its prerequisites, what its steps show of the org beyond the 
 **Code:** —
 
 **Tests:** —
+
+### REQ-2015 · Internationalization {#REQ-2015}
+
+**Status:** 💡 proposed · **Priority:** SHOULD · **Type:** constraint
+
+Locale catalog parity is enforced by a vitest case, not by practice. Every locale in supportedLngs carries exactly the English key set — no missing keys, no extras — and every {{placeholder}} in an English string appears in the translation with the same names and no additions. The check reads the merged resources from provisa-ui/src/i18n (the shape the app serves, after every locales/<lng>/*.json is spread over the root catalog) and names the offending keys rather than counting them.
+
+**Use case:** A missing key renders as a raw dotted key and a dropped or renamed placeholder renders as literal {{name}} — each in one locale only, which no English-reading reviewer sees. The invariants are what makes an incremental translation run safe to land unreviewed, so they are checked where they can fail the build.
+
+**Code:** `provisa-ui/src/i18n/`
+
+**Tests:** `provisa-ui/src/__tests__/i18nCatalogParity.test.ts`
