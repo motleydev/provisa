@@ -77,6 +77,10 @@ Screenshot*
 
 # Node
 node_modules/
+# The root one is the symlink site/'s playwright import resolves through
+# (site/design-system/browser-deps.py, site-review-browser.yml). A symlink is
+# not a directory, so the pattern above does not cover it.
+/node_modules
 
 # Claude Code / Codex — local only
 /.claude/

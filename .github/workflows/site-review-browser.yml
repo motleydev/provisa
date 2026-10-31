@@ -1,0 +1,124 @@
+name: Site Review Gate (browser)
+
+# The browser half of the site's own checkers — the seven that import playwright,
+# render each page at the verified widths in both themes and assert on painted
+# geometry, which is the half `site-review.yml` cannot cover by reading bytes.
+#
+# They were unrunnable anywhere but a workstation (PRO-38): no workflow ran them,
+# and in the agent workspace Chromium was absent and its cache sat under a
+# run-scoped temp dir, so screenshots for the five-width review passes (PRO-10,
+# PRO-14, PRO-15, PRO-21, PRO-26) were being taken by hand-rolled inline snippets
+# instead. This job is the gate; `site/design-system/browser-deps.py --prefix`
+# is the workspace half.
+#
+# It pays for a Chromium download and a served site/, which is why it is a second
+# workflow rather than more steps in site-review.yml: that job stays a sub-minute
+# node-and-python pass with no network.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - site/**
+      - .github/workflows/site-review-browser.yml
+      - .github/actions/setup-ui/action.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to the same ref supersedes the run before it.
+concurrency:
+  group: site-review-browser-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    name: rendered pages, every verified width, both themes
+    # Pinned rather than ubuntu-latest: setup-ui installs Chromium without
+    # `--with-deps` because this image already carries its shared libraries and
+    # fonts, and the apt refresh `--with-deps` triggers has stalled a job past
+    # its timeout (run 32158624857: 28.5 minutes, zero tests run). A silent
+    # bump of the latest label is how that assumption would break.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      # install: true is only here for the Playwright version — the browser
+      # binary has to match the playwright that drives it, and provisa-ui's
+      # lockfile is the one place this repo pins it.
+      - uses: ./.github/actions/setup-ui
+        with:
+          playwright: chromium
+
+      # site/ has no package.json and deliberately does not depend on Playwright
+      # (no build step, the served bytes are the checked bytes), so an
+      # `import { chromium } from "playwright"` in site/ resolves by walking up
+      # to the repo root and finding nothing. The symlink points that lookup at
+      # the version npm ci just locked, so the driver and the browser build
+      # cannot drift apart the way a second `npm install playwright` here would
+      # let them.
+      - name: Resolve playwright from site/
+        run: ln -s provisa-ui/node_modules node_modules
+
+      # serve.py, not `python3 -m http.server`: two of these checkers request the
+      # production route (`/why/interfaces`, `/why/one-model`), and the
+      # extensionless-to-.html resolution is Cloudflare Pages' rather than the
+      # stdlib handler's. The nav links are extensionless, so the route is what
+      # the page is really asked for.
+      - name: Serve site/ the way Pages does
+        run: |
+          python3 site/design-system/serve.py 8731 &
+          for _ in $(seq 1 50); do
+            curl -fsS -o /dev/null http://127.0.0.1:8731/ && break
+            sleep 0.2
+          done
+          curl -fsS -o /dev/null http://127.0.0.1:8731/why/interfaces
+          echo "ok    site/ is serving, extensionless routes included"
+
+      # One step per checker, as in site-review.yml: each prints one PASS/FAIL
+      # line per assertion and exits non-zero on the first failure, so a red step
+      # names the page without opening the log.
+      - name: Home — /
+        run: node site/verify-home.mjs http://127.0.0.1:8731
+
+      - name: Design system — header, themes, breakpoint, keyboard
+        run: node site/design-system/verify-ui.mjs http://127.0.0.1:8731
+
+      - name: Render — /why/governance
+        run: node site/design-system/verify-page-governance.mjs http://127.0.0.1:8731
+
+      - name: Render — /why/interfaces
+        run: node site/design-system/verify-page-interfaces.mjs http://127.0.0.1:8731
+
+      - name: Render — /why/one-model
+        run: node site/design-system/verify-page-one-model.mjs http://127.0.0.1:8731
+
+      - name: Render — /platform
+        run: node site/design-system/verify-page-platform.mjs http://127.0.0.1:8731
+
+      - name: Render — /vs/starburst
+        run: node site/design-system/verify-page-vs-starburst.mjs http://127.0.0.1:8731
+
+      # The mirror of site-review.yml's drift step, over the other half. That one
+      # skips any checker importing playwright; this one gates exactly those, so
+      # between them every checker under site/ has a step in one workflow or the
+      # other and a new one cannot land ungated. Globbing on the check-/verify-
+      # name rather than an extension keeps a checker in a third language from
+      # hiding.
+      - name: Every browser checker is gated
+        run: |
+          missing=0
+          while IFS= read -r f; do
+            if ! grep -q "playwright" "$f"; then continue; fi
+            if ! grep -q " $f http" .github/workflows/site-review-browser.yml; then
+              echo "FAIL  $f is a browser checker that no step in this workflow runs"
+              missing=1
+            fi
+          done < <(find site \( -name 'check-*' -o -name 'verify-*' \) -type f | sort)
+          if [ "$missing" -ne 0 ]; then
+            echo "Add a step for each checker listed above, pointed at the served origin."
+            exit 1
+          fi
+          echo "ok    every playwright checker under site/ has a step"
