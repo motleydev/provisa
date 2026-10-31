@@ -713,7 +713,7 @@ Some sources, such as files, SharePoint and Splunk, are reached through a bundle
 
 **Available**
 
-Provisa can serve a repeated request from a stored result, but only when the request asks for it. A GraphQL query opts in with a directive, a Cypher query with a comment line, and a gRPC call with request metadata. Without it, the request neither reads nor writes the cache. Every response says whether it was a hit or a miss. A hit is a real route in the planner, not a side check, so a cached answer skips execution entirely. The store is Redis when configured and an embedded fallback otherwise.
+Provisa can serve a repeated request from a stored result, but only when the request asks for it. A GraphQL query opts in with a directive, a Cypher query with a comment line, a SQL statement with a comment line on pgwire, Flight SQL and SQL over HTTP, a REST or JSON:API call with a request header, and a gRPC call with request metadata. Without it, the request neither reads nor writes the cache. Every response says whether it was a hit or a miss. A hit is a real route in the planner, not a side check, so a cached answer skips execution entirely. The store is Redis when configured and an embedded fallback otherwise.
 { #response-caching-store-and-opt-in }
 
 How long a result lives is set at the most specific level that has an opinion: the table, then the source, then the deployment. A table can also set a different tolerance per role, so a trader sees live data while an analyst accepts a few minutes of staleness. Any mutation to a table drops the cached results that read it.
@@ -1028,10 +1028,10 @@ What cannot be mapped is reported, not hidden. Event triggers, cron triggers, bo
 
 ??? note "Requirements"
 
-    - [Point the converter at a Hasura v2 metadata export or a DDN supergraph project and get...](#hasura-migration-converters): [REQ-182](arch/requirements.md#REQ-182), [REQ-183](arch/requirements.md#REQ-183), [REQ-184](arch/requirements.md#REQ-184), [REQ-188](arch/requirements.md#REQ-188), [REQ-189](arch/requirements.md#REQ-189), [REQ-191](arch/requirements.md#REQ-191), [REQ-193](arch/requirements.md#REQ-193), [REQ-415](arch/requirements.md#REQ-415), [REQ-417](arch/requirements.md#REQ-417), [REQ-623](arch/requirements.md#REQ-623), [REQ-627](arch/requirements.md#REQ-627), [REQ-629](arch/requirements.md#REQ-629)
+    - [Point the converter at a Hasura v2 metadata export or a DDN supergraph project and get...](#hasura-migration-converters): [REQ-182](arch/requirements.md#REQ-182), [REQ-183](arch/requirements.md#REQ-183), [REQ-184](arch/requirements.md#REQ-184), [REQ-188](arch/requirements.md#REQ-188), [REQ-189](arch/requirements.md#REQ-189), [REQ-191](arch/requirements.md#REQ-191), [REQ-193](arch/requirements.md#REQ-193), [REQ-415](arch/requirements.md#REQ-415), [REQ-417](arch/requirements.md#REQ-417), [REQ-623](arch/requirements.md#REQ-623), [REQ-627](arch/requirements.md#REQ-627), [REQ-629](arch/requirements.md#REQ-629), [REQ-2041](arch/requirements.md#REQ-2041)
     - [Permissions come across in Provisa's own vocabulary.](#hasura-migration-permissions): [REQ-185](arch/requirements.md#REQ-185), [REQ-186](arch/requirements.md#REQ-186), [REQ-187](arch/requirements.md#REQ-187), [REQ-190](arch/requirements.md#REQ-190), [REQ-624](arch/requirements.md#REQ-624), [REQ-626](arch/requirements.md#REQ-626), [REQ-1684](arch/requirements.md#REQ-1684)
     - [The same conversion runs from the admin console as Import Hasura Config, so a migration...](#hasura-migration-import): [REQ-1483](arch/requirements.md#REQ-1483), [REQ-1680](arch/requirements.md#REQ-1680), [REQ-1681](arch/requirements.md#REQ-1681), [REQ-1687](arch/requirements.md#REQ-1687), [REQ-1691](arch/requirements.md#REQ-1691)
-    - [What cannot be mapped is reported, not hidden.](#hasura-migration-gaps): [REQ-192](arch/requirements.md#REQ-192), [REQ-621](arch/requirements.md#REQ-621), [REQ-625](arch/requirements.md#REQ-625), [REQ-628](arch/requirements.md#REQ-628), [REQ-920](arch/requirements.md#REQ-920)
+    - [What cannot be mapped is reported, not hidden.](#hasura-migration-gaps): [REQ-192](arch/requirements.md#REQ-192), [REQ-621](arch/requirements.md#REQ-621), [REQ-625](arch/requirements.md#REQ-625), [REQ-628](arch/requirements.md#REQ-628), [REQ-920](arch/requirements.md#REQ-920), [REQ-2034](arch/requirements.md#REQ-2034)
 
 ## Install and operate
 
