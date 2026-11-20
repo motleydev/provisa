@@ -3,9 +3,9 @@
  *
  *   node site/design-system/check-page-how-it-works.mjs
  *
- * The page states the data-kernel positioning and what the maintainer has
+ * The page states the compiler-and-runtime positioning and what the maintainer has
  * published for it (README.md, the "How it works" page of the upstream site).
- * What is held in place: the kernel sentence, the four heritages, the four
+ * What is held in place: the compiler sentence, the four heritages, the four
  * regulated-industry demands, one h1, six numbered sections, no inline CSS,
  * and the footer marking this page current.
  */
@@ -29,9 +29,9 @@ check("one h1", count(/<h1\b/g) === 1, String(count(/<h1\b/g)));
 check("six numbered section labels", count(/class="pv-seclabel__num"/g) === 6);
 check("no page-level CSS", !/<style[\s>]/.test(served));
 check(
-  "the kernel sentence",
-  /Provisa is a data kernel\s*\./.test(text) &&
-    /A compiler and runtime for building your data control plane/.test(text),
+  "the compiler sentence",
+  /Provisa is a compiler and runtime for building your data control plane\./.test(text) &&
+    !/data kernel/i.test(text),
 );
 for (const heritage of [
   "Operating systems and virtual machines",
