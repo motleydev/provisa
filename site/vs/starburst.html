@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- partials/head.html, verbatim but for the title, the description and the
-     canonical link. Order matters: fonts before tokens before provisa.css, and
-     the theme bootstrap before anything paints. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>vs Starburst — Provisa</title>
@@ -17,9 +14,6 @@
 <link rel="stylesheet" href="/design-system/tokens.css">
 <link rel="stylesheet" href="/design-system/provisa.css">
 
-<!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
-     external script runs after first paint, which is exactly the flash of the
-     wrong theme this prevents. -->
 <script>
   (function () {
     try {
@@ -37,7 +31,6 @@
 
 <a class="pv-skip" href="#main">Skip to content</a>
 
-<!-- UtilityBar — partials/utility-bar.html. -->
 <div class="pv-utility">
   <div class="pv-utility__inner pv-container">
     <nav class="pv-utility__links" aria-label="Utility">
@@ -48,21 +41,6 @@
   </div>
 </div>
 
-<!-- SiteHeader — partials/site-header.html, verbatim, and the same bytes Home
-     and /why/interfaces ship.
-
-     Two notes for whoever reads this page next to its brief.
-
-     The brief says the header's `Compare` item targets /vs/starburst today.
-     It does not: the kit points it at /vs/, which has no index and 404s. The
-     shared chrome is the same on every page by design, so this page does not
-     fork it — raised on PRO-3 instead, where the fix is one file.
-
-     The brief's forbidden-string list rules out cloud.provisa.dev, and the
-     kit's header used to carry it as `Start free trial`. That was already
-     corrected in the partial, to the free licence at /register.html, which is
-     also what §2 of this page concedes: Provisa does not offer a managed
-     service. Nothing to do here but stay current with it. -->
 <header class="pv-header">
   <div class="pv-header__inner pv-container">
     <a class="pv-wordmark" href="/">
@@ -130,19 +108,9 @@
 
 <main id="main">
 
-  <!-- ==================================================================
-       §1 Hero. Heading + Emph + Callout.
-
-       No FigPanel, and not by omission: the image-register has no slot for a
-       /vs/* page, and a figure above the fold pushes the first conceded card
-       below it, which is the one thing this page cannot afford. If a slot is
-       added later it goes between §5 and §6, never above §2.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
 
-      <!-- Breadcrumb. `Compare` is not a link: /compare does not exist yet and
-           /vs/ has no index, so the only honest middle crumb is the label. -->
       <nav class="pv-crumb" aria-label="Breadcrumb">
         <a href="/">Provisa</a>
         <span aria-hidden="true">/</span>
@@ -176,18 +144,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §2 Where Starburst wins. RuledCard ×4.
-
-       This section must render above the first comparison table at every
-       width. It does, unconditionally: it is earlier in the document and
-       nothing here is positioned, floated or re-ordered, so there is no
-       breakpoint at which §4 can precede it.
-
-       pv-grid--2 and not --4: card 01 is a long paragraph and a four-track
-       grid would hand it a 230px column. Two tracks keep every card inside a
-       readable measure at every width the page is verified at.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -252,9 +208,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §3 Where we overlap. Callout.
-       ================================================================== -->
   <section class="pv-section pv-section--tight">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -277,20 +230,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §4 The actual difference. ComparisonTable, 8 rows × 3 columns.
-
-       Every Starburst cell is a statement about their documentation at a
-       stated version. Four rows in the previous revision were wrong because
-       they had been compressed into "Starburst has no X"; none are now. Do not
-       shorten a cell to make the column fit, do not replace one with an
-       em-dash, and do not move a qualifier into a footnote — raise it on
-       PRO-16 instead.
-
-       The kit's ComparisonTable wraps its cells and scrolls the table under
-       640px rather than reflowing. That is the solution the brief asks for:
-       the Starburst column is never truncated and never collapsible.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -421,11 +360,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §5 Governance side by side. LayerRow ×4, list variant.
-
-       The list variant is white on a forest band, so it ships inside one.
-       ================================================================== -->
   <section class="pv-section pv-section--brand-alt">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -505,18 +439,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §6 Application surfaces. ComparisonTable, 6 rows × 3 columns.
-
-       Every Starburst cell carries prose, not a dash: an em-dash in a
-       competitor column is a negative absolute with no scope.
-
-       The AI-agent row is the one cell on this page that is not the brief's
-       copy — revision 3 left an em-dash there while the acceptance criteria
-       forbid one, so it is filled in the form the sibling Graph-tool row
-       already uses and the same claim number it already carries. Raised on
-       PRO-16 for the Content Manager to confirm or replace.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -613,9 +535,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §7 Smallest deployment. CodeBlock + Callout.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -662,13 +581,6 @@ provisa run</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §8 When to pick which. ChoiceCard ×3.
-
-       The brief gives each card one prose block; the component is a ruled
-       list, so each card's sentences are its items. The words are the brief's,
-       sentence for sentence.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -718,13 +630,6 @@ provisa run</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §9 Dateline. Callout.
-
-       Not optional and not a placeholder. An undated competitor claim is the
-       failure mode this whole page is designed around; every Starburst
-       statement above is a statement about the documentation named here.
-       ================================================================== -->
   <section class="pv-section pv-section--tight">
     <div class="pv-container pv-stack">
 
@@ -746,19 +651,6 @@ provisa run</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §10 Conversion. Heading + Button + TextLink.
-
-       The brief's conversion is "Book a demo → demo form", so this is the
-       kit's ContactBand: the heading, the demo form and its one primary
-       button. The ContactBand's trial link was withdrawn (PRO-2 revision 3),
-       and the download-and-register pair was added in PRO-24 — the page
-       shipped contact-only, which is the inverse of the trial-only error
-       that issue corrected.
-
-       One link the brief lists is not here: `All comparisons → /compare` is
-       held back until the hub exists, as the build notes require.
-       ================================================================== -->
   <section class="pv-contact" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">
@@ -783,19 +675,6 @@ provisa run</pre>
   </section>
 
 </main>
-
-<!-- SiteFooter — partials/site-footer.html, verbatim, and the same bytes Home
-     and /why/interfaces ship.
-
-     The brief holds the /why/no-lock-in link back until that page is rebuilt.
-     That is an instruction about this page's links out — §4's `the engine is a
-     component` row — and §4 carries no link at all, so it is honoured. The
-     footer keeps the entry, because the chrome is shared and /why/no-lock-in
-     resolves today; forking the footer on one page to hide a link every other
-     page shows would be the worse half of that trade. The held-back-link check
-     in check-page-vs-starburst.mjs is scoped to <main> for the same reason.
-
-     The Compare column marks this page with aria-current. -->
 
 <footer class="pv-footer">
   <div class="pv-footer__inner pv-container">

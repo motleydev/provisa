@@ -241,7 +241,6 @@
             <span class="pv-seclabel__num">02</span>
             <span class="pv-seclabel__text">The regions</span>
           </div>
-          <!-- IMG-19. Labelled region schematic, 16:9. -->
           <figure class="pv-editorial pv-editorial--wide" role="img"
                aria-label="A labelled region schematic: one shared model store, three regional clusters each with their own nodes and stores, and a table named to a home region.">
               <img class="pv-editorial__img pv-editorial__img--light" src="/assets/editorial/img-19-light.png" alt="A labelled region schematic: one shared model store, three regional clusters each with their own nodes and stores, and a table named to a home region." loading="lazy" decoding="async">
@@ -252,25 +251,21 @@
 
           <h2 class="pv-h pv-h--section">One model. Separate clusters.</h2>
 
-          <!-- [C-5] One model, multiple clusters. -->
           <p class="pv-p">A deployment may run more than one Provisa cluster
             off a single model store. The model — every source, table,
             relationship, role, rule, view, freshness setting and limit — is
             declared once and is the same for every cluster.</p>
 
-          <!-- [C-6] Each cluster separate stores. -->
           <p class="pv-p">Each cluster is in one region and has its own
             nodes, engine, storage for replicas and materialized views,
             cache, state store, record, and address.</p>
 
-          <!-- [C-7] Reader connects by address, rules same everywhere. -->
           <p class="pv-p">A reader connects to a region by its address. What
             a reader may see is decided by the model's rules on the reader's
             attributes, the same in every region; where the work is done and
             where anything is kept is decided by the cluster the reader
             connected to.</p>
 
-          <!-- [C-8] Any node can reach any source/store. -->
           <div class="pv-callout pv-callout--get">
             <span class="pv-callout__label">REACH</span>
             <span class="pv-callout__body">Every source of every region, and
@@ -284,9 +279,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §3 Rules decide what crosses
-       ================================================================== -->
   <section class="pv-section pv-section--band" id="crosses">
     <div class="pv-container">
       <div class="pv-rail">
@@ -301,16 +293,11 @@
           <h2 class="pv-h pv-h--section">The rules travel with the request.
             The filtering happens before the border.</h2>
 
-          <!-- [C-9] Rules in statement sent to source. -->
           <p class="pv-p">Row and column rules written on user attributes —
             the country a user is in, the role they hold — decide what each
             request may see. The statement sent to the source already
             carries them, so nothing a reader may not see is read.</p>
 
-          <!-- [C-10] Cross-region reads from replica with reader's rules,
-               with the SME-added clause: naming a home region governs
-               copies, not reads; an unreplicated home-region table is
-               read live from its source by every region. -->
           <p class="pv-p">A table that names a home region is served to
             readers in other regions from that region's replica, read in
             place under the reader's rules — so the filtering is done in
@@ -320,8 +307,6 @@
             every region, under the reader's rules, exactly as any
             unreplicated table is.</p>
 
-          <!-- [C-11] Example: US reads EU table. The two-region demo's own
-               shape, from the brief and docs/regions-demo.md:42-44. -->
           <div class="pv-code pv-code--get">
             <div class="pv-code__title">A US node reading an EU-homed table</div>
             <pre><span class="pv-code__c">-- Reader in US queries intake_eu (homed in EU)</span>
@@ -331,9 +316,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
 <span class="pv-code__c">-- Only rows the reader is allowed cross the border.</span></pre>
           </div>
 
-          <!-- [C-12] Refused when replica not built or region unreachable.
-               The fail-closed sentence the SME called the page's strongest
-               moment. -->
           <div class="pv-callout">
             <span class="pv-callout__label">FAIL CLOSED</span>
             <span class="pv-callout__body">When the replica has not been
@@ -348,9 +330,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
     </div>
   </section>
 
-  <!-- ==================================================================
-       §4 Home region controls copies
-       ================================================================== -->
   <section class="pv-section" id="home-region">
     <div class="pv-container">
       <div class="pv-rail">
@@ -365,7 +344,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
           <h2 class="pv-h pv-h--section">What the setting on a table
             decides.</h2>
 
-          <!-- [C-13] Table names home region. -->
           <p class="pv-p">A table may name one of its organization's
             regions as its home. Whole-table copies of it — replicas and
             hot tables — are built only in that region.</p>
@@ -382,19 +360,16 @@ SELECT * FROM intake_eu WHERE category = 'public';
               </thead>
               <tbody>
                 <tr>
-                  <!-- [C-14] Names region → home only. -->
                   <th scope="row">Names a region (e.g. <code>eu</code>)</th>
                   <td>Home region only</td>
                   <td>From home region's replica, with reader's rules</td>
                 </tr>
                 <tr>
-                  <!-- [C-15] No region → every region. -->
                   <th scope="row">No region</th>
                   <td>Every region</td>
                   <td>Locally</td>
                 </tr>
                 <tr>
-                  <!-- [C-16] Draft → out of service. -->
                   <th scope="row">Draft</th>
                   <td>Nowhere — out of service</td>
                   <td>Not readable</td>
@@ -403,16 +378,10 @@ SELECT * FROM intake_eu WHERE category = 'public';
             </table>
           </div>
 
-          <!-- [C-17] A table with no region is replicated, when its
-               replicate setting calls for it, in the region of the node
-               the reader connected to. -->
           <p class="pv-p">A table with no region is replicated, when its
             replicate setting calls for it, in the region of the node the
             reader connected to.</p>
 
-          <!-- [C-18] Draft definition — SME-corrected to "on any data
-               surface" and with the admin preview clause from the
-               2026-10-08 amendment. -->
           <div class="pv-ruled pv-ruled--thick">
             <h3 class="pv-ruled__title">Draft</h3>
             <div class="pv-ruled__body">A table or view set to draft is
@@ -423,11 +392,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
               preview it in the admin before releasing it.</div>
           </div>
 
-          <!-- [C-19] Move via draft — SME rewrite. The three-step move
-               under the amendment "No region is a region a grant names":
-               the middle "remove region" step from the older procedure
-               would itself need a grant covering no_region, so it is not
-               part of the move. -->
           <p class="pv-p">A move between regions holds no data anywhere in
             between: the owner sets draft, which removes every copy; the
             holder of <code>data_residency</code> for the destination sets
@@ -439,9 +403,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
     </div>
   </section>
 
-  <!-- ==================================================================
-       §5 Materialized views per region
-       ================================================================== -->
   <section class="pv-section pv-section--band" id="views">
     <div class="pv-container">
       <div class="pv-rail">
@@ -456,21 +417,16 @@ SELECT * FROM intake_eu WHERE category = 'public';
           <h2 class="pv-h pv-h--section">Each region builds its own copy of
             a view, under its own administrator's identity.</h2>
 
-          <!-- [C-20] MV built in every region unless names one. The
-               parenthetical is the 2026-10-04 amendment "A view may name a
-               region". -->
           <p class="pv-p">A materialized view is built in every region
             (unless the view names a region of its own). Each region's
             coordinator builds its own copy in its own view storage, on
             the view's schedule.</p>
 
-          <!-- [C-21] Build governed as admin with node's region. -->
           <p class="pv-p">The build statement is governed — run under the
             organization's administrator identity, with that node's region
             as its region attribute. An identity processing within a node
             carries the node's region.</p>
 
-          <!-- [C-22] Each region's copy holds what admin there may see. -->
           <p class="pv-p">So each region's copy holds exactly what an
             administrator in that region may see. When row rules bind to
             region, the same view returns different rows in different
@@ -479,7 +435,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
             a finding; an auditor who was told in advance sees a
             control.</p>
 
-          <!-- [C-23] Reader served from their region's copy. -->
           <p class="pv-p">A reader is served from the copy in the region
             they connected to, with their own rules applied on top.</p>
 
@@ -499,9 +454,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
     </div>
   </section>
 
-  <!-- ==================================================================
-       §6 data_residency capability
-       ================================================================== -->
   <section class="pv-section" id="data-residency">
     <div class="pv-container">
       <div class="pv-rail">
@@ -516,22 +468,12 @@ SELECT * FROM intake_eu WHERE category = 'public';
           <h2 class="pv-h pv-h--section">A right distinct from domain
             ownership. Compliance can hold it alone.</h2>
 
-          <!-- [C-24] data_residency required to change region. The SME
-               preferred "in addition to owning the object through its
-               domain" over "separate from"; both captured here. -->
           <p class="pv-p">Setting, changing or removing a table's or view's
             region requires the <code>data_residency</code> capability, in
             addition to owning the object through its domain. The same
             rule applies in the admin and on config import, so the file
             path is not a way round it.</p>
 
-          <!-- [C-25] SME rewrite. The brief's text cited the superseded
-               "data_residency names its regions"; the rule in force is
-               "No region is a region a grant names" (2026-10-04). The
-               grant covers values — the org's regions AND no_region —
-               and a change from P to Q needs both covered. While an
-               object is draft, the destination's holder may claim it
-               with a grant covering the new value alone. -->
           <p class="pv-p">A grant of <code>data_residency</code> names the
             values it covers: the organization's regions, and "no
             region", which is a value of its own, so making an object
@@ -541,7 +483,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
             destination's holder may claim it with a grant covering the
             new value alone.</p>
 
-          <!-- [C-26] Compliance alone can hold it. -->
           <div class="pv-ruled pv-ruled--run pv-ruled--accent">
             <h3 class="pv-ruled__title">The compliance-only grant</h3>
             <div class="pv-ruled__body">An organization can give
@@ -551,7 +492,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
               but cannot move its data across a border.</div>
           </div>
 
-          <!-- [C-27] Draft needs only domain ownership. -->
           <p class="pv-p">Setting or clearing draft is part of domain
             ownership and needs no other capability — the three-step
             move above is a draft from the owner, a region from
@@ -562,14 +502,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
     </div>
   </section>
 
-  <!-- ==================================================================
-       §7 How to try it
-       Links the two-region demo. The scaffolding banners on
-       docs/regions-demo.md and scripts/launch-demo-regions.sh were
-       struck under PRO-60 (REQ-1922 region-qualified naming landed, the
-       `regions-demo` Playwright project went green on 2026-10-04 — commit
-       f4bfae8da — and the pending draft step shipped on 2026-10-08).
-       ================================================================== -->
   <section class="pv-section pv-section--band" id="try-it">
     <div class="pv-container">
       <div class="pv-rail">
@@ -584,7 +516,6 @@ SELECT * FROM intake_eu WHERE category = 'public';
           <h2 class="pv-h pv-h--section">Two regions on your machine,
             Docker-free.</h2>
 
-          <!-- [C-28] Two-region demo description. -->
           <p class="pv-p">The two-region demo runs two Provisa nodes —
             one in region <code>eu</code>, one in region <code>us</code>
             — on the embedded local platform, sharing one embedded
@@ -611,11 +542,6 @@ scripts/launch-demo-regions.sh --stop</pre>
           <h3 class="pv-h pv-h--sub">What to click</h3>
 
           <div class="pv-stack pv-stack--sm">
-            <!-- [C-30] Region selector behaviour. SME-corrected: the
-                 selector is on Sources, Tables and Cache → Hot (not
-                 Materialized Views; the views page has no region
-                 control today — docs/regions-demo.md vs ViewsPage.tsx is
-                 a requirement-vs-UI gap tracked separately). -->
             <div class="pv-ruled pv-ruled--see">
               <h3 class="pv-ruled__title">The region selector on
                 Sources, Tables and Cache → Hot</h3>
@@ -631,10 +557,6 @@ scripts/launch-demo-regions.sh --stop</pre>
                 from EU's replica under the reader's rules, and the
                 admin names the region the row came from.</div>
             </div>
-            <!-- [C-32] data_residency refusal example. SME-corrected:
-                 the resident's grant covers eu AND no-region — the
-                 second half of the demo step (set the no-region
-                 `breeds` table to `eu`, succeeds) depends on it. -->
             <div class="pv-ruled pv-ruled--run">
               <h3 class="pv-ruled__title">A <code>data_residency</code>
                 refusal</h3>
@@ -655,10 +577,6 @@ scripts/launch-demo-regions.sh --stop</pre>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §Conversion. ContactBand, forest, with the demo form the primary
-       button submits. Carries id="contact".
-       ================================================================== -->
   <section class="pv-contact" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">

@@ -147,10 +147,6 @@
 </main>
 
 <script>
-  // REQ-2006: wake the cloud coordinator while the visitor reads the cards, so that a click on
-  // "Open live demo" rarely meets the front door's waking page. The front door starts the
-  // coordinator on any hit; the response is not read (an opaque no-cors reply), and a warm-up
-  // that fails changes nothing for the visitor, who is answered the waking page on click.
   fetch("https://cloud.provisa.dev/health", { mode: "no-cors", cache: "no-store" }).catch(() => {});
 </script>
 

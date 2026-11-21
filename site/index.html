@@ -1,16 +1,4 @@
 <!doctype html>
-<!-- Home — route `/`, built from the `brief-home` document on PRO-5 at
-     revision 3 (PRO-10), on the design system ported in PRO-3.
-
-     Every heading, paragraph, table cell, code line, button label and alt
-     string below is the brief's copy verbatim. The qualifiers that look
-     removable are load-bearing and were required by the SME's verdict pass on
-     PRO-6 — see the claim table in the brief before editing any sentence here.
-
-     Five anchor ids are an acceptance criterion and are linked from outside
-     the site: #governance (§3), #interfaces (§6), #sources (§7), #deploy and
-     #download (§9). A fragment cannot be redirected server-side, so removing
-     one silently breaks an inbound link rather than 404ing. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -153,10 +141,6 @@
               one model. Nothing to keep in sync. A catalog tells an agent
               what it should do. <em class="pv-emph">Provisa enforces what it
               can do.</em></p>
-            <!-- Spine position (PRO-26, claim-audit §5.1b/§5.1c). Qualifier 1
-                 — "up to six", never a count promised per question — travels
-                 with the sentence here; qualifiers 2 and 3 are in §5's
-                 callout, which is where the six are shown. -->
             <p class="pv-p">Register a source, register the tables you want
               published, and ask once in English: the answer comes back on up
               to six governed surfaces — SQL, GraphQL, Cypher, gRPC, JSON:API
@@ -181,13 +165,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §2 Figures. StatStrip.
-
-       Four numbers, each reproducible by one command — that is the selection
-       rule for this strip, not editorial preference. No measured figure goes
-       here: a table size is not a result (PRO-6 decision 11).
-       ================================================================== -->
   <section class="pv-stats" aria-label="Figures">
     <div class="pv-stats__inner pv-container">
       <div class="pv-stats__item pv-stats__item--run">
@@ -213,21 +190,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §3 Governance compiles. LayerRow ×6 + Callout. Anchor id `governance`.
-
-       The detail variant of LayerRow, which carries the tone and the prose at
-       once — the list variant has the description but no per-row colour and
-       only works on a forest band.
-
-       Tones follow the kit's governance semantic: cobalt for who can see,
-       forest for what they get, vermilion for whether it runs. The sixth row
-       is the slate `--outside` tone and carries no index, because it is an
-       external callout taken on the plan rather than a layer compiled into
-       it. Its empty index track still holds, so its title lines up with the
-       five numbered rows — beside them, not among them. Do not put a number
-       there to fill the gap.
-       ================================================================== -->
   <section class="pv-section pv-section--band" id="governance">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -317,17 +279,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §4 The fork. ChoiceCard ×3 + IMG-02.
-
-       One card per buyer path, in the kit's three tones: cobalt for evaluate,
-       forest for team, vermilion for procurement. The three figures are
-       FigPanel placeholders at 1/1, one mark per path.
-
-       The procurement card does not use the kit's `governance` rings figure:
-       it draws six concentric rings, which would state the six-layer count in
-       a picture that the copy is careful not to state in words.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -394,36 +345,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §5 One question, six governed surfaces. CodeTabs.
-
-       The spine position on this page (PRO-26; claim-audit §5.1a-c replaced
-       "one model, three languages" on 2026-10-14). Six tabs, one English
-       question, and the six artifacts the natural-language path actually
-       produces — `_TARGETS` in provisa/nl/runner.py:51, each one executed
-       through the same compiled pipeline (nl/executor.py:117-129).
-
-       The wire label under each tab name is the component's own slot, and
-       every value is a listener §6 names on this same page — SQL on pgwire,
-       GraphQL/JSON:API/OpenAPI on HTTP, Cypher on Bolt, gRPC on gRPC — so
-       the tabs state nothing the interface table below does not.
-
-       Three qualifiers are load-bearing and audited, not hedging. (1) "Up to
-       six" — six is what the platform answers on, never a count promised per
-       question; it is in the section lede and in the hero. (2) The gRPC,
-       JSON:API and OpenAPI panels are the request a client would send and the
-       envelope it would receive, computed through the governed pipeline, not a
-       network round trip — do not redraw this as six arrows leaving a box.
-       (3) Those three express row, aggregate and group-by questions only;
-       anything else returns NOT_APPLICABLE on that surface, exactly as the
-       product shows it (provisa-ui/src/pages/NlPage.tsx:380). Both live in
-       the callout below the tabs. A pass that drops (1) fails the audit.
-
-       The question shown is a group-by with a nodes projection because that
-       is the shape all six express. The arbitrary question — the three-source
-       join this block used to show — is carried by SQL, GraphQL and Cypher,
-       which is what the callout says.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -525,11 +446,6 @@ GET /data/rest/sales/orders
           </div>
         </div>
 
-        <!-- Qualifiers 2 and 3 of claim-audit §5.1b. They are the audited
-             form of the claim, not hedging: the three protocol surfaces are
-             computed request-and-envelope pairs, and they express three
-             question shapes. Removing either sentence makes the page less
-             honest than the product's own screen. -->
         <div class="pv-callout">
           <span class="pv-callout__body">gRPC, JSON:API and OpenAPI are the
             request a client of those protocols would send and the envelope it
@@ -545,23 +461,11 @@ GET /data/rest/sales/orders
         <p class="pv-p">Relationships in Cypher are joins between tables, which
           is why they carry no stored properties.</p>
 
-        <!-- brief §8's "Read the model page →", held back until /why/one-model
-             was rebuilt on this design system. It was, under PRO-28, so the
-             TextLink lands here. -->
         <a class="pv-link" href="/why/one-model.html">Read the model page<span class="pv-link__arrow"> →</span></a>
       </div>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §6 Seven listeners, sixteen surfaces. ComparisonTable + Chip.
-       Anchor id `interfaces`.
-
-       Seven listeners, each binding its own port — Airport and MCP each have
-       their own, which is what corrects the old "five listeners, nine ways in"
-       framing (PRO-6 decisions 9 and 10). The sixteenth surface is outbound
-       and is footnoted as such rather than counted as a way in.
-       ================================================================== -->
   <section class="pv-section" id="interfaces">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -671,15 +575,6 @@ GET /data/rest/sales/orders
     </div>
   </section>
 
-  <!-- ==================================================================
-       §7 Reach. StatStrip + RuledCard ×3. Anchor id `sources`.
-
-       The brief heads this section with its three numbers and names StatStrip
-       as the section's component, so the three numbers render once, as the
-       strip. The heading sentence is carried verbatim on a visually hidden h2
-       so the document outline keeps a heading for the section rather than
-       printing the same three numbers twice.
-       ================================================================== -->
   <section class="pv-section pv-section--tight" id="sources">
     <div class="pv-container">
       <div class="pv-seclabel">
@@ -753,21 +648,10 @@ GET /data/rest/sales/orders
           generalises: Provisa is the governed join across the inventories you
           already have. It does not scan, patch or replace any of them.</p>
 
-        <!-- "Every source type →" is omitted at build: /why/sources is Phase 2
-             and has not been rebuilt on this design system yet. Add the
-             TextLink here when that page lands (brief §8). -->
       </div>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §8 The engine is yours. ComparisonTable.
-
-       The SQLAlchemy row states the runtime structurally rather than as a key
-       count: the arithmetic reaches 21 and is correct, but the figure invites
-       a recount, so it is deliberately not printed as a number here (brief
-       C-27).
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -836,10 +720,6 @@ GET /data/rest/sales/orders
           </table>
         </div>
 
-        <!-- "What lock-in would look like, and why this is not it →" is
-             omitted at build: /why/no-lock-in is Phase 2 and has not been
-             rebuilt on this design system yet. Add the TextLink here when that
-             page lands (brief §8). -->
         <p class="pv-p">32 engine keys in total — six federating, five
           warehouse, and one generic SQLAlchemy runtime pre-named for twenty
           databases. Run on the Trino-protocol coordinator you already operate
@@ -850,18 +730,6 @@ GET /data/rest/sales/orders
     </div>
   </section>
 
-  <!-- ==================================================================
-       §9 Deploy where the data is. RuledCard ×4 + CodeBlock.
-       Anchor ids `deploy` and `download`.
-
-       `deploy` is the section; `download` is the install block, which is where
-       the content behind the old #download anchor went. Both are linked from
-       outside the site.
-
-       The three qualifiers on the install command — Python 3.12 exactly, not
-       Linux aarch64, DuckDB only — sit beside the command rather than in a
-       footnote, which the SME's verdict pass required (brief C-11).
-       ================================================================== -->
   <section class="pv-section" id="deploy">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -911,9 +779,6 @@ pip install "provisa[embedded]"
 provisa run          <span class="pv-code__c"># your data</span>
 provisa run --demo   <span class="pv-code__c"># the bundled sample domains, on embedded SQLite</span></pre>
           </div>
-          <!-- The brief asks for this caption at the code's own type size. The
-               kit has no code-caption component, so it ships as small body
-               copy; the gap is raised on PRO-3. -->
           <p class="pv-note">The embedded tier runs on DuckDB. No JVM
             means no Trino — multi-engine federation comes from pointing the
             install at an engine you run.</p>
@@ -935,15 +800,6 @@ provisa run --demo   <span class="pv-code__c"># the bundled sample domains, on e
     </div>
   </section>
 
-  <!-- ==================================================================
-       §10 Licence, stated plainly. Callout.
-
-       Two callouts, because the two paragraphs are two different things with
-       confusingly similar names — the Business Source Licence that governs
-       production use, and the in-product licence file you get by registering.
-       Keeping them in one block is what makes a reader read "free licence" as
-       a contradiction of "commercial licence".
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -975,27 +831,12 @@ provisa run --demo   <span class="pv-code__c"># the bundled sample domains, on e
           </div>
         </div>
 
-        <!-- "Editions and licensing →" is omitted at build: /pricing is Phase
-             3 and does not exist yet. Add the TextLink here when that page
-             lands (brief §8). -->
         <p class="pv-note">Non-production use, evaluation included, is
           free at any size.</p>
       </div>
     </div>
   </section>
 
-  <!-- ==================================================================
-       §11 Conversion. Button ×2 + TextLink.
-
-       Three conversions, one per buyer path: the download for evaluate, the
-       demo form for procurement, the free licence for team. The team path
-       converted on a hosted trial in revision 2 of the brief and no longer
-       does — `plan` revision 3 withdrew it, so nothing on this page links to a
-       hosted service, and the utility bar carries no notice of one either.
-
-       The band also carries id="contact", which the header, the drawer, the
-       utility bar and the footer all link to for Support and Book a demo.
-       ================================================================== -->
   <section class="pv-contact" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">

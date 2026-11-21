@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- partials/head.html, verbatim but for the title, the description and the
-     canonical link. Order matters: fonts before tokens before provisa.css, and
-     the theme bootstrap before anything paints.
-
-     This file is a rebuild, not a new page. The old one was on the pre-kit
-     stylesheet (site/styles.css) and is indexed at /vs/hasura; the route does
-     not move and there is no redirect. Two things from the old file had to come
-     across rather than be rewritten from the brief, and both are below: the
-     PRO-34 rate-limit correction (§4 RuledCard 3 and §5 Panel 6) and the
-     comment recording why that sentence may not change back (§5 Panel 6). -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Coming from Hasura — Provisa</title>
@@ -44,7 +34,6 @@
 
 <a class="pv-skip" href="#main">Skip to content</a>
 
-<!-- UtilityBar — partials/utility-bar.html. -->
 <div class="pv-utility">
   <div class="pv-utility__inner pv-container">
     <nav class="pv-utility__links" aria-label="Utility">
@@ -55,16 +44,6 @@
   </div>
 </div>
 
-<!-- SiteHeader — partials/site-header.html, and the same bytes /vs/starburst
-     ships but for one attribute.
-
-     The kit's `Compare` item targets /vs/starburst. That is a different page
-     from this one, so this file does not carry aria-current="page" on it: a
-     current-page marker on a link that navigates away is the one way this
-     attribute misleads a screen reader. The footer's Compare column has an
-     entry for this route and that is where the marker goes. The nav item
-     itself stays as the shared chrome has it — raised on PRO-3, where the fix
-     is one file. -->
 <header class="pv-header">
   <div class="pv-header__inner pv-container">
     <a class="pv-wordmark" href="/">
@@ -132,27 +111,9 @@
 
 <main id="main">
 
-  <!-- ==================================================================
-       §1 Hero. Breadcrumb + Eyebrow + Heading + Emph.
-
-       No FigPanel, and not by omission: the image-register has no slot for a
-       /vs/* page (IMG-15 is the Compare hub, not a comparison), and a figure
-       above the fold pushes §5 further down, which is the one thing this page
-       cannot afford. If the VP wants a slot it goes between §6 and §7, never
-       above §5.
-
-       The standfirst names four things and points at §3's table for the rest.
-       It is not an eleven-item list and must not become one again: every item
-       in the long version was cited, so this was never a claims problem — an
-       evaluator scanning for their own permission shape cannot find it in
-       prose that long. §3's table is where comprehensiveness belongs.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
 
-      <!-- Breadcrumb. `Compare` is not a link: the hub does not exist yet
-           (build note 3) and /vs/ has no index, so the only honest middle
-           crumb is the label. -->
       <nav class="pv-crumb" aria-label="Breadcrumb">
         <a href="/">Provisa</a>
         <span aria-hidden="true">/</span>
@@ -187,25 +148,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §2 Run it. CodeTabs ×2 + SectionLabel + CodeBlock + Callout.
-
-       Two routes, each complete on its own. The CLI takes a metadata
-       *directory* and calls parse_metadata_dir unconditionally; the metadata
-       API's consolidated document is an upload and goes to the admin import
-       tab. An earlier revision offered the API export as an alternative inside
-       the CLI flow, which led a reader who drives Hasura over HTTP into a dead
-       end two commands in. Do not re-merge the two routes.
-
-       The two tabs compose: tab 1 writes the directory tab 2 converts. An
-       earlier revision exported with `--output metadata.yaml` and then
-       converted `./metadata`, which gets a reader a file and then a missing
-       directory on the page's primary command path.
-
-       Each panel carries its code block and its prose, so it is a
-       pv-codetabs__panel--prose with a pv-code inside rather than a bare
-       code panel.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -332,18 +274,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §3 What converts. ComparisonTable, 18 rows × 2 columns.
-
-       The row-filter row carries its qualifier in the cell, not in a footnote.
-       `claim-set-vs-hasura` §1 forbids a "select permissions → column
-       visibility plus row rules" row without the row-filter disclosure beside
-       it, which is what the bolded clause is.
-
-       Do not shorten a cell to make the column fit and do not replace one with
-       an em-dash. Every cell is cited in the brief's §6; a cell that loses its
-       qualifier stops being the claim that was verified.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -501,26 +431,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §4 What you get that v2 did not have. RuledCard ×4.
-
-       pv-grid--2 and not --4: card 3 is a four-sentence paragraph and a
-       four-track grid would hand it a 230px column.
-
-       RuledCard 3 is the PRO-34 correction, carried over from the pre-kit
-       version of this file. It read "Rate limits that travel … the limits you
-       set in v2 are part of the design", which was false: Hasura's
-       `rate_limit` is per minute, Provisa's `requests_per_second` is per
-       second, and `provisa/hasura_v2/mapper.py:258` divides and rounds with a
-       floor of 1 and no warning — 10/min arrives serving 60/min, 150/min
-       arrives held to 120/min, exact only at a multiple of 60. `node_limit`
-       and the time limit convert exactly; `depth_limit` is dropped by design.
-       REQ-2033 forbids the old framing site-wide and `site/verify-claims.mjs`
-       enforces it as a scoped window check, so this card may not reacquire
-       preservation language — "preserved", "unchanged", "carried over",
-       "carried across", "intact", "untouched", "as-is" — within 90 characters
-       of a rate or an API limit. The arithmetic is §5 Panel 6.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -533,12 +443,6 @@
 
       <div class="pv-grid pv-grid--2">
 
-        <!-- The three-language form is deliberate and is not the six-surface
-             spine. `docs/claim-audit.md` §5.1c says not to rewrite a claim
-             that is specifically about query languages, because that is a
-             different claim from the spine, and this card's claim is about
-             query languages. Written down so a later sitewide sweep does not
-             "fix" it. -->
         <div class="pv-ruled">
           <span class="pv-ruled__num">01</span>
           <h3 class="pv-ruled__title">SQL and Cypher, not only GraphQL</h3>
@@ -585,45 +489,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §5 What does not convert. Callout + ComparisonTable ×2 + CodeBlock +
-       Accordion.
-
-       THIS SECTION IS THE PAGE. Three things about it are acceptance criteria
-       on the build issue (PRO-39) and an SME position on the record, not
-       preferences:
-
-       1. It sits immediately after §4 and before §7. Moving it below §7
-          reverses the page's argument: the credibility strategy is to put the
-          gap list above the fold of the second screen, because a reader who
-          finds the row-filter gap themselves after reading a coverage table
-          has caught us, and a reader who reads it from us has been told.
-
-       2. The leading Callout carries the same visual weight as §3's table.
-          Concretely: this section is the same `pv-section` treatment §3 is,
-          its lead is the kit's Callout at the primary vermilion tone with no
-          weight-reducing modifier (--inverse, --get and --outside are all
-          lighter), and the disclosure's own table is the same `pv-table`
-          component §3's coverage table is. Demoting it — a footnote, a lighter
-          type colour, an accordion panel, pv-p--sm, pv-note — breaks the page.
-          `check-page-vs-hasura.mjs` asserts all of it.
-
-       3. The allowlist row says `allow_list.yaml`, with the underscore. A CLI
-          export writes the file as `allow_list.yaml`; `allowlist` is the
-          metadata API's key for the same section. Both are real, only one is
-          in the directory §2 converts, and a reader who greps their export for
-          the wrong one finds nothing and concludes our gap list is
-          approximate. A design pass that "tidies" the file name to match the
-          section key beside it reintroduces exactly the defect the SME caught,
-          and it looks like a typo fix on the way past. The checker asserts the
-          literal `allow_list.yaml` and forbids `allowlist.yaml`.
-
-       Why the gap list is here at all: a published gap list with a silent
-       permissive bug behind it is worse than no gap list at all, so the
-       disclosure is not a concession the page makes reluctantly — it is the
-       page's entire credibility and the reason anyone believes the rest of it.
-       PRO-13 is open and unassigned.
-       ================================================================== -->
   <section class="pv-section" id="gaps">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -688,9 +553,6 @@
         </table>
       </div>
 
-      <!-- This paragraph is the claim set's requirement, not the page's
-           choice. It does not move into a footnote and it does not lose the
-           `_exists` rewrite, which is the only actionable half of it. -->
       <p class="pv-p"><strong>So: review every role’s row rules against your v2
         permissions before the deployment serves traffic.</strong> The rules
         that need rewriting by hand are the ones that reach through a
@@ -701,11 +563,6 @@
 
       <h3 class="pv-h pv-h--sub">Reported and not converted</h3>
 
-      <!-- The claim set about what the Hasura v2 importer does lives in the
-           app's own published material, not here. See
-           https://provisa.dev/docs/import for the importer documentation the
-           app's owner maintains; this page quotes it rather than restating
-           it. -->
       <p class="pv-p">Five sections of the export have no target in a Provisa
         configuration. Two of the five are load-bearing and worth planning for
         before you convert.</p>
@@ -780,14 +637,6 @@
 
       <h3 class="pv-h pv-h--sub">Converted, with something to check</h3>
 
-      <!-- Six panels. Panel 6 is the per-minute rate conversion the SME
-           found by running the converter — silent and small, worth a
-           paragraph.
-
-           The Accordion is the right component for these six and the wrong
-           one for the row-filter disclosure above, which is why that one is a
-           Callout at the top of the section and not panel 7. -->
-
       <div class="pv-acc pv-acc--numbered">
 
         <div class="pv-acc__item">
@@ -797,13 +646,6 @@
               <code>columns: "*"</code></span>
             <span class="pv-acc__sign" aria-hidden="true"></span>
           </button>
-          <!-- "loud on the import tab, silent on the command line" is the
-               whole point of this panel. An earlier revision said "this gap is
-               loud: the warning fires", which told a reader following §2 that
-               they would be warned. They would not: the typing pass runs from
-               the preview endpoint only (import_router.py:203-206), and the
-               SME's CLI run against a `columns: "*"` export printed two
-               warnings, neither about the wildcard, and exited 0. -->
           <div class="pv-acc__panel" id="a-gap1">
             <p class="pv-p">A wildcard column permission imports as a single
               placeholder column named <code>*</code>, which is not expanded to
@@ -851,13 +693,6 @@
         <div class="pv-acc__item">
           <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-gap4">
             <span class="pv-acc__num">04</span>
-            <!-- The <wbr> is a break opportunity and not a character: this is
-                 the one panel title that is a single unbreakable token, and in
-                 the numbered Accordion's `48px 1fr auto` grid its min-content
-                 width (252px) exceeds the 1fr track at 360px and pushes the
-                 +/− sign past the viewport edge. Breaking after the `=` costs
-                 nothing — the tag strips out of every copy comparison, so the
-                 title is still the brief's string exactly. -->
             <span class="pv-acc__title"><code>AUTH_PROVIDER=<wbr>webhook</code></span>
             <span class="pv-acc__sign" aria-hidden="true"></span>
           </button>
@@ -870,12 +705,6 @@
           </div>
         </div>
 
-        <!-- `mapper.py:637-663` converts every tracked function identically;
-             there is no simple-versus-complex branch anywhere, so the old
-             "simple cases convert, complex ones need manual work" implied a
-             classifier the code does not have. `docs/import.md:92` is where
-             the vague version still lives and is a source correction, not a
-             page one. -->
         <div class="pv-acc__item">
           <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-gap5">
             <span class="pv-acc__num">05</span>
@@ -893,18 +722,6 @@
           </div>
         </div>
 
-        <!-- PRO-34, carried over from the pre-kit version of this file. This
-             panel and §4 RuledCard 3 are the two places the rate conversion is
-             stated, and neither may reacquire preservation language while the
-             conversion rounds without a warning: REQ-2033, and
-             `site/verify-claims.mjs` holds it as a scoped window check —
-             "preserved", "unchanged", "carried over", "carried across",
-             "intact", "untouched" or "as-is" within 90 characters of a rate
-             limit, an API limit, requests per second or a throttle. The
-             pre-kit version of this page is the page that failed that check. A
-             design pass that compresses this panel can reintroduce the
-             failure, so run `node site/verify-claims.mjs` as part of the
-             change rather than after it. -->
         <div class="pv-acc__item">
           <button class="pv-acc__btn" type="button" aria-expanded="false" aria-controls="a-gap6">
             <span class="pv-acc__num">06</span>
@@ -924,12 +741,6 @@
           </div>
         </div>
 
-        <!-- Panel 7 (computed field / tracked function name collision) was
-             removed with the release gate: the published importer
-             documentation at https://provisa.dev/docs/import does not describe
-             the collision warning or the traceback behaviour, and the site
-             does not run the converter to verify the claim. -->
-
       </div>
 
       <div class="pv-contact__links">
@@ -940,20 +751,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §6 Preview before you apply. CodeBlock + Callout.
-
-       An earlier revision opened this section with `--dry-run` and called it
-       previewing. The typing warnings of the §3 callout and §5 panel 1 do not
-       exist on that path, so the page was over-promising the CLI — which is
-       the one thing this page cannot do. The two surfaces are named
-       separately and stay that way.
-
-       The counted summary is the answer to the question this reader asks that
-       the page used to be silent on: how long does it take. We cannot invent a
-       number, but the warnings are counted and the gap list is enumerable, so
-       an unbounded commitment becomes a bounded task.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -1000,23 +797,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §7 When Provisa is not the answer. RuledCard ×2.
-
-       Conceded, unhedged, and after §5 rather than before it.
-
-       Card 1's added clause is one clause and no more: self-hosted is the
-       answer to the residency and air-gap requirements that bring enterprise
-       buyers to this category, and leaving that unstated is not honesty. The
-       concession itself keeps its last sentence (REQ-2014) and the page makes
-       no quantified claim from the clause.
-
-       Card 2 is already at the limit of what the evidence supports — the
-       GraphQL schema is generated per role (`provisa/compiler/schema_gen.py`),
-       nothing diffs it against the v2 schema and no test asserts equivalence.
-       The SME's answer to "how much stronger can this be put" was "not at
-       all". Hold it against pressure.
-       ================================================================== -->
   <section class="pv-section">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -1054,33 +834,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §8 v2 and DDN, in Hasura's own words. Callout ×2 + body.
-
-       No sentence in this section may be added, glossed or paraphrased at
-       build. `WIP` and `❌` are quoted tokens from a table with no legend, so
-       they are quoted as tokens: "work in progress", "on the roadmap" and "not
-       finished yet" are all claims about another company's intent and are
-       forbidden on this page, as is any characterisation of Hasura's
-       priorities, commitment or pricing intent. Distribution here is warm
-       outbound to former Hasura contacts and ex-Hasura sales engineers —
-       people who still talk to people who work there — and the sentence that
-       gets screenshotted and forwarded costs us the network the page exists to
-       reach. `check-page-vs-hasura.mjs` forbids the strings.
-
-       The section outline names a CodeBlock here. There is no code in this
-       section's copy and inventing one would mean inventing content, which is
-       exactly what build note 4 forbids; the quoted tokens take inline <code>
-       instead.
-
-       One cell of `docs/competitive_analysis.md` licenses this section — line
-       79, Hasura v2 Upgrade Path, read 2026-10-14 against Hasura's published
-       documentation. Lines 18-20 record that the rest of that column is
-       undated and licenses no Hasura negative, and that still holds. The
-       correction that dated line 79 also killed a falsehood we were one
-       revision from publishing: "v2 is effectively end-of-life" was not merely
-       unverified, it was false, and Hasura's own documentation is why.
-       ================================================================== -->
   <section class="pv-section pv-section--band">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -1123,18 +876,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §9 Conversion. Heading + Button + TextLink.
-
-       REQ-2014 rung 1 then rung 2: the free licence is the primary and the
-       conversation is the alternative. REQ-2014 pairs the licence CTA with
-       "Download Provisa" → /install as one rung; this page uses half a rung,
-       because /install does not exist (PRO-17) and seven links on three pages
-       already wait on it. The download route that resolves today is
-       /dl/<platform> and this page needs neither.
-
-       `All comparisons → /compare` is held back until the hub ships.
-       ================================================================== -->
   <section class="pv-section pv-section--tight">
     <div class="pv-container pv-stack pv-stack--lg">
 
@@ -1152,16 +893,6 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       ContactBand. The shared chrome every rebuilt page ships, and the target
-       §9's TextLink, the header button and the utility bar all point at. Its
-       heading is the form's name rather than new copy: §9 is the brief's
-       conversion block and this band is the form it jumps to.
-
-       The band's own `Start a free trial → cloud.provisa.dev` and `Download`
-       links are out. We offer no managed service to start a trial on, in any
-       tense, which is also what §7 card 1 concedes.
-       ================================================================== -->
   <section class="pv-contact" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">
@@ -1186,17 +917,6 @@
   </section>
 
 </main>
-
-<!-- SiteFooter — partials/site-footer.html, verbatim, and the same bytes Home
-     and /vs/starburst ship. The Compare column marks this page with
-     aria-current, which is where the marker belongs: the header's `Compare`
-     item points at /vs/starburst, a different page.
-
-     The footer keeps its /why/no-lock-in entry, because the chrome is shared
-     and that route resolves today. The held-back-link check in
-     check-page-vs-hasura.mjs is scoped to <main> for the same reason: /compare
-     and /install are held back from this page's copy, not forked out of a
-     footer every other page ships. -->
 
 <footer class="pv-footer">
   <div class="pv-footer__inner pv-container">

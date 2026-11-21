@@ -1,38 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-<!-- partials/head.html, verbatim but for the title, the description and the
-     canonical link.
-
-     This is PRO-92 — /industries/government, built on the design system from
-     PRO-3 against the SME verdict on PRO-86 (36 claims + §7: 17 OK, 19
-     reworded, 0 cut, §7 CTA replaced).
-
-     Page-level rules from the PRO-86 verdict, applied here:
-       1. No compliance names on the page. "FedRAMP-aligned", "IL4/IL5",
-          "GCC-High", "JWICS", "NIPR" and "CAC" are struck — none is
-          published. The sitewide ban in site/claim-bans.mjs already keeps
-          "FedRAMP", "SOC 2", "HIPAA", "ISO 27001", "GDPR" and "PCI" out of
-          served copy.
-       2. YAML uses the published forms: top-level rls_rules with table_id /
-          role_id / filter (docs/security.md § RLS lines 277-283); tables
-          carry domain_id, not domain (docs/configuration.md lines 149, 555);
-          columns carry visible_to.
-       3. Refusals use V000, not V004 — the latter is not published
-          (docs/api-reference.md line 1209).
-       4. Government open-data source is `govdata` by subject (COMMERCE,
-          ECONOMY, DEMOGRAPHICS, HEALTH, CYBER, GOVERNMENT). No "employment",
-          "unemployment", "prices" or "EDGAR" series name appears — those
-          are not published (docs/sources.md § GovData lines 870-895).
-       5. Cross-region reads: whole-table copies live in the home region;
-          readers elsewhere are served from that replica with their own
-          rules applied; if the home region cannot answer, the request is
-          refused by name (docs/features.md line 204; docs/regions-demo.md
-          § What to click). "Queries do not cross" is wrong.
-       6. §7 CTA is replaced with the REQ-2014 ladder: Install primary,
-          Register secondary. The optional contact line is "Talk to us
-          about an air-gapped deployment" (docs/deployment.md line 230) —
-          not a FedRAMP/IL4 briefing. No cloud.provisa.dev. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Government — Provisa</title>
@@ -143,15 +111,7 @@
 
 <main id="main">
 
-  <!-- ==================================================================
-       §Hero
-       The one thing: a semantic and governance layer that answers the
-       two scenarios the page walks — multi-agency isolation and
-       public data catalog federation — from the same published model.
-       The verdict strikes "FedRAMP-aligned" from the brief's lede; the
-       lede here names only the mechanics: column visibility, row
-       filters, domains, regions, and one audit log.
-       ================================================================== -->
+  
   <section class="pv-section">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -173,11 +133,7 @@
         <div class="pv-rail">
           <div class="pv-rail__body">
             <div class="pv-stack">
-              <!-- [C-1] Scenario 26 — multi-agency data isolation. The
-                   verdict keeps the column-visibility and row-filter
-                   framing; the example column is renamed from
-                   `sigint_intercept_details` to `source_details` (per
-                   PRO-86 page-level note). -->
+              
               <p class="pv-p pv-p--lede">An agency keeps the data: a case
                 record, an intelligence report, a shared federal series,
                 a policy table. The question is who may see which column
@@ -186,13 +142,7 @@
                 Provisa is the governed semantic layer that answers it
                 from one model.</p>
 
-              <!-- Mechanics preamble. The two scenarios the page walks
-                   are the Notion scenarios 26 and 27: multi-agency
-                   isolation (classified columns and row filters) and
-                   public data catalog federation (domains, cross-domain
-                   refusals, govdata). The regions story follows because
-                   REQ-1921 is how a public-sector deployment keeps a
-                   home region's data on that region's cluster. -->
+              
               <p class="pv-p">Every column names the roles that may see
                 it. Every row filter is injected before the engine runs
                 the statement. Every table lives inside a domain, and a
@@ -204,9 +154,7 @@
             </div>
           </div>
           <div class="pv-rail__rail">
-            <!-- FIG — three rings: the three scenarios the page walks.
-                 The rings carry no caption; the SectionLabel above each
-                 §scenario is the caption. -->
+            
             <div class="pv-fig pv-fig--rings" role="img"
                  aria-label="Three stacked scenarios — multi-agency data isolation, public data catalog federation, and residency by region — converging into one governed semantic layer.">
               <span class="pv-fig__label">FIG. 01</span>
@@ -221,16 +169,7 @@
     </div>
   </section>
 
-  <!-- ==================================================================
-       §1 Scenario 1 — Multi-agency data isolation (Ken scenario 26)
-       Covers C-1 through C-9. C-2 and C-3 are the column model and
-       three-tier visibility; C-5 and C-6 are the RLS mechanics; C-7
-       is the audit record over the same table; C-8 is the YAML, now
-       in the published shape (visible_to on columns + a separate
-       top-level rls_rules list, source_id and domain_id on the table,
-       source_details renamed from sigint_intercept_details). C-9 is
-       the docs link, pointed at provisa.dev/docs.
-       ================================================================== -->
+  
   <section class="pv-section pv-section--band" id="isolation">
     <div class="pv-container">
       <div class="pv-rail">
@@ -242,15 +181,12 @@
         </div>
         <div class="pv-rail__body">
 
-          <!-- [C-1] Ken's scenario 26. Analysts across agencies share a
-               reporting table; some rows and some columns are visible
-               to one role and not another. -->
+          
           <h2 class="pv-h pv-h--section">An intelligence report is
             shared across analysts, and only cleared roles see the
             source details — on every row the clearance allows.</h2>
 
-          <!-- [C-2] Column Permission Model (docs/security.md line 163):
-               a column names the roles that may see it. -->
+          
           <p class="pv-p">Every column on the report names the roles
             that may see it. A role that is not on the column's
             <code>visible_to</code> list does not see the column, in any
@@ -258,8 +194,7 @@
             handed, not blanked out at the end of a result set.</p>
 
           <div class="pv-stack pv-stack--sm">
-            <!-- [C-3] Three-Tier Visibility (docs/security.md line 171):
-                 public, restricted, hidden. -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">01</span>
               <h3 class="pv-ruled__title">Three tiers of column
@@ -270,10 +205,7 @@
                 from the schema altogether). One column list, three
                 visibility rules per column.</div>
             </div>
-            <!-- [C-4] Layer 0 and the three-tier model
-                 (docs/security.md Layer 0, line 11). "Cannot be queried,
-                 autocompleted, or inferred to exist" is the published
-                 line; the verdict confirms it. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">02</span>
               <h3 class="pv-ruled__title">What a role cannot see, it
@@ -284,9 +216,7 @@
                 read; there is no "see the field, not the value"
                 in-between.</div>
             </div>
-            <!-- [C-5] RLS: a row filter is a predicate injected into
-                 every SELECT (docs/security.md § RLS line 277). The
-                 filter here is clearance-based. -->
+            
             <div class="pv-ruled pv-ruled--run pv-ruled--accent">
               <span class="pv-ruled__num">03</span>
               <h3 class="pv-ruled__title">A row filter narrows the rows
@@ -298,8 +228,7 @@
                 injected into every <code>SELECT</code> on the table,
                 before the engine runs it.</div>
             </div>
-            <!-- [C-6] RLS: "no filter means all rows"
-                 (docs/security.md § Meta-roles line 121). -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">04</span>
               <h3 class="pv-ruled__title">A role with no filter on the
@@ -309,10 +238,7 @@
                 applies; where a role is not named, no filter applies
                 and the role may see every row.</div>
             </div>
-            <!-- [C-7] Audit log (docs/security.md line 3; the audit
-                 fields are a shared pipeline — same shape, every
-                 surface). The verdict pins the fields in C-27, so this
-                 card stays on what the audit covers for this read. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">05</span>
               <h3 class="pv-ruled__title">The record names the role and
@@ -326,14 +252,7 @@
             </div>
           </div>
 
-          <!-- [C-8] The YAML, in the published forms the verdict
-               requires:
-                 - visible_to on columns, as drafted; column renamed
-                   from sigint_intercept_details → source_details.
-                 - top-level rls_rules list with table_id / role_id /
-                   filter on classification_level.
-                 - source_id (not source: postgres_intel) and
-                   domain_id on the table. -->
+          
           <div class="pv-code">
             <div class="pv-code__title">provisa.yaml — classified columns and a clearance filter</div>
 <pre><span class="pv-code__c"># A reporting table. The source_details column is restricted</span>
@@ -364,8 +283,7 @@ rls_rules:
     filter:   "classification_level = 'SECRET'"</pre>
           </div>
 
-          <!-- [C-9] Docs link, repointed to the published paths
-               (provisa.dev/docs), per the verdict's uniform correction. -->
+          
           <p class="pv-p">The two primitives in full:
             <a class="pv-link pv-link--inline" href="https://provisa.dev/docs/security/#row-level-security-rls">row-level
             security</a> and
@@ -377,16 +295,7 @@ rls_rules:
     </div>
   </section>
 
-  <!-- ==================================================================
-       §2 Scenario 2 — Public data catalog federation (Ken scenario 27)
-       Covers C-10 through C-19. The model is agency-by-agency domains
-       plus one shared public-data source (govdata). C-11 is the
-       permission-boundary line; C-14 is the one the verdict reworded
-       most tightly ("the domain grant is both a visibility boundary
-       and an execution boundary"); C-18 names the published refusal
-       V000 and drops the invented V004. C-17 is the YAML in the
-       published shape. C-19 is the docs link to Layer 2.
-       ================================================================== -->
+  
   <section class="pv-section" id="federation">
     <div class="pv-container">
       <div class="pv-rail">
@@ -398,15 +307,11 @@ rls_rules:
         </div>
         <div class="pv-rail__body">
 
-          <!-- [C-10] Ken's scenario 27. Agencies keep their own
-               operations tables and share one federal catalog; the
-               question is how the sharing is bounded. -->
+          
           <h2 class="pv-h pv-h--section">Two agencies share one federal
             catalog, and neither sees the other's operations table.</h2>
 
-          <!-- [C-11] Domains are permission boundaries
-               (docs/features.md line 270). The verdict quotes the
-               line in full. -->
+          
           <p class="pv-p">A domain is a permission boundary. A role
             reads freely inside the domains it is granted and needs an
             explicit grant for any other. One agency's operations lives
@@ -414,8 +319,7 @@ rls_rules:
             federal catalog lives in a third that both are granted.</p>
 
           <div class="pv-stack pv-stack--sm">
-            <!-- [C-12] domain_id: on a table
-                 (docs/configuration.md lines 149, 555). -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">01</span>
               <h3 class="pv-ruled__title">A table carries its
@@ -426,8 +330,7 @@ rls_rules:
                 reads to decide reach. Change the <code>domain_id</code>
                 and the reach changes with it.</div>
             </div>
-            <!-- [C-13] Role Inheritance: capabilities + domain_access
-                 (docs/security.md § Role Inheritance lines 88-97). -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">02</span>
               <h3 class="pv-ruled__title">A role carries its
@@ -439,11 +342,7 @@ rls_rules:
                 effective <code>domain_access</code> is the union of
                 the role and its parents.</div>
             </div>
-            <!-- [C-14] Reworded: the domain grant is both a visibility
-                 boundary and an execution boundary (docs/security.md
-                 Layer 0 line 11; Layer 2 line 21). The brief said
-                 "not a visibility filter"; the published model hides
-                 first and refuses second. -->
+            
             <div class="pv-ruled pv-ruled--run pv-ruled--accent">
               <span class="pv-ruled__num">03</span>
               <h3 class="pv-ruled__title">The domain grant is both a
@@ -455,11 +354,7 @@ rls_rules:
                 reach is rejected before execution (Layer 2). One
                 grant, two layers of the same rule.</div>
             </div>
-            <!-- [C-15] Hidden columns cannot be queried, autocompleted,
-                 or inferred to exist; a relationship is served when
-                 both of its ends' columns are
-                 (docs/security.md Layer 0 line 11; § Public columns
-                 line 187). -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">04</span>
               <h3 class="pv-ruled__title">A relationship is served
@@ -471,9 +366,7 @@ rls_rules:
                 relationship, and a hidden column cannot be
                 autocompleted or inferred to exist.</div>
             </div>
-            <!-- [C-16] Reworded: cross-domain reference rejected
-                 before execution (docs/security.md Layer 2 line 21).
-                 Drop "at plan compilation" — the verdict strikes it. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">05</span>
               <h3 class="pv-ruled__title">A cross-domain reference is
@@ -486,13 +379,7 @@ rls_rules:
             </div>
           </div>
 
-          <!-- [C-17] YAML, in the published shape:
-                 - tables carry domain_id (not domain), per
-                   docs/configuration.md line 555.
-                 - roles use capabilities + domain_access
-                   (docs/security.md § Role Inheritance lines 88-97).
-               The three domains name the shape: agency_a, agency_b,
-               and the shared govdata catalog that both are granted. -->
+          
           <div class="pv-code">
             <div class="pv-code__title">provisa.yaml — two agencies and one shared federal catalog</div>
 <pre><span class="pv-code__c"># An agency table lives in its own domain. domain_id is the</span>
@@ -520,8 +407,7 @@ roles:
     domain_access: [agency_b, public_registers]</pre>
           </div>
 
-          <!-- [C-18] Reworded: V000 is the published refusal
-               (docs/api-reference.md line 1209). V004 does not exist. -->
+          
           <div class="pv-code pv-code--get">
             <div class="pv-code__title">The refusal, when agency A references agency B</div>
 <pre><span class="pv-code__c"># A query from agency_a_analyst that reaches into agency_b.</span>
@@ -533,8 +419,7 @@ roles:
 }</pre>
           </div>
 
-          <!-- [C-19] Docs link, repointed per the verdict's uniform
-               correction. The Layer 2 anchor is the published target. -->
+          
           <p class="pv-p"><a class="pv-link pv-link--inline" href="https://provisa.dev/docs/security/#layer-2-domain-access">Layer
             2 — domain access, in the security docs.</a></p>
 
@@ -543,16 +428,7 @@ roles:
     </div>
   </section>
 
-  <!-- ==================================================================
-       §3 Scenario 3 — Residency and regional clusters
-       Covers C-20 through C-26. C-20 is positioning (not a product
-       claim). C-21 is the one-shared-model line, with GCC-High / US
-       regions dropped. C-22 is the fail-closed refusal — the verdict's
-       strongest correction on this page. C-23 pins the attribute name
-       to `region`, not `home_region`. C-24 is the view-region rule.
-       C-25 names the `data_residency` capability, held separately from
-       org admin. C-26 is the docs link.
-       ================================================================== -->
+  
   <section class="pv-section pv-section--band" id="regions">
     <div class="pv-container">
       <div class="pv-rail">
@@ -564,15 +440,11 @@ roles:
         </div>
         <div class="pv-rail__body">
 
-          <!-- [C-20] Positioning, not a product claim: one deployment,
-               many regional clusters, one shared model. -->
+          
           <h2 class="pv-h pv-h--section">One deployment, many regional
             clusters, one shared model.</h2>
 
-          <!-- [C-21] Reworded: Provisa runs as region-specific clusters
-               off one shared model (docs/features.md line 201). Drop
-               US-East, US-West, GCC-High — none is a published region
-               list on the site. -->
+          
           <p class="pv-p">Provisa runs as region-specific clusters off
             one shared model — each cluster has its own nodes, engine,
             replica storage, cache and record. The model and the roles
@@ -580,14 +452,7 @@ roles:
             each place the data has to.</p>
 
           <div class="pv-stack pv-stack--sm">
-            <!-- [C-22] Reworded: whole-table copies live only in the
-                 home region; a reader elsewhere is served from that
-                 replica with their own row and column rules applied;
-                 if the home region cannot answer, the request is
-                 refused by name (docs/features.md line 204;
-                 docs/regions-demo.md § What to click; PRO-8 §6).
-                 "Queries do not cross" is the brief line the verdict
-                 strikes. -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">01</span>
               <h3 class="pv-ruled__title">Whole-table copies live only
@@ -598,10 +463,7 @@ roles:
                 cannot answer the request, it is refused by name —
                 there is no fallback across the border.</div>
             </div>
-            <!-- [C-23] Reworded: a table's `region` pins its copies to
-                 one cluster. The attribute name is `region`, not
-                 `home_region` (docs/regions-demo.md § What to click;
-                 REQ-1921). -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">02</span>
               <h3 class="pv-ruled__title">A table's <code>region</code>
@@ -612,10 +474,7 @@ roles:
                 the table in configuration; it is the one place a
                 reviewer looks to see what is pinned where.</div>
             </div>
-            <!-- [C-24] Reworded: replicas home only; MV named region
-                 built only there, one that names none built in every
-                 region (docs/features.md line 204; REQ-1921 line
-                 20599). -->
+            
             <div class="pv-ruled pv-ruled--run pv-ruled--accent">
               <span class="pv-ruled__num">03</span>
               <h3 class="pv-ruled__title">A view that names a region is
@@ -627,12 +486,7 @@ roles:
                 declaration is the view that names the permitted
                 region.</div>
             </div>
-            <!-- [C-25] Reworded: what crosses a border is decided by
-                 row and column rules, and the moving right is
-                 data_residency — a capability held separately from
-                 org admin (REQ-1921 line 20599; docs/regions-demo.md
-                 § What to click). "Configured per table" dropped
-                 per verdict. -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">04</span>
               <h3 class="pv-ruled__title">What crosses the border is
@@ -674,7 +528,7 @@ views:
       GROUP  BY jurisdiction</pre>
           </div>
 
-          <!-- [C-26] Docs link, repointed per the verdict. -->
+          
           <p class="pv-p"><a class="pv-link pv-link--inline" href="https://provisa.dev/docs/features/#regions-and-residency-clusters">Regions
             and residency clusters, in the features docs.</a></p>
 
@@ -683,15 +537,7 @@ views:
     </div>
   </section>
 
-  <!-- ==================================================================
-       §4 Why a public-sector reader chooses this
-       Three columns, as the Industries kit has them. The content is
-       the audit story (C-27 to C-31) — the single most important
-       line for a public-sector reviewer. C-27 names the published
-       authentication list (OIDC, Keycloak, SAML 2.0); CAC/PIV is
-       struck. C-28 is the ops-domain line. C-29 and C-30 cover
-       policy_denials. C-31 is the docs link.
-       ================================================================== -->
+  
   <section class="pv-section" id="audit">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -710,13 +556,7 @@ views:
           <!-- Column 1: the audit row. -->
           <div class="pv-stack pv-stack--sm">
             <h3 class="pv-h pv-h--sub">The audit row</h3>
-            <!-- [C-27] Reworded: the published audit fields
-                 (docs/security.md § Audit Logging lines 346-350).
-                 The identity is as the IdP asserts it — SAML 2.0
-                 signed assertion, OIDC or Keycloak
-                 (docs/security.md line 393; docs/features.md line
-                 967). CAC/PIV, "which columns" and "full query text"
-                 are struck. -->
+            
             <p class="pv-p">Every query writes one row: the timestamp,
               the user as the identity provider asserts them — OIDC,
               Keycloak or SAML 2.0 — the role assumed, the tables
@@ -733,18 +573,14 @@ views:
           <!-- Column 2: the log is a table. -->
           <div class="pv-stack pv-stack--sm">
             <h3 class="pv-h pv-h--sub">The log is a table</h3>
-            <!-- [C-28] Reworded: the audit log is queryable through
-                 governed views in the ops domain
-                 (docs/admin.md § Ops-domain management views). -->
+            
             <p class="pv-p">The audit log is queryable through governed
               views in the <code>ops</code> domain, so oversight can
               ask who read a tagged table in the last 30 days, under
               which role, over which surface — in SQL on pgwire, in
               GraphQL, in Cypher, under the same domain access, row
               rules and masking as any business table.</p>
-            <!-- [C-29] OK: policy_denials — all access attempts that
-                 governance rejected (HTTP 401/403)
-                 (docs/admin.md line 350). -->
+            
             <p class="pv-p">A second queryable view,
               <code>policy_denials</code>, records every access
               attempt governance rejected — the HTTP 401 and 403
@@ -755,12 +591,7 @@ views:
           <!-- Column 3: the trace. -->
           <div class="pv-stack pv-stack--sm">
             <h3 class="pv-h pv-h--sub">The trace</h3>
-            <!-- [C-30] Reworded: a request governance refuses is
-                 recorded as a policy denial, so an analyst probing for
-                 tables outside their grant leaves a trace. A hidden
-                 column is absent from the schema; "the column was
-                 withheld" is not a published log entry
-                 (docs/admin.md line 350; docs/security.md Layer 0). -->
+            
             <p class="pv-p">A request governance refuses is recorded as
               a policy denial, so an analyst probing for tables
               outside their grant leaves a trace — the role, the
@@ -768,7 +599,7 @@ views:
               columns themselves do not appear in the log; a hidden
               column is absent from the schema the analyst sees, so
               there is no attempt to refuse.</p>
-            <!-- [C-31] Docs link, repointed. -->
+            
             <p class="pv-p"><a class="pv-link pv-link--inline" href="https://provisa.dev/docs/security/#audit-logging">Audit
               logging, in the security docs<span class="pv-link__arrow"> →</span></a></p>
           </div>
@@ -778,15 +609,7 @@ views:
     </div>
   </section>
 
-  <!-- ==================================================================
-       §5 Where government data lives
-       The sources that this verdict leaves on the page: Oracle,
-       PostgreSQL, Snowflake, S3 data lakes, CSV. "E-Business Suite"
-       and "mainframe" come off (C-32). 72 source types (C-33) is the
-       figure. C-34 drops JWICS/NIPR. C-35 recapitulates RLS +
-       domain_access. The StatStrip is the interfaces strip; C-36
-       seats pgwire and the BI-tool line beside it.
-       ================================================================== -->
+  
   <section class="pv-section pv-section--band" id="sources">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -796,10 +619,7 @@ views:
             <span class="pv-seclabel__text">Where the data lives,
               and how it reaches the team</span>
           </div>
-          <!-- [C-34] Reworded: whatever the data is in — PostgreSQL,
-               Snowflake, a CSV from a legacy system — the row and
-               column rules reach it (verdict's wording, JWICS and NIPR
-               dropped). -->
+          
           <h2 class="pv-h pv-h--section">Whether the data is in a
             PostgreSQL database, a Snowflake warehouse or a CSV
             exported from a legacy system — the same rules reach it.</h2>
@@ -810,18 +630,14 @@ views:
           <!-- Left: where it lives. -->
           <div class="pv-stack pv-stack--sm">
             <h3 class="pv-h pv-h--sub">Where it lives</h3>
-            <!-- [C-32] Reworded: Oracle, PostgreSQL, Snowflake, S3
-                 data lakes, CSV extracts (docs/sources.md § RDBMS
-                 line 61; § Cloud Data Warehouses; § File-Based line
-                 328; § Data Lake line 188). "E-Business Suite" and
-                 "mainframe" struck. -->
+            
             <p class="pv-p">Government data lives in Oracle and
               PostgreSQL databases, in Snowflake, in S3 data lakes and
               in CSV extracts from legacy systems. Each registers as a
               source — a config entry naming the connection, the
               credentials and the schema — and its tables appear in
               the catalog under their domain.</p>
-            <!-- [C-33] OK: 72 source types (docs/sources.md line 29). -->
+            
             <p class="pv-p">Seventy-two source types are published:
               relational databases, cloud warehouses, data lakes,
               file sources (CSV, JSON, Parquet, Arrow), API sources
@@ -833,17 +649,14 @@ views:
           <!-- Right: the one audit, the same rules. -->
           <div class="pv-stack pv-stack--sm">
             <h3 class="pv-h pv-h--sub">The same rules reach it</h3>
-            <!-- [C-35] OK: RLS and domain_access reach every source
-                 (docs/security.md § RLS; § Rights Model, domain_access). -->
+            
             <p class="pv-p">A row filter on an Oracle table applies
               exactly as it does on a PostgreSQL one. A domain grant
               bounds reach across every source the role may read. The
               roles and the rules are defined on the model; the
               connection to the source is what the engine does with
               them underneath.</p>
-            <!-- Supporting line: the govdata source for shared
-                 federal series, named by subject per docs/sources.md
-                 § GovData lines 870-895. -->
+            
             <p class="pv-p">The government open-data source,
               <code>govdata</code>, is one source with sub-schemas
               per subject — commerce (SEC, patents, CFTC), economy
@@ -858,16 +671,10 @@ views:
     </div>
   </section>
 
-  <!-- The six-surface strip. [C-36] seats SQL on pgwire with the
-       BI-tool line (docs/features.md § PostgreSQL wire protocol lines
-       555-557): BI tools and SQL clients that speak Postgres connect
-       as if it were a Postgres database. The other five surfaces are
-       named verbatim; no status badge on the strip is the kit
-       convention. -->
+  
   <section class="pv-stats">
     <div class="pv-stats__inner pv-container">
-      <!-- [C-36] SQL on pgwire — JDBC, BI tools, drivers that already
-           speak Postgres. -->
+      
       <div class="pv-stats__item">
         <span class="pv-stats__num">pgwire</span>
         <span class="pv-stats__label">SQL, JDBC, BI tools</span>
@@ -905,24 +712,14 @@ views:
     </div>
   </section>
 
-  <!-- ==================================================================
-       §Conversion. REQ-2014 ladder, as the design-system README
-       writes it down and as the SME verdict's §7 replacement
-       requires: /install primary, /register secondary. The optional
-       contact line is "Talk to us about an air-gapped deployment"
-       (docs/deployment.md line 230) — not a FedRAMP / IL4 briefing,
-       and not cloud.provisa.dev. "Install in ten minutes" is
-       unpublished and does not appear.
-       ================================================================== -->
+  
   <section class="pv-contact" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">
         <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
         <h2 class="pv-h pv-h--cta">Run it on your own
           infrastructure.</h2>
-        <!-- The REQ-2014 ladder. Install primary, Register secondary;
-             Book a demo as the contact-band form. The SME verdict for
-             §7 says exactly this. -->
+        
         <div class="pv-row">
           <a class="pv-btn pv-btn--on-color" href="/install">Install and deploy</a>
           <a class="pv-btn pv-btn--inverse" href="/register">Register (free licence)</a>
@@ -931,9 +728,7 @@ views:
           <a class="pv-link pv-link--inverse" href="/why/governance">How governance reaches every surface<span class="pv-link__arrow"> →</span></a>
           <a class="pv-link pv-link--inverse" href="/why/data-residency">The residency model<span class="pv-link__arrow"> →</span></a>
         </div>
-        <!-- The optional contact route the verdict permits:
-             "Talk to us about an air-gapped deployment"
-             (docs/deployment.md line 230). The form below carries it. -->
+        
         <p class="pv-contact__sub">Talk to us about an air-gapped
           deployment: Provisa runs on your hardware, in your cloud
           account, or air-gapped. There is no SaaS offer.</p>

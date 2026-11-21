@@ -110,15 +110,7 @@
 
 <main id="main">
 
-  <!-- =================================================================
-       §Hero. /industries has no hub yet (check-kit.mjs PENDING), so the
-       middle crumb is a span, as on /why/* when its hub is absent.
-       The lede is C-1 from the brief with the SME's rewording applied to
-       scenario 2: this page's strongest new material is views with
-       history (X-Provisa-As-Of / X-Provisa-As-Recorded) and the
-       fail-closed region refusal, per PRO-86 "Financial Services gets
-       the strongest new material… Lead scenario 2 with them."
-       ================================================================= -->
+  
   <section class="pv-section">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -155,16 +147,7 @@
     </div>
   </section>
 
-  <!-- =================================================================
-       §1 Scenario 1 — Cross-border residency (Swiss/German bank)
-       Covers C-1 through C-5. The YAML is rewritten to the published
-       rls_rules / visible_to / domain_id forms (PRO-86 Headline problem
-       1 and SME wording for C-3, C-4). IMG-22's placeholder is the
-       Schematic: a Swiss client table homed in `ch`, a view also homed
-       in `ch` that aggregates deposits by canton, and a Frankfurt role
-       reading only the view. The audit record names which region's copy
-       served the read (C-5).
-       ================================================================= -->
+  
   <section class="pv-section pv-section--band" id="residency">
     <div class="pv-container">
       <div class="pv-rail">
@@ -176,7 +159,7 @@
         </div>
         <div class="pv-rail__body">
 
-          <!-- [C-1] Swiss/German bank question. -->
+          
           <h2 class="pv-h pv-h--section">A bank in Switzerland and
             Germany. Swiss client rows stay in Switzerland, and
             Frankfurt still sees deposits by canton.</h2>
@@ -188,8 +171,7 @@
             sheet.</p>
 
           <div class="pv-stack pv-stack--sm">
-            <!-- [C-2] One model, each table names its region.
-                 SME: say "names" not "declares". -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">01</span>
               <h3 class="pv-ruled__title">The client tables name their
@@ -200,10 +182,7 @@
                 table names <code>de</code>; its copies are built only
                 in Germany.</div>
             </div>
-            <!-- [C-3] MV names the region it must be built in — SME
-                 wording. A view that named no region would be built in
-                 every region, Frankfurt included, so the view must
-                 name `ch`. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">02</span>
               <h3 class="pv-ruled__title">The aggregate view also
@@ -215,9 +194,7 @@
                 named no region would be built in every region,
                 Frankfurt included — so the view must name <code>ch</code>.</div>
             </div>
-            <!-- [C-4] Reader domain grants are on the view, not on
-                 the client tables. Region is never an access
-                 dimension — SME wording. -->
+            
             <div class="pv-ruled pv-ruled--run pv-ruled--accent">
               <span class="pv-ruled__num">03</span>
               <h3 class="pv-ruled__title">Frankfurt roles are granted
@@ -228,8 +205,7 @@
                 client rows are not in the Frankfurt role's schema,
                 because the role has no grant on their domain.</div>
             </div>
-            <!-- [C-5] Audit record names the region's copy that
-                 served it — SME wording from REQ-1921. -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">04</span>
               <h3 class="pv-ruled__title">The audit log records which
@@ -242,9 +218,7 @@
             </div>
           </div>
 
-          <!-- The published YAML syntax, per PRO-86 Headline problem 1:
-               top-level rls_rules list with table_id/role_id/filter,
-               domain_id on tables, visible_to on columns. -->
+          
           <div class="pv-code">
             <div class="pv-code__title">provisa.yaml — Swiss client table, Swiss-homed view, Frankfurt role</div>
             <pre><span class="pv-code__c"># The client table lives in Switzerland.</span>
@@ -278,13 +252,7 @@ rls_rules:
     filter:   "deposits &gt;= 0"</pre>
           </div>
 
-          <!-- The schematic for IMG-22. The design-system notes under
-               PRO-19 scope what this figure may assert: regions
-               declared in two places, a table or view homed to one
-               region and read only from that region's stores, a read
-               refused by name when the home replica is absent. The
-               Swiss sketch here reads as a modelling choice someone
-               made, not as behaviour the platform imposes. -->
+          
           <figure class="pv-schem-fig">
             <div class="pv-schem pv-schem--tall">
               <div class="pv-schem__node pv-schem__node--see" style="--l:4;--t:6;--w:40">
@@ -321,17 +289,7 @@ rls_rules:
     </div>
   </section>
 
-  <!-- =================================================================
-       §2 Scenario 2 — Bitemporal regulatory replay (broker-dealer)
-       Covers C-6, C-7, C-9, C-10. C-8 is cut (model-version replay is
-       not published — docs/admin-graphql.md § Schema version is a
-       cache-invalidation hash); the card is replaced with the
-       "same request… rights, masks and row rules apply as to any
-       read" line from docs/configuration.md:955 (SME verdict for C-8).
-       The example is the two headers X-Provisa-As-Of and
-       X-Provisa-As-Recorded from docs/configuration.md § Views with
-       history. The SME verdict calls these the page's strongest moment.
-       ================================================================= -->
+  
   <section class="pv-section" id="bitemporal">
     <div class="pv-container">
       <div class="pv-rail">
@@ -343,16 +301,12 @@ rls_rules:
         </div>
         <div class="pv-rail__body">
 
-          <!-- [C-6] Broker-dealer bitemporal replay question. -->
+          
           <h2 class="pv-h pv-h--section">A broker-dealer reproduces a
             client's positions and the prices used, exactly as they
             stood at the close eight months ago.</h2>
 
-          <!-- [C-7] Positions and prices are views with history. SME:
-               say "views with history", not "bitemporal views of the
-               positions and price tables". Two headers: X-Provisa-As-Of
-               and X-Provisa-As-Recorded (docs/configuration.md
-               §Views with history, REQ-1162 / REQ-1163 / REQ-2064). -->
+          
           <p class="pv-p">Positions and prices are materialized views
             that declare history. Every refresh appends versions,
             never overwrites. Two request headers read them in time:
@@ -377,9 +331,7 @@ curl -H "Authorization: Bearer $TOKEN" \
           </div>
 
           <div class="pv-stack pv-stack--sm">
-            <!-- C-8 is cut: model-version replay is not published.
-                 Replacement is the SME's exact line from
-                 docs/configuration.md:955. -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">01</span>
               <h3 class="pv-ruled__title">Rights, masks and row rules
@@ -391,8 +343,7 @@ curl -H "Authorization: Bearer $TOKEN" \
                 row recorded today does not change what the
                 as-recorded read returns.</div>
             </div>
-            <!-- [C-9] Audit record keeps who, what role, and both
-                 times — SME wording. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">02</span>
               <h3 class="pv-ruled__title">The audit record keeps both
@@ -403,8 +354,7 @@ curl -H "Authorization: Bearer $TOKEN" \
                 what was enforced on the statement. The whole audit
                 row is encrypted at rest.</div>
             </div>
-            <!-- [C-10] Regulators verify by re-running — drop
-                 "archived model". SME wording. -->
+            
             <div class="pv-ruled pv-ruled--run pv-ruled--accent">
               <span class="pv-ruled__num">03</span>
               <h3 class="pv-ruled__title">Regulators verify by
@@ -426,13 +376,7 @@ curl -H "Authorization: Bearer $TOKEN" \
     </div>
   </section>
 
-  <!-- =================================================================
-       §3 Scenario 3 — Insurance claims fraud graph
-       Covers C-11 through C-15. SME: Cypher is shipped (not "In
-       development"), relationships carry no stored properties, masking
-       applies in every query language and output format. "Six query
-       languages" is three: SQL, GraphQL, Cypher.
-       ================================================================= -->
+  
   <section class="pv-section pv-section--band" id="fraud">
     <div class="pv-container">
       <div class="pv-rail">
@@ -444,14 +388,12 @@ curl -H "Authorization: Bearer $TOKEN" \
         </div>
         <div class="pv-rail__body">
 
-          <!-- [C-11] Insurance claims fraud question. -->
+          
           <h2 class="pv-h pv-h--section">An insurance claim is scored
             against the links the claimant shares with earlier claims:
             address, phone, bank account, repair shop, witness.</h2>
 
-          <!-- [C-12] Cypher is shipped. SME-optional caveat about
-               relationships-as-joins carrying no stored properties
-               (docs/features.md:468). -->
+          
           <p class="pv-p">Claims, policies and payments are modelled
             once, as tables with approved relationships between them.
             The Cypher surface walks the model as a graph, from a new
@@ -460,7 +402,7 @@ curl -H "Authorization: Bearer $TOKEN" \
             they carry no stored properties.</p>
 
           <div class="pv-stack pv-stack--sm">
-            <!-- [C-13] Arrow Flight + MCP, caller's role. -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">01</span>
               <h3 class="pv-ruled__title">A model reads the graph over
@@ -472,8 +414,7 @@ curl -H "Authorization: Bearer $TOKEN" \
                 caller's role, so the agent can never do more than the
                 investigator could.</div>
             </div>
-            <!-- [C-14] NL endpoint — three languages, not six.
-                 SME wording. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">02</span>
               <h3 class="pv-ruled__title">The natural-language job
@@ -487,10 +428,7 @@ curl -H "Authorization: Bearer $TOKEN" \
                 the network of shared addresses, accounts, repair
                 shops and claims.</div>
             </div>
-            <!-- [C-15] Masking applies in Cypher. SME: masking
-                 applies in all query languages and output formats
-                 (docs/security.md Layer 4). Hidden columns are not
-                 in the schema. Node-to-node masking is NOT a thing. -->
+            
             <div class="pv-ruled pv-ruled--run pv-ruled--accent">
               <span class="pv-ruled__num">03</span>
               <h3 class="pv-ruled__title">Masked columns come back
@@ -527,16 +465,7 @@ ORDER  BY shared_count DESC;</pre>
     </div>
   </section>
 
-  <!-- =================================================================
-       §4 Scenario 4 — Credit concentration (private × public)
-       Covers C-16 through C-21. SME: Snowflake and Databricks both
-       land a replica (through their own driver), not "read live".
-       The published govdata subjects are COMMERCE, ECONOMY,
-       DEMOGRAPHICS — not "employment, unemployment, prices", not
-       EDGAR; the schema is `sec`. MV refreshes on a schedule or when
-       a freshness probe finds the series has published. Public figures
-       may be served as public-scoped columns.
-       ================================================================= -->
+  
   <section class="pv-section" id="concentration">
     <div class="pv-container">
       <div class="pv-rail">
@@ -548,17 +477,14 @@ ORDER  BY shared_count DESC;</pre>
         </div>
         <div class="pv-rail__body">
 
-          <!-- [C-16] Credit concentration question. -->
+          
           <h2 class="pv-h pv-h--section">A credit-risk team reads each
             commercial borrower's exposure alongside its industry's
             trend and its county's demographics, before the economy
             turns.</h2>
 
           <div class="pv-stack pv-stack--sm">
-            <!-- [C-17] Snowflake / Databricks both land a replica
-                 through their own drivers (docs/sources.md § Cloud
-                 Data Warehouses lines 86-95, REQ-987, REQ-988). SME
-                 wording. The site must not say "read live". -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">01</span>
               <h3 class="pv-ruled__title">Loan exposures from the core
@@ -569,10 +495,7 @@ ORDER  BY shared_count DESC;</pre>
                 drivers into a replica the engine queries; BigQuery
                 reaches through the federation engine.</div>
             </div>
-            <!-- [C-18] GovData by subject — ECONOMY and DEMOGRAPHICS
-                 schemas, joined through the geo linker. SME wording;
-                 no "employment" or "unemployment" series is
-                 published by that name. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">02</span>
               <h3 class="pv-ruled__title">Joined to federal series
@@ -584,8 +507,7 @@ ORDER  BY shared_count DESC;</pre>
                 join to the exposures through the geography linker
                 schema, on industry code and county.</div>
             </div>
-            <!-- [C-19] MV refresh — schedule or freshness probe. SME
-                 wording (same as Cybersecurity C-16). -->
+            
             <div class="pv-ruled pv-ruled--run pv-ruled--accent">
               <span class="pv-ruled__num">03</span>
               <h3 class="pv-ruled__title">A materialized view, on a
@@ -595,9 +517,7 @@ ORDER  BY shared_count DESC;</pre>
                 finds the public series has published. Readers see
                 the view, not the join plan.</div>
             </div>
-            <!-- [C-20] Column masking: borrower names masked for
-                 every role except credit risk. The masks list is
-                 ordered (REQ-2059). -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">04</span>
               <h3 class="pv-ruled__title">Borrower names masked for
@@ -608,11 +528,7 @@ ORDER  BY shared_count DESC;</pre>
                 sees the real value; every other role falls through
                 to the default mask and sees a hashed one.</div>
             </div>
-            <!-- [C-21] Public vs restricted: public-scoped columns
-                 are served to every role of the org
-                 (docs/security.md § Public columns, lines 175-183).
-                 SME: stronger — the public figures can be
-                 public-scoped columns. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">05</span>
               <h3 class="pv-ruled__title">Public figures served as
@@ -634,18 +550,7 @@ ORDER  BY shared_count DESC;</pre>
     </div>
   </section>
 
-  <!-- =================================================================
-       §5 Why regulated institutions choose this
-       Three columns, as the brief has it, with SME corrections. C-22
-       rewritten to the published wording; C-23 cut (node-to-node
-       masking is not published — PRO-86 §8 and §4 both strike it) and
-       replaced with the fail-closed region refusal, which is published
-       (docs/regions-demo.md §What to click, docs/features.md:690).
-       Column 2 covers C-24, C-25, C-26. Column 3 covers C-27, C-28,
-       C-29 — "employment, unemployment, prices" and "EDGAR" come off
-       (the schema is `sec`); COMMERCE / ECONOMY / DEMOGRAPHICS /
-       GOVERNMENT subjects go on.
-       ================================================================= -->
+  
   <section class="pv-section pv-section--band" id="pillars">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -664,8 +569,7 @@ ORDER  BY shared_count DESC;</pre>
           <!-- Column 1: Residency -->
           <div class="pv-stack pv-stack--sm">
             <h3 class="pv-h pv-h--sub">Residency</h3>
-            <!-- [C-22] Home region, replicas, reader's rules — SME
-                 wording (not "data never leaves"). -->
+            
             <p class="pv-p">A table names its home region. Whole-table
               copies are built only there. A reader elsewhere is served
               from that replica with their own row and column rules
@@ -686,21 +590,17 @@ ORDER  BY shared_count DESC;</pre>
           <!-- Column 2: Bitemporal and audit -->
           <div class="pv-stack pv-stack--sm">
             <h3 class="pv-h pv-h--sub">Bitemporal and audit</h3>
-            <!-- [C-24] Answer as of a past time as it was recorded
-                 then. SME wording. -->
+            
             <p class="pv-p">Views with history answer as of a past
               time, as it was recorded then. A correction recorded
               today does not change what the as-recorded read
               returns.</p>
-            <!-- [C-25] Audit log fields — SME wording. Drop "model
-                 version"; add "what was enforced on the statement"
-                 and the two time-travel fields. -->
+            
             <p class="pv-p">Every query lands in the append-only
               audit log: user, role, tables, status, duration, row
               count, what was enforced on the statement, and the
               times a time-travel read used.</p>
-            <!-- [C-26] Log is queryable through views in the ops
-                 domain (docs/admin.md §Ops-domain management views). -->
+            
             <p class="pv-p">The log is queryable through governed
               views in the <code>ops</code> domain, so compliance
               reviews are ordinary governed queries, over the same
@@ -710,22 +610,18 @@ ORDER  BY shared_count DESC;</pre>
           <!-- Column 3: Public data governed -->
           <div class="pv-stack pv-stack--sm">
             <h3 class="pv-h pv-h--sub">Public data, governed</h3>
-            <!-- [C-27] GovData subjects — SME wording.
-                 docs/sources.md §GovData lines 870-884. -->
+            
             <p class="pv-p">U.S. government open data by subject —
               commerce (SEC, patents, CFTC), economy (banking,
               fiscal, housing, transport), demographics (census),
               government (Federal Register, FEC) and more —
               registered as one source per subject.</p>
-            <!-- [C-28] Joined through approved relationships (same
-                 as Cybersecurity C-3). -->
+            
             <p class="pv-p">Joined to your own loan, credit or
               holdings tables through a relationship declared and
               approved by a steward holding the relationship right in
               each domain the join touches.</p>
-            <!-- [C-29] Three-Tier Visibility — public to every role,
-                 restricted to roles visible_to names. One query,
-                 different visibility rules per column. -->
+            
             <p class="pv-p">Internal rows stay role-restricted; the
               federal trend series are served as public-scoped
               columns. One query, different visibility rules per
@@ -737,15 +633,7 @@ ORDER  BY shared_count DESC;</pre>
     </div>
   </section>
 
-  <!-- =================================================================
-       §6 How it reaches the team
-       Six surfaces, same model, same row and column rules — "whatever
-       the client path, every path gets the same governance"
-       (docs/features.md:671). StatStrip, as the brief has it. GraphQL
-       and REST carry "In development" badges in the local docs but
-       README.md and upstream mark both as available; no status badge
-       on the strip is the kit convention.
-       ================================================================= -->
+  
   <section class="pv-section" id="surfaces">
     <div class="pv-container">
       <div class="pv-stack pv-stack--lg">
@@ -763,32 +651,32 @@ ORDER  BY shared_count DESC;</pre>
 
   <section class="pv-stats">
     <div class="pv-stats__inner pv-container">
-      <!-- [C-33] SQL over pgwire / JDBC. -->
+      
       <div class="pv-stats__item">
         <span class="pv-stats__num">pgwire</span>
         <span class="pv-stats__label">SQL, JDBC</span>
       </div>
-      <!-- [C-34] GraphQL. -->
+      
       <div class="pv-stats__item pv-stats__item--get">
         <span class="pv-stats__num">GraphQL</span>
         <span class="pv-stats__label">GraphQL over HTTP</span>
       </div>
-      <!-- [C-35] gRPC. -->
+      
       <div class="pv-stats__item pv-stats__item--run">
         <span class="pv-stats__num">gRPC</span>
         <span class="pv-stats__label">Typed services</span>
       </div>
-      <!-- [C-36] Cypher over HTTP and Bolt. -->
+      
       <div class="pv-stats__item">
         <span class="pv-stats__num">Bolt</span>
         <span class="pv-stats__label">Cypher, graph queries</span>
       </div>
-      <!-- [C-37] Arrow Flight. -->
+      
       <div class="pv-stats__item pv-stats__item--get">
         <span class="pv-stats__num">Flight</span>
         <span class="pv-stats__label">Arrow Flight, ADBC</span>
       </div>
-      <!-- [C-38] MCP for AI agents, scoped to the caller's role. -->
+      
       <div class="pv-stats__item pv-stats__item--run">
         <span class="pv-stats__num">MCP</span>
         <span class="pv-stats__label">AI agents, under role</span>
@@ -808,16 +696,7 @@ ORDER  BY shared_count DESC;</pre>
     </div>
   </section>
 
-  <!-- =================================================================
-       §7 The licence threshold that matters here
-       Covers C-30, C-31, C-32, C-39. SME verdict for C-30 quotes the
-       LICENSE Parameters block parameters: fewer than 100 employees
-       and contractors counted together AND less than USD 1,000,000 in
-       revenue, budget or expenditure, affiliates counted; 90 days to
-       obtain a commercial licence after crossing. C-31: fourth
-       anniversary, GPL-2.0-or-later. C-32: air-gapped supported, no
-       managed hosting (docs/competitive_analysis.md:32).
-       ================================================================= -->
+  
   <section class="pv-section pv-section--band" id="licence">
     <div class="pv-container">
       <div class="pv-rail">
@@ -833,7 +712,7 @@ ORDER  BY shared_count DESC;</pre>
             thresholds. Air-gapped supported. Self-host only.</h2>
 
           <div class="pv-stack pv-stack--sm">
-            <!-- [C-30] The exact LICENSE parameters. -->
+            
             <div class="pv-ruled pv-ruled--see pv-ruled--accent">
               <span class="pv-ruled__num">01</span>
               <h3 class="pv-ruled__title">Free in production under the
@@ -846,7 +725,7 @@ ORDER  BY shared_count DESC;</pre>
                 organisation that outgrows the thresholds has 90 days
                 to obtain a commercial licence.</div>
             </div>
-            <!-- [C-31] GPL-2.0-or-later after four years. -->
+            
             <div class="pv-ruled pv-ruled--get pv-ruled--accent">
               <span class="pv-ruled__num">02</span>
               <h3 class="pv-ruled__title">GPL-2.0-or-later after four
@@ -855,7 +734,7 @@ ORDER  BY shared_count DESC;</pre>
                 converts to GPL-2.0-or-later on the fourth anniversary
                 of its public release.</div>
             </div>
-            <!-- [C-32] Air-gapped, no managed hosting. -->
+            
             <div class="pv-ruled pv-ruled--run pv-ruled--accent">
               <span class="pv-ruled__num">03</span>
               <h3 class="pv-ruled__title">Self-host, air-gapped if
@@ -866,7 +745,7 @@ ORDER  BY shared_count DESC;</pre>
             </div>
           </div>
 
-          <!-- [C-39] One package: pgwire, GraphQL, UI. SME wording. -->
+          
           <div class="pv-callout pv-callout--get pv-measure">
             <span class="pv-callout__label">ONE PACKAGE</span>
             <span class="pv-callout__body">Register on the form, confirm
@@ -883,12 +762,7 @@ ORDER  BY shared_count DESC;</pre>
     </div>
   </section>
 
-  <!-- =================================================================
-       §Conversion. The REQ-2014 ladder, as the design-system README
-       writes it down: Install primary, Register beside it, Book a
-       demo as the contact-band form. SME verdict for §7 CTA says
-       exactly this.
-       ================================================================= -->
+  
   <section class="pv-contact" id="contact">
     <div class="pv-contact__inner pv-container">
       <div class="pv-contact__copy">

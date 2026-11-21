@@ -14,10 +14,7 @@
   <link rel="stylesheet" href="/design-system/tokens.css">
   <link rel="stylesheet" href="/design-system/provisa.css">
 
-  <!-- The theme bootstrap. Inline and synchronous on purpose: a deferred or
-       external script runs after first paint, which is exactly the flash of the
-       wrong theme this prevents. -->
-  <script>
+    <script>
     (function () {
       try {
         if (localStorage.getItem("provisa-theme") === "dark")
@@ -43,11 +40,7 @@
     </div>
   </div>
 
-  <!-- The chrome is the Home chrome, item 1 of PRO-28: six nav items, the
-       two-state theme toggle, the free licence as the secondary action and
-       `Book a demo` as the button. One model is not a nav item, so nothing
-       here carries aria-current; the breadcrumb is what says where you are. -->
-  <header class="pv-header">
+    <header class="pv-header">
     <div class="pv-header__inner pv-container">
       <a class="pv-wordmark" href="/">
         <span class="pv-wordmark__bars" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -114,10 +107,7 @@
 
   <main id="main">
 
-    <!-- §1 Hero ======================================================
-         The four-tools opening is the audit's wording and moves here
-         unchanged (PRO-28, copy to preserve). -->
-    <section class="pv-section">
+        <section class="pv-section">
       <div class="pv-container pv-stack pv-stack--lg">
         <nav class="pv-crumb" aria-label="Breadcrumb">
           <a href="/">Provisa</a>
@@ -142,10 +132,7 @@
             </div>
           </div>
           <div class="pv-rail__rail">
-            <!-- IMG-08a. Four-descriptions editorial, 4:5. (Legacy slot
-                 name IMG-13 in prior comments; the image register's current
-                 canonical name is IMG-08a.) -->
-            <figure class="pv-editorial" role="img"
+                        <figure class="pv-editorial" role="img"
                  aria-label="Four separate panels in a row resolving into one wide panel beneath them.">
                 <img class="pv-editorial__img pv-editorial__img--light" src="/assets/editorial/img-08a-light.png" alt="Four separate panels in a row resolving into one wide panel beneath them." fetchpriority="high" decoding="async">
                 <img class="pv-editorial__img pv-editorial__img--dark" src="/assets/editorial/img-08a-dark.png" alt="" aria-hidden="true" fetchpriority="high" decoding="async">
@@ -155,11 +142,7 @@
       </div>
     </section>
 
-    <!-- §2 Federation ================================================
-         The reach line, the live-source names and the link text are the
-         forms PRO-27 cleared in 435927d10. The counts are 72 / 63 / 37 and
-         the sweep (site/verify-claims.mjs) holds them there. -->
-    <section class="pv-section pv-section--band" id="federation">
+        <section class="pv-section pv-section--band" id="federation">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
@@ -253,12 +236,7 @@
       </div>
     </section>
 
-    <!-- §5 Governance =================================================
-         Five layers plus the approval hook beside them, and the join
-         paragraph with both bypasses named — the forms PRO-27 cleared.
-         "six layers" and "no invalid join" are struck strings; the sweep
-         fails the page if either comes back. -->
-    <section class="pv-section" id="governance">
+        <section class="pv-section" id="governance">
       <div class="pv-container pv-stack pv-stack--lg">
         <div class="pv-stack">
           <div class="pv-seclabel">
@@ -296,10 +274,7 @@
             </div>
           </div>
           <div class="pv-rail__rail">
-            <!-- IMG-08b. Five-rings editorial, 4:5. (Legacy slot name
-                 IMG-14 in prior comments; the image register's current
-                 canonical name is IMG-08b.) -->
-            <figure class="pv-editorial" role="img"
+                        <figure class="pv-editorial" role="img"
                  aria-label="Five nested rings, one for each layer compiled into the query plan, closing on the statement at the centre.">
                 <img class="pv-editorial__img pv-editorial__img--light" src="/assets/editorial/img-08b-light.png" alt="Five nested rings, one for each layer compiled into the query plan, closing on the statement at the centre." loading="lazy" decoding="async">
                 <img class="pv-editorial__img pv-editorial__img--dark" src="/assets/editorial/img-08b-dark.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
@@ -319,11 +294,7 @@
           </div>
           <h2 class="pv-h pv-h--section">Alongside context layers.</h2>
         </div>
-        <!-- pv-measure, because a Callout does not cap itself and this one
-             carries running prose: without it the paragraph sets to the
-             container, which is 1320px of line on a laptop. The utility is
-             the kit's own answer to this (design-system/README.md). -->
-        <div class="pv-callout pv-callout--get pv-measure">
+                <div class="pv-callout pv-callout--get pv-measure">
           <span class="pv-callout__body">Data catalogs that provide a context
             layer tell an agent what it should do. Provisa enforces what it can
             do. They are complementary, and Provisa publishes its model into
@@ -332,11 +303,7 @@
       </div>
     </section>
 
-    <!-- §7 Conversion ================================================
-         The CTA ladder from site/design-system/README.md: /install primary,
-         /register beside it, Book a demo as the secondary. Nothing here
-         points at a hosted service. -->
-    <section class="pv-contact" id="contact">
+        <section class="pv-contact" id="contact">
       <div class="pv-contact__inner pv-container">
         <div class="pv-contact__copy">
           <div class="pv-bars" aria-hidden="true"><i></i><i></i><i></i></div>
